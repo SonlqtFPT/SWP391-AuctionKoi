@@ -33,7 +33,7 @@ public class KoiFish {
     @Column(nullable = false)
     KoiFishStatusEnum status;
 
-    @OneToOne(mappedBy = "koiFish")
+    @OneToOne(mappedBy = "koiFish", cascade = CascadeType.ALL)
     AuctionRequest auctionRequest;
 
     @OneToOne(mappedBy = "koiFish", cascade = CascadeType.ALL)

@@ -27,6 +27,12 @@ public class Lot {
     float startingPrice;
 
     @Column(nullable = false)
+    java.util.Date startingTime;
+
+    @Column(nullable = false)
+    java.util.Date endingTime;
+
+    @Column(nullable = false)
     float increment;
 
     @Column(nullable = false)
@@ -56,9 +62,11 @@ public class Lot {
     public Lot() {
     }
 
-    public Lot(float deposit, float startingPrice, float increment, Integer currentMemberId, float currentPrice, LotStatusEnum status, KoiFish koiFish, List<LotRegister> lotRegisters, List<Bid> bids, Auction auction) {
+    public Lot(float deposit, float startingPrice, java.util.Date startingTime, java.util.Date endingTime,float increment, Integer currentMemberId, float currentPrice, LotStatusEnum status, KoiFish koiFish, List<LotRegister> lotRegisters, List<Bid> bids, Auction auction) {
         this.deposit = deposit;
         this.startingPrice = startingPrice;
+        this.startingTime = startingTime;
+        this.endingTime = endingTime;
         this.increment = increment;
         this.currentMemberId = currentMemberId;
         this.currentPrice = currentPrice;

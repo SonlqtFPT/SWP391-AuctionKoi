@@ -36,4 +36,10 @@ public class Bid {
     public Bid() {
     }
 
+    public Bid(float bidAmount, Date bidTime, Member member, Lot lot) {
+        this.bidAmount = bidAmount;
+        this.bidTime = bidTime;
+        this.member = member;
+        this.lot = lot;
+    }
 }
