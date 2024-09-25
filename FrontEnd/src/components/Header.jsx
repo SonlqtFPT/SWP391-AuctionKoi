@@ -7,6 +7,7 @@ import {
   FaSignInAlt,
   FaUserPlus,
 } from "react-icons/fa";
+import Logo from "../assets/logo/koi69Logo_white.png";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,8 +21,13 @@ const Header = () => {
       <nav className="flex justify-between items-center bg-[#1a1c26] text-white">
         <div className="px-5 xl:px-12 py-6 flex items-center">
           {/* Logo */}
-          <a className="text-3xl font-bold font-heading" href="/">
-            Koi69
+          <a href="/" className="flex items-center space-x-2">
+            <img
+              src={Logo}
+              alt="Koi69 Logo"
+              className="h-10 w-auto object-contain"
+            />
+            <span className="text-xl sm:text-2xl font-bold">Koi69</span>
           </a>
         </div>
 
