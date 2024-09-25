@@ -75,13 +75,13 @@ const Header = () => {
         </div>
 
         {/* Hamburger Menu */}
-        <a
+        <button
           className="navbar-burger self-center mr-12 xl:hidden"
           href="#"
           onClick={toggleDropdown}
         >
           <FaBars className="h-6 w-6 hover:text-gray-200" />
-        </a>
+        </button>
       </nav>
 
       {/* Dropdown Menu */}
