@@ -1,5 +1,7 @@
 package swp.koi.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,18 +29,16 @@ public class Lot {
     float startingPrice;
 
     @Column(nullable = false)
-    java.util.Date startingTime;
+    java.time.LocalDateTime startingTime;
 
     @Column(nullable = false)
-    java.util.Date endingTime;
+    java.time.LocalDateTime endingTime;
 
     @Column(nullable = false)
     float increment;
 
-    @Column(nullable = false)
     Integer currentMemberId;
 
-    @Column(nullable = false)
     float currentPrice;
 
     @Enumerated(EnumType.STRING)
@@ -49,20 +49,21 @@ public class Lot {
     @JoinColumn(name = "fishId")
     KoiFish koiFish;
 
-    @OneToMany(mappedBy = "lot")
+    @OneToMany(mappedBy = "lot", fetch = FetchType.LAZY)
     List<LotRegister> lotRegisters;
 
-    @OneToMany(mappedBy = "lot")
+    @OneToMany(mappedBy = "lot", fetch = FetchType.LAZY)
     List<Bid> bids;
 
     @ManyToOne
     @JoinColumn(name = "auctionId")
+    @JsonIgnore
     Auction auction;
 
     public Lot() {
     }
 
-    public Lot(float deposit, float startingPrice, java.util.Date startingTime, java.util.Date endingTime,float increment, Integer currentMemberId, float currentPrice, LotStatusEnum status, KoiFish koiFish, List<LotRegister> lotRegisters, List<Bid> bids, Auction auction) {
+    public Lot(float deposit, float startingPrice, java.time.LocalDateTime startingTime, java.time.LocalDateTime endingTime,float increment, Integer currentMemberId, float currentPrice, LotStatusEnum status, KoiFish koiFish, List<LotRegister> lotRegisters, List<Bid> bids, Auction auction) {
         this.deposit = deposit;
         this.startingPrice = startingPrice;
         this.startingTime = startingTime;

@@ -1,5 +1,8 @@
 package swp.koi.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResponseData<T> {
     private int status;                 //Response code
     private String message;             //Response message
@@ -38,6 +41,15 @@ public class ResponseData<T> {
         this.status = responseCode.getCode();
         this.message = responseCode.getMessage();
         this.data = data;
+    }
+    /**
+     * Constructor to create a ResponseData object using a ResponseCode.
+     *
+     * @param responseCode - the ResponseCode enum containing the status and message.
+     */
+    public ResponseData(ResponseCode responseCode) {
+        this.status = responseCode.getCode();
+        this.message = responseCode.getMessage();
     }
 
     // Getters and setters

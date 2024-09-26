@@ -1,5 +1,7 @@
 package swp.koi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -26,6 +28,8 @@ public class AuctionType {
     AuctionTypeNameEnum auctionTypeName;
 
     @OneToMany(mappedBy = "auctionType")
+    @JsonManagedReference
+    @JsonIgnore
     List<Auction> auctions;
 
     public AuctionType() {

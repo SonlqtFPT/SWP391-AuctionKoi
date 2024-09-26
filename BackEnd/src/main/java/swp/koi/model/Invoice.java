@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -23,7 +23,7 @@ public class Invoice {
     float totalAmount;
 
     @Column(nullable = false)
-    java.util.Date invoiceDate;
+    java.time.LocalDateTime invoiceDate;
 
     @OneToOne
     @JoinColumn(name = "LRID")
@@ -32,7 +32,7 @@ public class Invoice {
     public Invoice() {
     }
 
-    public Invoice(float totalAmount, Date invoiceDate, LotRegister lotRegister) {
+    public Invoice(float totalAmount, LocalDateTime invoiceDate, LotRegister lotRegister) {
         this.totalAmount = totalAmount;
         this.invoiceDate = invoiceDate;
         this.lotRegister = lotRegister;

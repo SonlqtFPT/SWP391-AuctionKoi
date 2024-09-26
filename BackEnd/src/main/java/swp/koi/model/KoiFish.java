@@ -1,5 +1,8 @@
 package swp.koi.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -34,9 +37,13 @@ public class KoiFish {
     KoiFishStatusEnum status;
 
     @OneToOne(mappedBy = "koiFish", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    @JsonIgnore
     AuctionRequest auctionRequest;
 
-    @OneToOne(mappedBy = "koiFish", cascade = CascadeType.ALL)
+    @OneToOne()
+    @JoinColumn(name = "mediaId")
+    @JsonBackReference
     Media media;
 
     @ManyToOne
@@ -44,6 +51,7 @@ public class KoiFish {
     Variety variety;
 
     @OneToOne(mappedBy = "koiFish")
+    @JsonIgnore
     Lot lot;
 
     public KoiFish() {

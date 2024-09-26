@@ -1,5 +1,7 @@
 package swp.koi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -41,9 +43,11 @@ public class Account {
     Member member;
 
     @OneToOne(mappedBy = "account")
+    @JsonManagedReference
     KoiBreeder koiBreeder;
 
     @OneToOne(mappedBy = "account")
+    @JsonManagedReference
     AuctionRequest auctionRequest;
 
     public Account() {

@@ -1,5 +1,6 @@
 package swp.koi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -23,10 +24,12 @@ public class Variety {
     String varietyName;
 
     @OneToMany(mappedBy = "variety")
+    @JsonIgnore
     List<KoiFish> koiFishes;
 
     public Variety() {
     }
+
 
     public Variety(String varietyName, List<KoiFish> koiFishes) {
         this.varietyName = varietyName;

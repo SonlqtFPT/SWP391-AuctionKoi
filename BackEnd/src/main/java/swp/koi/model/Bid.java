@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -23,7 +23,7 @@ public class Bid {
     float bidAmount;
 
     @Column(nullable = false)
-    java.util.Date bidTime;
+    java.time.LocalDateTime bidTime;
 
     @ManyToOne
     @JoinColumn(name = "memberId")
@@ -36,7 +36,7 @@ public class Bid {
     public Bid() {
     }
 
-    public Bid(float bidAmount, Date bidTime, Member member, Lot lot) {
+    public Bid(float bidAmount, LocalDateTime bidTime, Member member, Lot lot) {
         this.bidAmount = bidAmount;
         this.bidTime = bidTime;
         this.member = member;

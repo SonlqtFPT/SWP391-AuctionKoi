@@ -1,13 +1,16 @@
 package swp.koi.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import org.springframework.cglib.core.Local;
 import swp.koi.model.enums.AuctionStatusEnum;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -22,10 +25,10 @@ public class Auction {
     Integer auctionId;
 
     @Column(nullable = false)
-    java.util.Date startTime;
+    java.time.LocalDateTime startTime;
 
     @Column(nullable = false)
-    java.util.Date endTime;
+    java.time.LocalDateTime endTime;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -41,7 +44,7 @@ public class Auction {
     public Auction() {
     }
 
-    public Auction(Date startTime, Date endTime, AuctionStatusEnum status, List<Lot> lots, AuctionType auctionType) {
+    public Auction(LocalDateTime startTime, LocalDateTime endTime, AuctionStatusEnum status, List<Lot> lots, AuctionType auctionType) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.status = status;

@@ -23,8 +23,7 @@ public class Media {
     @Column(nullable = false)
     String videoUrl;
 
-    @OneToOne
-    @JoinColumn(name = "fishId")
+    @OneToOne(mappedBy = "media", cascade = CascadeType.ALL)
     KoiFish koiFish;
 
     public Media() {
