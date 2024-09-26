@@ -2,6 +2,7 @@ package swp.koi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -40,6 +41,7 @@ public class Account {
     boolean status;
 
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+    @JsonIgnore
     Member member;
 
     @OneToOne(mappedBy = "account")

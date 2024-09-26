@@ -5,16 +5,20 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import swp.koi.model.enums.KoiFishStatusEnum;
+
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "KoiFish")
+@AllArgsConstructor
 public class KoiFish {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,9 +54,9 @@ public class KoiFish {
     @JoinColumn(name = "varietyId", nullable = false)
     Variety variety;
 
-    @OneToOne(mappedBy = "koiFish")
+    @OneToMany(mappedBy = "koiFish")
     @JsonIgnore
-    Lot lot;
+    List<Lot> lot;
 
     public KoiFish() {
     }
@@ -68,15 +72,4 @@ public class KoiFish {
         this.variety = variety;
     }
 
-    public KoiFish(String gender, int age, float size, float price, KoiFishStatusEnum status, AuctionRequest auctionRequest, Media media, Variety variety, Lot lot) {
-        this.gender = gender;
-        this.age = age;
-        this.size = size;
-        this.price = price;
-        this.status = status;
-        this.auctionRequest = auctionRequest;
-        this.media = media;
-        this.variety = variety;
-        this.lot = lot;
-    }
 }

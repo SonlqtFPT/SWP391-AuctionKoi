@@ -1,7 +1,10 @@
 package swp.koi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
@@ -13,6 +16,7 @@ import java.util.List;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "Member")
+@AllArgsConstructor
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,18 +26,15 @@ public class Member {
     @JoinColumn(name = "accountId", nullable = false)
     Account account;
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member",fetch = FetchType.LAZY)
+    @JsonIgnore
     List<LotRegister> lotRegisters;
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member",fetch = FetchType.LAZY)
+    @JsonIgnore
     List<Bid> bids;
 
     public Member() {
     }
 
-    public Member(Account account, List<LotRegister> lotRegisters, List<Bid> bids) {
-        this.account = account;
-        this.lotRegisters = lotRegisters;
-        this.bids = bids;
-    }
 }

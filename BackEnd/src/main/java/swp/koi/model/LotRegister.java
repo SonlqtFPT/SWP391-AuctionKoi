@@ -1,9 +1,10 @@
 package swp.koi.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import swp.koi.model.enums.LotRegisterStatusEnum;
 
@@ -12,6 +13,8 @@ import swp.koi.model.enums.LotRegisterStatusEnum;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "LotRegister")
+@Builder
+@AllArgsConstructor
 public class LotRegister {
 
     @Id
@@ -29,21 +32,16 @@ public class LotRegister {
     @JoinColumn(name = "memberId")
     Member member;
 
-    @OneToOne(mappedBy = "lotRegister")
+    @OneToOne(mappedBy = "lotRegister", fetch = FetchType.LAZY)
     Invoice invoice;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lotId")
+    @JsonIgnore
     Lot lot;
 
     public LotRegister() {
     }
 
-    public LotRegister(float deposit, LotRegisterStatusEnum status, Member member, Invoice invoice, Lot lot) {
-        this.deposit = deposit;
-        this.status = status;
-        this.member = member;
-        this.invoice = invoice;
-        this.lot = lot;
-    }
+
 }

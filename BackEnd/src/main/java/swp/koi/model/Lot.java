@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import org.springframework.lang.Nullable;
 import swp.koi.model.enums.LotStatusEnum;
 
 import java.util.List;
@@ -16,6 +18,7 @@ import java.util.List;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "Lot")
+@AllArgsConstructor
 public class Lot {
 
     @Id
@@ -37,6 +40,7 @@ public class Lot {
     @Column(nullable = false)
     float increment;
 
+    @Column(columnDefinition = "integer null")
     Integer currentMemberId;
 
     float currentPrice;
@@ -45,8 +49,7 @@ public class Lot {
     @Column(nullable = false)
     LotStatusEnum status;
 
-    @OneToOne
-    @JoinColumn(name = "fishId")
+    @ManyToOne
     KoiFish koiFish;
 
     @OneToMany(mappedBy = "lot", fetch = FetchType.LAZY)
@@ -63,18 +66,5 @@ public class Lot {
     public Lot() {
     }
 
-    public Lot(float deposit, float startingPrice, java.time.LocalDateTime startingTime, java.time.LocalDateTime endingTime,float increment, Integer currentMemberId, float currentPrice, LotStatusEnum status, KoiFish koiFish, List<LotRegister> lotRegisters, List<Bid> bids, Auction auction) {
-        this.deposit = deposit;
-        this.startingPrice = startingPrice;
-        this.startingTime = startingTime;
-        this.endingTime = endingTime;
-        this.increment = increment;
-        this.currentMemberId = currentMemberId;
-        this.currentPrice = currentPrice;
-        this.status = status;
-        this.koiFish = koiFish;
-        this.lotRegisters = lotRegisters;
-        this.bids = bids;
-        this.auction = auction;
-    }
+
 }

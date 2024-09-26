@@ -1,18 +1,19 @@
 package swp.koi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "Bid")
+@Builder
+@AllArgsConstructor
 public class Bid {
 
     @Id
@@ -23,7 +24,7 @@ public class Bid {
     float bidAmount;
 
     @Column(nullable = false)
-    java.time.LocalDateTime bidTime;
+    Date bidTime;
 
     @ManyToOne
     @JoinColumn(name = "memberId")
@@ -31,15 +32,11 @@ public class Bid {
 
     @ManyToOne
     @JoinColumn(name = "lotId")
+    @JsonIgnore
     Lot lot;
 
     public Bid() {
     }
 
-    public Bid(float bidAmount, LocalDateTime bidTime, Member member, Lot lot) {
-        this.bidAmount = bidAmount;
-        this.bidTime = bidTime;
-        this.member = member;
-        this.lot = lot;
-    }
+
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
@@ -18,6 +19,7 @@ import java.util.List;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "Auction")
+@AllArgsConstructor
 public class Auction {
 
     @Id
@@ -44,11 +46,4 @@ public class Auction {
     public Auction() {
     }
 
-    public Auction(LocalDateTime startTime, LocalDateTime endTime, AuctionStatusEnum status, List<Lot> lots, AuctionType auctionType) {
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.status = status;
-        this.lots = lots;
-        this.auctionType = auctionType;
-    }
 }

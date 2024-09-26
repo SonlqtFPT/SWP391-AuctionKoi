@@ -13,8 +13,8 @@ public enum ResponseCode {
     ERROR_AUTHENTICATION(500, "An error occurred during sign up.");
     ;
 
-    private int code;
-    private String message;
+    private final int code;
+    private final String message;
 
     ResponseCode(int code, String message) {
         this.code = code;
