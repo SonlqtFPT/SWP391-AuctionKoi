@@ -1,5 +1,6 @@
 package swp.koi.service.lotRegisterService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -15,7 +16,9 @@ import swp.koi.model.enums.LotRegisterStatusEnum;
 import swp.koi.repository.LotRegisterRepository;
 import swp.koi.service.lotService.LotServiceImpl;
 import swp.koi.service.memberService.MemberServiceImpl;
+import swp.koi.service.vnPayService.VnpayService;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,22 +31,25 @@ public class LotRegisterServiceImpl implements LotRegisterService{
     private final LotServiceImpl lotServiceImpl;
     private final MemberServiceImpl memberServiceImpl;
     private final ModelMapper modelMapper;
+    private final VnpayService vnpayService;
 
     @Override
-    public void regisSlotWithLotId(LotRegisterDTO lotRegisterDTO) throws KoiException{
-        try{
-            Lot lot = lotServiceImpl.findLotById(lotRegisterDTO.getLotId());
-            Member member = memberServiceImpl.getMemberById(lotRegisterDTO.getMemberId());
+    public String regisSlotWithLotId(LotRegisterDTO lotRegisDto, HttpServletRequest request) throws UnsupportedEncodingException {
+//        Lot lot = lotServiceImpl.findLotById(lotRegisDto.getLotId());
+        Member member = memberServiceImpl.getMemberById(lotRegisDto.getMemberId());
 
-            // Validate if the member is already registered for this lot
-            validateMemberRegistration(lotRegisterDTO.getLotId(), member);
+        // Validate if the member is already registered for this lot
+        var isUserRegisted = validateMemberRegistration(lotRegisDto.getLotId(), member);
 
-            // Register the member for the lot
-            LotRegister lotRegister = createLotRegister(lot, member);
-            lotRegisterRepository.save(lotRegister);
-        }catch (KoiException e){
-            throw e;
+        if(isUserRegisted) {
+            return null;
+        }else {
+            var paymentUrl = vnpayService.generateInvoice(lotRegisDto.getLotId(),lotRegisDto.getMemberId(),request);
+            return paymentUrl;
         }
+        // Register the member for the lot
+//        LotRegister lotRegister = createLotRegister(lot, member);
+//        lotRegisterRepository.save(lotRegister);
     }
 
     @Override
@@ -62,21 +68,15 @@ public class LotRegisterServiceImpl implements LotRegisterService{
         }
     }
 
-    private void validateMemberRegistration(Integer lotId, Member member) throws KoiException{
-        try{
-            boolean isAlreadyRegistered = listLotRegistersByLotId(lotId)
-                    .stream()
-                    .anyMatch(lr -> lr.getMember().equals(member));
+    private boolean validateMemberRegistration(Integer lotId, Member member){
 
-            if (isAlreadyRegistered) {
-                throw new KoiException(ResponseCode.MEMBER_REGISTED);
-            }
-        }catch (KoiException e){
-            throw e;
-        }
+        return listLotRegistersByLotId(lotId)
+                .stream()
+                .anyMatch(lr -> lr.getMember().equals(member));
+
     }
 
-    private LotRegister createLotRegister(Lot lot, Member member) {
+    public LotRegister createLotRegister(Lot lot, Member member) {
         return LotRegister.builder()
                 .deposit(lot.getDeposit())
                 .status(LotRegisterStatusEnum.WAITING)

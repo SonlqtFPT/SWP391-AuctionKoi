@@ -14,10 +14,12 @@ public class KoiException extends RuntimeException {
     }
 
     public ResponseCode getResponseCode() {
+
         return responseCode;
     }
 
     public void setResponseCode(ResponseCode responseCode) {
+
         this.responseCode = responseCode;
     }
 }

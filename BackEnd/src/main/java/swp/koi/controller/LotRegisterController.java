@@ -1,6 +1,9 @@
 package swp.koi.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import swp.koi.dto.request.LotRegisterDTO;
 
@@ -11,6 +14,7 @@ import swp.koi.exception.KoiException;
 import swp.koi.service.lotRegisterService.LotRegisterService;
 
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 @RestController
@@ -21,12 +25,15 @@ public class LotRegisterController {
     private final LotRegisterService lotRegisterService;
 
     @PostMapping("/regis")
-    public ResponseData<String> registerLot(@RequestBody LotRegisterDTO lotRegisterDTO) {
+    public ResponseEntity<?> registerLot(@RequestBody LotRegisterDTO lotRegisterDTO, HttpServletRequest request) throws KoiException {
         try{
-            lotRegisterService.regisSlotWithLotId(lotRegisterDTO);
-            return new ResponseData<>(ResponseCode.LOT_REGISTER_SUCCESS);
-        }catch (KoiException e){
-            return new ResponseData<>(e.getResponseCode());
+            var userRegisted = lotRegisterService.regisSlotWithLotId(lotRegisterDTO,request);
+            if(userRegisted != null) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(userRegisted);
+            }
+            return ResponseEntity.status(HttpStatus.CREATED).body("User already registered to lot");
+        }catch (KoiException | UnsupportedEncodingException e){
+            throw new RuntimeException(e);
         }
     }
 

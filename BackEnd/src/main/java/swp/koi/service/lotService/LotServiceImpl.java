@@ -71,6 +71,7 @@ public class LotServiceImpl implements LotService{
         // => change status to passed
         if(bidList.isEmpty()){
             lot.setStatus(LotStatusEnum.PASSED);
+            lotRepository.save(lot);
         } else {
             //find the biggest amount bidder
             Bid highestBid = bidList.stream().max(Comparator.comparing(Bid::getBidAmount))

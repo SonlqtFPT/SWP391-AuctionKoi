@@ -44,7 +44,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/v1/getRequest").hasAuthority("ROLE_BREEDER")
                         .requestMatchers("/register-lot/regis").hasAuthority("ROLE_MEMBER")
                         .requestMatchers("/register-lot/list").hasAuthority("ROLE_MEMBER")
-                        .requestMatchers("/bid/bidAuction")
+                        .requestMatchers("/bid/bidAuction").hasAuthority("ROLE_MEMBER")
                         .anyRequest().authenticated()
                 )
 //                .formLogin(Customizer.withDefaults())

@@ -26,7 +26,7 @@ public class GlobalExceptionHandle {
         return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);  // Return ResponseEntity with 404 status
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler({MethodArgumentNotValidException.class,Exception.class})
     public ResponseEntity<ResponseData<Map>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex){
         List<ObjectError> errors = ex.getBindingResult().getAllErrors();
         Map<String, String> map = new HashMap<>(errors.size());

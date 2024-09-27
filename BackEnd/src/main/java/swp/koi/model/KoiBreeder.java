@@ -1,11 +1,7 @@
 package swp.koi.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
@@ -15,6 +11,8 @@ import java.util.List;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "KoiBreeder")
+@Builder
+@AllArgsConstructor
 public class KoiBreeder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,10 +38,4 @@ public class KoiBreeder {
     public KoiBreeder() {
     }
 
-    public KoiBreeder(String breederName, String location, boolean status, Account account) {
-        this.breederName = breederName;
-        this.location = location;
-        this.status = status;
-        this.account = account;
-    }
 }
