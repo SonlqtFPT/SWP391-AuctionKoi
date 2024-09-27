@@ -1,10 +1,12 @@
 package swp.koi.service.auctionRequestService;
 
 import jakarta.transaction.Transactional;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import swp.koi.dto.request.AuctionRequestDTO;
 import swp.koi.dto.request.KoiFishDTO;
 import swp.koi.dto.request.MediaDTO;
+import swp.koi.dto.response.AuctionRequestResponseDTO;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
 import swp.koi.model.AuctionRequest;
@@ -26,16 +28,18 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     private final AuctionRequestRepository auctionRequestRepository;
     private final KoiBreederService koiBreederService;
     private final KoiFishService koiFishService;
+    private final ModelMapper modelMapper;
 
-    public AuctionRequestServiceImpl(AuctionRequestRepository auctionRequestRepository, KoiBreederServiceImpl koiBreederService, KoiFishServiceImpl koiFishService) {
+    public AuctionRequestServiceImpl(AuctionRequestRepository auctionRequestRepository, KoiBreederServiceImpl koiBreederService, KoiFishServiceImpl koiFishService, ModelMapper modelMapper) {
         this.auctionRequestRepository = auctionRequestRepository;
         this.koiBreederService = koiBreederService;
         this.koiFishService = koiFishService;
+        this.modelMapper = modelMapper;
     }
 
 
     @Override
-    public AuctionRequest createRequest(AuctionRequestDTO request) {
+    public AuctionRequestResponseDTO createRequest(AuctionRequestDTO request) throws KoiException{
         try {
             // Create a new AuctionRequest object to hold the auction request data
             AuctionRequest auctionRequest = new AuctionRequest();
@@ -55,9 +59,9 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
             auctionRequest.setKoiFish(koiFish);
 
             // Save the AuctionRequest to the repository and return the saved instance
-            return auctionRequestRepository.save(auctionRequest);
+            return modelMapper.map(auctionRequestRepository.save(auctionRequest), AuctionRequestResponseDTO.class);
         } catch (KoiException e) {
-            throw new KoiException(ResponseCode.CREATED_FAILED_AUCTION_REQUEST);
+            throw e;
         }
     }
 

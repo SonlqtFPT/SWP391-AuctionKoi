@@ -27,11 +27,9 @@ public class Member {
     Account account;
 
     @OneToMany(mappedBy = "member",fetch = FetchType.LAZY)
-    @JsonIgnore
     List<LotRegister> lotRegisters;
 
     @OneToMany(mappedBy = "member",fetch = FetchType.LAZY)
-    @JsonIgnore
     List<Bid> bids;
 
     public Member() {

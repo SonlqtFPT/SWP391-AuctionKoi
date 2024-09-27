@@ -24,12 +24,10 @@ public class Variety {
     String varietyName;
 
     @OneToMany(mappedBy = "variety",fetch = FetchType.LAZY)
-    @JsonIgnore
     List<KoiFish> koiFishes;
 
     public Variety() {
     }
-
 
     public Variety(String varietyName, List<KoiFish> koiFishes) {
         this.varietyName = varietyName;

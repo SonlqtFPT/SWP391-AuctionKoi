@@ -17,6 +17,7 @@ import swp.koi.repository.KoiFishRepository;
 import swp.koi.service.mediaService.MediaService;
 import swp.koi.service.varietyService.VarietyService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -39,33 +40,37 @@ public class KoiFishServiceImpl implements KoiFishService{
     }
 
     @Override
-    public KoiFish createKoiFishFromRequest(KoiFishDTO koiRequest, MediaDTO mediaRequest) {
-            KoiFish koiFish = new KoiFish();
+    public KoiFish createKoiFishFromRequest(KoiFishDTO koiRequest, MediaDTO mediaRequest) throws KoiException{
+            try{
+                KoiFish koiFish = new KoiFish();
 
-            // Set the variety of the koi fish by fetching it from the varietyService based on the variety name provided
-            Variety variety = varietyService.findByVarietyName(koiRequest.getVarietyName());
-            koiFish.setVariety(variety);
+                // Set the variety of the koi fish by fetching it from the varietyService based on the variety name provided
+                Variety variety = varietyService.findByVarietyName(koiRequest.getVarietyName());
+                koiFish.setVariety(variety);
 
-            // Create and set the media (e.g., images or videos) related to the koi fish using the mediaService
-            Media media = mediaService.createMediaFromRequest(mediaRequest);
-            koiFish.setMedia(media);
+                // Create and set the media (e.g., images or videos) related to the koi fish using the mediaService
+                Media media = mediaService.createMediaFromRequest(mediaRequest);
+                koiFish.setMedia(media);
 
-            // Set the age, gender, price, and size from the request DTO
-            koiFish.setAge(koiRequest.getAge());
-            koiFish.setGender(koiRequest.getGender());
-            koiFish.setPrice(koiRequest.getPrice());
-            koiFish.setSize(koiRequest.getSize());
+                // Set the age, gender, price, and size from the request DTO
+                koiFish.setAge(koiRequest.getAge());
+                koiFish.setGender(koiRequest.getGender());
+                koiFish.setPrice(koiRequest.getPrice());
+                koiFish.setSize(koiRequest.getSize());
 
-            // Set the status of the koi fish to 'WAITING' (probably waiting for auction or approval)
-            koiFish.setStatus(KoiFishStatusEnum.WAITING);
+                // Set the status of the koi fish to 'WAITING' (probably waiting for auction or approval)
+                koiFish.setStatus(KoiFishStatusEnum.WAITING);
 
-            // Save the koi fish to the repository and return the saved entity
-            return koiFishRepository.save(koiFish);
+                // Save the koi fish to the repository and return the saved entity
+                return koiFishRepository.save(koiFish);
+            }catch (KoiException e){
+                throw e;
+            }
     }
 
     @Override
     public KoiFish findByFishId(Integer fishId) {
-        return koiFishRepository.findByFishId(fishId).orElseThrow(() -> new KoiException(ResponseCode.NOT_FOUND));
+        return koiFishRepository.findByFishId(fishId).orElseThrow(() -> new KoiException(ResponseCode.FISH_NOT_FOUND));
     }
 
     @Override

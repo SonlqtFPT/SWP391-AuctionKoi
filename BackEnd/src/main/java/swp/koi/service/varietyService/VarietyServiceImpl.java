@@ -19,6 +19,6 @@ public class VarietyServiceImpl implements VarietyService{
 
     @Override
     public Variety findByVarietyName(String name) {
-        return varietyRepository.findByVarietyName(name).orElseThrow(() -> new KoiException(ResponseCode.NOT_FOUND));
+        return varietyRepository.findByVarietyName(name).orElseThrow(() -> new KoiException(ResponseCode.VARIETY_NOT_FOUND));
     }
 }

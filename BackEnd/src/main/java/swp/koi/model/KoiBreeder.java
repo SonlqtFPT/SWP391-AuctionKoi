@@ -31,11 +31,9 @@ public class KoiBreeder {
 
     @OneToOne
     @JoinColumn(name = "accountId", nullable = false)
-    @JsonBackReference
     Account account;
 
     @OneToMany(mappedBy = "koiBreeder")
-    @JsonManagedReference
     List<AuctionRequest> auctionRequests;
 
 

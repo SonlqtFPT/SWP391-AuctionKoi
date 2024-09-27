@@ -32,7 +32,6 @@ public class Bid {
 
     @ManyToOne
     @JoinColumn(name = "lotId")
-    @JsonIgnore
     Lot lot;
 
     public Bid() {

@@ -2,7 +2,9 @@ package swp.koi.service.bidService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import swp.koi.dto.response.requestDto.BidRequestDto;
+import swp.koi.dto.request.BidRequestDto;
+import swp.koi.dto.response.ResponseCode;
+import swp.koi.exception.KoiException;
 import swp.koi.model.Bid;
 import swp.koi.model.Lot;
 import swp.koi.model.LotRegister;
@@ -28,43 +30,57 @@ public class BidServiceImpl implements BidService{
     private final LotRegisterRepository lotRegisterRepository;
 
     @Override
-    public void bid(BidRequestDto bidRequestDto) {
-        // Retrieve the Member and Lot based on the DTO
-        Member member = memberService.getMemberById(bidRequestDto.getMemberId());
-        Lot lot = lotRepository.findById(bidRequestDto.getLotId())
-                .orElseThrow(() -> new NoSuchElementException("lot not found"));
+    public void bid(BidRequestDto bidRequestDto) throws KoiException {
+        try{
+            // Retrieve the Member and Lot based on the DTO
+            Member member = memberService.getMemberById(bidRequestDto.getMemberId());
+            Lot lot = lotRepository.findById(bidRequestDto.getLotId())
+                    .orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
 
-        // Validate the bid request to ensure it's eligible for placing a bid
-        validateBidRequest(bidRequestDto, member, lot);
+            // Validate the bid request to ensure it's eligible for placing a bid
+            validateBidRequest(bidRequestDto, member, lot);
 
-        // Create a Bid entity and update the Lot with the new bid
-        Bid bid = createBid(bidRequestDto, member, lot);
-        updateLotWithNewBid(bidRequestDto.getPrice(), lot);
+            // Create a Bid entity and update the Lot with the new bid
+            Bid bid = createBid(bidRequestDto, member, lot);
+            updateLotWithNewBid(bidRequestDto.getPrice(), lot);
 
-        // Persist the bid and the updated lot into the repository
-        bidRepository.save(bid);
-        lotRepository.save(lot);
+            // Persist the bid and the updated lot into the repository
+            bidRepository.save(bid);
+            lotRepository.save(lot);
+        }catch (KoiException e){
+            throw e;
+        }
     }
 
     @Override
-    public List<Bid> listBidByLotId(int lotId) {
-        // Find the Lot by ID and fetch all bids associated with it
-        Lot lot = lotRepository.findById(lotId)
-                .orElseThrow(() -> new NoSuchElementException("lot not found"));
-        return bidRepository.getBidByLot(lot)
-                .orElseThrow(() -> new IllegalStateException("No Lot found")); // Handle case where no bids are found
+    public List<Bid> listBidByLotId(int lotId) throws KoiException{
+        try{
+            // Find the Lot by ID and fetch all bids associated with it
+            Lot lot = lotRepository.findById(lotId)
+                    .orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
+            return bidRepository.getBidByLot(lot)
+                    .orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND)); // Handle case where no bids are found
+        }catch (KoiException e){
+            throw e;
+        }
     }
 
     // Validates the bid request, ensuring the member is registered and that the bid price is valid
-    private void validateBidRequest(BidRequestDto bidRequestDto, Member member, Lot lot) {
-        // Check if the member is registered for the lot and update their status if needed
-        boolean isRegistered = lotRegisterRepository.findByLot(lot)
-                .orElseThrow(() -> new NoSuchElementException("lot not found"))
-                .stream()
-                .anyMatch(lr -> lr.getMember().equals(member) && updateLotRegisterStatus(lr)); // Update status to "BIDDING"
-//
-        if (!isRegistered || bidRequestDto.getPrice() <= lot.getCurrentPrice()) {
-            throw new IllegalStateException("Invalid bid: Either price is too low or member is not registered.");
+    private void validateBidRequest(BidRequestDto bidRequestDto, Member member, Lot lot) throws KoiException{
+        try{
+            // Check if the member is registered for the lot and update their status if needed
+            boolean isRegistered = lotRegisterRepository.findByLot(lot)
+                    .orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND))
+                    .stream()
+                    .anyMatch(lr -> lr.getMember().equals(member) && updateLotRegisterStatus(lr)); // Update status to "BIDDING"
+
+            if (!isRegistered) {
+                throw new KoiException(ResponseCode.MEMBER_NOT_REGISTERED_FOR_LOT);
+            }else if(bidRequestDto.getPrice() <= lot.getCurrentPrice()){
+                throw new KoiException((ResponseCode.BID_PRICE_TOO_LOW));
+            }
+        }catch (KoiException e){
+            throw e;
         }
     }
 

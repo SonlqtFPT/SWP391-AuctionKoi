@@ -19,7 +19,12 @@ public class AuctionTypeServiceImpl implements AuctionTypeService{
 
     @Override
     public AuctionType findByAuctionTypeName(String auctionTypeName) {
-        AuctionTypeNameEnum auctionTypeEnum = AuctionTypeNameEnum.valueOf(auctionTypeName.toUpperCase());
-        return auctionTypeRepository.findByAuctionTypeName(auctionTypeEnum).orElseThrow(() -> new KoiException(ResponseCode.NOT_FOUND));
+        AuctionTypeNameEnum auctionTypeEnum;
+        try{
+            auctionTypeEnum = AuctionTypeNameEnum.valueOf(auctionTypeName.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new KoiException(ResponseCode.AUCTION_TYPE_NOT_FOUND);
+        }
+        return auctionTypeRepository.findByAuctionTypeName(auctionTypeEnum).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_TYPE_NOT_FOUND));
     }
 }

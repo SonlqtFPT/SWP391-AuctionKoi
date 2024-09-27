@@ -1,5 +1,6 @@
-package swp.koi.dto.response.requestDto;
+package swp.koi.dto.request;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -8,10 +9,11 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BidRequestDto {
+public class LotRegisterDTO {
+
+    @NotNull
+    int memberId;
+    @NotNull
     int lotId;
 
-    float price;
-
-    int memberId;
 }

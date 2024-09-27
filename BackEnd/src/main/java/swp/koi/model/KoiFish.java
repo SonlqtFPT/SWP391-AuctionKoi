@@ -41,13 +41,10 @@ public class KoiFish {
     KoiFishStatusEnum status;
 
     @OneToOne(mappedBy = "koiFish", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @JsonIgnore
     AuctionRequest auctionRequest;
 
     @OneToOne()
     @JoinColumn(name = "mediaId")
-    @JsonBackReference
     Media media;
 
     @ManyToOne
@@ -55,7 +52,6 @@ public class KoiFish {
     Variety variety;
 
     @OneToMany(mappedBy = "koiFish")
-    @JsonIgnore
     List<Lot> lot;
 
     public KoiFish() {

@@ -37,7 +37,6 @@ public class LotRegister {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lotId")
-    @JsonIgnore
     Lot lot;
 
     public LotRegister() {

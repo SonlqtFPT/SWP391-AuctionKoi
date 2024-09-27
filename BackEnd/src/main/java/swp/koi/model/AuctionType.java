@@ -28,8 +28,6 @@ public class AuctionType {
     AuctionTypeNameEnum auctionTypeName;
 
     @OneToMany(mappedBy = "auctionType")
-    @JsonManagedReference
-    @JsonIgnore
     List<Auction> auctions;
 
     public AuctionType() {

@@ -50,6 +50,7 @@ public class Lot {
     LotStatusEnum status;
 
     @ManyToOne
+    @JoinColumn(name = "fishId", nullable = false)
     KoiFish koiFish;
 
     @OneToMany(mappedBy = "lot", fetch = FetchType.LAZY)
@@ -60,7 +61,6 @@ public class Lot {
 
     @ManyToOne
     @JoinColumn(name = "auctionId")
-    @JsonIgnore
     Auction auction;
 
     public Lot() {

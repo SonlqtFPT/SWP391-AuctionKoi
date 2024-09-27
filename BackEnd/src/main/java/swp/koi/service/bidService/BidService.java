@@ -1,6 +1,7 @@
 package swp.koi.service.bidService;
 
-import swp.koi.dto.response.requestDto.BidRequestDto;
+import swp.koi.dto.request.BidRequestDto;
+import swp.koi.dto.response.BidResponseDTO;
 import swp.koi.model.Bid;
 
 import java.util.List;

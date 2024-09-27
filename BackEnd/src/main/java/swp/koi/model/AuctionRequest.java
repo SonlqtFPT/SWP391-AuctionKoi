@@ -25,17 +25,14 @@ public class AuctionRequest {
 
     @OneToOne
     @JoinColumn(name = "accountId")
-    @JsonBackReference
     Account account;
 
     @ManyToOne
     @JoinColumn(name = "breederId")
-    @JsonBackReference
     KoiBreeder koiBreeder;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fishId")
-    @JsonManagedReference
     KoiFish koiFish;
 
     public AuctionRequest() {

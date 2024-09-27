@@ -1,13 +1,13 @@
 package swp.koi.service.lotRegisterService;
 
-import swp.koi.dto.response.requestDto.LotRegisDto;
-import swp.koi.model.LotRegister;
+import swp.koi.dto.request.LotRegisterDTO;
+import swp.koi.dto.response.LotRegisterResponseDTO;
 
 import java.util.List;
 
 public interface LotRegisterService {
-    void regisSlotWithLotId(LotRegisDto lotRegisDto);
+    void regisSlotWithLotId(LotRegisterDTO lotRegisterDTO);
 
-    List<LotRegister> listLotRegistersByLotId(int lotId);
+    List<LotRegisterResponseDTO> listLotRegistersByLotId(int lotId);
 
 }

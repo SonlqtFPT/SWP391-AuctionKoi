@@ -10,6 +10,9 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import swp.koi.model.enums.AccountRoleEnum;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -22,6 +25,7 @@ public class Account {
 
     @Column(nullable = false, unique = true)
     String email;
+
     @Column(nullable = false)
     String firstName;
 
@@ -37,19 +41,19 @@ public class Account {
     @Enumerated(EnumType.STRING)
     AccountRoleEnum role;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    List<AccountRoleEnum> roles = new ArrayList<>();
+
     @Column(nullable = false)
     boolean status;
 
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
-    @JsonIgnore
     Member member;
 
     @OneToOne(mappedBy = "account")
-    @JsonManagedReference
     KoiBreeder koiBreeder;
 
     @OneToOne(mappedBy = "account")
-    @JsonManagedReference
     AuctionRequest auctionRequest;
 
     public Account() {

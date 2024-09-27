@@ -1,5 +1,7 @@
 package swp.koi.dto.request;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -14,9 +16,9 @@ import swp.koi.model.enums.AuctionRequestStatusEnum;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuctionRequestDTO {
-    @NotNull(message = "breederId can not be null")
+    @NotNull(message = "Breeder Id is required")
     Integer breederId;
-    @NotNull(message = "Koi Fish can not be null")
+    @Valid
     KoiFishDTO koiFish;
 
 }

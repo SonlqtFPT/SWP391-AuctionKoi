@@ -3,6 +3,8 @@ package swp.koi.service.lotService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import swp.koi.dto.response.ResponseCode;
+import swp.koi.exception.KoiException;
 import swp.koi.model.Bid;
 import swp.koi.model.Lot;
 import swp.koi.model.LotRegister;
@@ -29,7 +31,7 @@ public class LotServiceImpl implements LotService{
 
     @Override
     public Lot findLotById(int id) {
-        return lotRepository.findById(id).orElseThrow(() -> new RuntimeException("Lot with such id not exist"));
+        return lotRepository.findById(id).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
     }
 
     @Override
@@ -86,7 +88,7 @@ public class LotServiceImpl implements LotService{
             List<LotRegister> lotRegisterList = lotRegisterRepository.findByLot(lot).get();
 
             //change status of others to lose
-                    lotRegisterList
+            lotRegisterList
                     .stream()
                     .filter(lr -> !lr.getMember().equals(highestBid.getMember()))
                     .forEach( lr -> {
@@ -96,6 +98,8 @@ public class LotServiceImpl implements LotService{
         }
 
     }
-
+    public List<Lot> createLots(List<Lot> lots) {
+        return lotRepository.saveAll(lots);
+    }
 
 }
