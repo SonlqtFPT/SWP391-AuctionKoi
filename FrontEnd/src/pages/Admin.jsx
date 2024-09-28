@@ -9,7 +9,9 @@ const AdminPage = () => {
       <Header />
       <div className="flex flex-grow">
         <SidebarAdmin />
-        <Test />
+        <div className="flex-grow">
+          <Test />
+        </div>
       </div>
       <Footer />
     </div>

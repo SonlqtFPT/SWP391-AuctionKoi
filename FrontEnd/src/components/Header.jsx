@@ -13,7 +13,11 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDropdown = () => {
-    setIsOpen(!isOpen);
+    setIsOpen((prev) => !prev);
+  };
+
+  const handleLinkClick = () => {
+    setIsOpen(false);
   };
 
   return (
@@ -37,6 +41,7 @@ const Header = () => {
             <a
               href="/"
               className="hover:text-gray-200 flex items-center space-x-2"
+              onClick={handleLinkClick}
             >
               <FaHome className="h-5 w-5" />
               <span>Home</span>
@@ -46,6 +51,7 @@ const Header = () => {
             <a
               href="/auction"
               className="hover:text-gray-200 flex items-center space-x-2"
+              onClick={handleLinkClick}
             >
               <FaGavel className="h-5 w-5" />
               <span>Auction</span>
@@ -55,6 +61,7 @@ const Header = () => {
             <a
               href="/about"
               className="hover:text-gray-200 flex items-center space-x-2"
+              onClick={handleLinkClick}
             >
               <FaInfoCircle className="h-5 w-5" />
               <span>About Us</span>
@@ -67,6 +74,7 @@ const Header = () => {
           <a
             href="/login"
             className="hover:text-gray-200 flex items-center space-x-2"
+            onClick={handleLinkClick}
           >
             <FaSignInAlt className="h-6 w-6" />
             <span>Login</span>
@@ -74,6 +82,7 @@ const Header = () => {
           <a
             href="/register"
             className="hover:text-gray-200 flex items-center space-x-2"
+            onClick={handleLinkClick}
           >
             <FaUserPlus className="h-6 w-6" />
             <span>Register</span>
@@ -83,7 +92,6 @@ const Header = () => {
         {/* Hamburger Menu */}
         <button
           className="navbar-burger self-center mr-12 xl:hidden"
-          href="#"
           onClick={toggleDropdown}
         >
           <FaBars className="h-6 w-6 hover:text-gray-200" />
@@ -101,7 +109,7 @@ const Header = () => {
             <a
               href="/"
               className="hover:text-gray-200 flex items-center space-x-2"
-              onClick={() => setIsOpen(false)}
+              onClick={handleLinkClick}
             >
               <FaHome className="h-5 w-5" />
               <span>Home</span>
@@ -111,7 +119,7 @@ const Header = () => {
             <a
               href="/auction"
               className="hover:text-gray-200 flex items-center space-x-2"
-              onClick={() => setIsOpen(false)}
+              onClick={handleLinkClick}
             >
               <FaGavel className="h-5 w-5" />
               <span>Auction</span>
@@ -121,7 +129,7 @@ const Header = () => {
             <a
               href="/about"
               className="hover:text-gray-200 flex items-center space-x-2"
-              onClick={() => setIsOpen(false)}
+              onClick={handleLinkClick}
             >
               <FaInfoCircle className="h-5 w-5" />
               <span>About Us</span>
@@ -131,7 +139,7 @@ const Header = () => {
             <a
               href="/login"
               className="hover:text-gray-200 flex items-center space-x-2"
-              onClick={() => setIsOpen(false)}
+              onClick={handleLinkClick}
             >
               <FaSignInAlt className="h-6 w-6" />
               <span>Login</span>
@@ -141,7 +149,7 @@ const Header = () => {
             <a
               href="/register"
               className="hover:text-gray-200 flex items-center space-x-2"
-              onClick={() => setIsOpen(false)}
+              onClick={handleLinkClick}
             >
               <FaUserPlus className="h-6 w-6" />
               <span>Register</span>

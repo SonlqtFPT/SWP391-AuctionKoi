@@ -5,6 +5,8 @@ import {
   FaSignOutAlt,
   FaTasks,
   FaGavel,
+  FaTruck, // Import FaTruck icon for Manage Transport
+  FaReceipt, // Import FaReceipt icon for View Transaction
 } from "react-icons/fa"; // Importing React icons
 import Logo from "../assets/logo/koi69Logo_white.png";
 
@@ -72,6 +74,32 @@ const SidebarAdmin = () => {
                 <FaGavel />
               </span>
               <span className="text-sm font-medium">Manage Auction</span>
+            </a>
+          </li>
+
+          {/* Manage Transport */}
+          <li>
+            <a
+              href="#"
+              className="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-white hover:text-gray-200"
+            >
+              <span className="inline-flex items-center justify-center h-12 w-12 text-lg text-white">
+                <FaTruck />
+              </span>
+              <span className="text-sm font-medium">Manage Transport</span>
+            </a>
+          </li>
+
+          {/* View Transaction */}
+          <li>
+            <a
+              href="#"
+              className="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-white hover:text-gray-200"
+            >
+              <span className="inline-flex items-center justify-center h-12 w-12 text-lg text-white">
+                <FaReceipt />
+              </span>
+              <span className="text-sm font-medium">View Transaction</span>
             </a>
           </li>
 
