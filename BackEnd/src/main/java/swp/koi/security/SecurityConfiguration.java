@@ -40,7 +40,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers("/login", "/signup").permitAll()
+                        .requestMatchers("authenticate/**").permitAll()
                         .requestMatchers("/api/v1/getRequest").hasAuthority("ROLE_BREEDER")
                         .requestMatchers("/register-lot/regis").hasAuthority("ROLE_MEMBER")
                         .requestMatchers("/register-lot/list").hasAuthority("ROLE_MEMBER")

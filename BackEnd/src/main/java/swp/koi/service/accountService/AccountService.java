@@ -1,16 +1,18 @@
 package swp.koi.service.accountService;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import jakarta.servlet.http.HttpServletRequest;
 import swp.koi.dto.request.AccountLoginDTO;
 import swp.koi.dto.request.AccountRegisterDTO;
-import swp.koi.dto.response.AccountResponseDTO;
+import swp.koi.dto.response.AuthenticateResponse;
 import swp.koi.model.Account;
+
+import javax.security.auth.login.AccountNotFoundException;
 
 public interface AccountService {
     AccountRegisterDTO findByAccountId(Integer accountId);
     Account createAccount(Account account);
     Account createAccountByRequest(AccountRegisterDTO request);
     Account findByEmail(String emai);
-    void login(AccountLoginDTO request);
+    AuthenticateResponse login(AccountLoginDTO request);
+    AuthenticateResponse refreshToken(HttpServletRequest request) throws AccountNotFoundException;
 }

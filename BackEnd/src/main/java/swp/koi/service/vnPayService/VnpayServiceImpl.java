@@ -11,7 +11,6 @@ import swp.koi.model.enums.LotRegisterStatusEnum;
 import swp.koi.repository.LotRegisterRepository;
 import swp.koi.repository.LotRepository;
 import swp.koi.repository.MemberRepository;
-import swp.koi.service.lotRegisterService.LotRegisterServiceImpl;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
