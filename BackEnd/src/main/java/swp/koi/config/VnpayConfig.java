@@ -35,7 +35,7 @@ public class VnpayConfig {
         }
         return digest;
     }
-//test git
+
     public static String Sha256(String message) {
         String digest = null;
         try {
