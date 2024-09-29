@@ -2,6 +2,7 @@ package swp.koi.dto.response;
 
 public enum ResponseCode {
     SUCCESS(200, "Successfully."),
+    UNAUTHORIZED(403, "UNAUTHORIZED"),
     NOT_FOUND(400, "Not found"),
     INVALID_INFORMATION(400, "Data is invalid"),
     CREATED_SUCCESS(400, "Created successfully"),
@@ -24,6 +25,7 @@ public enum ResponseCode {
     // Breeder related statuses
     FAILED_CREATE_BREEDER(2000, "Fail to create breeder"),
     BREEDER_ID_NOT_FOUND(2001, "Breeder ID not found"),
+    BREEDER_NOT_FOUND(2002, "Breeder not found"),
 
     // KoiFish related statuses
     FISH_NOT_FOUND(3001, "Koi Fish not found"),
@@ -38,6 +40,7 @@ public enum ResponseCode {
 
     // AuctionRequest related statuses
     AUCTION_REQUEST_NOT_FOUND(7001, "Auction request not found"),
+    AUCTION_STATUS_CHANGE(7002, "Auction request status changed"),
 
     // Auction type related statuses
     AUCTION_TYPE_NOT_FOUND(7001, "Auction type not found"),

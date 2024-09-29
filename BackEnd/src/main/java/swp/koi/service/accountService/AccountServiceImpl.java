@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import org.springframework.web.server.ResponseStatusException;
+import swp.koi.convert.AccountEntityToDtoConverter;
 import swp.koi.dto.request.AccountLoginDTO;
 import swp.koi.dto.request.AccountRegisterDTO;
 import swp.koi.dto.response.AuthenticateResponse;
@@ -40,11 +41,17 @@ public class AccountServiceImpl implements AccountService{
     private final JwtServiceImpl jwtService;
     private final KoiBreederRepository koiBreederRepository;
     private final AccountDetailService accountDetailService;
+    private final AccountEntityToDtoConverter accountEntityToDtoConverter;
 
 
     @Override
     public AccountRegisterDTO findByAccountId(Integer accountId) {
         return accountRepository.findByAccountId(accountId).orElseThrow(() -> new KoiException(ResponseCode.NOT_FOUND));
+    }
+
+    @Override
+    public Account findById(Integer accountId) {
+        return accountRepository.findById(accountId).orElseThrow(() -> new KoiException(ResponseCode.NOT_FOUND));
     }
 
     @Override
@@ -79,7 +86,6 @@ public class AccountServiceImpl implements AccountService{
     @Override
     public AuthenticateResponse login(AccountLoginDTO request) throws KoiException {
         AuthenticateResponse authenticateResponse;
-        Integer breederId = 0;
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
             var account = findByEmail(request.getEmail());
@@ -88,16 +94,8 @@ public class AccountServiceImpl implements AccountService{
 
             String refreshToken = jwtService.generateRefreshToken(account.getEmail(), TokenType.REFRESH_TOKEN);
 
-            var memberId = memberService.getMemberIdByAccount(account);
-
-            if (account.getRole().equals(AccountRoleEnum.BREEDER)) {
-                breederId = koiBreederRepository.findByAccount(account)
-                        .get().getBreederId();
-            }
-
             authenticateResponse = AuthenticateResponse.builder()
-                    .memberId(memberId)
-                    .breederId(breederId)
+                    .account(accountEntityToDtoConverter.convertAccount(account))
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
                     .build();
@@ -142,12 +140,10 @@ public class AccountServiceImpl implements AccountService{
                     .get().getBreederId();
         }
 
-
         AuthenticateResponse tokenResponse = AuthenticateResponse.builder()
+                .account(accountEntityToDtoConverter.convertAccount(account))
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .breederId(breederId)
-                .memberId(memberId)
                 .build();
 
 

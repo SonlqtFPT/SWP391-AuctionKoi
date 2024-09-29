@@ -1,9 +1,12 @@
 package swp.koi.service.koiFishService;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import swp.koi.convert.KoiFishEntityToDtoConverter;
 import swp.koi.dto.request.KoiFishDTO;
 import swp.koi.dto.request.MediaDTO;
+import swp.koi.dto.response.KoiFishResponseDTO;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
 import swp.koi.model.AuctionRequest;
@@ -25,19 +28,14 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class KoiFishServiceImpl implements KoiFishService{
 
     private final KoiFishRepository koiFishRepository;
     private final VarietyService varietyService;
     private final MediaService mediaService;
     private final AuctionRequestRepository auctionRequestRepository;
-
-    public KoiFishServiceImpl(KoiFishRepository koiFishRepository, VarietyService varietyService, MediaService mediaService, AuctionRequestRepository auctionRequestRepository) {
-        this.koiFishRepository = koiFishRepository;
-        this.varietyService = varietyService;
-        this.mediaService = mediaService;
-        this.auctionRequestRepository = auctionRequestRepository;
-    }
+    private final KoiFishEntityToDtoConverter koiFishEntityToDtoConverter;
 
     @Override
     public KoiFish createKoiFishFromRequest(KoiFishDTO koiRequest, MediaDTO mediaRequest) throws KoiException{
@@ -83,5 +81,10 @@ public class KoiFishServiceImpl implements KoiFishService{
                 .collect(Collectors.toList());
 
         return koiFishList;
+    }
+
+    @Override
+    public void saveFish(KoiFish koiFish) {
+        koiFishRepository.save(koiFish);
     }
 }

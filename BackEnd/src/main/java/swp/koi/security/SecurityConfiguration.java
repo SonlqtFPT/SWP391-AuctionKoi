@@ -41,10 +41,15 @@ public class SecurityConfiguration {
         return httpSecurity
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers("authenticate/**").permitAll()
-                        .requestMatchers("/api/v1/getRequest").hasAuthority("ROLE_BREEDER")
+                        .requestMatchers("/api/pay/vn-pay-callback").permitAll()
+                        .requestMatchers("/auctionRequest/addRequest").hasAuthority("ROLE_BREEDER")
+                        .requestMatchers("/auctionRequest/getRequest").permitAll()
                         .requestMatchers("/register-lot/regis").hasAuthority("ROLE_MEMBER")
-                        .requestMatchers("/register-lot/list").hasAuthority("ROLE_MEMBER")
+                        .requestMatchers("/register-lot/list").hasAuthority("ROLE_MANAGER")
                         .requestMatchers("/bid/bidAuction").hasAuthority("ROLE_MEMBER")
+                        .requestMatchers("/bid/list").hasAuthority("ROLE_MANAGER")
+                        .requestMatchers("/api/v1/createBreeder").hasAuthority("ROLE_MANAGER")
+                        .requestMatchers("/manager/**").hasAuthority("ROLE_MANAGER")
                         .anyRequest().authenticated()
                 )
 //                .formLogin(Customizer.withDefaults())

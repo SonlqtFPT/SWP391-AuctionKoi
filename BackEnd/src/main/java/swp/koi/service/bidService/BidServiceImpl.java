@@ -1,9 +1,6 @@
 package swp.koi.service.bidService;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import swp.koi.dto.request.BidRequestDto;
 import swp.koi.dto.response.ResponseCode;
@@ -13,11 +10,9 @@ import swp.koi.model.Lot;
 import swp.koi.model.LotRegister;
 import swp.koi.model.Member;
 import swp.koi.model.enums.LotRegisterStatusEnum;
-import swp.koi.repository.AccountRepository;
 import swp.koi.repository.BidRepository;
 import swp.koi.repository.LotRegisterRepository;
 import swp.koi.repository.LotRepository;
-import swp.koi.service.accountService.AccountService;
 import swp.koi.service.memberService.MemberServiceImpl;
 
 import java.util.Date;
@@ -33,20 +28,12 @@ public class BidServiceImpl implements BidService{
     private final MemberServiceImpl memberService;
     private final LotRepository lotRepository;
     private final LotRegisterRepository lotRegisterRepository;
-    private final AccountRepository accountRepository;
-
 
     @Override
     public void bid(BidRequestDto bidRequestDto) throws KoiException {
         try{
             // Retrieve the Member and Lot based on the DTO
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            String accountEmail = auth.getName();
-
-            var account = accountRepository.findByEmail(accountEmail).orElseThrow(NoSuchElementException::new);
-
-            Member member = memberService.getMemberByAccount(account);
-
+            Member member = memberService.getMemberById(bidRequestDto.getMemberId());
             Lot lot = lotRepository.findById(bidRequestDto.getLotId())
                     .orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
 
@@ -71,6 +58,9 @@ public class BidServiceImpl implements BidService{
             // Find the Lot by ID and fetch all bids associated with it
             Lot lot = lotRepository.findById(lotId)
                     .orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
+            List<Bid> list = bidRepository.getBidByLot(lot)
+                    .orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
+
             return bidRepository.getBidByLot(lot)
                     .orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND)); // Handle case where no bids are found
         }catch (KoiException e){
@@ -117,17 +107,4 @@ public class BidServiceImpl implements BidService{
     private void updateLotWithNewBid(float newPrice, Lot lot) {
         lot.setCurrentPrice(newPrice); // Set the new highest bid as the current price
     }
-
-    /*var currentTime = Timestamp.from(Instant.now());
-        var endDate = auction.getEndDate();
-        long minutesDifference = (endDate.getTime() - currentTime.getTime()) / (1000 * 60);
-
-        // Thoi gian con lon hon 15p
-        if (auction.getLastPrice() >= auction.getJewelry().getBuyNowPrice() && minutesDifference > 15) {
-            auction.setEndDateStored(endDate);
-            auction.setEndDate(new Timestamp(currentTime.getTime() + 15 * 60 * 1000));
-        }
-        auctionRepository.save(auction);*/
-
-
 }

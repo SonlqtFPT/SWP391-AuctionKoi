@@ -8,9 +8,12 @@ import swp.koi.model.AuctionRequest;
 import swp.koi.model.enums.AuctionRequestStatusEnum;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AuctionRequestRepository extends JpaRepository<AuctionRequest, Integer> {
     @Query("SELECT ar FROM AuctionRequest ar WHERE ar.status = :status")
     List<AuctionRequest> findAllFishByStatus(@Param("status") AuctionRequestStatusEnum status);
+
+    Optional<AuctionRequest> findByRequestId(Integer requestId);
 }

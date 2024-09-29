@@ -1,20 +1,22 @@
 package swp.koi.service.auctionService;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import swp.koi.dto.request.AuctionWithLotsDTO;
 import swp.koi.dto.request.LotDTO;
+import swp.koi.dto.request.UpdateStatusDTO;
 import swp.koi.dto.response.AuctionResponseDTO;
 import swp.koi.dto.response.FullLotResponseDTO;
 import swp.koi.exception.KoiException;
-import swp.koi.model.Auction;
-import swp.koi.model.AuctionType;
-import swp.koi.model.Lot;
+import swp.koi.model.*;
 import swp.koi.model.enums.AuctionStatusEnum;
+import swp.koi.model.enums.KoiFishStatusEnum;
 import swp.koi.model.enums.LotStatusEnum;
 import swp.koi.repository.AuctionRepository;
 import swp.koi.repository.LotRepository;
+import swp.koi.service.auctionRequestService.AuctionRequestService;
 import swp.koi.service.auctionTypeService.AuctionTypeService;
 import swp.koi.service.koiFishService.KoiFishService;
 import swp.koi.service.lotService.LotService;
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class AuctionServiceImpl implements AuctionService{
 
     private final AuctionRepository auctionRepository;
@@ -32,14 +35,7 @@ public class AuctionServiceImpl implements AuctionService{
     private final AuctionTypeService auctionTypeService;
     private final KoiFishService koiFishService;
     private final ModelMapper modelMapper;
-
-    public AuctionServiceImpl(AuctionRepository auctionRepository, AuctionTypeService auctionTypeService, KoiFishService koiFishService, LotRepository lotRepository, LotService lotService, ModelMapper modelMapper) {
-        this.auctionRepository = auctionRepository;
-        this.auctionTypeService = auctionTypeService;
-        this.koiFishService = koiFishService;
-        this.lotService = lotService;
-        this.modelMapper = modelMapper;
-    }
+    private final AuctionRequestService auctionRequestService;
 
     @Override
     public AuctionResponseDTO createAuctionWithLots(AuctionWithLotsDTO request) {
@@ -81,5 +77,12 @@ public class AuctionServiceImpl implements AuctionService{
         }catch (KoiException e){
             throw e;
         }
+    }
+
+    @Override
+    public void changeStatus(Integer requestId, UpdateStatusDTO request) {
+        AuctionRequest auctionRequest = auctionRequestService.findByRequestId(requestId);
+        auctionRequest.setStatus(request.getRequestStatus());
+        auctionRequestService.saveRequest(auctionRequest);
     }
 }

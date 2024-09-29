@@ -10,6 +10,7 @@ import javax.security.auth.login.AccountNotFoundException;
 
 public interface AccountService {
     AccountRegisterDTO findByAccountId(Integer accountId);
+    Account findById(Integer accountId);
     Account createAccount(Account account);
     Account createAccountByRequest(AccountRegisterDTO request);
     Account findByEmail(String emai);

@@ -41,9 +41,6 @@ public class Account {
     @Enumerated(EnumType.STRING)
     AccountRoleEnum role;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    List<AccountRoleEnum> roles = new ArrayList<>();
-
     @Column(nullable = false)
     boolean status;
 
