@@ -7,6 +7,7 @@ import {
   FaSignInAlt,
   FaUserPlus,
 } from "react-icons/fa";
+import { Link } from "react-router-dom"; // Import Link from react-router-dom
 import Logo from "../assets/logo/koi69Logo_white.png";
 
 const Header = () => {
@@ -25,68 +26,70 @@ const Header = () => {
       <nav className="flex justify-between items-center bg-[#1a1c26] text-white">
         <div className="px-5 xl:px-12 py-6 flex items-center">
           {/* Logo */}
-          <a href="/" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2">
+            {" "}
+            {/* Use Link here */}
             <img
               src={Logo}
               alt="Koi69 Logo"
               className="h-10 w-auto object-contain"
             />
             <span className="text-xl sm:text-2xl font-bold">Koi69</span>
-          </a>
+          </Link>
         </div>
 
         {/* Desktop Menu */}
         <ul className="hidden md:flex mx-auto font-semibold font-heading space-x-12">
           <li className="flex items-center space-x-2">
-            <a
-              href="/"
+            <Link
+              to="/"
               className="hover:text-gray-200 flex items-center space-x-2"
               onClick={handleLinkClick}
             >
               <FaHome className="h-5 w-5" />
               <span>Home</span>
-            </a>
+            </Link>
           </li>
           <li className="flex items-center space-x-2">
-            <a
-              href="/auction"
+            <Link
+              to="/auction"
               className="hover:text-gray-200 flex items-center space-x-2"
               onClick={handleLinkClick}
             >
               <FaGavel className="h-5 w-5" />
               <span>Auction</span>
-            </a>
+            </Link>
           </li>
           <li className="flex items-center space-x-2">
-            <a
-              href="/about"
+            <Link
+              to="/about"
               className="hover:text-gray-200 flex items-center space-x-2"
               onClick={handleLinkClick}
             >
               <FaInfoCircle className="h-5 w-5" />
               <span>About Us</span>
-            </a>
+            </Link>
           </li>
         </ul>
 
         {/* Login/Register Buttons */}
         <div className="hidden xl:flex items-center space-x-5 pr-5">
-          <a
-            href="/login"
+          <Link
+            to="/login"
             className="hover:text-gray-200 flex items-center space-x-2"
             onClick={handleLinkClick}
           >
             <FaSignInAlt className="h-6 w-6" />
             <span>Login</span>
-          </a>
-          <a
-            href="/register"
+          </Link>
+          <Link
+            to="/register"
             className="hover:text-gray-200 flex items-center space-x-2"
             onClick={handleLinkClick}
           >
             <FaUserPlus className="h-6 w-6" />
             <span>Register</span>
-          </a>
+          </Link>
         </div>
 
         {/* Hamburger Menu */}
@@ -106,54 +109,54 @@ const Header = () => {
       >
         <ul className="flex flex-col space-y-2 px-5 py-4">
           <li>
-            <a
-              href="/"
+            <Link
+              to="/"
               className="hover:text-gray-200 flex items-center space-x-2"
               onClick={handleLinkClick}
             >
               <FaHome className="h-5 w-5" />
               <span>Home</span>
-            </a>
+            </Link>
           </li>
           <li>
-            <a
-              href="/auction"
+            <Link
+              to="/auction"
               className="hover:text-gray-200 flex items-center space-x-2"
               onClick={handleLinkClick}
             >
               <FaGavel className="h-5 w-5" />
               <span>Auction</span>
-            </a>
+            </Link>
           </li>
           <li>
-            <a
-              href="/about"
+            <Link
+              to="/about"
               className="hover:text-gray-200 flex items-center space-x-2"
               onClick={handleLinkClick}
             >
               <FaInfoCircle className="h-5 w-5" />
               <span>About Us</span>
-            </a>
+            </Link>
           </li>
           <li>
-            <a
-              href="/login"
+            <Link
+              to="/login"
               className="hover:text-gray-200 flex items-center space-x-2"
               onClick={handleLinkClick}
             >
               <FaSignInAlt className="h-6 w-6" />
               <span>Login</span>
-            </a>
+            </Link>
           </li>
           <li>
-            <a
-              href="/register"
+            <Link
+              to="/register"
               className="hover:text-gray-200 flex items-center space-x-2"
               onClick={handleLinkClick}
             >
               <FaUserPlus className="h-6 w-6" />
               <span>Register</span>
-            </a>
+            </Link>
           </li>
         </ul>
       </div>
