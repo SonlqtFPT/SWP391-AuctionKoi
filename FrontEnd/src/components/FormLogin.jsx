@@ -40,31 +40,30 @@ function FormLogin() {
 
             //These 2 lines are used to storage the accessToken, refreshToken from BackEnd//
             const accessToken = response.data.data.accessToken;
+            const resquestToken = response.data.data.resquestToken;
             console.log(accessToken);
             localStorage.setItem('accessToken', accessToken);
-            localStorage.setItem('refreshToken', response.data.data);
+            localStorage.setItem('refreshToken', resquestToken);
             ///////////////////////////////////////////////////////////////////////
-            const { status } = response.data;
-            const { message } = response.data;
-            const { role } = response.data;
-            const { memberId } = response.data.data;
-            console.log(status);
-            console.log(message);
-            console.log(memberId);
-            const { breederId } = response.data.data;
+            const { role } = response.data.data.account;
+            console.log(role);
+            console.log("Hello");
 
-            if (role === "ADMIN") {
+            if (role === "MANAGER") {
+                toast.success("Successfully Login In as Manager!");
                 navigate("/admin");
+            } else if (role === "MEMBER") {
+                toast.success("Successfully Login In as Member!");
+                navigate("/");
+            } else if (role === "BREEDER") {
+                toast.success("Successfully Login In as Breeder!");
+                navigate("/breeder");
+            } else if (role === "STAFF") {
+                toast.success("Successfully Login In as Staff!");
+                navigate("/staff");
             }
-            //handle login below here
-            if (status === 1) {
-                if (memberId > 0) {
-                    toast.success("Successfully Login In!");
-                    navigate("/admin");
-                }
-            } else toast.error(message);
         } catch (error) {
-            toast.error("This account doesn't exit!");
+            toast.error("This account doesn't exit, really!");
         }
     };
 
