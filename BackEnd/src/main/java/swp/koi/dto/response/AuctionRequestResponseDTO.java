@@ -15,6 +15,7 @@ public class AuctionRequestResponseDTO {
 
     Integer requestId;
     AuctionRequestStatusEnum status;
+    KoiBreederResponseDTO breeder;
     KoiFishResponseDTO KoiFish;
 
 }
