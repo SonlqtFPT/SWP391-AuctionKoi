@@ -55,7 +55,10 @@ public enum ResponseCode {
     LOT_NOT_FOUND(8001, "Lot ID not found"),
 
     // Variety related statuses
-    VARIETY_NOT_FOUND(9003, "Variety not found")
+    VARIETY_NOT_FOUND(9003, "Variety not found"),
+
+    // Media
+    MEDIA_NOT_FOUND(9500, "Media not found")
     ;
 
     private final int code;

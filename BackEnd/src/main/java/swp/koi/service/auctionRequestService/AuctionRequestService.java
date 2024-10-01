@@ -28,7 +28,7 @@ public interface AuctionRequestService {
 
     void acceptTask(Integer requestId);
 
-    AuctionRequestUpdateDTO updateRequest(Integer requestId, AuctionRequestUpdateDTO auctionRequest);
+    AuctionRequest updateRequest(Integer requestId, AuctionRequestUpdateDTO auctionRequest);
 
     void changeStatus(Integer requestId, UpdateStatusDTO request);
 }

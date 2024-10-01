@@ -96,11 +96,12 @@ public class KoiFishServiceImpl implements KoiFishService{
 
         AuctionType auctionType = auctionTypeService.findByAuctionTypeName(koiFishUpdateDTO.getAuctionTypeName());
 
-        KoiFish koiFish = new KoiFish();
+        KoiFish koiFish = koiFishRepository.findByFishId(koiFishUpdateDTO.getFishId()).orElseThrow(() -> new KoiException(ResponseCode.FISH_NOT_FOUND));
 
-//        Media media = mediaService.updateMedia(mediaDTO);
-
+        modelMapper.map(koiFishUpdateDTO, koiFish);
+        Media media = mediaService.updateMedia(mediaDTO);
         koiFish.setAuctionType(auctionType);
+        koiFish.setMedia(media);
         modelMapper.map(koiFishUpdateDTO, koiFish);
 
         return null;

@@ -166,7 +166,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     }
 
     @Override
-    public AuctionRequestUpdateDTO updateRequest(Integer requestId, AuctionRequestUpdateDTO dto) throws KoiException{
+    public AuctionRequest updateRequest(Integer requestId, AuctionRequestUpdateDTO dto) throws KoiException{
         KoiBreeder koiBreeder = koiBreederService.findByAccount(accountService.findById(dto.getAccountId()));
         if(koiBreeder == null){
             throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
@@ -177,10 +177,10 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
         KoiFishUpdateDTO koiFishUpdateDTO = dto.getKoiFish();
         MediaUpdateDTO mediaDTO = dto.getKoiFish().getMedia();
 
-//        KoiFish koiFish = koiFishService.updateFish(koiFishUpdateDTO, mediaDTO);
+        KoiFish koiFish = koiFishService.updateFish(koiFishUpdateDTO, mediaDTO);
+        auctionRequest.setKoiFish(koiFish);
 
-//        return modelMapper.map(updateRequest, AuctionRequestUpdateDTO.class);
-        return null;
+        return auctionRequest;
     }
 
     @Override

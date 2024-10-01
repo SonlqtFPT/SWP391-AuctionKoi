@@ -62,10 +62,11 @@ public class AuctionRequestController {
     }
 
     @PutMapping("/breeder/update/{requestId}")
-    public ResponseData<AuctionRequestUpdateDTO> updateRequest(@PathVariable Integer requestId,
+    public ResponseData<AuctionRequestResponseDTO> updateRequest(@PathVariable Integer requestId,
                                                                @RequestBody AuctionRequestUpdateDTO auctionRequest){
         try{
-           return new ResponseData<>(ResponseCode.UPDATE_REQUEST_SUCCESS, auctionRequestService.updateRequest(requestId, auctionRequest));
+            AuctionRequestResponseDTO response = auctionRequestEntityToDtoConverter.convertAuctionRequest(auctionRequestService.updateRequest(requestId, auctionRequest));
+           return new ResponseData<>(ResponseCode.UPDATE_REQUEST_SUCCESS, response);
         }catch (KoiException e){
             return new ResponseData<>(e.getResponseCode());
         }

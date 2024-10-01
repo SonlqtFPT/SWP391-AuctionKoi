@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import swp.koi.dto.request.MediaDTO;
+import swp.koi.dto.request.MediaUpdateDTO;
+import swp.koi.dto.response.ResponseCode;
+import swp.koi.exception.KoiException;
 import swp.koi.model.Media;
 import swp.koi.repository.MediaRepository;
 
@@ -25,9 +28,10 @@ public class MediaServiceImpl implements MediaService{
     }
 
     @Override
-    public Media updateMedia(MediaDTO mediaDTO) {
-//        mediaRepository.findById(mediaDTO.get)
-//        return mediaRepository.save(media);
-        return null;
+    public Media updateMedia(MediaUpdateDTO mediaDTO) {
+        Media media = mediaRepository.findById(mediaDTO.getMediaId()).orElseThrow(() -> new KoiException(ResponseCode.MEDIA_NOT_FOUND));
+        media.setImageUrl(mediaDTO.getImageUrl());
+        media.setVideoUrl(mediaDTO.getVideoUrl());
+        return mediaRepository.save(media);
     }
 }
