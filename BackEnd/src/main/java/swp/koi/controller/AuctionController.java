@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import swp.koi.convert.AuctionEntityToDtoConverter;
 import swp.koi.convert.AuctionRequestEntityToDtoConverter;
 import swp.koi.convert.KoiFishEntityToDtoConverter;
+import swp.koi.dto.request.AuctionTypeDTO;
 import swp.koi.dto.request.AuctionWithLotsDTO;
 import swp.koi.dto.request.UpdateStatusDTO;
 import swp.koi.dto.response.*;
@@ -31,6 +32,13 @@ public class AuctionController {
     public ResponseData<?> getKoiFishFromApproveRequest(){
         List<KoiFishResponseDTO> response = koiFishEntityToDtoConverter
                 .convertFishList(koiFishService.getKoiFishFromApproveRequest());
+        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+    }
+
+    @PostMapping("/manager/get-fish-auction")
+    public ResponseData<List<KoiFishResponseDTO>> getKoiFishBasedOnType(@RequestBody AuctionTypeDTO auctionTypeDTO){
+        List<KoiFishResponseDTO> response = koiFishEntityToDtoConverter
+                .convertFishList(koiFishService.getKoiFishBasedOnType(auctionTypeDTO));
         return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
     }
 

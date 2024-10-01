@@ -1,11 +1,7 @@
 package swp.koi.service.koiFishService;
 
-import org.springframework.data.repository.query.Param;
 import swp.koi.dto.request.*;
-import swp.koi.dto.response.KoiFishResponseDTO;
-import swp.koi.model.AuctionRequest;
 import swp.koi.model.KoiFish;
-import swp.koi.model.enums.AuctionRequestStatusEnum;
 
 import java.util.List;
 
@@ -19,4 +15,5 @@ public interface KoiFishService {
 
     KoiFish updateFish(KoiFishUpdateDTO koiFishUpdateDTO, MediaUpdateDTO mediaDTO);
 
+    List<KoiFish> getKoiFishBasedOnType(AuctionTypeDTO auctionTypeDTO);
 }

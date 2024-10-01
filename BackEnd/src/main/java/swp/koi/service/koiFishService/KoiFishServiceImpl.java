@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import swp.koi.convert.KoiFishEntityToDtoConverter;
-import swp.koi.dto.request.KoiFishDTO;
-import swp.koi.dto.request.KoiFishUpdateDTO;
-import swp.koi.dto.request.MediaDTO;
-import swp.koi.dto.request.MediaUpdateDTO;
+import swp.koi.dto.request.*;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
 import swp.koi.model.*;
@@ -106,5 +103,13 @@ public class KoiFishServiceImpl implements KoiFishService{
         koiFish.setMedia(media);
         koiFish.setVariety(variety);
         return koiFishRepository.save(koiFish);
+    }
+
+    @Override
+    public List<KoiFish> getKoiFishBasedOnType(AuctionTypeDTO auctionTypeDTO) {
+        List<KoiFish> list = koiFishRepository.findAll().stream()
+                .filter(fish -> fish.getAuctionType().getAuctionTypeName().equals(auctionTypeDTO.getAuctionTypeName()))
+                .collect(Collectors.toList());
+        return list;
     }
 }
