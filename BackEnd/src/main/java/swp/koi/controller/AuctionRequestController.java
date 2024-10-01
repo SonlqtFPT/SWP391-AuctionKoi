@@ -46,7 +46,7 @@ public class AuctionRequestController {
         }
     }
 
-    @PatchMapping("/breeder/{requestId}/cancel")
+    @PatchMapping("/breeder/cancel/{requestId}")
     public ResponseData<?> cancelRequest(@PathVariable Integer requestId){
         try{
             auctionRequestService.cancelRequest(requestId);
