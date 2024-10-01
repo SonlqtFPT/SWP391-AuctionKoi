@@ -92,7 +92,7 @@ public class AuctionRequestController {
     @GetMapping("/staff/list-request/{accountId}")
     public ResponseData<List<AuctionRequestResponseDTO>> getAllStaffRequest(@PathVariable Integer accountId){
         try{
-            List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllStaffRequest(accountId), true);
+            List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllStaffRequest(accountId), false);
             return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
         }catch (KoiException e){
             return new ResponseData<>(e.getResponseCode());
