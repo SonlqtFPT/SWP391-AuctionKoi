@@ -102,13 +102,13 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
         try{
             AuctionRequest request = auctionRequestRepository.findByRequestId(requestId)
                     .orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
-            if(request.getStatus().equals(AuctionRequestStatusEnum.ASSIGN))
+            if(request.getStatus().equals(AuctionRequestStatusEnum.INSPECTION_IN_PROGRESS))
                 throw new KoiException(ResponseCode.ALREADY_HAVE_STAFF);
             Account account = accountService.findById(accountId);
             if(!account.getRole().equals(AccountRoleEnum.STAFF))
                 throw new KoiException(ResponseCode.MUST_BE_STAFF);
             request.setAccount(account);
-            request.setStatus(AuctionRequestStatusEnum.ASSIGN);
+            request.setStatus(AuctionRequestStatusEnum.INSPECTION_IN_PROGRESS);
             auctionRequestRepository.save(request);
         }catch (KoiException e){
             throw e;
@@ -151,17 +151,6 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
             }
         }catch (KoiException e){
             throw e;
-        }
-    }
-
-    @Override
-    public void acceptTask(Integer requestId) throws KoiException{
-        AuctionRequest auctionRequest = auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
-        if(!auctionRequest.getStatus().equals(AuctionRequestStatusEnum.ASSIGN))
-            throw new KoiException(ResponseCode.FAIL);
-        else {
-            auctionRequest.setStatus(AuctionRequestStatusEnum.INSPECTION_IN_PROGRESS);
-            auctionRequestRepository.save(auctionRequest);
         }
     }
 

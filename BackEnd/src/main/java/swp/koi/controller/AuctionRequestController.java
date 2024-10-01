@@ -99,16 +99,6 @@ public class AuctionRequestController {
         }
     }
 
-    @PostMapping("/staff/task/{requestId}")
-    public ResponseData<?> acceptTask(@PathVariable Integer requestId){
-        try {
-            auctionRequestService.acceptTask(requestId);
-            return new ResponseData<>(ResponseCode.SUCCESS);
-        } catch (KoiException e) {
-            return new ResponseData<>(e.getResponseCode());
-        }
-    }
-
     @PatchMapping("/staff/request/{requestId}/status")
     public ResponseData<?> changeStatus(@PathVariable Integer requestId, @RequestBody UpdateStatusDTO request){
         auctionRequestService.changeStatus(requestId, request);

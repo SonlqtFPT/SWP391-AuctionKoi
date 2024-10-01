@@ -26,7 +26,6 @@ public interface AuctionRequestService {
 
     void cancelRequest(Integer requestId);
 
-    void acceptTask(Integer requestId);
 
     AuctionRequest updateRequest(Integer requestId, AuctionRequestUpdateDTO auctionRequest);
 
