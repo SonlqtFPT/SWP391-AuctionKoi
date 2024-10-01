@@ -10,6 +10,7 @@ import swp.koi.dto.response.KoiFishResponseDTO;
 import swp.koi.model.AuctionRequest;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -27,10 +28,16 @@ public class AuctionRequestEntityToDtoConverter {
     public List<AuctionRequestResponseDTO> convertAuctionRequestList(List<AuctionRequest> auctionRequests, boolean isStaff){
         List<AuctionRequestResponseDTO> response = auctionRequests
                 .stream()
+                .filter(Objects::nonNull)
                 .map(auctionRequest -> {
-                    AuctionRequestResponseDTO dto =modelMapper.map(auctionRequest, AuctionRequestResponseDTO.class);
-                    if(!isStaff)
-                        dto.setStaff(accountEntityToDtoConverter.convertAccount(auctionRequest.getAccount()));
+                    AuctionRequestResponseDTO dto = modelMapper.map(auctionRequest, AuctionRequestResponseDTO.class);
+                    if(!isStaff) {
+                        if(auctionRequest.getAccount() == null) {
+                            dto.setStaff(null);
+                        }else {
+                            dto.setStaff(accountEntityToDtoConverter.convertAccount(auctionRequest.getAccount()));
+                        }
+                    }
                     else
                         dto.setStaff(null);
                     return dto;

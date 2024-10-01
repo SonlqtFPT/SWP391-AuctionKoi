@@ -12,7 +12,6 @@ import swp.koi.model.enums.AuctionRequestStatusEnum;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AuctionRequestResponseDTO {
 
     Integer requestId;

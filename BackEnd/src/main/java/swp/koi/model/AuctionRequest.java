@@ -28,7 +28,7 @@ public class AuctionRequest {
     @JoinColumn(name = "accountId")
     Account account;
 
-    String checkNote;
+
 
     @ManyToOne
     @JoinColumn(name = "breederId")
