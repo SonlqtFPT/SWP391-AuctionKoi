@@ -3,31 +3,28 @@ package swp.koi.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import swp.koi.convert.AccountEntityToDtoConverter;
 import swp.koi.convert.AuctionRequestEntityToDtoConverter;
 import swp.koi.dto.request.AuctionRequestDTO;
-import swp.koi.dto.request.FullAuctionRequestDTO;
-import swp.koi.dto.response.AuctionRequestResponseDTO;
-import swp.koi.dto.response.AuctionResponseDTO;
-import swp.koi.dto.response.ResponseCode;
-import swp.koi.dto.response.ResponseData;
+import swp.koi.dto.response.*;
 import swp.koi.exception.KoiException;
-import swp.koi.model.AuctionRequest;
-import swp.koi.model.KoiBreeder;
+import swp.koi.service.accountService.AccountService;
 import swp.koi.service.auctionRequestService.AuctionRequestService;
 import swp.koi.service.koiBreederService.KoiBreederService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/auctionRequest")
 @RequiredArgsConstructor
 public class AuctionRequestController {
 
     private final AuctionRequestService auctionRequestService;
     private final AuctionRequestEntityToDtoConverter auctionRequestEntityToDtoConverter;
     private final KoiBreederService koiBreederService;
+    private final AccountEntityToDtoConverter accountEntityToDtoConverter;
+    private final AccountService accountService;
 
-    @PostMapping("/addRequest")
+    @PostMapping("/breeder/addRequest")
     public ResponseData<AuctionRequestResponseDTO> createRequest(@Valid @RequestBody AuctionRequestDTO request){
         try{
             AuctionRequestResponseDTO response = auctionRequestEntityToDtoConverter
@@ -38,16 +35,42 @@ public class AuctionRequestController {
         }
     }
 
-//    @GetMapping("/request/{breederId}")
-//    public ResponseData<List<AuctionRequestResponseDTO>> getListRequest(@PathVariable Integer breederId){
-//        List<AuctionRequestResponseDTO> reponse = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllRequestById(breederId));
-//        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST);
-//    }
+    @GetMapping("/breeder/{breederId}")
+    public ResponseData<List<AuctionRequestResponseDTO>> getAllBreederRequest(@PathVariable Integer breederId){
+        try{
+            List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllBreederRequest(breederId), false);
+            return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+        }catch (KoiException e){
+            return new ResponseData<>(e.getResponseCode());
+        }
+    }
 
-//    @PutMapping("/updateRequest/{requestId}")
-//    public ResponseData<AuctionRequestResponseDTO> updateRequest(@Valid @RequestBody FullAuctionRequestDTO request, @PathVariable Integer requestId){
-//        auctionRequestEntityToDtoConverter.convertAuctionRequest(auctionRequestService.updateRequest(request, requestId));
-//        return new ResponseData<>(ResponseCode.AUCTION_REQUEST_NOT_FOUND);
-//    }
+    @GetMapping("/manager/assign-staff/getStaff")
+    public ResponseData<List<AccountResponseDTO>> getAllStaff(){
+        List<AccountResponseDTO> response = accountEntityToDtoConverter.convertAccountList(accountService.getAllStaff());
+        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+    }
 
+    @PostMapping("/manager/assign-staff/{requestId}")
+    public ResponseData<?> assignStaffToCheck(@PathVariable Integer requestId,
+                                              @RequestParam Integer accountId){
+        try{
+            auctionRequestService.assignStaffToRequest(requestId, accountId);
+            return new ResponseData<>(ResponseCode.STAFF_ASSIGN_SUCCESSFULLY);
+        }catch (KoiException e){
+            return new ResponseData<>(e.getResponseCode());
+        }
+    }
+
+    @GetMapping("/staff/list-request/{accountId}")
+    public ResponseData<List<AuctionRequestResponseDTO>> getAllStaffRequest(@PathVariable Integer accountId){
+        try{
+            List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllStaffRequest(accountId), true);
+            return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+        }catch (KoiException e){
+            return new ResponseData<>(e.getResponseCode());
+        }
+    }
 }
+
+

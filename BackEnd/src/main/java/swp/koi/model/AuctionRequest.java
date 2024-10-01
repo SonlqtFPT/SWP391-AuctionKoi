@@ -24,9 +24,11 @@ public class AuctionRequest {
     @Column(nullable = false)
     AuctionRequestStatusEnum status;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "accountId")
     Account account;
+
+    String checkNote;
 
     @ManyToOne
     @JoinColumn(name = "breederId")

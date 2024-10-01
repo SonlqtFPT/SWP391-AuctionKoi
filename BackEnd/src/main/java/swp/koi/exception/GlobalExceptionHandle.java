@@ -19,7 +19,7 @@ public class GlobalExceptionHandle {
 
     @ExceptionHandler(KoiException.class)
     public ResponseEntity<ResponseData<?>> handleKoiException(KoiException ex) {
-        int code = ex.getResponseCode().getCode();  // Get the code (404, for example)
+        int code = ex.getResponseCode().getCode();  // Get the code
         String message = ex.getResponseCode().getMessage();  // Get the error message
 
         ResponseData<?> responseData = new ResponseData<>(code, message);

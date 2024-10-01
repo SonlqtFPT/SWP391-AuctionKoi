@@ -28,6 +28,9 @@ import swp.koi.repository.KoiBreederRepository;
 import swp.koi.service.jwtService.JwtServiceImpl;
 import swp.koi.service.memberService.MemberServiceImpl;
 import javax.security.auth.login.AccountNotFoundException;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -55,8 +58,11 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public Account createAccount(Account account) {
-        return accountRepository.save(account);
+    public Account createAccount(Account account) throws KoiException{
+        if(accountRepository.existsByEmail(account.getEmail()))
+            throw new KoiException(ResponseCode.EMAIL_ALREADY_EXISTS);
+        else
+            return accountRepository.save(account);
     }
 
     @Override
@@ -150,5 +156,13 @@ public class AccountServiceImpl implements AccountService{
         return tokenResponse;
     }
 
-
+    @Override
+    public List<Account> getAllStaff() {
+        List<Account> list = accountRepository.findAll();
+        List<Account> staffList = list
+                .stream()
+                .filter(staff -> staff.getRole() == AccountRoleEnum.STAFF)
+                .collect(Collectors.toList());
+        return staffList;
+    }
 }

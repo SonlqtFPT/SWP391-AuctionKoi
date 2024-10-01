@@ -50,8 +50,8 @@ public class Account {
     @OneToOne(mappedBy = "account")
     KoiBreeder koiBreeder;
 
-    @OneToOne(mappedBy = "account")
-    AuctionRequest auctionRequest;
+    @OneToMany(mappedBy = "account")
+    List<AuctionRequest> auctionRequest;
 
     public Account() {
     }

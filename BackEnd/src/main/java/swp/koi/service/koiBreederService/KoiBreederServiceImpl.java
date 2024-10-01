@@ -58,12 +58,17 @@ public class KoiBreederServiceImpl implements KoiBreederService{
 
             return breederResponse;
         } catch (KoiException e) {
-            throw new KoiException(ResponseCode.FAILED_CREATE_BREEDER);
+            throw e;
         }
     }
 
     @Override
     public KoiBreeder findByAccount(Account account) {
         return koiBreederRepository.findByAccount(account).orElseThrow(() -> new KoiException(ResponseCode.BREEDER_NOT_FOUND));
+    }
+
+    @Override
+    public KoiBreeder findByBreederId(Integer breederId) {
+        return koiBreederRepository.findByBreederId(breederId).orElseThrow(() -> new KoiException(ResponseCode.BREEDER_NOT_FOUND));
     }
 }

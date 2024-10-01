@@ -9,12 +9,12 @@ import swp.koi.convert.AuctionRequestEntityToDtoConverter;
 import swp.koi.convert.KoiFishDtoToEntitConverter;
 import swp.koi.dto.request.*;
 import swp.koi.dto.response.AuctionRequestResponseDTO;
+import swp.koi.dto.response.AuctionResponseDTO;
+import swp.koi.dto.response.KoiBreederResponseDTO;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
-import swp.koi.model.Account;
-import swp.koi.model.AuctionRequest;
-import swp.koi.model.KoiBreeder;
-import swp.koi.model.KoiFish;
+import swp.koi.model.*;
+import swp.koi.model.enums.AccountRoleEnum;
 import swp.koi.model.enums.AuctionRequestStatusEnum;
 import swp.koi.model.enums.TokenType;
 import swp.koi.repository.AuctionRequestRepository;
@@ -83,6 +83,59 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     @Override
     public void saveRequest(AuctionRequest auctionRequest) {
         auctionRequestRepository.save(auctionRequest);
+    }
+
+    @Override
+    public List<AuctionRequest> getAllRequestById(Integer accountId) {
+//        Account account = accountService.findById(accountId);
+//        if(account.getRole() == AccountRoleEnum.BREEDER){
+//
+//        }
+        return List.of();
+    }
+
+    @Override
+    public void assignStaffToRequest(Integer requestId, Integer accountId) throws KoiException{
+        try{
+            AuctionRequest request = auctionRequestRepository.findByRequestId(requestId)
+                    .orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
+            if(request.getStatus().equals(AuctionRequestStatusEnum.ASSIGN))
+                throw new KoiException(ResponseCode.ALREADY_HAVE_STAFF);
+            Account account = accountService.findById(accountId);
+            if(!account.getRole().equals(AccountRoleEnum.STAFF))
+                throw new KoiException(ResponseCode.MUST_BE_STAFF);
+            request.setAccount(account);
+            request.setStatus(AuctionRequestStatusEnum.ASSIGN);
+            auctionRequestRepository.save(request);
+        }catch (KoiException e){
+            throw e;
+        }
+    }
+
+    @Override
+    public List<AuctionRequest> getAllStaffRequest(Integer accountId) throws KoiException{
+        try{
+            Account account = accountService.findById(accountId);
+            if(!account.getRole().equals(AccountRoleEnum.STAFF))
+                throw new KoiException(ResponseCode.MUST_BE_STAFF);
+            List<AuctionRequest> list = auctionRequestRepository.findAllRequestByAccountId(accountId);
+            return list;
+        } catch (KoiException e) {
+            throw e;
+        }
+    }
+
+    @Override
+    public List<AuctionRequest> getAllBreederRequest(Integer breederId) throws KoiException{
+        try{
+            KoiBreeder breeder = koiBreederService.findByBreederId(breederId);
+            if(breeder == null)
+                throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
+            List<AuctionRequest> list = auctionRequestRepository.findAllByBreederId(breederId);
+            return list;
+        }catch (KoiException e){
+            throw e;
+        }
     }
 
 }

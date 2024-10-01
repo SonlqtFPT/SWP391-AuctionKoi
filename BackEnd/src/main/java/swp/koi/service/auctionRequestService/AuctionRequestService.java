@@ -1,12 +1,7 @@
 package swp.koi.service.auctionRequestService;
 
-import jakarta.validation.Valid;
-import org.springframework.data.repository.query.Param;
 import swp.koi.dto.request.AuctionRequestDTO;
-import swp.koi.dto.request.FullAuctionRequestDTO;
-import swp.koi.dto.response.AuctionRequestResponseDTO;
 import swp.koi.model.AuctionRequest;
-import swp.koi.model.enums.AuctionRequestStatusEnum;
 
 import java.util.List;
 
@@ -19,4 +14,11 @@ public interface AuctionRequestService {
 
     void saveRequest(AuctionRequest auctionRequest);
 
+    List<AuctionRequest> getAllRequestById(Integer accountId);
+
+    void assignStaffToRequest(Integer requestId, Integer accountId);
+
+    List<AuctionRequest> getAllStaffRequest(Integer accountId);
+
+    List<AuctionRequest> getAllBreederRequest(Integer breederId);
 }

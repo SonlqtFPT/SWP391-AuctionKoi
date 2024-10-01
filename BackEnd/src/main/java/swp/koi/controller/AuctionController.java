@@ -18,7 +18,6 @@ import swp.koi.service.koiFishService.KoiFishService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/manager")
 @RequiredArgsConstructor
 public class AuctionController {
 
@@ -28,14 +27,14 @@ public class AuctionController {
     private final AuctionRequestEntityToDtoConverter auctionRequestEntityToDtoConverter;
     private final AuctionRequestService auctionRequestService;
 
-    @GetMapping("/auction")
+    @GetMapping("/manager/getFish")
     public ResponseData<?> getKoiFishFromApproveRequest(){
         List<KoiFishResponseDTO> response = koiFishEntityToDtoConverter
                 .convertFishList(koiFishService.getKoiFishFromApproveRequest());
         return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
     }
 
-    @PostMapping("/createAuction")
+    @PostMapping("/manager/createAuction")
     public ResponseData<?> createAuction(@Valid @RequestBody AuctionWithLotsDTO request){
         try{
             AuctionResponseDTO response = auctionService.createAuctionWithLots(request);
@@ -45,15 +44,15 @@ public class AuctionController {
         }
     }
 
-    @PatchMapping("/request/{requestId}/status")
+    @PatchMapping("/manager/request/{requestId}/status")
     public ResponseData<?> changeStatus(@PathVariable Integer requestId, @RequestBody UpdateStatusDTO request){
         auctionService.changeStatus(requestId, request);
         return new ResponseData<>(ResponseCode.AUCTION_STATUS_CHANGE);
     }
 
-    @GetMapping("/getRequest")
+    @GetMapping("/manager/getRequest")
     public ResponseData<List<AuctionRequestResponseDTO>> getAllAuctionRequest(){
-        List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllAuctionRequest());
+        List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllAuctionRequest(), false);
         return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
     }
 

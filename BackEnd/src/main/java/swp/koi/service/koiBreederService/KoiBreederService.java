@@ -13,4 +13,5 @@ public interface KoiBreederService {
 
     KoiBreeder findByAccount(Account account);
 
+    KoiBreeder findByBreederId(Integer breederId);
 }
