@@ -1,12 +1,42 @@
-import React from "react";
-import { Image, Button } from "antd";
+import React, { useState } from "react";
+import { Image, Button, Modal, Select } from "antd";
 
-// Component to display auction request details for staff
-const RequestDetails = ({ selectedRequest, onUpdateStatus }) => {
+// Component to display auction request details
+const RequestDetails = ({
+  selectedRequest,
+  staffList,
+  onAssign,
+  fetchRequest,
+}) => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedStaff, setSelectedStaff] = useState(null);
+
   if (!selectedRequest) return <p>No request selected.</p>;
 
   const formatStatus = (status) => {
-    return status.charAt(0) + status.slice(1).toLowerCase();
+    switch (status) {
+      case "INSPECTION_PASSED":
+        return "Pass";
+      case "INSPECTION_FAILED":
+        return "Fail";
+      case "PENDING":
+        return "Pending";
+      case "INSPECTION_IN_PROGRESS":
+        return "In Progress";
+      default:
+        return status.charAt(0) + status.slice(1).toLowerCase(); // Capitalizes the first letter for other statuses
+    }
+  };
+
+  const handleAssign = async () => {
+    if (selectedStaff) {
+      await onAssign(selectedRequest, selectedStaff); // Pass selected request and staff ID to onAssign
+      setIsModalVisible(false); // Close the modal after assignment
+      setSelectedStaff(null); // Clear selected staff
+      fetchRequest(); // Refresh the auction requests
+    } else {
+      alert("Please select a staff member.");
+    }
   };
 
   return (
@@ -22,40 +52,123 @@ const RequestDetails = ({ selectedRequest, onUpdateStatus }) => {
 
       {/* Breeder Info */}
       <p>
-        <strong>Breeder ID:</strong> {selectedRequest.breederId}
+        <strong>Breeder ID:</strong> {selectedRequest.breeder.breederId}
       </p>
       <p>
-        <strong>Breeder Name:</strong> {selectedRequest.breederName}
+        <strong>Breeder Name:</strong> {selectedRequest.breeder.breederName}
+      </p>
+      <p>
+        <strong>Location:</strong> {selectedRequest.breeder.location}
       </p>
 
       {/* Fish Info */}
       <p>
-        <strong>Fish ID:</strong> {selectedRequest.fishId}
+        <strong>Fish ID:</strong> {selectedRequest.koiFish.fishId}
       </p>
       <p>
-        <strong>Gender:</strong> {selectedRequest.gender}
+        <strong>Gender:</strong> {selectedRequest.koiFish.gender}
       </p>
       <p>
-        <strong>Age:</strong> {selectedRequest.age} years old
+        <strong>Age:</strong> {selectedRequest.koiFish.age} years old
       </p>
       <p>
-        <strong>Size:</strong> {selectedRequest.size} cm
+        <strong>Size:</strong> {selectedRequest.koiFish.size} cm
       </p>
       <p>
-        <strong>Variety Name:</strong> {selectedRequest.varietyName}
+        <strong>Price:</strong> {selectedRequest.koiFish.price} $
+      </p>
+      <p>
+        <strong>Auction Type:</strong> {selectedRequest.koiFish.auctionTypeName}
       </p>
 
-      {/* Media */}
-      <Image src={selectedRequest.image} alt="Fish Image" width={200} />
+      {/* Variety Info */}
       <p>
-        <strong>Price:</strong> ${selectedRequest.price}
+        <strong>Variety ID:</strong> {selectedRequest.koiFish.variety.varietyId}
+      </p>
+      <p>
+        <strong>Variety Name:</strong>{" "}
+        {selectedRequest.koiFish.variety.varietyName}
       </p>
 
-      {/* Update Status Button */}
-      {selectedRequest.status === "INSPECTION_IN_PROGRESS" && (
-        <Button onClick={onUpdateStatus} type="primary">
-          Update Status
-        </Button>
+      {/* Media Info */}
+      <Image
+        width={200}
+        src={selectedRequest.koiFish.media.imageUrl}
+        alt="Auction Request"
+        style={{ marginTop: 16 }}
+      />
+      {selectedRequest.koiFish.media.videoUrl ? (
+        <div style={{ marginTop: 16 }}>
+          <strong>Video:</strong>
+          <video width="300" controls>
+            <source
+              src={selectedRequest.koiFish.media.videoUrl}
+              type="video/mp4"
+            />
+            Your browser does not support the video tag.
+            <p>Your browser does not support the video playback.</p>
+          </video>
+        </div>
+      ) : (
+        <p>No video available for this auction request.</p>
+      )}
+
+      {/* Staff Info */}
+      {selectedRequest.staff && (
+        <>
+          <h3>Assigned Staff</h3>
+          <p>
+            <strong>Staff ID:</strong> {selectedRequest.staff.accountId}
+          </p>
+          <p>
+            <strong>Name:</strong> {selectedRequest.staff.firstName}{" "}
+            {selectedRequest.staff.lastName}
+          </p>
+          <p>
+            <strong>Email:</strong> {selectedRequest.staff.email}
+          </p>
+          <p>
+            <strong>Phone Number:</strong> {selectedRequest.staff.phoneNumber}
+          </p>
+          <p>
+            <strong>Role:</strong> {selectedRequest.staff.role}
+          </p>
+        </>
+      )}
+
+      {/* Only show Assign button if status is PENDING */}
+      {selectedRequest.status === "PENDING" && (
+        <>
+          <Button type="primary" onClick={() => setIsModalVisible(true)}>
+            Assign Staff
+          </Button>
+
+          {/* Assign Staff Modal */}
+          <Modal
+            visible={isModalVisible}
+            title="Assign Staff"
+            onCancel={() => setIsModalVisible(false)}
+            onOk={handleAssign}
+            okText="Assign"
+            cancelText="Cancel"
+          >
+            <p>
+              Assign a staff member to request ID: {selectedRequest.requestId}
+            </p>
+            <Select
+              placeholder="Select staff"
+              style={{ width: "100%" }}
+              onChange={(value) => setSelectedStaff(value)}
+            >
+              {staffList.map((staff) => (
+                <Select.Option key={staff.accountId} value={staff.accountId}>
+                  {staff.firstName} | {staff.lastName} | AccountID:{" "}
+                  {staff.accountId}
+                </Select.Option>
+              ))}
+            </Select>
+          </Modal>
+        </>
       )}
     </div>
   );

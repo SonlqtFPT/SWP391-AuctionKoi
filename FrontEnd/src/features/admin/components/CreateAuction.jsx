@@ -312,7 +312,7 @@ const CreateAuction = () => {
                 Type 1 - Fixed Price Sale
               </Select.Option>
               <Select.Option value="Type 2">
-                Type 2 - Blind Auction
+                Type 2 - Sealed Auction
               </Select.Option>
               <Select.Option value="Type 3">
                 Type 3 - Ascending Bid Auction

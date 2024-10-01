@@ -1,39 +1,46 @@
 import React, { useEffect, useState } from "react";
 import { Button, Select, Table, Modal } from "antd";
 import { toast } from "react-toastify";
-import api from "../../../config/axios"; // Axios instance for API calls
-import RequestDetails from "../components/RequestDetails"; // Import the RequestDetails component
+import api from "../../../config/axios";
+import RequestDetails from "../components/RequestDetails";
 
 const ManageRequestStatus = ({ onGoBack }) => {
   const [auctionRequests, setAuctionRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showList, setShowList] = useState(true);
-  const [statusOptions] = useState([
-    { label: "Inspection Passed", value: "INSPECTION_PASSED" },
-    { label: "Inspection Failed", value: "INSPECTION_FAILED" },
-  ]);
-  const [updatingRequest, setUpdatingRequest] = useState(null); // Request being updated
-  const [selectedStatus, setSelectedStatus] = useState(null); // Selected status for update
-  const accountId = 4; // Default account ID for the staff
+  const [updatingRequest, setUpdatingRequest] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState(null);
+  const accountId = 4;
 
-  // Fetch auction requests assigned to this staff member
   const fetchRequest = async () => {
     try {
       const response = await api.get(`/staff/list-request/${accountId}`);
       const auctionData = response.data.data;
+
+      // Map the response data to a suitable format for display
       const formattedRequests = auctionData.map((item) => ({
         requestId: item.requestId,
         status: item.status,
         fishId: item.koiFish.fishId,
-        image: item.koiFish.media.imageUrl,
-        videoUrl: item.koiFish.media.videoUrl,
-        breederId: item.breeder.breederId,
-        breederName: item.breeder.breederName,
         gender: item.koiFish.gender,
         age: item.koiFish.age,
         size: item.koiFish.size,
         price: item.koiFish.price,
+        auctionTypeName: item.koiFish.auctionTypeName,
+        mediaUrl: item.koiFish.media.imageUrl,
+        videoUrl: item.koiFish.media.videoUrl,
         varietyName: item.koiFish.variety.varietyName,
+        breederId: item.breeder.breederId,
+        breederName: item.breeder.breederName,
+        breederLocation: item.breeder.location,
+        staff: {
+          accountId: item.staff.accountId,
+          email: item.staff.email,
+          firstName: item.staff.firstName,
+          lastName: item.staff.lastName,
+          phoneNumber: item.staff.phoneNumber,
+          role: item.staff.role,
+        },
       }));
 
       setAuctionRequests(formattedRequests);
@@ -45,9 +52,8 @@ const ManageRequestStatus = ({ onGoBack }) => {
 
   useEffect(() => {
     fetchRequest();
-  }, []); // Fetch requests on component mount
+  }, []);
 
-  // Update the status of a request
   const handleUpdateStatus = async () => {
     if (!updatingRequest || !selectedStatus) {
       toast.error("Please select a status");
@@ -64,8 +70,8 @@ const ManageRequestStatus = ({ onGoBack }) => {
 
       if (response.status === 200) {
         toast.success("Status updated successfully");
-        setUpdatingRequest(null); // Clear the updating request
-        fetchRequest(); // Refresh the data after update
+        setUpdatingRequest(null);
+        fetchRequest();
       } else {
         throw new Error("Failed to update status");
       }
@@ -75,25 +81,23 @@ const ManageRequestStatus = ({ onGoBack }) => {
     }
   };
 
-  // Show update status modal
   const showUpdateStatusModal = (record) => {
-    setUpdatingRequest(record); // Set the request for which status will be updated
-    setSelectedStatus(null); // Reset selected status
+    setUpdatingRequest(record);
+    setSelectedStatus(null);
   };
 
-  // Close the update status modal
   const closeUpdateStatusModal = () => {
     setUpdatingRequest(null);
-    setSelectedStatus(null); // Clear selected status when modal is closed
+    setSelectedStatus(null);
   };
 
-  // Map status to a user-friendly display
+  // Utility function to display statuses
   const displayStatus = (status) => {
     switch (status) {
       case "INSPECTION_PASSED":
         return "Pass";
       case "INSPECTION_FAILED":
-        return "Fail";
+        return "Not Pass";
       case "INSPECTION_IN_PROGRESS":
         return "In Progress";
       default:
@@ -101,7 +105,6 @@ const ManageRequestStatus = ({ onGoBack }) => {
     }
   };
 
-  // Table columns definition
   const columns = [
     {
       title: "Request ID",
@@ -114,19 +117,49 @@ const ManageRequestStatus = ({ onGoBack }) => {
       key: "fishId",
     },
     {
-      title: "Breeder ID",
-      dataIndex: "breederId",
-      key: "breederId",
-    },
-    {
       title: "Breeder Name",
       dataIndex: "breederName",
       key: "breederName",
     },
     {
+      title: "Breeder Location",
+      dataIndex: "breederLocation",
+      key: "breederLocation",
+    },
+    {
+      title: "Fish Gender",
+      dataIndex: "gender",
+      key: "gender",
+    },
+    {
+      title: "Fish Age",
+      dataIndex: "age",
+      key: "age",
+    },
+    {
+      title: "Fish Size",
+      dataIndex: "size",
+      key: "size",
+    },
+    {
+      title: "Fish Price",
+      dataIndex: "price",
+      key: "price",
+    },
+    {
+      title: "Auction Type",
+      dataIndex: "auctionTypeName",
+      key: "auctionTypeName",
+    },
+    {
+      title: "Variety",
+      dataIndex: "varietyName",
+      key: "varietyName",
+    },
+    {
       title: "Image",
-      dataIndex: "image",
-      key: "image",
+      dataIndex: "mediaUrl",
+      key: "mediaUrl",
       render: (image) => <img src={image} alt="" width={200} />,
     },
     {
@@ -137,40 +170,33 @@ const ManageRequestStatus = ({ onGoBack }) => {
     },
     {
       title: "Action",
-      dataIndex: "action",
       key: "action",
-      render: (text, record) => {
-        // Show update status button only if the request is in progress
-        const isInProgress = record.status === "INSPECTION_IN_PROGRESS";
-        return (
-          <div>
-            <Button onClick={() => handleViewDetail(record)} type="link">
-              View Detail
+      render: (text, record) => (
+        <div>
+          <Button onClick={() => handleViewDetail(record)} type="link">
+            View Detail
+          </Button>
+          {record.status === "INSPECTION_IN_PROGRESS" && (
+            <Button
+              onClick={() => showUpdateStatusModal(record)}
+              type="primary"
+            >
+              Update Status
             </Button>
-            {isInProgress && (
-              <Button
-                onClick={() => showUpdateStatusModal(record)}
-                type="primary"
-              >
-                Update Status
-              </Button>
-            )}
-          </div>
-        );
-      },
+          )}
+        </div>
+      ),
     },
   ];
 
-  // View auction request details
   const handleViewDetail = (request) => {
     setSelectedRequest(request);
-    setShowList(false); // Hide the list and show the details
+    setShowList(false);
   };
 
-  // Go back to the request list
   const handleGoBack = () => {
-    setShowList(true); // Show the list again
-    setSelectedRequest(null); // Clear selected request
+    setShowList(true);
+    setSelectedRequest(null);
   };
 
   return (
@@ -182,7 +208,7 @@ const ManageRequestStatus = ({ onGoBack }) => {
 
           {/* Update Status Modal */}
           <Modal
-            visible={!!updatingRequest} // Show the modal if updatingRequest is set
+            visible={!!updatingRequest}
             title="Update Request Status"
             onCancel={closeUpdateStatusModal}
             onOk={handleUpdateStatus}
@@ -196,23 +222,23 @@ const ManageRequestStatus = ({ onGoBack }) => {
               placeholder="Select status"
               style={{ width: "100%" }}
               onChange={(value) => setSelectedStatus(value)}
-              value={selectedStatus} // Bind value to selectedStatus
+              value={selectedStatus}
             >
-              {statusOptions.map((option) => (
-                <Select.Option key={option.value} value={option.value}>
-                  {option.label}
-                </Select.Option>
-              ))}
+              <Select.Option value="INSPECTION_PASSED">
+                Inspection Passed
+              </Select.Option>
+              <Select.Option value="INSPECTION_FAILED">
+                Inspection Failed
+              </Select.Option>
             </Select>
           </Modal>
         </>
       ) : (
         <>
           <Button onClick={handleGoBack}>Go Back</Button>
-          {/* Pass the showUpdateStatusModal function to RequestDetails */}
           <RequestDetails
             selectedRequest={selectedRequest}
-            onUpdateStatus={() => showUpdateStatusModal(selectedRequest)} // Use the function directly here
+            onUpdateStatus={() => showUpdateStatusModal(selectedRequest)}
           />
         </>
       )}

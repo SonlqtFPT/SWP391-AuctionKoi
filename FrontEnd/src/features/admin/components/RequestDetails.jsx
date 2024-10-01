@@ -14,7 +14,31 @@ const RequestDetails = ({
   if (!selectedRequest) return <p>No request selected.</p>;
 
   const formatStatus = (status) => {
-    return status.charAt(0) + status.slice(1).toLowerCase();
+    switch (status) {
+      case "INSPECTION_PASSED":
+        return "Pass";
+      case "INSPECTION_FAILED":
+        return "Fail";
+      case "INSPECTION_IN_PROGRESS": // Add this case
+        return "Checking";
+      default:
+        return status.charAt(0) + status.slice(1).toLowerCase(); // Capitalizes the first letter for other statuses
+    }
+  };
+
+  const capitalizeAuctionType = (auctionType) => {
+    switch (auctionType) {
+      case "ascending_bid":
+      case "decreasing_bid":
+      case "sealed_bid":
+      case "fixed_price_sale":
+        return (
+          auctionType.charAt(0).toUpperCase() +
+          auctionType.slice(1).toLowerCase()
+        );
+      default:
+        return auctionType; // Return unchanged for other types
+    }
   };
 
   const handleAssign = async () => {
@@ -62,6 +86,10 @@ const RequestDetails = ({
       </p>
       <p>
         <strong>Price:</strong> {selectedRequest.price} $
+      </p>
+      <p>
+        <strong>Auction Type:</strong>{" "}
+        {capitalizeAuctionType(selectedRequest.auctionTypeName)}
       </p>
 
       {/* Variety Info */}
