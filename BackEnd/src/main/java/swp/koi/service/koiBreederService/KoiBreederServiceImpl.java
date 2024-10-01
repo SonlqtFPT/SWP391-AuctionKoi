@@ -13,6 +13,7 @@ import swp.koi.exception.KoiException;
 import swp.koi.model.Account;
 import swp.koi.model.AuctionRequest;
 import swp.koi.model.KoiBreeder;
+import swp.koi.model.KoiFish;
 import swp.koi.model.enums.AccountRoleEnum;
 import swp.koi.repository.KoiBreederRepository;
 import swp.koi.service.accountService.AccountService;
@@ -71,4 +72,6 @@ public class KoiBreederServiceImpl implements KoiBreederService{
     public KoiBreeder findByBreederId(Integer breederId) {
         return koiBreederRepository.findByBreederId(breederId).orElseThrow(() -> new KoiException(ResponseCode.BREEDER_NOT_FOUND));
     }
+
+
 }

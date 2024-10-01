@@ -165,4 +165,9 @@ public class AccountServiceImpl implements AccountService{
                 .collect(Collectors.toList());
         return staffList;
     }
+
+    @Override
+    public boolean existById(Integer accountId) {
+        return accountRepository.existsById(accountId);
+    }
 }

@@ -27,4 +27,14 @@ public class AuctionTypeServiceImpl implements AuctionTypeService{
         }
         return auctionTypeRepository.findByAuctionTypeName(auctionTypeEnum).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_TYPE_NOT_FOUND));
     }
+
+    @Override
+    public boolean existById(Integer auctionTypeId) {
+        return auctionTypeRepository.existsById(auctionTypeId);
+    }
+
+    @Override
+    public void saveType(AuctionType auctionType) {
+        auctionTypeRepository.save(auctionType);
+    }
 }

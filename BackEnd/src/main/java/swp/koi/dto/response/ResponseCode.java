@@ -8,6 +8,7 @@ public enum ResponseCode {
     CREATED_SUCCESS(400, "Created successfully"),
     SUCCESS_GET_LIST(200, "Data retrieved successfully."),
     SUCCESS_SIGN_UP(200, "Sign up successful."),
+    FAIL(000, "Fail"),
 
     // Authentication / Authorization
     SUCCESS_LOGIN(001, "Login successful."),
@@ -44,7 +45,8 @@ public enum ResponseCode {
     STAFF_ASSIGN_SUCCESSFULLY(7003, "Staff assigned successfully"),
     ALREADY_HAVE_STAFF(7004, "This request already have staff"),
     MUST_BE_STAFF(7005, "Only staff can be assign"),
-    CANCEL_SUCCESS(7006, "Canceled successfully"),
+    CANCEL_REQUEST_SUCCESS(7006, "Canceled successfully"),
+    UPDATE_REQUEST_SUCCESS(7007, "Updated successfully"),
 
     // Auction type related statuses
     AUCTION_TYPE_NOT_FOUND(7001, "Auction type not found"),

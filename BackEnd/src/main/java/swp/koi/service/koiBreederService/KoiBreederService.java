@@ -5,6 +5,7 @@ import swp.koi.dto.response.KoiBreederResponseDTO;
 import swp.koi.model.Account;
 import swp.koi.model.AuctionRequest;
 import swp.koi.model.KoiBreeder;
+import swp.koi.model.KoiFish;
 
 import java.util.List;
 
@@ -14,4 +15,5 @@ public interface KoiBreederService {
     KoiBreeder findByAccount(Account account);
 
     KoiBreeder findByBreederId(Integer breederId);
+
 }

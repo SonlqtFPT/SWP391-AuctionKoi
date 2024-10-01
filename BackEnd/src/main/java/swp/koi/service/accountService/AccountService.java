@@ -1,6 +1,7 @@
 package swp.koi.service.accountService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
 import swp.koi.dto.request.AccountLoginDTO;
 import swp.koi.dto.request.AccountRegisterDTO;
 import swp.koi.dto.response.AuctionResponseDTO;
@@ -23,4 +24,5 @@ public interface AccountService {
 
     List<Account> getAllStaff();
 
+    boolean existById(@NotNull(message = "Account Id is required") Integer accountId);
 }

@@ -31,6 +31,7 @@ public class AuctionRequestEntityToDtoConverter {
                 .filter(Objects::nonNull)
                 .map(auctionRequest -> {
                     AuctionRequestResponseDTO dto = modelMapper.map(auctionRequest, AuctionRequestResponseDTO.class);
+                    dto.getKoiFish().setAuctionTypeName(auctionRequest.getKoiFish().getAuctionType().getAuctionTypeName());
                     if(!isStaff) {
                         if(auctionRequest.getAccount() == null) {
                             dto.setStaff(null);

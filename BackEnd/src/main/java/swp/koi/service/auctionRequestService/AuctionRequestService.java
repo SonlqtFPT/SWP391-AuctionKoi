@@ -1,6 +1,8 @@
 package swp.koi.service.auctionRequestService;
 
 import swp.koi.dto.request.AuctionRequestDTO;
+import swp.koi.dto.request.AuctionRequestUpdateDTO;
+import swp.koi.dto.request.UpdateStatusDTO;
 import swp.koi.model.AuctionRequest;
 
 import java.util.List;
@@ -23,4 +25,10 @@ public interface AuctionRequestService {
     List<AuctionRequest> getAllBreederRequest(Integer breederId);
 
     void cancelRequest(Integer requestId);
+
+    void acceptTask(Integer requestId);
+
+    AuctionRequestUpdateDTO updateRequest(Integer requestId, AuctionRequestUpdateDTO auctionRequest);
+
+    void changeStatus(Integer requestId, UpdateStatusDTO request);
 }

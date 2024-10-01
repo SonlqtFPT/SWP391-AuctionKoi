@@ -1,9 +1,7 @@
 package swp.koi.service.koiFishService;
 
 import org.springframework.data.repository.query.Param;
-import swp.koi.dto.request.AuctionRequestDTO;
-import swp.koi.dto.request.KoiFishDTO;
-import swp.koi.dto.request.MediaDTO;
+import swp.koi.dto.request.*;
 import swp.koi.dto.response.KoiFishResponseDTO;
 import swp.koi.model.AuctionRequest;
 import swp.koi.model.KoiFish;
@@ -18,4 +16,7 @@ public interface KoiFishService {
     List<KoiFish> getKoiFishFromApproveRequest();
 
     void saveFish(KoiFish koiFish);
+
+    KoiFish updateFish(KoiFishUpdateDTO koiFishUpdateDTO, MediaUpdateDTO mediaDTO);
+
 }
