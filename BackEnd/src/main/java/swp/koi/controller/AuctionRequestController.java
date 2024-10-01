@@ -71,6 +71,8 @@ public class AuctionRequestController {
             return new ResponseData<>(e.getResponseCode());
         }
     }
+
+
 }
 
 
