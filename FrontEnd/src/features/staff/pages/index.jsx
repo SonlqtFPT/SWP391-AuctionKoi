@@ -1,7 +1,7 @@
-import Header from "../components/Header.jsx";
-import Footer from "../components/Footer.jsx";
+import Header from "../../../components/Header.jsx";
+import Footer from "../../../components/Footer.jsx";
 import SidebarStaff from "../components/SidebarStaff.jsx";
-import Test from "../components/Test.jsx";
+import ManageRequestStatus from "../components/ManageRequestStatus.jsx";
 
 const StaffPage = () => {
   return (
@@ -9,7 +9,9 @@ const StaffPage = () => {
       <Header />
       <div className="flex flex-grow">
         <SidebarStaff />
-        <Test />
+        <div className="flex-grow p-4">
+          <ManageRequestStatus />
+        </div>
       </div>
       <Footer />
     </div>

@@ -1,8 +1,9 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import HomePage from "../src/pages/Home.jsx";
-import AdminPage from "../src/pages/admin/index.jsx";
-import StaffPage from "../src/pages/Staff.jsx";
-import { Login } from "./pages/Login.jsx";
+import HomePage from "../src/features/Home.jsx";
+import AdminPage from "../src/features/admin/pages/index.jsx";
+import StaffPage from "../src/features/staff/pages/index.jsx";
+import { Login } from "../src/features/Login.jsx";
+import BreederPage from "../src/features/breeder/index.jsx";
 
 export default function App() {
   const router = createBrowserRouter([
@@ -19,12 +20,12 @@ export default function App() {
       element: <StaffPage />,
     },
     {
-      path: "/breeder", // Breeder page
+      path: "/login", // Login page
       element: <Login />,
     },
     {
-      path: "/login", // Login page
-      element: <Login />,
+      path: "/breeder", // Login page
+      element: <BreederPage />,
     },
   ]);
 

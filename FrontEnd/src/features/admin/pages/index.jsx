@@ -1,11 +1,10 @@
-import Header from "../../components/Header.jsx";
-import Footer from "../../components/Footer.jsx";
-import SidebarAdmin from "../../components/SidebarAdmin.jsx";
-import Test from "../../components/Test.jsx";
-import ManageAuction from "../../components/ManageAuction.jsx";
-import ManageRequest from "../../components/ManageRequest.jsx";
+import Header from "../../../components/Header.jsx";
+import Footer from "../../../components/Footer.jsx";
+import SidebarAdmin from "../../../components/SidebarAdmin.jsx";
+import ManageAuction from "../components/ManageAuction.jsx";
+import ManageRequest from "../components/ManageRequest.jsx";
+import CreateAuction from "../components/CreateAuction.jsx";
 import { useState } from "react";
-import CreateAuction from "../../components/CreateAuction.jsx";
 
 const AdminPage = () => {
   const [activeComponent, setActiveComponent] = useState("Dashboard");
