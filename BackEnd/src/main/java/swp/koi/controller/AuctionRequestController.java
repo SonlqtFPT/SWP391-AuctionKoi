@@ -2,6 +2,7 @@ package swp.koi.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.web.bind.annotation.*;
 import swp.koi.convert.AccountEntityToDtoConverter;
 import swp.koi.convert.AuctionRequestEntityToDtoConverter;
@@ -43,6 +44,17 @@ public class AuctionRequestController {
         }catch (KoiException e){
             return new ResponseData<>(e.getResponseCode());
         }
+    }
+
+    @PatchMapping("/breeder/{requestId}/cancel")
+    public ResponseData<?> cancelRequest(@PathVariable Integer requestId){
+        try{
+            auctionRequestService.cancelRequest(requestId);
+            return new ResponseData<>(ResponseCode.CANCEL_SUCCESS);
+        }catch (KoiException e){
+            return new ResponseData<>(e.getResponseCode());
+        }
+
     }
 
     @GetMapping("/manager/assign-staff/getStaff")

@@ -138,4 +138,14 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
         }
     }
 
+    @Override
+    public void cancelRequest(Integer requestId) throws KoiException{
+        try{
+            AuctionRequest auctionRequest = auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
+            auctionRequest.setStatus(AuctionRequestStatusEnum.CANCELLED);
+            auctionRequestRepository.save(auctionRequest);
+        }catch (KoiException e){
+            throw e;
+        }
+    }
 }

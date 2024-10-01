@@ -21,4 +21,6 @@ public interface AuctionRequestService {
     List<AuctionRequest> getAllStaffRequest(Integer accountId);
 
     List<AuctionRequest> getAllBreederRequest(Integer breederId);
+
+    void cancelRequest(Integer requestId);
 }

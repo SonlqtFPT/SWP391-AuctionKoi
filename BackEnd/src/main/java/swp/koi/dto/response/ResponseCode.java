@@ -44,6 +44,7 @@ public enum ResponseCode {
     STAFF_ASSIGN_SUCCESSFULLY(7003, "Staff assigned successfully"),
     ALREADY_HAVE_STAFF(7004, "This request already have staff"),
     MUST_BE_STAFF(7005, "Only staff can be assign"),
+    CANCEL_SUCCESS(7006, "Canceled successfully"),
 
     // Auction type related statuses
     AUCTION_TYPE_NOT_FOUND(7001, "Auction type not found"),

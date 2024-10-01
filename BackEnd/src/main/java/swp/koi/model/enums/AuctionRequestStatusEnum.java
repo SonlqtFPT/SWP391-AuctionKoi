@@ -9,5 +9,5 @@ public enum AuctionRequestStatusEnum {
     PENDING_NEGOTIATION,
     APPROVE,
     REJECT,
-    CANCELED
+    CANCELLED
 }
