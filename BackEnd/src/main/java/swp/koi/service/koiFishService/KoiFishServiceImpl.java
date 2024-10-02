@@ -3,6 +3,7 @@ package swp.koi.service.koiFishService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.stereotype.Service;
 import swp.koi.convert.KoiFishEntityToDtoConverter;
 import swp.koi.dto.request.*;
@@ -89,16 +90,17 @@ public class KoiFishServiceImpl implements KoiFishService{
     }
 
     @Override
-    public KoiFish updateFish(KoiFishUpdateDTO koiFishUpdateDTO, MediaUpdateDTO mediaDTO) {
+    public KoiFish updateFish(KoiFishUpdateDTO koiFishDTO) {
 
-        AuctionType auctionType = auctionTypeService.findByAuctionTypeName(koiFishUpdateDTO.getAuctionTypeName());
+        AuctionType auctionType = auctionTypeService.findByAuctionTypeName(koiFishDTO.getAuctionTypeName());
 
-        Variety variety = varietyService.findByVarietyName(koiFishUpdateDTO.getVarietyName());
+        Variety variety = varietyService.findByVarietyName(koiFishDTO.getVarietyName());
 
-        KoiFish koiFish = koiFishRepository.findByFishId(koiFishUpdateDTO.getFishId()).orElseThrow(() -> new KoiException(ResponseCode.FISH_NOT_FOUND));
+        Media media = mediaService.updateMedia(koiFishDTO.getMedia());
 
-        modelMapper.map(koiFishUpdateDTO, koiFish);
-        Media media = mediaService.updateMedia(mediaDTO);
+        KoiFish koiFish = koiFishRepository.findByFishId(koiFishDTO.getFishId()).orElseThrow(() -> new KoiException(ResponseCode.FISH_NOT_FOUND));
+
+        modelMapper.map(koiFishDTO, koiFish);
         koiFish.setAuctionType(auctionType);
         koiFish.setMedia(media);
         koiFish.setVariety(variety);

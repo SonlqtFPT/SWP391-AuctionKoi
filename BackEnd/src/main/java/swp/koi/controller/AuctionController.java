@@ -58,10 +58,4 @@ public class AuctionController {
         return new ResponseData<>(ResponseCode.AUCTION_STATUS_CHANGE);
     }
 
-    @GetMapping("/manager/getRequest")
-    public ResponseData<List<AuctionRequestResponseDTO>> getAllAuctionRequest(){
-        List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllAuctionRequest(), false);
-        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
-    }
-
 }

@@ -10,4 +10,5 @@ public interface MediaService {
     Media createMediaFromRequest(MediaDTO mediaDTO);
 
     Media updateMedia(MediaUpdateDTO mediaDTO);
+
 }

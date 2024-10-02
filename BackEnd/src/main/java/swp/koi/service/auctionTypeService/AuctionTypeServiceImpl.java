@@ -18,7 +18,7 @@ public class AuctionTypeServiceImpl implements AuctionTypeService{
     }
 
     @Override
-    public AuctionType findByAuctionTypeName(String auctionTypeName) {
+    public AuctionType findByAuctionTypeName(String auctionTypeName) throws KoiException{
         AuctionTypeNameEnum auctionTypeEnum;
         try{
             auctionTypeEnum = AuctionTypeNameEnum.valueOf(auctionTypeName.toUpperCase());
