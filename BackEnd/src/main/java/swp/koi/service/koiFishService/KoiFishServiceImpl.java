@@ -1,43 +1,38 @@
 package swp.koi.service.koiFishService;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import swp.koi.dto.request.KoiFishDTO;
-import swp.koi.dto.request.MediaDTO;
+import swp.koi.convert.KoiFishEntityToDtoConverter;
+import swp.koi.dto.request.*;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
-import swp.koi.model.AuctionRequest;
-import swp.koi.model.KoiFish;
-import swp.koi.model.Media;
-import swp.koi.model.Variety;
+import swp.koi.model.*;
 import swp.koi.model.enums.AuctionRequestStatusEnum;
 import swp.koi.model.enums.KoiFishStatusEnum;
 import swp.koi.repository.AuctionRequestRepository;
 import swp.koi.repository.KoiFishRepository;
+import swp.koi.service.auctionTypeService.AuctionTypeService;
 import swp.koi.service.mediaService.MediaService;
 import swp.koi.service.varietyService.VarietyService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class KoiFishServiceImpl implements KoiFishService{
 
     private final KoiFishRepository koiFishRepository;
     private final VarietyService varietyService;
     private final MediaService mediaService;
     private final AuctionRequestRepository auctionRequestRepository;
-
-    public KoiFishServiceImpl(KoiFishRepository koiFishRepository, VarietyService varietyService, MediaService mediaService, AuctionRequestRepository auctionRequestRepository) {
-        this.koiFishRepository = koiFishRepository;
-        this.varietyService = varietyService;
-        this.mediaService = mediaService;
-        this.auctionRequestRepository = auctionRequestRepository;
-    }
+    private final KoiFishEntityToDtoConverter koiFishEntityToDtoConverter;
+    private final AuctionTypeService auctionTypeService;
+    private final ModelMapper modelMapper;
 
     @Override
     public KoiFish createKoiFishFromRequest(KoiFishDTO koiRequest, MediaDTO mediaRequest) throws KoiException{
@@ -52,9 +47,12 @@ public class KoiFishServiceImpl implements KoiFishService{
                 Media media = mediaService.createMediaFromRequest(mediaRequest);
                 koiFish.setMedia(media);
 
+                AuctionType auctionType = auctionTypeService.findByAuctionTypeName(koiRequest.getAuctionTypeName());
+
                 // Set the age, gender, price, and size from the request DTO
                 koiFish.setAge(koiRequest.getAge());
                 koiFish.setGender(koiRequest.getGender());
+                koiFish.setAuctionType(auctionType);
                 koiFish.setPrice(koiRequest.getPrice());
                 koiFish.setSize(koiRequest.getSize());
 
@@ -83,5 +81,35 @@ public class KoiFishServiceImpl implements KoiFishService{
                 .collect(Collectors.toList());
 
         return koiFishList;
+    }
+
+    @Override
+    public void saveFish(KoiFish koiFish) {
+        koiFishRepository.save(koiFish);
+    }
+
+    @Override
+    public KoiFish updateFish(KoiFishUpdateDTO koiFishUpdateDTO, MediaUpdateDTO mediaDTO) {
+
+        AuctionType auctionType = auctionTypeService.findByAuctionTypeName(koiFishUpdateDTO.getAuctionTypeName());
+
+        Variety variety = varietyService.findByVarietyName(koiFishUpdateDTO.getVarietyName());
+
+        KoiFish koiFish = koiFishRepository.findByFishId(koiFishUpdateDTO.getFishId()).orElseThrow(() -> new KoiException(ResponseCode.FISH_NOT_FOUND));
+
+        modelMapper.map(koiFishUpdateDTO, koiFish);
+        Media media = mediaService.updateMedia(mediaDTO);
+        koiFish.setAuctionType(auctionType);
+        koiFish.setMedia(media);
+        koiFish.setVariety(variety);
+        return koiFishRepository.save(koiFish);
+    }
+
+    @Override
+    public List<KoiFish> getKoiFishBasedOnType(AuctionTypeDTO auctionTypeDTO) {
+        List<KoiFish> list = koiFishRepository.findAll().stream()
+                .filter(fish -> fish.getAuctionType().getAuctionTypeName().equals(auctionTypeDTO.getAuctionTypeName()))
+                .collect(Collectors.toList());
+        return list;
     }
 }

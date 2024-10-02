@@ -2,11 +2,13 @@ package swp.koi.dto.response;
 
 public enum ResponseCode {
     SUCCESS(200, "Successfully."),
+    UNAUTHORIZED(403, "UNAUTHORIZED"),
     NOT_FOUND(400, "Not found"),
     INVALID_INFORMATION(400, "Data is invalid"),
     CREATED_SUCCESS(400, "Created successfully"),
     SUCCESS_GET_LIST(200, "Data retrieved successfully."),
     SUCCESS_SIGN_UP(200, "Sign up successful."),
+    FAIL(000, "Fail"),
 
     // Authentication / Authorization
     SUCCESS_LOGIN(001, "Login successful."),
@@ -24,6 +26,7 @@ public enum ResponseCode {
     // Breeder related statuses
     FAILED_CREATE_BREEDER(2000, "Fail to create breeder"),
     BREEDER_ID_NOT_FOUND(2001, "Breeder ID not found"),
+    BREEDER_NOT_FOUND(2002, "Breeder not found"),
 
     // KoiFish related statuses
     FISH_NOT_FOUND(3001, "Koi Fish not found"),
@@ -38,6 +41,12 @@ public enum ResponseCode {
 
     // AuctionRequest related statuses
     AUCTION_REQUEST_NOT_FOUND(7001, "Auction request not found"),
+    AUCTION_STATUS_CHANGE(7002, "Auction request status changed"),
+    STAFF_ASSIGN_SUCCESSFULLY(7003, "Staff assigned successfully"),
+    ALREADY_HAVE_STAFF(7004, "This request already have staff"),
+    MUST_BE_STAFF(7005, "Only staff can be assign"),
+    CANCEL_REQUEST_SUCCESS(7006, "Canceled successfully"),
+    UPDATE_REQUEST_SUCCESS(7007, "Updated successfully"),
 
     // Auction type related statuses
     AUCTION_TYPE_NOT_FOUND(7001, "Auction type not found"),
@@ -46,7 +55,10 @@ public enum ResponseCode {
     LOT_NOT_FOUND(8001, "Lot ID not found"),
 
     // Variety related statuses
-    VARIETY_NOT_FOUND(9003, "Variety not found")
+    VARIETY_NOT_FOUND(9003, "Variety not found"),
+
+    // Media
+    MEDIA_NOT_FOUND(9500, "Media not found")
     ;
 
     private final int code;

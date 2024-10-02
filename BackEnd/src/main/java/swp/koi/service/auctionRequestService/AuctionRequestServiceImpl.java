@@ -1,19 +1,28 @@
 package swp.koi.service.auctionRequestService;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import swp.koi.dto.request.AuctionRequestDTO;
-import swp.koi.dto.request.KoiFishDTO;
-import swp.koi.dto.request.MediaDTO;
+import swp.koi.convert.AuctionRequestDtoToEntityConverter;
+import swp.koi.convert.AuctionRequestEntityToDtoConverter;
+import swp.koi.convert.KoiFishDtoToEntitConverter;
+import swp.koi.dto.request.*;
 import swp.koi.dto.response.AuctionRequestResponseDTO;
+import swp.koi.dto.response.AuctionResponseDTO;
+import swp.koi.dto.response.KoiBreederResponseDTO;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
-import swp.koi.model.AuctionRequest;
-import swp.koi.model.KoiBreeder;
-import swp.koi.model.KoiFish;
+import swp.koi.model.*;
+import swp.koi.model.enums.AccountRoleEnum;
 import swp.koi.model.enums.AuctionRequestStatusEnum;
+import swp.koi.model.enums.KoiFishStatusEnum;
+import swp.koi.model.enums.TokenType;
 import swp.koi.repository.AuctionRequestRepository;
+import swp.koi.service.accountService.AccountService;
+import swp.koi.service.accountService.AccountServiceImpl;
+import swp.koi.service.auctionTypeService.AuctionTypeService;
+import swp.koi.service.jwtService.JwtService;
 import swp.koi.service.koiBreederService.KoiBreederService;
 import swp.koi.service.koiBreederService.KoiBreederServiceImpl;
 import swp.koi.service.koiFishService.KoiFishService;
@@ -23,24 +32,23 @@ import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class AuctionRequestServiceImpl implements AuctionRequestService{
 
     private final AuctionRequestRepository auctionRequestRepository;
     private final KoiBreederService koiBreederService;
     private final KoiFishService koiFishService;
     private final ModelMapper modelMapper;
-
-    public AuctionRequestServiceImpl(AuctionRequestRepository auctionRequestRepository, KoiBreederServiceImpl koiBreederService, KoiFishServiceImpl koiFishService, ModelMapper modelMapper) {
-        this.auctionRequestRepository = auctionRequestRepository;
-        this.koiBreederService = koiBreederService;
-        this.koiFishService = koiFishService;
-        this.modelMapper = modelMapper;
-    }
-
+    private final JwtService jwtService;
+    private final AccountService accountService;
+    private final AuctionRequestDtoToEntityConverter auctionRequestDtoToEntityConverter;
+    private final KoiFishDtoToEntitConverter koiFishDtoToEntitConverter;
+    private final AuctionTypeService auctionTypeService;
 
     @Override
-    public AuctionRequestResponseDTO createRequest(AuctionRequestDTO request) throws KoiException{
+    public AuctionRequest createRequest(AuctionRequestDTO request) throws KoiException{
         try {
+            Account account = accountService.findById(request.getAccountId());
             // Create a new AuctionRequest object to hold the auction request data
             AuctionRequest auctionRequest = new AuctionRequest();
 
@@ -49,7 +57,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
             MediaDTO mediaDTO = request.getKoiFish().getMedia();
 
             // Get the KoiBreeder based on the provided breederId in the request
-            KoiBreeder koiBreeder = koiBreederService.findByBreederId(request.getBreederId());
+            KoiBreeder koiBreeder = koiBreederService.findByAccount(account);
             // Create a new KoiFish object using the data from the request and media information
             KoiFish koiFish = koiFishService.createKoiFishFromRequest(koiFishDTO, mediaDTO);
 
@@ -59,7 +67,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
             auctionRequest.setKoiFish(koiFish);
 
             // Save the AuctionRequest to the repository and return the saved instance
-            return modelMapper.map(auctionRequestRepository.save(auctionRequest), AuctionRequestResponseDTO.class);
+            return auctionRequestRepository.save(auctionRequest);
         } catch (KoiException e) {
             throw e;
         }
@@ -70,4 +78,106 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
         return auctionRequestRepository.findAll();
     }
 
+    @Override
+    public AuctionRequest findByRequestId(Integer requestId) {
+        return auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
+    }
+
+    @Override
+    public void saveRequest(AuctionRequest auctionRequest) {
+        auctionRequestRepository.save(auctionRequest);
+    }
+
+    @Override
+    public List<AuctionRequest> getAllRequestById(Integer accountId) {
+//        Account account = accountService.findById(accountId);
+//        if(account.getRole() == AccountRoleEnum.BREEDER){
+//
+//        }
+        return List.of();
+    }
+
+    @Override
+    public void assignStaffToRequest(Integer requestId, Integer accountId) throws KoiException{
+        try{
+            AuctionRequest request = auctionRequestRepository.findByRequestId(requestId)
+                    .orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
+            if(request.getStatus().equals(AuctionRequestStatusEnum.INSPECTION_IN_PROGRESS))
+                throw new KoiException(ResponseCode.ALREADY_HAVE_STAFF);
+            Account account = accountService.findById(accountId);
+            if(!account.getRole().equals(AccountRoleEnum.STAFF))
+                throw new KoiException(ResponseCode.MUST_BE_STAFF);
+            request.setAccount(account);
+            request.setStatus(AuctionRequestStatusEnum.INSPECTION_IN_PROGRESS);
+            auctionRequestRepository.save(request);
+        }catch (KoiException e){
+            throw e;
+        }
+    }
+
+    @Override
+    public List<AuctionRequest> getAllStaffRequest(Integer accountId) throws KoiException{
+        try{
+            Account account = accountService.findById(accountId);
+            if(!account.getRole().equals(AccountRoleEnum.STAFF))
+                throw new KoiException(ResponseCode.MUST_BE_STAFF);
+            List<AuctionRequest> list = auctionRequestRepository.findAllRequestByAccountId(accountId);
+            return list;
+        } catch (KoiException e) {
+            throw e;
+        }
+    }
+
+    @Override
+    public List<AuctionRequest> getAllBreederRequest(Integer breederId) throws KoiException{
+        try{
+            KoiBreeder breeder = koiBreederService.findByBreederId(breederId);
+            if(breeder == null)
+                throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
+            List<AuctionRequest> list = auctionRequestRepository.findAllByBreederId(breederId);
+            return list;
+        }catch (KoiException e){
+            throw e;
+        }
+    }
+
+    @Override
+    public void cancelRequest(Integer requestId) throws KoiException{
+        try{
+            AuctionRequest auctionRequest = auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
+            if(!auctionRequest.getStatus().equals(AuctionRequestStatusEnum.CANCELLED)&& auctionRequest.getKoiFish().getStatus().equals(KoiFishStatusEnum.PENDING)) {
+                auctionRequest.setStatus(AuctionRequestStatusEnum.CANCELLED);
+                auctionRequestRepository.save(auctionRequest);
+            }
+        }catch (KoiException e){
+            throw e;
+        }
+    }
+
+    @Override
+    public AuctionRequest updateRequest(Integer requestId, AuctionRequestUpdateDTO dto) throws KoiException{
+        KoiBreeder koiBreeder = koiBreederService.findByAccount(accountService.findById(dto.getAccountId()));
+        if(koiBreeder == null){
+            throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
+        }
+
+        AuctionRequest auctionRequest = auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
+
+        KoiFishUpdateDTO koiFishUpdateDTO = dto.getKoiFish();
+        MediaUpdateDTO mediaDTO = dto.getKoiFish().getMedia();
+
+        KoiFish koiFish = koiFishService.updateFish(koiFishUpdateDTO, mediaDTO);
+        auctionRequest.setKoiFish(koiFish);
+
+        return auctionRequest;
+    }
+
+    @Override
+    public void changeStatus(Integer requestId, UpdateStatusDTO request) {
+        AuctionRequest auctionRequest = auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
+        if(auctionRequest.getAccount().getRole().equals(AccountRoleEnum.STAFF)){
+            auctionRequest.setStatus(request.getRequestStatus());
+            auctionRequestRepository.save(auctionRequest);
+        }
+    }
 }
