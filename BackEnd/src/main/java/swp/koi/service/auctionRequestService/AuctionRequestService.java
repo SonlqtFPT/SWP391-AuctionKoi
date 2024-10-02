@@ -14,8 +14,6 @@ public interface AuctionRequestService {
 
     void saveRequest(AuctionRequest auctionRequest);
 
-    List<AuctionRequest> getAllRequestById(Integer accountId);
-
     void assignStaffToRequest(Integer requestId, Integer accountId);
 
     List<AuctionRequest> getAllStaffRequest(Integer accountId);

@@ -25,12 +25,4 @@ public class LotDTO {
 
     @Min(value = 0, message = "Increment value must be a positive value")
     float increment;
-
-    @NotNull(message = "Starting time cannot be null")
-    @Future(message = "Starting time must be in the future")
-    LocalDateTime startingTime;
-
-    @NotNull(message = "Ending time cannot be null")
-    @Future(message = "Ending time must be in the future")
-    LocalDateTime endingTime;
 }

@@ -110,7 +110,7 @@ public class KoiFishServiceImpl implements KoiFishService{
     @Override
     public List<KoiFish> getKoiFishBasedOnType(AuctionTypeDTO auctionTypeDTO) {
         List<KoiFish> list = koiFishRepository.findAll().stream()
-                .filter(fish -> fish.getAuctionType().getAuctionTypeName().equals(auctionTypeDTO.getAuctionTypeName()))
+                .filter(fish -> fish.getAuctionType().getAuctionTypeName().equals(auctionTypeDTO.getAuctionTypeName()) && fish.getStatus().equals(KoiFishStatusEnum.WAITING))
                 .collect(Collectors.toList());
         return list;
     }

@@ -81,15 +81,6 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     }
 
     @Override
-    public List<AuctionRequest> getAllRequestById(Integer accountId) {
-//        Account account = accountService.findById(accountId);
-//        if(account.getRole() == AccountRoleEnum.BREEDER){
-//
-//        }
-        return List.of();
-    }
-
-    @Override
     public void assignStaffToRequest(Integer requestId, Integer accountId) throws KoiException{
         try{
             AuctionRequest request = auctionRequestRepository.findByRequestId(requestId)
@@ -184,7 +175,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
                 auctionRequest.setStatus(AuctionRequestStatusEnum.PENDING_NEGOTIATION);
                 auctionRequestRepository.save(auctionRequest);
             }else{
-                throw new KoiException(ResponseCode.FAIL);
+                throw new KoiException(ResponseCode.AUCTION_REQUEST_VALID_STATUS);
             }
     }
 
@@ -201,7 +192,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
 
             auctionRequest.setStatus(AuctionRequestStatusEnum.APPROVE);
         }else{
-            throw new KoiException(ResponseCode.FAIL);
+            throw new KoiException(ResponseCode.AUCTION_REQUEST_VALID_STATUS);
         }
     }
 
@@ -216,7 +207,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
             koiFish.setAuctionType(auctionType);
             koiFishService.saveFish(koiFish);
         }else {
-            throw new KoiException(ResponseCode.FAIL);
+            throw new KoiException(ResponseCode.AUCTION_REQUEST_VALID_STATUS);
         }
     }
 
@@ -230,7 +221,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
             auctionRequest.setStatus(AuctionRequestStatusEnum.APPROVE);
             auctionRequestRepository.save(auctionRequest);
         }else{
-            throw  new KoiException(ResponseCode.FAIL);
+            throw  new KoiException(ResponseCode.AUCTION_REQUEST_VALID_STATUS);
         }
     }
 
@@ -246,7 +237,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
             auctionRequest.setStatus(AuctionRequestStatusEnum.CANCELLED);
             auctionRequestRepository.save(auctionRequest);
         }else{
-            throw new KoiException(ResponseCode.FAIL);
+            throw new KoiException(ResponseCode.AUCTION_REQUEST_VALID_STATUS);
         }
     }
 }
