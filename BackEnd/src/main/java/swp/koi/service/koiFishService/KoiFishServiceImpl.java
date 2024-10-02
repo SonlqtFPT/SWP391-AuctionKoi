@@ -57,7 +57,7 @@ public class KoiFishServiceImpl implements KoiFishService{
                 koiFish.setSize(koiRequest.getSize());
 
                 // Set the status of the koi fish to 'WAITING' (probably waiting for auction or approval)
-                koiFish.setStatus(KoiFishStatusEnum.WAITING);
+                koiFish.setStatus(KoiFishStatusEnum.PENDING);
 
                 // Save the koi fish to the repository and return the saved entity
                 return koiFishRepository.save(koiFish);

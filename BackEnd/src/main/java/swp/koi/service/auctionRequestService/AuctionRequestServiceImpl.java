@@ -145,7 +145,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     public void cancelRequest(Integer requestId) throws KoiException{
         try{
             AuctionRequest auctionRequest = auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
-            if(!auctionRequest.getStatus().equals(AuctionRequestStatusEnum.CANCELLED)&& auctionRequest.getKoiFish().getStatus().equals(KoiFishStatusEnum.PENDING)) {
+            if(!auctionRequest.getStatus().equals(AuctionRequestStatusEnum.CANCELLED) && auctionRequest.getKoiFish().getStatus().equals(KoiFishStatusEnum.PENDING)) {
                 auctionRequest.setStatus(AuctionRequestStatusEnum.CANCELLED);
                 auctionRequestRepository.save(auctionRequest);
             }
