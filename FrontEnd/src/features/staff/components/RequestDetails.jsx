@@ -7,6 +7,12 @@ const RequestDetails = ({
   staffList,
   onAssign,
   fetchRequest,
+  onUpdateStatus,
+  showUpdateStatusModal,
+  updatingRequest,
+  closeUpdateStatusModal,
+  selectedStatus,
+  setSelectedStatus,
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState(null);
@@ -42,6 +48,7 @@ const RequestDetails = ({
   return (
     <div>
       <h2>Auction Request Details</h2>
+
       {/* Request Info */}
       <p>
         <strong>Request ID:</strong> {selectedRequest.requestId}
@@ -51,66 +58,83 @@ const RequestDetails = ({
       </p>
 
       {/* Breeder Info */}
-      <p>
-        <strong>Breeder ID:</strong> {selectedRequest.breeder.breederId}
-      </p>
-      <p>
-        <strong>Breeder Name:</strong> {selectedRequest.breeder.breederName}
-      </p>
-      <p>
-        <strong>Location:</strong> {selectedRequest.breeder.location}
-      </p>
+      {selectedRequest.breeder && (
+        <>
+          <p>
+            <strong>Breeder ID:</strong> {selectedRequest.breeder.breederId}
+          </p>
+          <p>
+            <strong>Breeder Name:</strong> {selectedRequest.breeder.breederName}
+          </p>
+          <p>
+            <strong>Location:</strong> {selectedRequest.breeder.location}
+          </p>
+        </>
+      )}
 
       {/* Fish Info */}
-      <p>
-        <strong>Fish ID:</strong> {selectedRequest.koiFish.fishId}
-      </p>
-      <p>
-        <strong>Gender:</strong> {selectedRequest.koiFish.gender}
-      </p>
-      <p>
-        <strong>Age:</strong> {selectedRequest.koiFish.age} years old
-      </p>
-      <p>
-        <strong>Size:</strong> {selectedRequest.koiFish.size} cm
-      </p>
-      <p>
-        <strong>Price:</strong> {selectedRequest.koiFish.price} $
-      </p>
-      <p>
-        <strong>Auction Type:</strong> {selectedRequest.koiFish.auctionTypeName}
-      </p>
+      {selectedRequest.koiFish && (
+        <>
+          <p>
+            <strong>Fish ID:</strong> {selectedRequest.koiFish.fishId}
+          </p>
+          <p>
+            <strong>Gender:</strong> {selectedRequest.koiFish.gender}
+          </p>
+          <p>
+            <strong>Age:</strong> {selectedRequest.koiFish.age} years old
+          </p>
+          <p>
+            <strong>Size:</strong> {selectedRequest.koiFish.size} cm
+          </p>
+          <p>
+            <strong>Price:</strong> {selectedRequest.koiFish.price} $
+          </p>
+          <p>
+            <strong>Auction Type:</strong>{" "}
+            {selectedRequest.koiFish.auctionTypeName}
+          </p>
 
-      {/* Variety Info */}
-      <p>
-        <strong>Variety ID:</strong> {selectedRequest.koiFish.variety.varietyId}
-      </p>
-      <p>
-        <strong>Variety Name:</strong>{" "}
-        {selectedRequest.koiFish.variety.varietyName}
-      </p>
+          {/* Variety Info */}
+          {selectedRequest.koiFish.variety && (
+            <>
+              <p>
+                <strong>Variety ID:</strong>{" "}
+                {selectedRequest.koiFish.variety.varietyId}
+              </p>
+              <p>
+                <strong>Variety Name:</strong>{" "}
+                {selectedRequest.koiFish.variety.varietyName}
+              </p>
+            </>
+          )}
 
-      {/* Media Info */}
-      <Image
-        width={200}
-        src={selectedRequest.koiFish.media.imageUrl}
-        alt="Auction Request"
-        style={{ marginTop: 16 }}
-      />
-      {selectedRequest.koiFish.media.videoUrl ? (
-        <div style={{ marginTop: 16 }}>
-          <strong>Video:</strong>
-          <video width="300" controls>
-            <source
-              src={selectedRequest.koiFish.media.videoUrl}
-              type="video/mp4"
-            />
-            Your browser does not support the video tag.
-            <p>Your browser does not support the video playback.</p>
-          </video>
-        </div>
-      ) : (
-        <p>No video available for this auction request.</p>
+          {/* Media Info */}
+          {selectedRequest.koiFish.media && (
+            <>
+              <Image
+                width={200}
+                src={selectedRequest.koiFish.media.imageUrl}
+                alt="Auction Request"
+                style={{ marginTop: 16 }}
+              />
+              {selectedRequest.koiFish.media.videoUrl ? (
+                <div style={{ marginTop: 16 }}>
+                  <strong>Video:</strong>
+                  <video width="300" controls>
+                    <source
+                      src={selectedRequest.koiFish.media.videoUrl}
+                      type="video/mp4"
+                    />
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+              ) : (
+                <p>No video available for this auction request.</p>
+              )}
+            </>
+          )}
+        </>
       )}
 
       {/* Staff Info */}
@@ -166,6 +190,45 @@ const RequestDetails = ({
                   {staff.accountId}
                 </Select.Option>
               ))}
+            </Select>
+          </Modal>
+        </>
+      )}
+
+      {/* Only show "Update Status" button if status is INSPECTION_IN_PROGRESS */}
+      {selectedRequest.status === "INSPECTION_IN_PROGRESS" && (
+        <>
+          <Button
+            type="primary"
+            onClick={() => showUpdateStatusModal(selectedRequest)}
+          >
+            Update Status
+          </Button>
+
+          {/* Update Status Modal */}
+          <Modal
+            visible={!!updatingRequest}
+            title="Update Request Status"
+            onCancel={closeUpdateStatusModal}
+            onOk={onUpdateStatus} // No need to pass parameters; handled internally
+            okText="Update"
+            cancelText="Cancel"
+          >
+            <p>
+              Update the status for request ID: {updatingRequest?.requestId}
+            </p>
+            <Select
+              placeholder="Select status"
+              style={{ width: "100%" }}
+              onChange={(value) => setSelectedStatus(value)}
+              value={selectedStatus}
+            >
+              <Select.Option value="INSPECTION_PASSED">
+                Inspection Passed
+              </Select.Option>
+              <Select.Option value="INSPECTION_FAILED">
+                Inspection Failed
+              </Select.Option>
             </Select>
           </Modal>
         </>

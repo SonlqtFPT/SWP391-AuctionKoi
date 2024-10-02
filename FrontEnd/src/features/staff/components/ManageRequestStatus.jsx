@@ -17,30 +17,15 @@ const ManageRequestStatus = ({ onGoBack }) => {
       const response = await api.get(`/staff/list-request/${accountId}`);
       const auctionData = response.data.data;
 
-      // Map the response data to a suitable format for display
       const formattedRequests = auctionData.map((item) => ({
         requestId: item.requestId,
         status: item.status,
         fishId: item.koiFish.fishId,
-        gender: item.koiFish.gender,
-        age: item.koiFish.age,
-        size: item.koiFish.size,
-        price: item.koiFish.price,
-        auctionTypeName: item.koiFish.auctionTypeName,
-        mediaUrl: item.koiFish.media.imageUrl,
-        videoUrl: item.koiFish.media.videoUrl,
-        varietyName: item.koiFish.variety.varietyName,
         breederId: item.breeder.breederId,
         breederName: item.breeder.breederName,
-        breederLocation: item.breeder.location,
-        staff: {
-          accountId: item.staff.accountId,
-          email: item.staff.email,
-          firstName: item.staff.firstName,
-          lastName: item.staff.lastName,
-          phoneNumber: item.staff.phoneNumber,
-          role: item.staff.role,
-        },
+        mediaUrl: item.koiFish.media.imageUrl,
+        staff: item.staff,
+        koiFish: item.koiFish,
       }));
 
       setAuctionRequests(formattedRequests);
@@ -55,8 +40,8 @@ const ManageRequestStatus = ({ onGoBack }) => {
   }, []);
 
   const handleUpdateStatus = async () => {
-    if (!updatingRequest || !selectedStatus) {
-      toast.error("Please select a status");
+    if (!updatingRequest?.requestId || !selectedStatus) {
+      toast.error("Please select a valid status");
       return;
     }
 
@@ -70,8 +55,8 @@ const ManageRequestStatus = ({ onGoBack }) => {
 
       if (response.status === 200) {
         toast.success("Status updated successfully");
-        setUpdatingRequest(null);
         fetchRequest();
+        closeUpdateStatusModal(); // Close modal on success
       } else {
         throw new Error("Failed to update status");
       }
@@ -83,15 +68,14 @@ const ManageRequestStatus = ({ onGoBack }) => {
 
   const showUpdateStatusModal = (record) => {
     setUpdatingRequest(record);
-    setSelectedStatus(null);
+    setSelectedStatus(null); // Reset selected status when showing modal
   };
 
   const closeUpdateStatusModal = () => {
     setUpdatingRequest(null);
-    setSelectedStatus(null);
+    setSelectedStatus(null); // Reset selected status on close
   };
 
-  // Utility function to display statuses
   const displayStatus = (status) => {
     switch (status) {
       case "INSPECTION_PASSED":
@@ -101,7 +85,7 @@ const ManageRequestStatus = ({ onGoBack }) => {
       case "INSPECTION_IN_PROGRESS":
         return "In Progress";
       default:
-        return status; // Fallback for any unexpected status
+        return status;
     }
   };
 
@@ -117,44 +101,14 @@ const ManageRequestStatus = ({ onGoBack }) => {
       key: "fishId",
     },
     {
+      title: "Breeder ID",
+      dataIndex: "breederId",
+      key: "breederId",
+    },
+    {
       title: "Breeder Name",
       dataIndex: "breederName",
       key: "breederName",
-    },
-    {
-      title: "Breeder Location",
-      dataIndex: "breederLocation",
-      key: "breederLocation",
-    },
-    {
-      title: "Fish Gender",
-      dataIndex: "gender",
-      key: "gender",
-    },
-    {
-      title: "Fish Age",
-      dataIndex: "age",
-      key: "age",
-    },
-    {
-      title: "Fish Size",
-      dataIndex: "size",
-      key: "size",
-    },
-    {
-      title: "Fish Price",
-      dataIndex: "price",
-      key: "price",
-    },
-    {
-      title: "Auction Type",
-      dataIndex: "auctionTypeName",
-      key: "auctionTypeName",
-    },
-    {
-      title: "Variety",
-      dataIndex: "varietyName",
-      key: "varietyName",
     },
     {
       title: "Image",
@@ -166,7 +120,7 @@ const ManageRequestStatus = ({ onGoBack }) => {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (text, record) => displayStatus(record.status), // Display user-friendly status
+      render: (text, record) => displayStatus(record.status),
     },
     {
       title: "Action",
@@ -211,7 +165,7 @@ const ManageRequestStatus = ({ onGoBack }) => {
             visible={!!updatingRequest}
             title="Update Request Status"
             onCancel={closeUpdateStatusModal}
-            onOk={handleUpdateStatus}
+            onOk={handleUpdateStatus} // No need to pass parameters; handled internally
             okText="Update"
             cancelText="Cancel"
           >
@@ -238,7 +192,17 @@ const ManageRequestStatus = ({ onGoBack }) => {
           <Button onClick={handleGoBack}>Go Back</Button>
           <RequestDetails
             selectedRequest={selectedRequest}
-            onUpdateStatus={() => showUpdateStatusModal(selectedRequest)}
+            staffList={[]} // Pass staff list if needed
+            onAssign={async (request, staffId) => {
+              // Handle staff assignment logic here
+            }}
+            fetchRequest={fetchRequest}
+            onUpdateStatus={handleUpdateStatus}
+            showUpdateStatusModal={showUpdateStatusModal} // Pass this for status modal
+            updatingRequest={updatingRequest} // Pass this state to the modal in RequestDetails
+            closeUpdateStatusModal={closeUpdateStatusModal} // Close modal callback
+            selectedStatus={selectedStatus} // Status for the modal
+            setSelectedStatus={setSelectedStatus} // Set status function for modal
           />
         </>
       )}

@@ -19,25 +19,27 @@ const RequestDetails = ({
         return "Pass";
       case "INSPECTION_FAILED":
         return "Fail";
-      case "INSPECTION_IN_PROGRESS": // Add this case
+      case "INSPECTION_IN_PROGRESS":
         return "Checking";
       default:
-        return status.charAt(0) + status.slice(1).toLowerCase(); // Capitalizes the first letter for other statuses
+        return status.charAt(0) + status.slice(1).toLowerCase();
     }
   };
 
   const capitalizeAuctionType = (auctionType) => {
     switch (auctionType) {
-      case "ascending_bid":
-      case "decreasing_bid":
-      case "sealed_bid":
-      case "fixed_price_sale":
-        return (
-          auctionType.charAt(0).toUpperCase() +
-          auctionType.slice(1).toLowerCase()
-        );
+      case "ASCENDING_BID":
+      case "DESCENDING_BID":
+      case "SEALED_BID":
+      case "FIXED_PRICE_SALE":
+        return auctionType
+          .toLowerCase()
+          .replace(/_/g, " ")
+          .split(" ")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ");
       default:
-        return auctionType; // Return unchanged for other types
+        return auctionType;
     }
   };
 
@@ -46,7 +48,7 @@ const RequestDetails = ({
       await onAssign(selectedRequest, selectedStaff); // Pass selected request and staff ID to onAssign
       setIsModalVisible(false); // Close the modal after assignment
       setSelectedStaff(null); // Clear selected staff
-      fetchRequest(); // Refresh the auction requests
+      await fetchRequest(); // Refresh the auction requests
     } else {
       alert("Please select a staff member.");
     }
