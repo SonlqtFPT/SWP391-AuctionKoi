@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import swp.koi.model.enums.AuctionRequestStatusEnum;
+import swp.koi.model.enums.AuctionTypeNameEnum;
 
 @Entity
 @Getter
@@ -28,7 +29,11 @@ public class AuctionRequest {
     @JoinColumn(name = "accountId")
     Account account;
 
+    float offerPrice;
 
+    @OneToOne
+    @JoinColumn(name = "auctionTypeId")
+    AuctionType auctionType;
 
     @ManyToOne
     @JoinColumn(name = "breederId")

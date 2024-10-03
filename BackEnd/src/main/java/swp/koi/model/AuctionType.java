@@ -31,7 +31,10 @@ public class AuctionType {
     List<Auction> auctions;
 
     @OneToMany(mappedBy = "auctionType")
-    List<KoiFish> koiFish;
+    List<KoiFish> koiFishes;
+
+    @OneToOne(mappedBy = "auctionType")
+    AuctionRequest auctionRequest;
 
     public AuctionType() {
     }

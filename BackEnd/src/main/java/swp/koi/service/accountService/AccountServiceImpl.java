@@ -49,12 +49,12 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public AccountRegisterDTO findByAccountId(Integer accountId) {
-        return accountRepository.findByAccountId(accountId).orElseThrow(() -> new KoiException(ResponseCode.NOT_FOUND));
+        return accountRepository.findByAccountId(accountId).orElseThrow(() -> new KoiException(ResponseCode.ACCOUNT_ID_NOT_FOUND));
     }
 
     @Override
     public Account findById(Integer accountId) {
-        return accountRepository.findById(accountId).orElseThrow(() -> new KoiException(ResponseCode.NOT_FOUND));
+        return accountRepository.findById(accountId).orElseThrow(() -> new KoiException(ResponseCode.ACCOUNT_ID_NOT_FOUND));
     }
 
     @Override

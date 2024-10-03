@@ -47,6 +47,8 @@ public enum ResponseCode {
     MUST_BE_STAFF(7005, "Only staff can be assign"),
     CANCEL_REQUEST_SUCCESS(7006, "Canceled successfully"),
     UPDATE_REQUEST_SUCCESS(7007, "Updated successfully"),
+    AUCTION_REQUEST_VALID_STATUS(7008, "Auction request status / Koi fish status have something wrong. Check again!"),
+    WRONG_BREEDER_REQUEST(7009, "This breeder does not have this request"),
 
     // Auction type related statuses
     AUCTION_TYPE_NOT_FOUND(7001, "Auction type not found"),

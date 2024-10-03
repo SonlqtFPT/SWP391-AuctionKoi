@@ -3,6 +3,7 @@ package swp.koi.service.koiFishService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.stereotype.Service;
 import swp.koi.convert.KoiFishEntityToDtoConverter;
 import swp.koi.dto.request.*;
@@ -57,7 +58,7 @@ public class KoiFishServiceImpl implements KoiFishService{
                 koiFish.setSize(koiRequest.getSize());
 
                 // Set the status of the koi fish to 'WAITING' (probably waiting for auction or approval)
-                koiFish.setStatus(KoiFishStatusEnum.WAITING);
+                koiFish.setStatus(KoiFishStatusEnum.PENDING);
 
                 // Save the koi fish to the repository and return the saved entity
                 return koiFishRepository.save(koiFish);
@@ -89,26 +90,33 @@ public class KoiFishServiceImpl implements KoiFishService{
     }
 
     @Override
-    public KoiFish updateFish(KoiFishUpdateDTO koiFishUpdateDTO, MediaUpdateDTO mediaDTO) {
+    public KoiFish updateFish(KoiFishUpdateDTO koiFishDTO) {
 
-        AuctionType auctionType = auctionTypeService.findByAuctionTypeName(koiFishUpdateDTO.getAuctionTypeName());
+        AuctionType auctionType = auctionTypeService.findByAuctionTypeName(koiFishDTO.getAuctionTypeName());
 
-        Variety variety = varietyService.findByVarietyName(koiFishUpdateDTO.getVarietyName());
+        Variety variety = varietyService.findByVarietyName(koiFishDTO.getVarietyName());
 
-        KoiFish koiFish = koiFishRepository.findByFishId(koiFishUpdateDTO.getFishId()).orElseThrow(() -> new KoiException(ResponseCode.FISH_NOT_FOUND));
+        Media media = mediaService.findByMediaId(koiFishDTO.getMedia().getMediaId());
+        media.setImageUrl(koiFishDTO.getMedia().getImageUrl());
+        media.setVideoUrl(koiFishDTO.getMedia().getVideoUrl());
 
-        modelMapper.map(koiFishUpdateDTO, koiFish);
-        Media media = mediaService.updateMedia(mediaDTO);
+        KoiFish koiFish = koiFishRepository.findByFishId(koiFishDTO.getFishId()).orElseThrow(() -> new KoiException(ResponseCode.FISH_NOT_FOUND));
+
         koiFish.setAuctionType(auctionType);
         koiFish.setMedia(media);
         koiFish.setVariety(variety);
+        koiFish.setAge(koiFishDTO.getAge());
+        koiFish.setGender(koiFishDTO.getGender());
+        koiFish.setSize(koiFishDTO.getSize());
+        koiFish.setPrice(koiFishDTO.getPrice());
+
         return koiFishRepository.save(koiFish);
     }
 
     @Override
     public List<KoiFish> getKoiFishBasedOnType(AuctionTypeDTO auctionTypeDTO) {
         List<KoiFish> list = koiFishRepository.findAll().stream()
-                .filter(fish -> fish.getAuctionType().getAuctionTypeName().equals(auctionTypeDTO.getAuctionTypeName()))
+                .filter(fish -> fish.getAuctionType().getAuctionTypeName().equals(auctionTypeDTO.getAuctionTypeName()) && fish.getStatus().equals(KoiFishStatusEnum.WAITING))
                 .collect(Collectors.toList());
         return list;
     }

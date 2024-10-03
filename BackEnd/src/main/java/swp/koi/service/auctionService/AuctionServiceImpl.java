@@ -9,6 +9,7 @@ import swp.koi.dto.request.LotDTO;
 import swp.koi.dto.request.UpdateStatusDTO;
 import swp.koi.dto.response.AuctionResponseDTO;
 import swp.koi.dto.response.FullLotResponseDTO;
+import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
 import swp.koi.model.*;
 import swp.koi.model.enums.AuctionStatusEnum;
@@ -38,11 +39,19 @@ public class AuctionServiceImpl implements AuctionService{
     private final AuctionRequestService auctionRequestService;
 
     @Override
-    public AuctionResponseDTO createAuctionWithLots(AuctionWithLotsDTO request) {
+    public AuctionResponseDTO createAuctionWithLots(AuctionWithLotsDTO request) throws KoiException{
         try{
             Auction auction = new Auction();
-
             AuctionType auctionType = auctionTypeService.findByAuctionTypeName(request.getAuctionTypeName());
+
+            for(LotDTO lotDTO : request.getLots()){
+                KoiFish koiFish = koiFishService.findByFishId(lotDTO.getFishId());
+                if(koiFish == null || !koiFish.getStatus().equals(KoiFishStatusEnum.WAITING) ||
+                        !koiFish.getAuctionType().equals(auctionType)){
+                    throw new KoiException(ResponseCode.FAIL);
+                }
+            }
+
             auction.setAuctionType(auctionType);
             auction.setStartTime(request.getStartTime());
             auction.setEndTime(request.getEndTime());
@@ -53,16 +62,17 @@ public class AuctionServiceImpl implements AuctionService{
             List<Lot> lots = new ArrayList<>();
             for(LotDTO lotDTO : request.getLots()){
                 Lot lot = new Lot();
-                lot.setAuction(auction);
-                lot.setKoiFish(koiFishService.findByFishId(lotDTO.getFishId()));
-                lot.setDeposit(lotDTO.getDeposit());
-                lot.setStartingPrice(lotDTO.getStartingPrice());
-                lot.setIncrement(lotDTO.getIncrement());
-                lot.setCurrentPrice(lot.getStartingPrice());
-                lot.setStartingTime(savedAuction.getStartTime());
-                lot.setEndingTime(savedAuction.getEndTime());
-                lot.setStatus(LotStatusEnum.WAITING);
-                lots.add(lot);
+                KoiFish koiFish = koiFishService.findByFishId(lotDTO.getFishId());
+                    lot.setAuction(auction);
+                    lot.setKoiFish(koiFish);
+                    lot.setDeposit(lotDTO.getDeposit());
+                    lot.setStartingPrice(lotDTO.getStartingPrice());
+                    lot.setIncrement(lotDTO.getIncrement());
+                    lot.setCurrentPrice(lot.getStartingPrice());
+                    lot.setStartingTime(savedAuction.getStartTime());
+                    lot.setEndingTime(savedAuction.getEndTime());
+                    lot.setStatus(LotStatusEnum.WAITING);
+                    lots.add(lot);
             }
 
             lotService.createLots(lots);
