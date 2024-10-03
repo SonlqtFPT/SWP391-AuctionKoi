@@ -146,26 +146,34 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
 
     @Transactional
     @Override
-    public AuctionRequest updateRequest(Integer requestId, KoiFishUpdateDTO dto) throws KoiException{
+    public AuctionRequest updateRequest(Integer requestId, AuctionRequestUpdateDTO dto) throws KoiException{
+        Account account = accountService.findById(dto.getAccountId());
+        if(!account.getRole().equals(AccountRoleEnum.BREEDER))
+            throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
+
+        KoiBreeder koiBreeder = koiBreederService.findByAccount(account);
 
         AuctionRequest auctionRequest = auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
+
+        if(auctionRequest.getKoiBreeder().getBreederId() != koiBreeder.getBreederId())
+            throw new KoiException(ResponseCode.WRONG_BREEDER_REQUEST);
 
         if(auctionRequest.getKoiBreeder() == null){
             throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
         }
 
-        KoiFish koiFish = koiFishService.findByFishId(dto.getFishId());
-        Variety variety = varietyService.findByVarietyName(dto.getVarietyName());
-        Media media = mediaService.findByMediaId(dto.getMedia().getMediaId());
-        media.setImageUrl(dto.getMedia().getImageUrl());
-        media.setVideoUrl(dto.getMedia().getVideoUrl());
+        KoiFish koiFish = koiFishService.findByFishId(dto.getKoiFish().getFishId());
+        Variety variety = varietyService.findByVarietyName(dto.getKoiFish().getVarietyName());
+        Media media = mediaService.findByMediaId(dto.getKoiFish().getMedia().getMediaId());
+        media.setImageUrl(dto.getKoiFish().getMedia().getImageUrl());
+        media.setVideoUrl(dto.getKoiFish().getMedia().getVideoUrl());
         mediaService.save(media);
-        AuctionType auctionType = auctionTypeService.findByAuctionTypeName(dto.getAuctionTypeName());
+        AuctionType auctionType = auctionTypeService.findByAuctionTypeName(dto.getKoiFish().getAuctionTypeName());
         koiFish.setVariety(variety);
-        koiFish.setGender(dto.getGender());
-        koiFish.setAge(dto.getAge());
-        koiFish.setSize(dto.getSize());
-        koiFish.setPrice(dto.getPrice());
+        koiFish.setGender(dto.getKoiFish().getGender());
+        koiFish.setAge(dto.getKoiFish().getAge());
+        koiFish.setSize(dto.getKoiFish().getSize());
+        koiFish.setPrice(dto.getKoiFish().getPrice());
         koiFish.setAuctionType(auctionType);
         koiFish.setMedia(media);
         koiFishService.saveFish(koiFish);

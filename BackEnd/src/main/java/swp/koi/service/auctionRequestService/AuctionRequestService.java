@@ -23,7 +23,7 @@ public interface AuctionRequestService {
     void breederCancelRequest(Integer requestId);
 
 
-    AuctionRequest updateRequest(Integer requestId, KoiFishUpdateDTO auctionRequest);
+    AuctionRequest updateRequest(Integer requestId, AuctionRequestUpdateDTO auctionRequest);
 
     void changeStatus(Integer requestId, UpdateStatusDTO request);
 
