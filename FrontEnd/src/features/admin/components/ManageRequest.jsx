@@ -17,7 +17,7 @@ const ManageRequest = () => {
   const fetchRequest = async () => {
     setLoading(true);
     try {
-      const response = await api.get("manager/getRequest");
+      const response = await api.get("manager/request/getRequest");
       const auctionData = response.data.data;
       console.log(auctionData);
       const formattedRequests = auctionData.map((item) => ({
@@ -48,7 +48,7 @@ const ManageRequest = () => {
   // Fetch staff list for assignment
   const fetchStaff = async () => {
     try {
-      const response = await api.get("/manager/assign-staff/getStaff");
+      const response = await api.get("/manager/request/assign-staff/getStaff");
       setStaffList(response.data.data); // Store the staff data
     } catch (error) {
       console.error("Error fetching staff data:", error);
@@ -69,8 +69,9 @@ const ManageRequest = () => {
     }
 
     try {
+      console.log(selectedStaff);
       const response = await api.post(
-        `/manager/assign-staff/${assigningRequest.requestId}?accountId=${selectedStaff}`
+        `/manager/request/assign-staff/${assigningRequest.requestId}?accountId=${selectedStaff}`
       );
 
       if (response.status === 200) {

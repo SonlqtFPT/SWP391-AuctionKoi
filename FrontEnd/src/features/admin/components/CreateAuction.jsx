@@ -16,215 +16,51 @@ import dayjs from "dayjs"; // Use dayjs for date management
 
 const { Step } = Steps;
 
-const AddLots = ({ setLots }) => {
-  const [fishData, setFishData] = useState([]);
-  const [selectedFish, setSelectedFish] = useState(null); // Selected fish for viewing details
-  const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
-  const [lotDetails, setLotDetails] = useState({}); // State to store details for each fish/lot
-  const [currentFishId, setCurrentFishId] = useState(null); // Store current fish ID for adding lot
-
-  // Fetch fish data from API (approved requests)
-  useEffect(() => {
-    axios
-      .get("http://localhost:8080/manager/auction")
-      .then((response) => {
-        setFishData(response.data.data); // Set the approved fish
-      })
-      .catch((err) => {
-        console.error("Error fetching fish data", err);
-      });
-  }, []);
-
-  // Open detail modal
-  const handleViewDetail = (fish) => {
-    setSelectedFish(fish);
-    setIsDetailModalVisible(true);
-  };
-
-  // Close detail modal
-  const handleCloseDetailModal = () => {
-    setIsDetailModalVisible(false);
-    setSelectedFish(null);
-  };
-
-  // Handle change in lot input fields
-  const handleInputChange = (field, value) => {
-    setLotDetails((prev) => ({
-      ...prev,
-      [currentFishId]: {
-        ...prev[currentFishId],
-        [field]: value,
-      },
-    }));
-  };
-
-  // Open modal to add lot
-  const openAddLotModal = (fishId) => {
-    setCurrentFishId(fishId);
-    setIsDetailModalVisible(true);
-  };
-
-  // Add lot to the list
-  const handleAddLot = () => {
-    const currentLot = lotDetails[currentFishId];
-    if (
-      currentLot &&
-      currentLot.deposit &&
-      currentLot.startingPrice &&
-      currentLot.increment &&
-      currentLot.startingTime &&
-      currentLot.endingTime
-    ) {
-      setLots((prev) => [
-        ...prev,
-        {
-          fishId: currentFishId,
-          ...currentLot,
-        },
-      ]);
-      // Clear lot details for the added fish
-      setLotDetails((prev) => ({ ...prev, [currentFishId]: {} }));
-      message.success("Lot added successfully!");
-      handleCloseDetailModal(); // Close modal after adding lot
-    } else {
-      message.error("Please fill in all details before adding the lot.");
-    }
-  };
-
-  // Table columns for fish data
-  const columns = [
-    {
-      title: "Variety",
-      dataIndex: "variety",
-      key: "variety",
-      render: (variety) => variety.varietyName,
-    },
-    {
-      title: "Gender",
-      dataIndex: "gender",
-      key: "gender",
-    },
-    {
-      title: "Age",
-      dataIndex: "age",
-      key: "age",
-    },
-    {
-      title: "Action",
-      key: "action",
-      render: (text, fish) => (
-        <Button onClick={() => handleViewDetail(fish)} type="link">
-          View Detail
-        </Button>
-      ),
-    },
-    {
-      title: "Add Lot",
-      key: "addLot",
-      render: (text, fish) => (
-        <Button onClick={() => openAddLotModal(fish.fishId)}>Add Lot</Button>
-      ),
-    },
-  ];
-
-  return (
-    <>
-      <Table
-        columns={columns}
-        dataSource={fishData}
-        rowKey="fishId"
-        pagination={false}
-        style={{ marginBottom: 20 }}
-      />
-
-      {selectedFish && (
-        <Modal
-          title={`${selectedFish.variety.varietyName} Details`}
-          visible={isDetailModalVisible}
-          onCancel={handleCloseDetailModal}
-          footer={null}
-        >
-          <p>
-            <strong>Fish ID:</strong> {selectedFish.fishId}
-          </p>
-          <p>
-            <strong>Gender:</strong> {selectedFish.gender}
-          </p>
-          <p>
-            <strong>Age:</strong> {selectedFish.age} years old
-          </p>
-          <Image width={200} src={selectedFish.media.imageUrl} alt="Fish" />
-        </Modal>
-      )}
-
-      {/* Modal for adding lot details */}
-      <Modal
-        title={`Add Lot for Fish ID: ${currentFishId}`}
-        visible={isDetailModalVisible && currentFishId !== null}
-        onCancel={handleCloseDetailModal}
-        footer={null}
-      >
-        <Form layout="vertical">
-          <Form.Item label="Deposit">
-            <InputNumber
-              value={lotDetails[currentFishId]?.deposit}
-              onChange={(value) => handleInputChange("deposit", value)}
-            />
-          </Form.Item>
-          <Form.Item label="Starting Price">
-            <InputNumber
-              value={lotDetails[currentFishId]?.startingPrice}
-              onChange={(value) => handleInputChange("startingPrice", value)}
-            />
-          </Form.Item>
-          <Form.Item label="Increment">
-            <InputNumber
-              value={lotDetails[currentFishId]?.increment}
-              onChange={(value) => handleInputChange("increment", value)}
-            />
-          </Form.Item>
-          <Form.Item label="Starting Time">
-            <DatePicker
-              showTime
-              value={
-                lotDetails[currentFishId]?.startingTime
-                  ? dayjs(lotDetails[currentFishId].startingTime)
-                  : null
-              }
-              onChange={(value) => handleInputChange("startingTime", value)}
-            />
-          </Form.Item>
-          <Form.Item label="Ending Time">
-            <DatePicker
-              showTime
-              value={
-                lotDetails[currentFishId]?.endingTime
-                  ? dayjs(lotDetails[currentFishId].endingTime)
-                  : null
-              }
-              onChange={(value) => handleInputChange("endingTime", value)}
-            />
-          </Form.Item>
-          <Button type="primary" onClick={handleAddLot}>
-            Add Lot
-          </Button>
-        </Form>
-      </Modal>
-    </>
-  );
-};
-
 const CreateAuction = () => {
   const [current, setCurrent] = useState(0);
   const [form] = Form.useForm();
+  const [auction, setAuction] = useState({
+    auctionTypeName: null,
+    startTime: null,
+    endTime: null,
+    lots: [],
+  });
   const [lots, setLots] = useState([]); // State to store the lots
 
-  // Define the onFinish function for form submission
-  const onFinish = async (values) => {
+  // Function to handle moving to the next step
+  const handleNext = () => {
+    form
+      .validateFields() // Validate form fields
+      .then((values) => {
+        if (current === 0) {
+          // Step 1: Update auctionTypeName, startTime, and endTime
+          setAuction((prevAuction) => ({
+            ...prevAuction,
+            auctionTypeName: values.auctionType,
+            startTime: values.startTime ? values.startTime.toISOString() : null,
+            endTime: values.endTime ? values.endTime.toISOString() : null,
+          }));
+        }
+        // Proceed to the next step
+        setCurrent(current + 1);
+      })
+      .catch((errorInfo) => {
+        console.log("Validation failed:", errorInfo);
+      });
+  };
+
+  // Function to handle previous step
+  const prev = () => {
+    setCurrent(current - 1);
+  };
+
+  // Final form submission
+  const onFinish = async () => {
+    // Ensure the auction state is up-to-date
     const auctionData = {
-      auctionTypeName: values.auctionType,
-      startTime: values.startTime ? values.startTime.toISOString() : null,
-      endTime: values.endTime ? values.endTime.toISOString() : null,
+      auctionTypeName: auction.auctionTypeName,
+      startTime: auction.startTime,
+      endTime: auction.endTime,
       lots: lots.map((lot) => ({
         fishId: lot.fishId,
         deposit: lot.deposit,
@@ -252,23 +88,6 @@ const CreateAuction = () => {
     }
   };
 
-  // Function to handle moving to the next step
-  const handleNext = () => {
-    form
-      .validateFields() // Validate form fields
-      .then(() => {
-        setCurrent(current + 1); // Move to the next step if validation is successful
-      })
-      .catch((errorInfo) => {
-        console.log("Validation failed:", errorInfo);
-        // Validation failed, error messages will be shown automatically
-      });
-  };
-
-  const prev = () => {
-    setCurrent(current - 1);
-  };
-
   // Step definitions
   const steps = [
     {
@@ -285,7 +104,7 @@ const CreateAuction = () => {
               format="YYYY-MM-DD HH:mm:ss"
               disabledDate={(current) =>
                 current && current < dayjs().startOf("day")
-              } // Prevent selection of past dates
+              }
               defaultValue={dayjs()} // Set to current time
             />
           </Form.Item>
@@ -297,8 +116,8 @@ const CreateAuction = () => {
             <DatePicker
               showTime
               format="YYYY-MM-DD HH:mm:ss"
-              disabledDate={
-                (current) => current && current < dayjs().startOf("day") // Prevent selection of past dates
+              disabledDate={(current) =>
+                current && current < dayjs().startOf("day")
               }
             />
           </Form.Item>
@@ -308,16 +127,16 @@ const CreateAuction = () => {
             rules={[{ required: true, message: "Please select auction type!" }]}
           >
             <Select placeholder="Select Auction Type">
-              <Select.Option value="Type 1">
+              <Select.Option value="FIXED_PRICE_SALE">
                 Type 1 - Fixed Price Sale
               </Select.Option>
-              <Select.Option value="Type 2">
+              <Select.Option value="SEALED_BID">
                 Type 2 - Sealed Auction
               </Select.Option>
-              <Select.Option value="Type 3">
+              <Select.Option value="ASCENDING_BID">
                 Type 3 - Ascending Bid Auction
               </Select.Option>
-              <Select.Option value="Type 4">
+              <Select.Option value="DESCENDING_BID">
                 Type 4 - Descending Price Auction
               </Select.Option>
             </Select>
@@ -327,7 +146,9 @@ const CreateAuction = () => {
     },
     {
       title: "Add Lots",
-      content: <AddLots setLots={setLots} />, // Pass the setLots function to AddLots
+      content: (
+        <AddLots setLots={setLots} auctionTypeName={auction.auctionTypeName} />
+      ),
     },
     {
       title: "Confirm",
@@ -336,7 +157,6 @@ const CreateAuction = () => {
           <p>
             Please review all the information before finalizing the auction.
           </p>
-          <p>Use the form to double-check your auction details.</p>
           <ul>
             {lots.map((lot, index) => (
               <li key={index}>
@@ -371,25 +191,103 @@ const CreateAuction = () => {
             </Button>
           )}
           {current === steps.length - 1 && (
-            <Button
-              type="primary"
-              onClick={() => {
-                form
-                  .validateFields()
-                  .then((values) => {
-                    onFinish(values); // Call onFinish with form values
-                  })
-                  .catch((errorInfo) => {
-                    console.error("Validation failed:", errorInfo);
-                  });
-              }}
-            >
+            <Button type="primary" onClick={onFinish}>
               Submit
             </Button>
           )}
         </div>
       </div>
     </div>
+  );
+};
+
+// AddLots Component for Step 2
+const AddLots = ({ setLots, auctionTypeName }) => {
+  const [fishData, setFishData] = useState([]);
+  const [selectedFish, setSelectedFish] = useState(null);
+  const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
+  const [lotDetails, setLotDetails] = useState({}); // Store lot details for each fish
+
+  // Fetch fish data from API based on auctionTypeName
+  useEffect(() => {
+    const fetchFishData = async () => {
+      try {
+        const response = await axios.post(
+          "http://localhost:8080/manager/get-fish-auction",
+          {
+            auctionTypeName: auctionTypeName, // Pass auction type from Step 1
+          }
+        );
+        setFishData(response.data.data); // Assuming response structure matches your specification
+        console.log(fishData);
+      } catch (err) {
+        console.error("Error fetching fish data", err);
+      }
+    };
+
+    if (auctionTypeName) {
+      fetchFishData(); // Call the function to fetch data only if auctionTypeName is available
+    }
+  }, [auctionTypeName]);
+
+  const handleAddLot = (fishId) => {
+    const currentLot = lotDetails[fishId];
+    if (currentLot) {
+      setLots((prev) => [...prev, { fishId, ...currentLot }]);
+      message.success("Lot added successfully!");
+    } else {
+      message.error("Please fill in all details before adding the lot.");
+    }
+  };
+
+  return (
+    <>
+      <Table
+        dataSource={fishData}
+        rowKey="fishId"
+        columns={[
+          {
+            title: "Variety",
+            dataIndex: "variety",
+            key: "variety",
+            render: (variety) => variety.varietyName,
+          },
+          {
+            title: "Gender",
+            dataIndex: "gender",
+            key: "gender",
+          },
+          {
+            title: "Action",
+            key: "action",
+            render: (_, fish) => (
+              <Button type="link" onClick={() => setSelectedFish(fish)}>
+                View Detail
+              </Button>
+            ),
+          },
+          {
+            title: "Add Lot",
+            key: "addLot",
+            render: (_, fish) => (
+              <Button onClick={() => handleAddLot(fish.fishId)}>Add Lot</Button>
+            ),
+          },
+        ]}
+      />
+      <Modal
+        title={selectedFish?.variety?.varietyName || "Fish Details"}
+        visible={!!selectedFish}
+        onCancel={() => setSelectedFish(null)}
+      >
+        {selectedFish && (
+          <>
+            <p>Gender: {selectedFish.gender}</p>
+            <Image src={selectedFish.media.imageUrl} alt="Fish" width={200} />
+          </>
+        )}
+      </Modal>
+    </>
   );
 };
 
