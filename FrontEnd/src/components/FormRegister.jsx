@@ -1,4 +1,4 @@
-import { Button, Form, Input, message } from 'antd';
+import { Button, Form, Input } from 'antd';
 import FormItem from 'antd/es/form/FormItem';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../config/axios';
@@ -31,7 +31,7 @@ function FormRegister() {
 
 
     return (
-        <div className='flex min-h-full flex-1 flex-col justify-center px-6 py-9 lg:px-8 bg-[#e8eae5]'>
+        <div className='flex min-h-full flex-1 flex-col justify-center mt-20 px-6 py-9 lg:px-8 bg-gray-800'>
             <div className='pl-2 pr-2 sm:mx-auto sm:w-full sm:max-w-sm  bg-white rounded-xl py-10 shadow-lg'>
                 <Form labelCol={{ span: 24, }} onFinish={handleRegister}>
                     <FormItem

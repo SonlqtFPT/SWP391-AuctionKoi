@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   FaBars,
   FaHome,
@@ -6,147 +6,299 @@ import {
   FaInfoCircle,
   FaSignInAlt,
   FaUserPlus,
+  FaUserCircle,
 } from "react-icons/fa";
 import Logo from "../assets/logo/koi69Logo_white.png";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 
 const Header = () => {
+  // State to manage the visibility of the mobile (hamburger) menu
   const [isOpen, setIsOpen] = useState(false);
+  //enable navigate
+  const navigate = useNavigate();
+  // State to manage the visibility of the user dropdown when logged in
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
 
+  // State to store the user's name and role fetched from localStorage
+  const [userName, setUserName] = useState("");
+  const [userRole, setUserRole] = useState("");
+
+  // Fetch user data from localStorage on component mount
+  useEffect(() => {
+    const storedData = localStorage.getItem("accountData");
+    if (storedData) {
+      const accountData = JSON.parse(storedData);
+      // Set the user's name and role based on the data in localStorage
+      setUserName(`${accountData.firstName} ${accountData.lastName}`);
+      setUserRole(accountData.role);
+    }
+  }, []);
+
+  // Toggle function to show or hide the hamburger menu on mobile screens
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
 
+  // Toggle function to show or hide the user dropdown menu (Account, Log Out)
+  const toggleUserDropdown = () => {
+    setIsUserDropdownOpen(!isUserDropdownOpen);
+  };
+
+  // Function to handle logout: remove user-related data from localStorage
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("accountData");
+    setUserName("");
+    setUserRole(""); // Reset role on logout
+    navigate("/");
+  };
+
+  // Dynamically generate the account link based on the user's role
+  const getAccountLink = () => {
+    switch (userRole) {
+      case "Manager":
+        return "/manager-account";
+      case "Admin":
+        return "/admin-account";
+      case "User":
+        return "/user-account";
+      default:
+        return "/account"; // Default route if no role is matched
+    }
+  };
+
   return (
     <>
-      <nav className="flex justify-between items-center bg-[#1a1c26] text-white">
-        <div className="px-5 xl:px-12 py-6 flex items-center">
-          {/* Logo */}
-          <a href="/" className="flex items-center space-x-2">
+      {/* Main navigation container */}
+      <nav className="flex justify-between items-center bg-[#171817] text-white fixed w-full z-10 shadow-2xl">
+
+        {/* Logo section */}
+        <div className="px-5 lg:px-12 py-5 flex items-center">
+          <Link to="/" className="flex items-center space-x-2">
             <img
               src={Logo}
               alt="Koi69 Logo"
               className="h-10 w-auto object-contain"
             />
-            <span className="text-xl sm:text-2xl font-bold">Koi69</span>
-          </a>
+          </Link>
         </div>
 
-        {/* Desktop Menu */}
-        <ul className="hidden md:flex mx-auto font-semibold font-heading space-x-12">
-          <li className="flex items-center space-x-2">
-            <a
-              href="/"
-              className="hover:text-gray-200 flex items-center space-x-2"
+        {/* Desktop menu items (hidden on small screens) */}
+        <ul className="hidden lg:flex mx-auto font-semibold font-heading space-x-6">
+          <li className="flex items-center space-x-2 hover:bg-red-500 min-w-max rounded-full hover:text-black">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive
+                  ? "flex items-center space-x-2 bg-red-600 min-w-max rounded-full text-black px-4 py-2"
+                  : "flex items-center space-x-2 px-4 py-2"
+              }
             >
               <FaHome className="h-5 w-5" />
               <span>Home</span>
-            </a>
+            </NavLink>
           </li>
-          <li className="flex items-center space-x-2">
-            <a
-              href="/auction"
-              className="hover:text-gray-200 flex items-center space-x-2"
+          <li className="flex items-center space-x-2 hover:bg-red-500 min-w-max rounded-full hover:text-black">
+            <NavLink
+              to="/auction"
+              className={({ isActive }) =>
+                isActive
+                  ? "flex items-center space-x-2 bg-red-600 min-w-max rounded-full text-black px-4 py-2"
+                  : "flex items-center space-x-2 px-4 py-2"
+              }
             >
               <FaGavel className="h-5 w-5" />
               <span>Auction</span>
-            </a>
+            </NavLink>
           </li>
-          <li className="flex items-center space-x-2">
-            <a
-              href="/about"
-              className="hover:text-gray-200 flex items-center space-x-2"
+          <li className="flex items-center space-x-2 hover:bg-red-500 min-w-max rounded-full hover:text-black">
+            <NavLink
+              to="/about"
+              className={({ isActive }) =>
+                isActive
+                  ? "flex items-center space-x-2 bg-red-600 min-w-max rounded-full text-black px-4 py-2"
+                  : "flex items-center space-x-2 px-4 py-2"
+              }
             >
               <FaInfoCircle className="h-5 w-5" />
               <span>About Us</span>
-            </a>
+            </NavLink>
           </li>
         </ul>
 
-        {/* Login/Register Buttons */}
-        <div className="hidden xl:flex items-center space-x-5 pr-5">
-          <a
-            href="/login"
-            className="hover:text-gray-200 flex items-center space-x-2"
-          >
-            <FaSignInAlt className="h-6 w-6" />
-            <span>Login</span>
-          </a>
-          <a
-            href="/register"
-            className="hover:text-gray-200 flex items-center space-x-2"
-          >
-            <FaUserPlus className="h-6 w-6" />
-            <span>Register</span>
-          </a>
+        {/* User dropdown for logged-in users */}
+        <div className="relative">
+          {userName ? (
+            <div className="flex items-center space-x-4 pr-10">
+              {/* User button that toggles the dropdown */}
+              <button onClick={toggleUserDropdown} className="flex items-center">
+                <FaUserCircle className="h-6 w-6" />
+                <span className="ml-2">{userName}</span>
+              </button>
+
+              {/* Dropdown content with Account and Log Out options */}
+              {isUserDropdownOpen && (
+                <div className="absolute top-7 left-5 mt-2 bg-[#171817] border border-gray-700 rounded-lg shadow-lg z-20">
+                  <Link
+                    to={getAccountLink()} // Dynamically generated link based on role
+                    className="block px-4 py-2 text-left text-white hover:bg-red-500"
+                  >
+                    Account
+                  </Link>
+                  <button
+                    className="block px-4 py-2 text-left text-white hover:bg-red-500"
+                    onClick={handleLogout}
+                  >
+                    Log Out
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            // If the user is not logged in, show Login and Register links
+            <div className="hidden lg:flex items-center space-x-4 pr-10">
+              <NavLink
+                to="/login"
+                className={({ isActive }) =>
+                  isActive
+                    ? "bg-red-600 flex items-center space-x-2 rounded-full px-4 py-2 text-black"
+                    : "hover:bg-red-500 flex items-center space-x-2 rounded-full px-4 py-2 hover:text-black"
+                }
+              >
+                <FaSignInAlt className="h-6 w-6" />
+                <span>Login</span>
+              </NavLink>
+              <NavLink
+                to="/register"
+                className={({ isActive }) =>
+                  isActive
+                    ? "bg-amber-600 flex items-center space-x-2 rounded-full px-4 py-2 text-black"
+                    : "hover:bg-amber-500 flex items-center space-x-2 rounded-full px-4 py-2 hover:text-black"
+                }
+              >
+                <FaUserPlus className="h-6 w-6" />
+                <span>Register</span>
+              </NavLink>
+            </div>
+          )}
         </div>
 
-        {/* Hamburger Menu */}
+        {/* Hamburger menu button for mobile screens */}
         <button
-          className="navbar-burger self-center mr-12 xl:hidden"
-          href="#"
+          className="navbar-burger self-center mr-5 lg:hidden"
           onClick={toggleDropdown}
+          aria-label="Toggle navigation"
         >
           <FaBars className="h-6 w-6 hover:text-gray-200" />
         </button>
       </nav>
 
-      {/* Dropdown Menu */}
+      {/* Hamburger menu dropdown for mobile screens */}
       <div
-        className={`bg-blue-800 text-white ${
-          isOpen ? "block" : "hidden"
-        } md:hidden`}
+        className={`bg-[#171817] text-white ${isOpen ? "block" : "hidden"} lg:hidden`}
       >
-        <ul className="flex flex-col space-y-2 px-5 py-4">
-          <li>
-            <a
-              href="/"
-              className="hover:text-gray-200 flex items-center space-x-2"
-              onClick={() => setIsOpen(false)}
+        <ul className="flex flex-col space-y-2 px-5 py-4 mt-20 text-center">
+          <li className="flex items-center justify-center">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive
+                  ? "flex items-center justify-center space-x-2 bg-red-600 min-w-max rounded-full text-black px-4 py-2"
+                  : "flex items-center justify-center space-x-2 px-4 py-2 hover:bg-red-500 hover:text-black rounded-full"
+              }
+              onClick={() => setIsOpen(false)} // Close menu after clicking
             >
               <FaHome className="h-5 w-5" />
               <span>Home</span>
-            </a>
+            </NavLink>
           </li>
-          <li>
-            <a
-              href="/auction"
-              className="hover:text-gray-200 flex items-center space-x-2"
-              onClick={() => setIsOpen(false)}
+          <li className="flex items-center justify-center">
+            <NavLink
+              to="/auction"
+              className={({ isActive }) =>
+                isActive
+                  ? "flex items-center justify-center space-x-2 bg-red-600 min-w-max rounded-full text-black px-4 py-2"
+                  : "flex items-center justify-center space-x-2 px-4 py-2 hover:bg-red-500 hover:text-black rounded-full"
+              }
+              onClick={() => setIsOpen(false)} // Close menu after clicking
             >
               <FaGavel className="h-5 w-5" />
               <span>Auction</span>
-            </a>
+            </NavLink>
           </li>
-          <li>
-            <a
-              href="/about"
-              className="hover:text-gray-200 flex items-center space-x-2"
-              onClick={() => setIsOpen(false)}
+          <li className="flex items-center justify-center">
+            <NavLink
+              to="/about"
+              className={({ isActive }) =>
+                isActive
+                  ? "flex items-center justify-center space-x-2 bg-red-600 min-w-max rounded-full text-black px-4 py-2"
+                  : "flex items-center justify-center space-x-2 px-4 py-2 hover:bg-red-500 hover:text-black rounded-full"
+              }
+              onClick={() => setIsOpen(false)} // Close menu after clicking
             >
               <FaInfoCircle className="h-5 w-5" />
               <span>About Us</span>
-            </a>
+            </NavLink>
           </li>
-          <li>
-            <a
-              href="/login"
-              className="hover:text-gray-200 flex items-center space-x-2"
-              onClick={() => setIsOpen(false)}
-            >
-              <FaSignInAlt className="h-6 w-6" />
-              <span>Login</span>
-            </a>
-          </li>
-          <li>
-            <a
-              href="/register"
-              className="hover:text-gray-200 flex items-center space-x-2"
-              onClick={() => setIsOpen(false)}
-            >
-              <FaUserPlus className="h-6 w-6" />
-              <span>Register</span>
-            </a>
-          </li>
+          {/* Conditional rendering of the user-specific options */}
+          {userName ? (
+            <>
+              <li className="flex items-center justify-center">
+                <Link
+                  to={getAccountLink()} // Dynamically generated link based on role
+                  className="hover:bg-red-500 flex items-center justify-center space-x-2 rounded-full px-4 py-2 hover:text-black"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <FaUserCircle className="h-5 w-5" />
+                  <span>Account</span>
+                </Link>
+              </li>
+              <li className="flex items-center justify-center">
+                <button
+                  onClick={() => {
+                    handleLogout(); // Call logout and close the menu
+                    setIsOpen(false);
+                  }}
+                  className="hover:bg-red-500 flex items-center justify-center space-x-2 rounded-full px-4 py-2 hover:text-black"
+                >
+                  <FaSignInAlt className="h-5 w-5" />
+                  <span>Log Out</span>
+                </button>
+              </li>
+            </>
+          ) : (
+            <>
+              <li className="flex items-center justify-center">
+                <NavLink
+                  to="/login"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "bg-red-600 flex items-center justify-center space-x-2 rounded-full px-4 py-2 text-black"
+                      : "hover:bg-red-500 flex items-center justify-center space-x-2 rounded-full px-4 py-2 hover:text-black"
+                  }
+                  onClick={() => setIsOpen(false)} // Close menu after clicking
+                >
+                  <FaSignInAlt className="h-5 w-5" />
+                  <span>Login</span>
+                </NavLink>
+              </li>
+              <li className="flex items-center justify-center">
+                <NavLink
+                  to="/register"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "bg-amber-600 flex items-center justify-center space-x-2 rounded-full px-4 py-2 text-black"
+                      : "hover:bg-amber-500 flex items-center justify-center space-x-2 rounded-full px-4 py-2 hover:text-black"
+                  }
+                  onClick={() => setIsOpen(false)} // Close menu after clicking
+                >
+                  <FaUserPlus className="h-5 w-5" />
+                  <span>Register</span>
+                </NavLink>
+              </li>
+            </>
+          )}
         </ul>
       </div>
     </>

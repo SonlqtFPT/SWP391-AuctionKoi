@@ -1,45 +1,46 @@
 /* eslint-disable react/no-unescaped-entities */
 import { FaInfoCircle, FaPhone, FaFileContract } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <section className="flex justify-between bg-[#1a1c26] text-white ">
+    <section className="flex justify-between bg-[#171817] text-white border-t-2 border-solid border-gray-500">
       <div className="max-w-screen-xl px-4 py-6 mx-auto space-y-8 overflow-hidden sm:px-6 lg:px-8">
         <nav className="flex flex-wrap justify-center -mx-5 -my-2">
           <div className="px-5 py-2 flex items-center space-x-2">
             <FaInfoCircle className="w-4 h-4" />
-            <a
-              href="#"
+            <Link
+              to="/about"
               className="text-base leading-6 text-white hover:text-gray-300"
             >
               About
-            </a>
+            </Link>
           </div>
 
           <div className="px-5 py-2 flex items-center space-x-2">
             <FaPhone className="w-4 h-4" />
-            <a
-              href="#"
+            <Link
+              to="/contact"
               className="text-base leading-6 text-white hover:text-gray-300"
             >
               Contact
-            </a>
+            </Link>
           </div>
           <div className="px-5 py-2 flex items-center space-x-2">
             <FaFileContract className="w-4 h-4" />
-            <a
-              href="#"
+            <Link
+              to="/terms"
               className="text-base leading-6 text-white hover:text-gray-300"
             >
               Terms
-            </a>
+            </Link>
           </div>
         </nav>
         <p className="mt-8 text-base leading-6 text-center text-white-400">
-          Koi69 - Vietnam's Number 1 Premier Koi Auction House
+          Prestige KoiAuction - Vietnam's Number 1 Premier Koi Auction House
         </p>
         <p className="mt-8 text-base leading-6 text-center text-white-400">
-          © 2024 Koi69, Inc. All rights reserved.
+          © 2024 Prestige KoiAuction, Inc. All rights reserved.
         </p>
       </div>
     </section>

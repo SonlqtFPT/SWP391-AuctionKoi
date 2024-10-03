@@ -1,13 +1,13 @@
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import Test from "../components/Test";
+import MainPage from "../components/MainPage";
 
 const HomePage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
       <div className="flex flex-grow">
-        <Test />
+        <MainPage />
       </div>
       <Footer />
     </div>
