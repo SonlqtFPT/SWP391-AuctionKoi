@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import swp.koi.config.VnpayConfig;
+import swp.koi.dto.response.ResponseCode;
+import swp.koi.exception.KoiException;
 import swp.koi.model.Lot;
 import swp.koi.model.LotRegister;
 import swp.koi.model.Member;
@@ -112,47 +114,50 @@ public class VnpayServiceImpl implements VnpayService {
     }
 
     //Using to check if response from vnpay after user complete their transactions correct or not
-    @Override
     public boolean isResponseValid(HttpServletRequest request) throws UnsupportedEncodingException {
 
+        // Create a map to hold parameters that start with "vnp_"
         Map<String, String> vnp_Params = new HashMap<>();
         Map<String, String[]> requestParams = request.getParameterMap();
 
+        // Iterate over request parameters to filter those that start with "vnp_"
         for (Map.Entry<String, String[]> entry : requestParams.entrySet()) {
             if (entry.getKey().startsWith("vnp_")) {
                 vnp_Params.put(entry.getKey(), entry.getValue()[0]);
             }
         }
 
-        // Extract the vnp_SecureHash from the request and remove it from the parameters map
+        // Extract the vnp_SecureHash from the parameters and remove it from the map
         String vnpSecureHash = vnp_Params.remove("vnp_SecureHash");
 
-        // Sort the parameters by key
+        // Sort the parameters by their keys for consistent hashing
         List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
         Collections.sort(fieldNames);
 
-        // Build the hash data string
+        // Build the hash data string in the format "key=value"
         StringBuilder hashData = new StringBuilder();
         for (String fieldName : fieldNames) {
             String fieldValue = vnp_Params.get(fieldName);
             if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                hashData.append(fieldName).append("=").append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                hashData.append(fieldName).append("=")
+                        .append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                // Append '&' if this is not the last field
                 if (!fieldName.equals(fieldNames.get(fieldNames.size() - 1))) {
                     hashData.append("&");
                 }
             }
         }
 
-        // Generate the HMAC SHA512 hash
+        // Generate the HMAC SHA512 hash using the secret key and hash data string
         String secureHashGenerated = VnpayConfig.hmacSHA512(VnpayConfig.secretKey, hashData.toString());
 
-        // Validate the secure hash
+        // Validate the secure hash against the one received in the request
         if (secureHashGenerated.equals(vnpSecureHash)) {
             // Hashes match, proceed to check the response status
             String responseCode = vnp_Params.get("vnp_ResponseCode");
-            return "00".equals(responseCode);
+            return "00".equals(responseCode); // "00" indicates a successful response
         }
-        return false;
+        return false; // Return false if hashes do not match
     }
 
 
@@ -181,10 +186,10 @@ public class VnpayServiceImpl implements VnpayService {
             String registerLot = orderInfoMap.get("registerlot");
 
             Lot lot = lotRepository.findById(Integer.parseInt(registerLot))
-                    .orElseThrow(()-> new RuntimeException("Lot not found"));
+                    .orElseThrow(()-> new KoiException(ResponseCode.LOT_NOT_FOUND));
 
             Member member = memberRepository.findById(Integer.parseInt(memberId))
-                    .orElseThrow(()-> new RuntimeException("Member not found"));
+                    .orElseThrow(()-> new KoiException(ResponseCode.MEMBER_NOT_FOUND));
 
             LotRegister lotRegister = LotRegister.builder()
                     .deposit(lot.getDeposit())

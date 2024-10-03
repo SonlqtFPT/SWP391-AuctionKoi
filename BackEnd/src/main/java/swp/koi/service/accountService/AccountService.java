@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.servlet.http.HttpServletRequest;
 import swp.koi.dto.request.AccountLoginDTO;
 import swp.koi.dto.request.AccountRegisterDTO;
+import swp.koi.dto.request.LogoutDTO;
 import swp.koi.dto.response.AuctionResponseDTO;
 import swp.koi.dto.response.AuthenticateResponse;
 import swp.koi.dto.response.AuthenticateResponse;
@@ -26,8 +27,7 @@ public interface AccountService {
     Account findByEmail(String emai);
     AuthenticateResponse login(AccountLoginDTO request);
     AuthenticateResponse refreshToken(HttpServletRequest request) throws AccountNotFoundException;
-
     List<Account> getAllStaff();
-
     boolean existById(@NotNull(message = "Account Id is required") Integer accountId);
+    void logout(LogoutDTO logoutDTO);
 }

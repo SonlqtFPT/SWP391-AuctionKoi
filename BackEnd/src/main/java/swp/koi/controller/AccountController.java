@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import swp.koi.dto.request.AccountLoginDTO;
 import swp.koi.dto.request.AccountRegisterDTO;
+import swp.koi.dto.request.LogoutDTO;
 import swp.koi.dto.request.KoiBreederDTO;
 import swp.koi.dto.response.AuthenticateResponse;
 import swp.koi.dto.response.KoiBreederResponseDTO;
@@ -18,6 +19,7 @@ import swp.koi.dto.response.ResponseData;
 import swp.koi.exception.KoiException;
 import swp.koi.service.accountService.AccountService;
 import swp.koi.service.jwtService.JwtService;
+import swp.koi.service.redisService.RedisService;
 import swp.koi.service.koiBreederService.KoiBreederService;
 
 import javax.security.auth.login.AccountNotFoundException;
@@ -27,7 +29,7 @@ import javax.security.auth.login.AccountNotFoundException;
 @RequiredArgsConstructor
 public class AccountController {
 
-    private final JwtService jwtService;
+
     private final AccountService accountService;
     private final KoiBreederService koiBreederService;
 
@@ -35,9 +37,10 @@ public class AccountController {
     public ResponseData<?> login(@Valid @RequestBody AccountLoginDTO request) {
         try {
             var tokenResponse = accountService.login(request);
-            return new ResponseData<>(ResponseCode.SUCCESS_LOGIN.getCode()
-                    , "Token generated successfully"
-                    , tokenResponse);
+
+            return new ResponseData<>(ResponseCode.SUCCESS_LOGIN.getCode(),
+                    "Token generated successfully",
+                    tokenResponse);
 
         } catch (KoiException e) {
             return new ResponseData<>(e.getResponseCode());
@@ -53,6 +56,8 @@ public class AccountController {
         } catch (KoiException e) {
             return new ResponseData<>(e.getResponseCode());
         }
+
+
     }
 
     @PostMapping("/refreshToken")
@@ -64,9 +69,18 @@ public class AccountController {
             return new ResponseData<>(ResponseCode.SUCCESS.getCode(),
                     "Token refreshed successfully",
                     authenticateResponse);
+
         } catch (KoiException e) {
             return new ResponseData<>(e.getResponseCode().getCode(),"Invalid refresh token");
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseData<?> logout(@Valid @RequestBody LogoutDTO logoutDTO) {
+
+        accountService.logout(logoutDTO);
+
+        return new ResponseData<>(ResponseCode.LOGOUT_JWT);
     }
 
 }

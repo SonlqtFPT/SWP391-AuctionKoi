@@ -15,6 +15,7 @@ import swp.koi.model.enums.LotRegisterStatusEnum;
 @Table(name = "LotRegister")
 @Builder
 @AllArgsConstructor
+@EqualsAndHashCode
 public class LotRegister {
 
     @Id
@@ -35,7 +36,7 @@ public class LotRegister {
     @OneToOne(mappedBy = "lotRegister", fetch = FetchType.LAZY)
     Invoice invoice;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "lotId")
     Lot lot;
 

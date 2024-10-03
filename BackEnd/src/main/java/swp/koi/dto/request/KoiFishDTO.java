@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import swp.koi.model.AuctionType;
 import swp.koi.model.Media;
+import swp.koi.model.enums.AuctionTypeNameEnum;
 
 @Getter
 @Setter

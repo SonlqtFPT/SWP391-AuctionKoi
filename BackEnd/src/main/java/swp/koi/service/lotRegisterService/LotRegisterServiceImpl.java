@@ -36,22 +36,20 @@ public class LotRegisterServiceImpl implements LotRegisterService{
 
 
     @Override
-    public String regisSlotWithLotId(LotRegisterDTO lotRegisDto, HttpServletRequest request) throws UnsupportedEncodingException {
-//        Lot lot = lotServiceImpl.findLotById(lotRegisDto.getLotId());
+    public String regisSlotWithLotId(LotRegisterDTO lotRegisDto,
+                                     HttpServletRequest request) throws UnsupportedEncodingException {
+
         Member member = memberServiceImpl.getMemberById(lotRegisDto.getMemberId());
 
         // Validate if the member is already registered for this lot
-        var isUserRegisted = validateMemberRegistration(lotRegisDto.getLotId(), member);
+        var isUserRegistered = validateMemberRegistration(lotRegisDto.getLotId(), member);
 
-        if(isUserRegisted) {
-            return null;
+        if(isUserRegistered) {
+            throw new KoiException((ResponseCode.MEMBER_ALREADY_REGISTERED));
         }else {
             var paymentUrl = vnpayService.generateInvoice(lotRegisDto.getLotId(),lotRegisDto.getMemberId(),request);
             return paymentUrl;
         }
-        // Register the member for the lot
-//        LotRegister lotRegister = createLotRegister(lot, member);
-//        lotRegisterRepository.save(lotRegister);
     }
 
     @Override

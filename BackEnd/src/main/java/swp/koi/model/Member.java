@@ -15,6 +15,7 @@ import java.util.List;
 @Table(name = "Member")
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

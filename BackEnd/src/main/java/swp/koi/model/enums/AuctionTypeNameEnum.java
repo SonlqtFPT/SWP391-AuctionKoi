@@ -6,3 +6,5 @@ public enum AuctionTypeNameEnum {
     ASCENDING_BID,
     DESCENDING_BID
 }
+
+

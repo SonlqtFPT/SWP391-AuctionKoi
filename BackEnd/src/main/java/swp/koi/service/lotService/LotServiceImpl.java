@@ -1,5 +1,6 @@
 package swp.koi.service.lotService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -15,13 +16,11 @@ import swp.koi.service.bidService.BidServiceImpl;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class LotServiceImpl implements LotService{
+public class LotServiceImpl implements LotService {
 
     private final LotRepository lotRepository;
     private final BidServiceImpl bidService;
@@ -41,7 +40,7 @@ public class LotServiceImpl implements LotService{
         LocalDateTime now = LocalDateTime.now();
 
         //get list of lot that have time less than atm => start time < now -> start lot
-        List<Lot> waitingLot = lotRepository.findAllByStatusAndStartingTimeLessThan(LotStatusEnum.WAITING,now);
+        List<Lot> waitingLot = lotRepository.findAllByStatusAndStartingTimeLessThan(LotStatusEnum.WAITING, now);
 
         //change status to auctioning
         for (Lot lot : waitingLot) {
@@ -60,12 +59,11 @@ public class LotServiceImpl implements LotService{
         //get list of lot that have time less than atm
         // => end time < now
         // ==> start lot
-        List<Lot> runningLot = lotRepository.findAllByStatusAndEndingTimeLessThan(LotStatusEnum.AUCTIONING,now);
+        List<Lot> runningLot = lotRepository.findAllByStatusAndEndingTimeLessThan(LotStatusEnum.AUCTIONING, now);
 
         //end lot
         for (Lot lot : runningLot) {
             endLot(lot);
-            System.out.println(lot);
         }
     }
 
@@ -73,34 +71,35 @@ public class LotServiceImpl implements LotService{
     @Override
     public void endLot(Lot lot) {
 
-        List<Bid> bidList = bidService.listBidByLotId(lot.getLotId());
-        KoiFish koiFish = lot.getKoiFish();
-        Auction auction = lot.getAuction();
-        //if nobody bid
-        // => change status to passed
-        if(bidList.isEmpty()){
-            lot.setStatus(LotStatusEnum.PASSED);
-            lotRepository.save(lot);
+        try {
+            List<Bid> bidList = bidService.listBidByLotId(lot.getLotId());
+            KoiFish koiFish = lot.getKoiFish();
+            Auction auction = lot.getAuction();
+            //if nobody bid
+            // => change status to passed
+            if (bidList.isEmpty()) {
+                lot.setStatus(LotStatusEnum.PASSED);
+                lotRepository.save(lot);
 
-            if (koiFish != null) {
-                koiFish.setStatus(KoiFishStatusEnum.WAITING);
-                koiFishRepository.save(koiFish);
+                if (koiFish != null) {
+                    koiFish.setStatus(KoiFishStatusEnum.WAITING);
+                    koiFishRepository.save(koiFish);
+                }
+
+                if (auction != null) {
+                    auction.setStatus(AuctionStatusEnum.COMPLETED);
+                    auctionRepository.save(auction);
+                }
+
+                return;
             }
-
-            if(auction != null){
-                auction.setStatus(AuctionStatusEnum.COMPLETED);
-                auctionRepository.save(auction);
-            }
-        } else {
-            //find the biggest amount bidder
-            Bid highestBid = bidList.stream().max(Comparator.comparing(Bid::getBidAmount))
-                    .orElse(null);
-
+            //find the winner
+            Bid bidWinner = chooseLotWinner(lot);
             koiFish.setStatus(KoiFishStatusEnum.SOLD);
             lot.setStatus(LotStatusEnum.SOLD);
             auction.setStatus(AuctionStatusEnum.COMPLETED);
             //find lot register of this member
-            LotRegister lotRegister = lotRegisterRepository.findLotRegisterByLotAndMember(lot, highestBid.getMember());
+            LotRegister lotRegister = lotRegisterRepository.findLotRegisterByLotAndMember(lot, bidWinner.getMember());
 
             lotRegister.setStatus(LotRegisterStatusEnum.WON);
 
@@ -112,18 +111,59 @@ public class LotServiceImpl implements LotService{
             List<LotRegister> lotRegisterList = lotRegisterRepository.findByLot(lot).get();
 
             //change status of others to lose
-            lotRegisterList
-                    .stream()
-                    .filter(lr -> !lr.getMember().equals(highestBid.getMember()))
-                    .forEach( lr -> {
-                        lr.setStatus(LotRegisterStatusEnum.LOSE);
-                        lotRegisterRepository.save(lr);
-                    });
+            for (LotRegister lotRegis : lotRegisterList) {
+                if (!lotRegis.getMember().getMemberId().equals(bidWinner.getMember().getMemberId())) {
+                    lotRegis.setStatus(LotRegisterStatusEnum.LOSE);
+                    lotRegisterRepository.save(lotRegis);
+                }
+            }
+        } catch (KoiException e) {
+            throw new RuntimeException(e);
         }
 
     }
+
+    @Override
     public List<Lot> createLots(List<Lot> lots) {
         return lotRepository.saveAll(lots);
+    }
+
+    private Bid endLotTypeFixedPrice(List<Bid> bidList) {
+
+        Collections.shuffle(bidList);
+
+        return bidList.getFirst();
+    }
+
+    private Bid endLotTypeSealedBidAndAscendingBid(List<Bid> bidList) {
+
+        return bidList.stream()
+                .max(Comparator.comparing(Bid::getBidAmount))
+                .orElse(null);
+    }
+
+    private Bid endLotTypeDescending(List<Bid> bidList) {
+
+        return bidList.getFirst();
+    }
+
+    //choosing winner by specific auction type of lot
+    private Bid chooseLotWinner(Lot lot) {
+        List<Bid> bidList = bidService.listBidByLotId(lot.getLotId());
+
+        return
+                switch (lot.getAuction().getAuctionType().getAuctionTypeName()) {
+
+                    case FIXED_PRICE_SALE -> endLotTypeFixedPrice(bidList);
+
+                    case SEALED_BID,
+                         ASCENDING_BID -> endLotTypeSealedBidAndAscendingBid(bidList);
+
+                    case DESCENDING_BID -> endLotTypeDescending(bidList);
+
+                };
+
+
     }
 
 }
