@@ -19,6 +19,8 @@ import swp.koi.service.auctionTypeService.AuctionTypeService;
 import swp.koi.service.jwtService.JwtService;
 import swp.koi.service.koiBreederService.KoiBreederService;
 import swp.koi.service.koiFishService.KoiFishService;
+import swp.koi.service.mediaService.MediaService;
+import swp.koi.service.varietyService.VarietyService;
 
 import java.util.List;
 
@@ -36,6 +38,8 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     private final AuctionRequestDtoToEntityConverter auctionRequestDtoToEntityConverter;
     private final KoiFishDtoToEntitConverter koiFishDtoToEntitConverter;
     private final AuctionTypeService auctionTypeService;
+    private final VarietyService varietyService;
+    private final MediaService mediaService;
 
     @Override
     public AuctionRequest createRequest(AuctionRequestDTO request) throws KoiException{
@@ -140,18 +144,33 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
         }
     }
 
+    @Transactional
     @Override
-    public AuctionRequest updateRequest(Integer requestId, AuctionRequestUpdateDTO dto) throws KoiException{
-        KoiBreeder koiBreeder = koiBreederService.findByAccount(accountService.findById(dto.getAccountId()));
-        if(koiBreeder == null){
-            throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
-        }
+    public AuctionRequest updateRequest(Integer requestId, KoiFishUpdateDTO dto) throws KoiException{
 
         AuctionRequest auctionRequest = auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
 
-        KoiFishUpdateDTO koiFishDTO = dto.getKoiFish();
+        if(auctionRequest.getKoiBreeder() == null){
+            throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
+        }
 
-        auctionRequest.setKoiFish(koiFishService.updateFish(koiFishDTO));
+        KoiFish koiFish = koiFishService.findByFishId(dto.getFishId());
+        Variety variety = varietyService.findByVarietyName(dto.getVarietyName());
+        Media media = mediaService.findByMediaId(dto.getMedia().getMediaId());
+        media.setImageUrl(dto.getMedia().getImageUrl());
+        media.setVideoUrl(dto.getMedia().getVideoUrl());
+        mediaService.save(media);
+        AuctionType auctionType = auctionTypeService.findByAuctionTypeName(dto.getAuctionTypeName());
+        koiFish.setVariety(variety);
+        koiFish.setGender(dto.getGender());
+        koiFish.setAge(dto.getAge());
+        koiFish.setSize(dto.getSize());
+        koiFish.setPrice(dto.getPrice());
+        koiFish.setAuctionType(auctionType);
+        koiFish.setMedia(media);
+        koiFishService.saveFish(koiFish);
+
+        auctionRequest.setKoiFish(koiFish);
         return auctionRequestRepository.save(auctionRequest);
     }
 

@@ -28,10 +28,12 @@ public class MediaServiceImpl implements MediaService{
     }
 
     @Override
-    public Media updateMedia(MediaUpdateDTO mediaDTO) {
-        Media media = mediaRepository.findById(mediaDTO.getMediaId()).orElseThrow(() -> new KoiException(ResponseCode.MEDIA_NOT_FOUND));
-        media.setImageUrl(mediaDTO.getImageUrl());
-        media.setVideoUrl(mediaDTO.getVideoUrl());
-        return mediaRepository.save(media);
+    public Media findByMediaId(Integer mediaId) {
+        return mediaRepository.findById(mediaId).orElseThrow(() -> new KoiException(ResponseCode.MEDIA_NOT_FOUND));
+    }
+
+    @Override
+    public void save(Media media) {
+        mediaRepository.save(media);
     }
 }

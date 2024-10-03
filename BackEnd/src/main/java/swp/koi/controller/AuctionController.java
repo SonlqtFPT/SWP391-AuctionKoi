@@ -8,12 +8,15 @@ import swp.koi.convert.AuctionRequestEntityToDtoConverter;
 import swp.koi.convert.KoiFishEntityToDtoConverter;
 import swp.koi.dto.request.AuctionTypeDTO;
 import swp.koi.dto.request.AuctionWithLotsDTO;
+import swp.koi.dto.request.KoiBreederDTO;
 import swp.koi.dto.request.UpdateStatusDTO;
 import swp.koi.dto.response.*;
 import swp.koi.exception.KoiException;
 import swp.koi.model.Auction;
+import swp.koi.model.KoiBreeder;
 import swp.koi.service.auctionRequestService.AuctionRequestService;
 import swp.koi.service.auctionService.AuctionService;
+import swp.koi.service.koiBreederService.KoiBreederService;
 import swp.koi.service.koiFishService.KoiFishService;
 
 import java.util.List;
@@ -27,6 +30,7 @@ public class AuctionController {
     private final KoiFishEntityToDtoConverter koiFishEntityToDtoConverter;
     private final AuctionRequestEntityToDtoConverter auctionRequestEntityToDtoConverter;
     private final AuctionRequestService auctionRequestService;
+    private final KoiBreederService koiBreederService;
 
     @GetMapping("/manager/getFish")
     public ResponseData<?> getKoiFishFromApproveRequest(){
@@ -56,6 +60,16 @@ public class AuctionController {
     public ResponseData<?> changeStatus(@PathVariable Integer requestId, @RequestBody UpdateStatusDTO request){
         auctionService.changeStatus(requestId, request);
         return new ResponseData<>(ResponseCode.AUCTION_STATUS_CHANGE);
+    }
+
+    @PostMapping("/manager/createBreeder")
+    public ResponseData<KoiBreederResponseDTO> createKoiBreeder(@Valid @RequestBody KoiBreederDTO request){
+        try{
+            koiBreederService.createKoiBreeder(request);
+            return new ResponseData<>(ResponseCode.CREATED_SUCCESS);
+        } catch (KoiException e) {
+            return new ResponseData<>(e.getResponseCode());
+        }
     }
 
 }

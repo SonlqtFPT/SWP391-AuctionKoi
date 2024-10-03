@@ -21,14 +21,4 @@ public class KoiBreederController {
 
     private final KoiBreederService koiBreederService;
 
-    @PostMapping("/manager/createBreeder")
-    public ResponseData<KoiBreederResponseDTO> createKoiBreeder(@Valid @RequestBody KoiBreederDTO request){
-        try{
-            koiBreederService.createKoiBreeder(request);
-            return new ResponseData<>(ResponseCode.CREATED_SUCCESS);
-        } catch (KoiException e) {
-            return new ResponseData<>(e.getResponseCode());
-        }
-    }
-
 }

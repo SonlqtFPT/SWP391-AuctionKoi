@@ -9,6 +9,7 @@ import java.util.Optional;
 public interface MediaService {
     Media createMediaFromRequest(MediaDTO mediaDTO);
 
-    Media updateMedia(MediaUpdateDTO mediaDTO);
+    Media findByMediaId(Integer mediaId);
 
+    void save(Media media);
 }

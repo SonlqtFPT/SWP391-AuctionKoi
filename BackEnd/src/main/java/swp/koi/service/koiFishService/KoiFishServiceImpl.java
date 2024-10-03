@@ -96,14 +96,20 @@ public class KoiFishServiceImpl implements KoiFishService{
 
         Variety variety = varietyService.findByVarietyName(koiFishDTO.getVarietyName());
 
-        Media media = mediaService.updateMedia(koiFishDTO.getMedia());
+        Media media = mediaService.findByMediaId(koiFishDTO.getMedia().getMediaId());
+        media.setImageUrl(koiFishDTO.getMedia().getImageUrl());
+        media.setVideoUrl(koiFishDTO.getMedia().getVideoUrl());
 
         KoiFish koiFish = koiFishRepository.findByFishId(koiFishDTO.getFishId()).orElseThrow(() -> new KoiException(ResponseCode.FISH_NOT_FOUND));
 
-        modelMapper.map(koiFishDTO, koiFish);
         koiFish.setAuctionType(auctionType);
         koiFish.setMedia(media);
         koiFish.setVariety(variety);
+        koiFish.setAge(koiFishDTO.getAge());
+        koiFish.setGender(koiFishDTO.getGender());
+        koiFish.setSize(koiFishDTO.getSize());
+        koiFish.setPrice(koiFishDTO.getPrice());
+
         return koiFishRepository.save(koiFish);
     }
 

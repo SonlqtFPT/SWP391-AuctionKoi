@@ -10,12 +10,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import swp.koi.dto.request.AccountLoginDTO;
 import swp.koi.dto.request.AccountRegisterDTO;
+import swp.koi.dto.request.KoiBreederDTO;
 import swp.koi.dto.response.AuthenticateResponse;
+import swp.koi.dto.response.KoiBreederResponseDTO;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.dto.response.ResponseData;
 import swp.koi.exception.KoiException;
 import swp.koi.service.accountService.AccountService;
 import swp.koi.service.jwtService.JwtService;
+import swp.koi.service.koiBreederService.KoiBreederService;
 
 import javax.security.auth.login.AccountNotFoundException;
 
@@ -26,6 +29,7 @@ public class AccountController {
 
     private final JwtService jwtService;
     private final AccountService accountService;
+    private final KoiBreederService koiBreederService;
 
     @PostMapping("/login")
     public ResponseData<?> login(@Valid @RequestBody AccountLoginDTO request) {
@@ -49,8 +53,6 @@ public class AccountController {
         } catch (KoiException e) {
             return new ResponseData<>(e.getResponseCode());
         }
-
-
     }
 
     @PostMapping("/refreshToken")

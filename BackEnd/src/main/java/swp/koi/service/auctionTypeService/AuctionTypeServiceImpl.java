@@ -25,7 +25,8 @@ public class AuctionTypeServiceImpl implements AuctionTypeService{
         } catch (IllegalArgumentException e) {
             throw new KoiException(ResponseCode.AUCTION_TYPE_NOT_FOUND);
         }
-        return auctionTypeRepository.findByAuctionTypeName(auctionTypeEnum).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_TYPE_NOT_FOUND));
+        AuctionType auctionType = auctionTypeRepository.findByAuctionTypeName(auctionTypeEnum).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_TYPE_NOT_FOUND));
+        return auctionType  ;
     }
 
     @Override
