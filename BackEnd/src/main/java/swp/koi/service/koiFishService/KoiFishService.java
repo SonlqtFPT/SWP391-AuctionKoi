@@ -13,7 +13,5 @@ public interface KoiFishService {
 
     void saveFish(KoiFish koiFish);
 
-    KoiFish updateFish(KoiFishUpdateDTO koiFishDTO);
-
     List<KoiFish> getKoiFishBasedOnType(AuctionTypeDTO auctionTypeDTO);
 }

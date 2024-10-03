@@ -5,7 +5,7 @@ public enum ResponseCode {
     UNAUTHORIZED(403, "UNAUTHORIZED"),
     NOT_FOUND(400, "Not found"),
     INVALID_INFORMATION(400, "Data is invalid"),
-    CREATED_SUCCESS(400, "Created successfully"),
+    CREATED_SUCCESS(010, "Created successfully"),
     SUCCESS_GET_LIST(200, "Data retrieved successfully."),
     SUCCESS_SIGN_UP(200, "Sign up successful."),
     FAIL(000, "Fail"),

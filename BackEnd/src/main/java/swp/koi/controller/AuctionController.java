@@ -6,14 +6,12 @@ import org.springframework.web.bind.annotation.*;
 import swp.koi.convert.AuctionEntityToDtoConverter;
 import swp.koi.convert.AuctionRequestEntityToDtoConverter;
 import swp.koi.convert.KoiFishEntityToDtoConverter;
-import swp.koi.dto.request.AuctionTypeDTO;
-import swp.koi.dto.request.AuctionWithLotsDTO;
-import swp.koi.dto.request.KoiBreederDTO;
-import swp.koi.dto.request.UpdateStatusDTO;
+import swp.koi.dto.request.*;
 import swp.koi.dto.response.*;
 import swp.koi.exception.KoiException;
 import swp.koi.model.Auction;
 import swp.koi.model.KoiBreeder;
+import swp.koi.service.accountService.AccountService;
 import swp.koi.service.auctionRequestService.AuctionRequestService;
 import swp.koi.service.auctionService.AuctionService;
 import swp.koi.service.koiBreederService.KoiBreederService;
@@ -31,6 +29,7 @@ public class AuctionController {
     private final AuctionRequestEntityToDtoConverter auctionRequestEntityToDtoConverter;
     private final AuctionRequestService auctionRequestService;
     private final KoiBreederService koiBreederService;
+    private final AccountService accountService;
 
     @GetMapping("/manager/getFish")
     public ResponseData<?> getKoiFishFromApproveRequest(){
@@ -70,6 +69,12 @@ public class AuctionController {
         } catch (KoiException e) {
             return new ResponseData<>(e.getResponseCode());
         }
+    }
+
+    @PostMapping("/manager/createStaff")
+    public ResponseData<?> createStaff(@RequestBody AccountRegisterDTO staffDto){
+        accountService.createAccountStaff(staffDto);
+        return new ResponseData<>(ResponseCode.CREATED_SUCCESS);
     }
 
 }

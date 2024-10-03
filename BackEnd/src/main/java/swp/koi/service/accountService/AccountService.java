@@ -25,4 +25,6 @@ public interface AccountService {
     List<Account> getAllStaff();
 
     boolean existById(@NotNull(message = "Account Id is required") Integer accountId);
+
+    void createAccountStaff(AccountRegisterDTO staffDto);
 }

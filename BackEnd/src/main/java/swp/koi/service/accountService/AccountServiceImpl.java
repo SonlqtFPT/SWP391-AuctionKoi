@@ -170,4 +170,14 @@ public class AccountServiceImpl implements AccountService{
     public boolean existById(Integer accountId) {
         return accountRepository.existsById(accountId);
     }
+
+    @Override
+    public void createAccountStaff(AccountRegisterDTO staffDto) {
+        Account account = new Account();
+        modelMapper.map(staffDto, account);
+        if(accountRepository.existsByEmail(account.getEmail()))
+            throw new KoiException(ResponseCode.EMAIL_ALREADY_EXISTS);
+        account.setRole(AccountRoleEnum.STAFF);
+        accountRepository.save(account);
+    }
 }

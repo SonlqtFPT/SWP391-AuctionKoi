@@ -17,6 +17,8 @@ public class AuctionRequestResponseDTO {
     Integer requestId;
     AuctionRequestStatusEnum status;
     KoiBreederResponseDTO breeder;
+    float offerPrice;
+    String auctionTypeName;
     AccountResponseDTO staff;
     KoiFishResponseDTO KoiFish;
 

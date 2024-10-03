@@ -45,6 +45,8 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     public AuctionRequest createRequest(AuctionRequestDTO request) throws KoiException{
         try {
             Account account = accountService.findById(request.getAccountId());
+            if(!account.getRole().equals(AccountRoleEnum.BREEDER))
+                throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
             // Create a new AuctionRequest object to hold the auction request data
             AuctionRequest auctionRequest = new AuctionRequest();
 
