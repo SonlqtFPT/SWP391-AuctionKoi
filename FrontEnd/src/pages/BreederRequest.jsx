@@ -34,11 +34,18 @@ function App() {
   const [requestId, setRequestId] = useState(null);
   const [fishId, setFishId] = useState(null);
   const [breederId, setBreederId] = useState(1); // Tạo state cho breederId
+  const [dealingModalVisible, setDealingModalVisible] = useState(false); // State for dealing modal
+  const [dealingPrice, setDealingPrice] = useState(0); // State for dealing price
+  const [dealingAuctionType, setDealingAuctionType] = useState(""); // State for dealing auction type
 
   const post_fish_api = "http://localhost:8080/breeder/request/addRequest";
   const get_fish_api = `http://localhost:8080/breeder/request/${breederId}`; // Sử dụng biến breederId
   const patch_fish_api = "http://localhost:8080/breeder/request/cancel";
   const put_fish_api = "http://localhost:8080/breeder/request/update";
+  const post_confirm_api =
+    "http://localhost:8080/manager/request/negotiation/accept";
+  const post_deal_api =
+    "http://localhost:8080/breeder/request/negotiation/send-negotiation";
 
   // Lấy api
   const fetchFish = async () => {
@@ -177,32 +184,110 @@ function App() {
       dataIndex: "requestId",
       key: "requestId",
       render: (requestId, fish) => {
-        // Check if status is CANCELLED
+        // Check the status and render buttons accordingly
         if (fish.status === "CANCELLED") {
           return null; // Do not render buttons if status is CANCELLED
         }
-        return (
-          <div>
-            <Button
-              onClick={() => handleOpenModalWithData(fish)}
-              type="primary"
-            >
-              Update
-            </Button>
-            <Popconfirm
-              title="Are you sure you want to cancel this request?"
-              description="Are you sure you want to delete this request?"
-              onConfirm={() => handleDeleteFish(requestId)}
-            >
-              <Button danger type="primary">
-                Delete
+        if (fish.status === "PENDING") {
+          return (
+            <div>
+              <Button
+                onClick={() => handleOpenModalWithData(fish)}
+                type="primary"
+                style={{ marginRight: "5px" }} // Add margin for spacing
+              >
+                Update
               </Button>
-            </Popconfirm>
-          </div>
-        );
+              <Popconfirm
+                title="Are you sure you want to cancel this request?"
+                description="Are you sure you want to delete this request?"
+                onConfirm={() => handleDeleteFish(requestId)}
+              >
+                <Button danger type="primary" style={{ marginRight: "5px" }}>
+                  Delete
+                </Button>
+              </Popconfirm>
+            </div>
+          );
+        }
+        if (fish.status === "PENDING_NEGOTIATION") {
+          return (
+            <div>
+              <Button
+                onClick={() => handleOpenModalWithData(fish)}
+                type="primary"
+                style={{ marginRight: "5px" }} // Add margin for spacing
+              >
+                Update
+              </Button>
+              <Button
+                onClick={() => handleConfirm(requestId)} // Đảm bảo requestId được truyền đúng
+                type="primary"
+                style={{
+                  marginRight: "5px",
+                  backgroundColor: "green",
+                  borderColor: "green",
+                }}
+              >
+                Confirm
+              </Button>
+              <Button
+                onClick={() => handleDealing(requestId)} // Pass fish to handleDealing
+                type="default"
+                style={{
+                  marginRight: "5px",
+                  backgroundColor: "orange",
+                  borderColor: "orange",
+                }}
+              >
+                Dealing
+              </Button>
+            </div>
+          );
+        }
+        return null; // Default case, no buttons
       },
     },
   ];
+
+  const handleDealing = (requestId) => {
+    setRequestId(requestId); // Lưu requestId
+    setDealingModalVisible(true); // Mở modal
+  };
+
+  // Function to handle dealing submission
+  const handleDealingSubmit = async () => {
+    // Tạo đối tượng chứa dữ liệu cần gửi
+    const dealData = {
+      price: dealingPrice, // Giá mà người dùng đã nhập
+      auctionTypeName: dealingAuctionType, // Loại đấu giá mà người dùng đã chọn
+    };
+
+    try {
+      // Gửi dữ liệu đến API với requestId trong đường dẫn
+      const response = await axios.post(
+        `${post_deal_api}/${requestId}`,
+        dealData
+      );
+      const message = response.data.message; // Lấy message từ response
+      toast.success(message); // Hiển thị thông báo thành công
+
+      // Đóng modal và reset các giá trị
+      setDealingModalVisible(false);
+      setDealingPrice(0); // Reset giá
+      setDealingAuctionType(""); // Reset loại đấu giá
+    } catch (error) {
+      toast.error("Submission failed!"); // Hiển thị thông báo lỗi
+      console.error("Error submitting deal data:", error); // Log lỗi
+    }
+  };
+
+  const handleConfirm = async (requestId) => {
+    console.log("Request ID:", requestId); // Kiểm tra giá trị requestId
+    const response = await axios.post(`${post_confirm_api}/${requestId}`);
+    toast(response.data.message);
+    fetchFish();
+  };
 
   const handleVideoChange = ({ fileList: newVideoList }) =>
     setVideoList(newVideoList);
@@ -597,6 +682,45 @@ function App() {
           src={previewImage}
         />
       )}
+      <Modal
+        title="Dealing Information"
+        visible={dealingModalVisible}
+        onOk={handleDealingSubmit}
+        onCancel={() => setDealingModalVisible(false)}
+      >
+        <Form>
+          <Form.Item
+            label="Price"
+            rules={[{ required: true, message: "Please enter the price" }]}
+          >
+            <InputNumber
+              value={dealingPrice}
+              onChange={(value) => setDealingPrice(value)}
+              style={{ width: "100%" }}
+            />
+          </Form.Item>
+          <Form.Item
+            label="Auction Type"
+            rules={[
+              { required: true, message: "Please select an auction type" },
+            ]}
+          >
+            <Select
+              value={dealingAuctionType}
+              onChange={(value) => setDealingAuctionType(value)}
+            >
+              <Select.Option value="FIXED_PRICE_SALE">
+                Fixed Price Sale
+              </Select.Option>
+              <Select.Option value="SEALED_BID">Sealed Bid</Select.Option>
+              <Select.Option value="ASCENDING_BID">Ascending Bid</Select.Option>
+              <Select.Option value="DESCENDING_BID">
+                Descending Bid
+              </Select.Option>
+            </Select>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }
