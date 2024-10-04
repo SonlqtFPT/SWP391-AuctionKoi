@@ -80,14 +80,14 @@ const ManageRequest = () => {
       key: "fishId",
     },
     {
-      title: "Breeder ID",
-      dataIndex: "breederId",
-      key: "breederId",
-    },
-    {
-      title: "Breeder Name",
-      dataIndex: "breederName",
-      key: "breederName",
+      title: "Breeder Info",
+      key: "breederInfo",
+      render: (text, record) => (
+        <span>
+          ID: {record.breederId} <br />
+          Name: {record.breederName}
+        </span>
+      ),
     },
     {
       title: "Image",

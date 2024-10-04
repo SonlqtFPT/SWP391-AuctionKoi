@@ -10,7 +10,7 @@ import {
   Table,
   InputNumber,
 } from "antd";
-import dayjs from "dayjs"; // Use dayjs for date management
+import dayjs from "dayjs";
 
 const { Step } = Steps;
 
@@ -23,15 +23,13 @@ const CreateAuction = () => {
     endTime: null,
     lots: [],
   });
-  const [lots, setLots] = useState([]); // State to store the lots
+  const [lots, setLots] = useState([]);
 
-  // Function to handle moving to the next step
   const handleNext = () => {
     form
-      .validateFields() // Validate form fields
+      .validateFields()
       .then((values) => {
         if (current === 0) {
-          // Step 1: Update auctionTypeName, startTime, and endTime
           setAuction((prevAuction) => ({
             ...prevAuction,
             auctionTypeName: values.auctionType,
@@ -39,7 +37,6 @@ const CreateAuction = () => {
             endTime: values.endTime ? values.endTime.toISOString() : null,
           }));
         }
-        // Proceed to the next step
         setCurrent(current + 1);
       })
       .catch((errorInfo) => {
@@ -47,13 +44,16 @@ const CreateAuction = () => {
       });
   };
 
-  // Function to handle previous step
   const prev = () => {
     setCurrent(current - 1);
   };
 
-  // Final form submission
   const onFinish = async () => {
+    if (lots.length === 0) {
+      message.error("Please add at least one lot before submitting!");
+      return; // Prevent submission if there are no lots
+    }
+
     const auctionData = {
       auctionTypeName: auction.auctionTypeName,
       startTime: auction.startTime,
@@ -66,7 +66,6 @@ const CreateAuction = () => {
     };
 
     try {
-      console.log("Auction Data:", auctionData); // For debugging
       const response = await axios.post(
         "http://localhost:8080/manager/createAuction",
         auctionData
@@ -75,14 +74,13 @@ const CreateAuction = () => {
       message.success("Auction created successfully!");
       form.resetFields();
       setCurrent(0);
-      setLots([]); // Clear lots after submission
+      setLots([]);
     } catch (error) {
       console.error("Failed to create auction", error);
       message.error("Failed to create auction");
     }
   };
 
-  // Step definitions
   const steps = [
     {
       title: "Create Auction",
@@ -99,13 +97,27 @@ const CreateAuction = () => {
               disabledDate={(current) =>
                 current && current < dayjs().startOf("day")
               }
-              defaultValue={dayjs()} // Set to current time
+              defaultValue={dayjs()}
+              className="w-full border border-gold rounded-md"
             />
           </Form.Item>
           <Form.Item
             label="End Time"
             name="endTime"
-            rules={[{ required: true, message: "Please select end time!" }]}
+            rules={[
+              { required: true, message: "Please select end time!" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  const startTime = getFieldValue("startTime");
+                  if (!value || !startTime || dayjs(value).isAfter(startTime)) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(
+                    new Error("End time must be later than start time!")
+                  );
+                },
+              }),
+            ]}
           >
             <DatePicker
               showTime
@@ -113,6 +125,7 @@ const CreateAuction = () => {
               disabledDate={(current) =>
                 current && current < dayjs().startOf("day")
               }
+              className="w-full border border-gold rounded-md"
             />
           </Form.Item>
           <Form.Item
@@ -120,7 +133,10 @@ const CreateAuction = () => {
             name="auctionType"
             rules={[{ required: true, message: "Please select auction type!" }]}
           >
-            <Select placeholder="Select Auction Type">
+            <Select
+              placeholder="Select Auction Type"
+              className="w-full border border-gold rounded-md"
+            >
               <Select.Option value="FIXED_PRICE_SALE">
                 Type 1 - Fixed Price Sale
               </Select.Option>
@@ -151,13 +167,22 @@ const CreateAuction = () => {
     {
       title: "Confirm",
       content: (
-        <div>
-          <p>
+        <div className="p-6 bg-white rounded-lg shadow-md">
+          <p className="text-lg font-bold mb-4">
             Please review all the information before finalizing the auction.
           </p>
-          <ul>
+          <h2 className="font-semibold">Auction Details:</h2>
+          <p>Type: {auction.auctionTypeName}</p>
+          <p>
+            Start Time: {dayjs(auction.startTime).format("YYYY-MM-DD HH:mm:ss")}
+          </p>
+          <p>
+            End Time: {dayjs(auction.endTime).format("YYYY-MM-DD HH:mm:ss")}
+          </p>
+          <h2 className="font-semibold mt-4">Lots:</h2>
+          <ul className="list-disc pl-5">
             {lots.map((lot, index) => (
-              <li key={index}>
+              <li key={index} className="mb-2">
                 Fish ID: {lot.fishId}, Starting Price: {lot.startingPrice},
                 Increment: {lot.increment}
               </li>
@@ -169,25 +194,40 @@ const CreateAuction = () => {
   ];
 
   return (
-    <div>
-      <Steps current={current}>
-        {steps.map((item) => (
-          <Step key={item.title} title={item.title} />
-        ))}
-      </Steps>
-      <div style={{ marginTop: 20 }}>
-        <div>{steps[current].content}</div>
-        <div style={{ marginTop: 24 }}>
-          <Button type="primary" disabled={current === 0} onClick={prev}>
+    <div className="bg-white min-h-screen flex flex-col items-center py-10">
+      <div className="bg-white p-8 rounded-lg shadow-lg max-w-4xl w-full">
+        <Steps current={current} className="mb-8" direction="horizontal">
+          {steps.map((item) => (
+            <Step key={item.title} title={item.title} />
+          ))}
+        </Steps>
+        <div className="bg-white p-6 rounded-lg shadow-lg mb-4">
+          {steps[current].content}
+        </div>
+        <div className="flex justify-between">
+          <Button
+            type="primary"
+            onClick={prev}
+            disabled={current === 0}
+            className="bg-red-500 hover:bg-red-600 text-white"
+          >
             Previous
           </Button>
           {current < steps.length - 1 && (
-            <Button type="primary" onClick={handleNext}>
+            <Button
+              type="primary"
+              onClick={handleNext}
+              className="bg-gold hover:bg-yellow-600 text-black"
+            >
               Next
             </Button>
           )}
           {current === steps.length - 1 && (
-            <Button type="primary" onClick={onFinish}>
+            <Button
+              type="primary"
+              onClick={onFinish}
+              className="bg-gold hover:bg-yellow-600 text-black"
+            >
               Submit
             </Button>
           )}
@@ -201,40 +241,35 @@ const CreateAuction = () => {
 const AddLots = ({ setLots, auctionTypeName, lots }) => {
   const [fishData, setFishData] = useState([]);
 
-  // Fetch fish data from API based on auctionTypeName
   useEffect(() => {
     const fetchFishData = async () => {
       try {
         const response = await axios.post(
           "http://localhost:8080/manager/get-fish-auction",
-          {
-            auctionTypeName: auctionTypeName, // Pass auction type from Step 1
-          }
+          { auctionTypeName }
         );
-        setFishData(response.data.data); // Assuming response structure matches your specification
+        setFishData(response.data.data);
       } catch (err) {
         console.error("Error fetching fish data", err);
       }
     };
 
     if (auctionTypeName) {
-      fetchFishData(); // Call the function to fetch data only if auctionTypeName is available
+      fetchFishData();
     }
   }, [auctionTypeName]);
 
   const handleAddRemoveLot = (fish) => {
     const existingIndex = lots.findIndex((lot) => lot.fishId === fish.fishId);
     if (existingIndex === -1) {
-      // Add lot if it doesn't exist
       const newLot = {
         fishId: fish.fishId,
-        startingPrice: fish.price, // Use the price from the fetched data
-        increment: 0, // Initialize increment to 0
+        startingPrice: fish.price,
+        increment: 0,
       };
       setLots((prev) => [...prev, newLot]);
       message.success("Lot added successfully!");
     } else {
-      // Remove lot if it exists
       setLots((prev) => prev.filter((lot) => lot.fishId !== fish.fishId));
       message.success("Lot removed successfully!");
     }
@@ -254,7 +289,7 @@ const AddLots = ({ setLots, auctionTypeName, lots }) => {
         if (lot.fishId === fishId) {
           const newIncrement =
             operation === "increase" ? lot.increment + 1 : lot.increment - 1;
-          return { ...lot, increment: Math.max(0, newIncrement) }; // Prevent negative increment
+          return { ...lot, increment: Math.max(0, newIncrement) }; // Ensure increment is not negative
         }
         return lot;
       })
@@ -263,72 +298,85 @@ const AddLots = ({ setLots, auctionTypeName, lots }) => {
 
   return (
     <>
-      <Table
-        dataSource={fishData}
-        rowKey="fishId"
-        columns={[
-          {
-            title: "Fish ID",
-            dataIndex: "fishId",
-            key: "fishId",
-          },
-          {
-            title: "Variety",
-            dataIndex: "variety",
-            key: "variety",
-            render: (variety) => <span>{variety.varietyName}</span>, // Correctly rendering the variety name
-          },
-          {
-            title: "Starting Price",
-            dataIndex: "price", // Change to "price" from the API response
-            key: "price",
-            render: (price) => <span>{price}</span>, // Display starting price as read-only
-          },
-          {
-            title: "Increment",
-            key: "increment",
-            render: (text, record) => {
-              const existingLot = lots.find(
-                (lot) => lot.fishId === record.fishId
-              );
-              return (
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <Button
-                    onClick={() => handleIncrement(record.fishId, "decrease")}
-                    disabled={!existingLot || existingLot.increment <= 0}
-                  >
-                    -
-                  </Button>
-                  <InputNumber
-                    min={0}
-                    value={existingLot ? existingLot.increment : 0} // Show the current increment value
-                    onChange={(value) =>
-                      handleIncrementChange(record.fishId, value)
-                    } // Update the increment
-                    style={{ margin: "0 8px" }}
-                  />
-                  <Button
-                    onClick={() => handleIncrement(record.fishId, "increase")}
-                  >
-                    +
-                  </Button>
-                </div>
-              );
+      {fishData.length === 0 ? (
+        <p className="text-red-500">No fishes match auction type</p>
+      ) : (
+        <Table
+          dataSource={fishData}
+          rowKey="fishId"
+          pagination={false}
+          columns={[
+            {
+              title: "Variety",
+              dataIndex: "variety",
+              key: "variety",
+              render: (variety) => <span>{variety.varietyName}</span>,
             },
-          },
-          {
-            title: "Action",
-            key: "action",
-            render: (text, record) => (
-              <Button type="primary" onClick={() => handleAddRemoveLot(record)}>
-                {lots.some((lot) => lot.fishId === record.fishId)
-                  ? "Remove Lot"
-                  : "Add Lot"}
-              </Button>
-            ),
-          },
-        ]}
-      />
+            {
+              title: "Starting Price",
+              dataIndex: "price",
+              key: "price",
+              render: (price) => <span>{price}</span>,
+            },
+            {
+              title: "Increment",
+              key: "increment",
+              render: (text, record) => {
+                const existingLot = lots.find(
+                  (lot) => lot.fishId === record.fishId
+                );
+                return (
+                  <div className="flex items-center">
+                    <Button
+                      onClick={() => handleIncrement(record.fishId, "decrease")}
+                      disabled={!existingLot || existingLot.increment <= 0}
+                      className="bg-blue-500 hover:bg-blue-600 text-white"
+                    >
+                      -
+                    </Button>
+                    <InputNumber
+                      min={0}
+                      value={existingLot ? existingLot.increment : 0}
+                      onChange={(value) =>
+                        existingLot &&
+                        handleIncrementChange(record.fishId, value)
+                      }
+                      className="mx-2 border border-gold rounded-md"
+                      disabled={!existingLot} // Disable if not added to lot
+                    />
+                    <Button
+                      onClick={() => handleIncrement(record.fishId, "increase")}
+                      disabled={!existingLot} // Disable if not added to lot
+                      className="bg-green-500 hover:bg-green-600 text-white"
+                    >
+                      +
+                    </Button>
+                  </div>
+                );
+              },
+            },
+            {
+              title: "Action",
+              key: "action",
+              render: (text, record) => (
+                <Button
+                  type="primary"
+                  onClick={() => handleAddRemoveLot(record)}
+                  className={`${
+                    lots.some((lot) => lot.fishId === record.fishId)
+                      ? "bg-red-500 hover:bg-red-600"
+                      : "bg-gold hover:bg-yellow-600"
+                  } text-white`}
+                >
+                  {lots.some((lot) => lot.fishId === record.fishId)
+                    ? "Remove Lot"
+                    : "Add Lot"}
+                </Button>
+              ),
+            },
+          ]}
+        />
+      )}
     </>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Image, Button, Modal, Select, Input, notification } from "antd";
+import { Image, Button, Modal, Select, Input, notification, Card } from "antd";
 import api from "../../../config/axios";
 
 const RequestDetails = ({
@@ -14,17 +14,16 @@ const RequestDetails = ({
   const [offerAuctionType, setOfferAuctionType] = useState(
     selectedRequest.auctionTypeName
   );
-  const [staffList, setStaffList] = useState([]); // State for storing staff data
+  const [staffList, setStaffList] = useState([]);
 
   useEffect(() => {
-    // Fetch staff data on component mount
     const fetchStaff = async () => {
       try {
         const response = await api.get(
           "/manager/request/assign-staff/getStaff"
         );
         if (response.data.status === 200) {
-          setStaffList(response.data.data); // Store staff data in state
+          setStaffList(response.data.data);
         } else {
           console.error("Failed to fetch staff:", response.data.message);
         }
@@ -34,15 +33,14 @@ const RequestDetails = ({
     };
 
     fetchStaff();
-  }, []); // Empty dependency array means this runs once when the component mounts
+  }, []);
 
-  // Fetch the request details again when selectedRequest changes
   useEffect(() => {
     if (selectedRequest) {
       setOfferPrice(selectedRequest.price);
       setOfferAuctionType(selectedRequest.auctionTypeName);
     }
-  }, [selectedRequest]); // Fetch request details whenever selectedRequest changes
+  }, [selectedRequest]);
 
   if (!selectedRequest) return <p>No request selected.</p>;
 
@@ -82,7 +80,6 @@ const RequestDetails = ({
     }
   };
 
-  // Handle negotiation request
   const handleNegotiate = async () => {
     try {
       const payload = {
@@ -99,7 +96,7 @@ const RequestDetails = ({
         message: "Success",
         description: "Offer submitted successfully!",
       });
-      fetchRequest(); // Refresh the list after negotiation
+      fetchRequest();
     } catch (error) {
       console.error("Error submitting negotiation offer:", error);
       notification.error({
@@ -110,63 +107,96 @@ const RequestDetails = ({
   };
 
   return (
-    <div>
-      <h2>Auction Request Details</h2>
-      <p>
-        <strong>Request ID:</strong> {selectedRequest.requestId}
-      </p>
-      <p>
-        <strong>Request Status:</strong> {formatStatus(selectedRequest.status)}
-      </p>
-      <p>
-        <strong>Breeder ID:</strong> {selectedRequest.breederId}
-      </p>
-      <p>
-        <strong>Breeder Name:</strong> {selectedRequest.breederName}
-      </p>
-      <p>
-        <strong>Fish ID:</strong> {selectedRequest.fishId}
-      </p>
-      <p>
-        <strong>Gender:</strong> {selectedRequest.gender}
-      </p>
-      <p>
-        <strong>Age:</strong> {selectedRequest.age} years old
-      </p>
-      <p>
-        <strong>Size:</strong> {selectedRequest.size} cm
-      </p>
-      <p>
-        <strong>Price:</strong> {selectedRequest.price} $
-      </p>
-      <p>
-        <strong>Auction Type:</strong>{" "}
-        {capitalizeAuctionType(selectedRequest.auctionTypeName)}
-      </p>
-      <p>
-        <strong>Variety:</strong> {selectedRequest.varietyName}
-      </p>
+    <div className="p-4">
+      <h2 className="text-xl font-bold mb-4">Auction Request Details</h2>
 
-      <Image
-        width={200}
-        src={selectedRequest.image}
-        alt="Auction Request"
-        style={{ marginTop: 16 }}
-      />
-      {selectedRequest.videoUrl ? (
-        <div style={{ marginTop: 16 }}>
-          <strong>Video:</strong>
-          <video width="300" controls>
-            <source src={selectedRequest.videoUrl} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
+      <Card className="mb-4 bg-white shadow-lg border border-black">
+        <div className="flex flex-col md:flex-row">
+          {/* Left Section with Details */}
+          <div className="flex-1 pr-4">
+            {/* Request Details */}
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gold mb-2">
+                Request Details
+              </h3>
+              <p>
+                <strong>Request ID:</strong> {selectedRequest.requestId}
+              </p>
+              <p>
+                <strong>Request Status:</strong>{" "}
+                {formatStatus(selectedRequest.status)}
+              </p>
+              <p>
+                <strong>Auction Type:</strong>{" "}
+                {capitalizeAuctionType(selectedRequest.auctionTypeName)}
+              </p>
+              <p>
+                <strong>Price:</strong> {selectedRequest.price} $
+              </p>
+            </div>
+
+            {/* Breeder Details */}
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gold mb-2">
+                Breeder Details
+              </h3>
+              <p>
+                <strong>Breeder ID:</strong> {selectedRequest.breederId}
+              </p>
+              <p>
+                <strong>Breeder Name:</strong> {selectedRequest.breederName}
+              </p>
+            </div>
+
+            {/* Fish Details */}
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gold mb-2">
+                Fish Details
+              </h3>
+              <p>
+                <strong>Fish ID:</strong> {selectedRequest.fishId}
+              </p>
+              <p>
+                <strong>Gender:</strong> {selectedRequest.gender}
+              </p>
+              <p>
+                <strong>Age:</strong> {selectedRequest.age} years old
+              </p>
+              <p>
+                <strong>Size:</strong> {selectedRequest.size} cm
+              </p>
+              <p>
+                <strong>Variety:</strong> {selectedRequest.varietyName}
+              </p>
+            </div>
+          </div>
+
+          {/* Right Section with Image and Video */}
+          <div className="flex-none w-full md:w-1/3">
+            <strong className="block mb-2">Image</strong>
+            <Image
+              width={200}
+              src={selectedRequest.image}
+              alt="Auction Request"
+              style={{ marginTop: 16 }}
+            />
+            {selectedRequest.videoUrl && (
+              <div style={{ marginTop: 16 }}>
+                <strong>Video:</strong>
+                <video width="300" controls>
+                  <source src={selectedRequest.videoUrl} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            )}
+          </div>
         </div>
-      ) : null}
+      </Card>
 
       {/* Staff Assignment Section */}
       {selectedRequest.status === "PENDING" && (
-        <div>
-          <h3>Assign Staff</h3>
+        <Card className="mb-4 bg-white shadow-lg border border-black">
+          <h3 className="text-lg font-semibold mb-2">Assign Staff</h3>
           <Select
             placeholder="Select staff"
             onChange={setSelectedStaff}
@@ -182,6 +212,7 @@ const RequestDetails = ({
             onClick={() => setIsModalVisible(true)}
             disabled={!selectedStaff}
             type="primary"
+            className="bg-red-500 hover:bg-red-700 text-white"
           >
             Assign
           </Button>
@@ -198,9 +229,9 @@ const RequestDetails = ({
                   message: "Success",
                   description: "Staff assigned successfully!",
                 });
-                onAssign(); // Refresh the auction requests after assigning staff
-                fetchRequest(); // Ensure to refresh the request list
-                setIsModalVisible(false); // Close modal
+                onAssign();
+                fetchRequest();
+                setIsModalVisible(false);
               } catch (error) {
                 console.error("Error assigning staff:", error);
                 notification.error({
@@ -213,13 +244,13 @@ const RequestDetails = ({
           >
             <p>Are you sure you want to assign this staff member?</p>
           </Modal>
-        </div>
+        </Card>
       )}
 
       {/* Negotiation Section */}
       {selectedRequest.status === "INSPECTION_PASSED" && (
-        <div style={{ marginTop: "16px" }}>
-          <h3>Negotiate</h3>
+        <Card className="mb-4 bg-white shadow-lg border border-black">
+          <h3 className="text-lg font-semibold mb-2">Negotiate</h3>
           <Input
             type="number"
             placeholder="Offer Price"
@@ -240,14 +271,22 @@ const RequestDetails = ({
               Fixed Price Sale
             </Select.Option>
           </Select>
-          <Button onClick={handleNegotiate} type="primary">
+          <Button
+            onClick={handleNegotiate}
+            type="primary"
+            className="bg-gold hover:bg-yellow-700"
+          >
             Submit Offer
           </Button>
-        </div>
+        </Card>
       )}
 
       {/* Back to List Button */}
-      <Button style={{ marginTop: "16px" }} onClick={onGoBack}>
+      <Button
+        style={{ marginTop: "16px" }}
+        onClick={onGoBack}
+        className="bg-black text-white hover:bg-gray-800"
+      >
         Back to Requests
       </Button>
     </div>
