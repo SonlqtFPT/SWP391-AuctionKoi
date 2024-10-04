@@ -43,7 +43,7 @@ function App() {
   const patch_fish_api = "http://localhost:8080/breeder/request/cancel";
   const put_fish_api = "http://localhost:8080/breeder/request/update";
   const post_confirm_api =
-    "http://localhost:8080/manager/request/negotiation/accept";
+    "http://localhost:8080/breeder/request/negotiation/accept/";
   const post_deal_api =
     "http://localhost:8080/breeder/request/negotiation/send-negotiation";
 
@@ -213,13 +213,15 @@ function App() {
         if (fish.status === "PENDING_NEGOTIATION") {
           return (
             <div>
-              <Button
-                onClick={() => handleOpenModalWithData(fish)}
-                type="primary"
-                style={{ marginRight: "5px" }} // Add margin for spacing
+              <Popconfirm
+                title="Are you sure you want to cancel this request?"
+                description="Are you sure you want to delete this request?"
+                onConfirm={() => handleDeleteFish(requestId)}
               >
-                Update
-              </Button>
+                <Button danger type="primary" style={{ marginRight: "5px" }}>
+                  Delete
+                </Button>
+              </Popconfirm>
               <Button
                 onClick={() => handleConfirm(requestId)} // Đảm bảo requestId được truyền đúng
                 type="primary"
@@ -276,6 +278,7 @@ function App() {
       setDealingModalVisible(false);
       setDealingPrice(0); // Reset giá
       setDealingAuctionType(""); // Reset loại đấu giá
+      fetchFish();
     } catch (error) {
       toast.error("Submission failed!"); // Hiển thị thông báo lỗi
       console.error("Error submitting deal data:", error); // Log lỗi
@@ -684,7 +687,7 @@ function App() {
       )}
       <Modal
         title="Dealing Information"
-        visible={dealingModalVisible}
+        open={dealingModalVisible}
         onOk={handleDealingSubmit}
         onCancel={() => setDealingModalVisible(false)}
       >
