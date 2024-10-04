@@ -41,7 +41,7 @@ public class AuctionRequest {
 
     float offerPrice;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "auctionTypeId")
     AuctionType auctionType;
 

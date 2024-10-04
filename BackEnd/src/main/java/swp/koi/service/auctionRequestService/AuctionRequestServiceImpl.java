@@ -198,7 +198,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
             AuctionRequest auctionRequest = auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
 
             if(auctionRequest.getStatus().equals(AuctionRequestStatusEnum.INSPECTION_PASSED)){
-                AuctionType auctionType = auctionTypeService.findByAuctionTypeName(request.getOfferAuctionType());
+                AuctionType auctionType = auctionTypeService.findByAuctionTypeName(request.getAuctionTypeName());
                 auctionRequest.setOfferPrice(request.getOfferPrice());
                 auctionRequest.setAuctionType(auctionType);
                 auctionRequest.setStatus(AuctionRequestStatusEnum.PENDING_NEGOTIATION);
