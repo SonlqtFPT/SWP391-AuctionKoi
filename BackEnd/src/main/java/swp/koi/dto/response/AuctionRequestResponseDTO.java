@@ -9,6 +9,8 @@ import swp.koi.dto.request.KoiFishDTO;
 import swp.koi.model.KoiFish;
 import swp.koi.model.enums.AuctionRequestStatusEnum;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -16,6 +18,7 @@ public class AuctionRequestResponseDTO {
 
     Integer requestId;
     AuctionRequestStatusEnum status;
+    LocalDateTime requestedAt;
     KoiBreederResponseDTO breeder;
     float offerPrice;
     String auctionTypeName;

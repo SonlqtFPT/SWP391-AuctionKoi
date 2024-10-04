@@ -11,6 +11,8 @@ import lombok.experimental.FieldDefaults;
 import swp.koi.model.enums.AuctionRequestStatusEnum;
 import swp.koi.model.enums.AuctionTypeNameEnum;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -20,6 +22,14 @@ public class AuctionRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer requestId;
+
+    @Column(name = "requestedAt", updatable = false)
+    LocalDateTime requestedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        requestedAt = LocalDateTime.now();
+    }
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

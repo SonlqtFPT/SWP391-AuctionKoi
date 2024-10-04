@@ -17,9 +17,6 @@ public class LotDTO {
     @NotNull (message = "Fish ID cannot be null")
     Integer fishId;
 
-    @Min(value = 0, message = "Deposit must be a positive value")
-    float deposit;
-
     @Min(value = 0, message = "Starting price must be a positive value")
     float startingPrice;
 

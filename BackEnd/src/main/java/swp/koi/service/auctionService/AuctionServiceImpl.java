@@ -65,7 +65,7 @@ public class AuctionServiceImpl implements AuctionService{
                 KoiFish koiFish = koiFishService.findByFishId(lotDTO.getFishId());
                     lot.setAuction(auction);
                     lot.setKoiFish(koiFish);
-                    lot.setDeposit(lotDTO.getDeposit());
+                    lot.setDeposit((float)(koiFish.getPrice()*0.1));
                     lot.setStartingPrice(lotDTO.getStartingPrice());
                     lot.setIncrement(lotDTO.getIncrement());
                     lot.setCurrentPrice(lot.getStartingPrice());
@@ -87,12 +87,5 @@ public class AuctionServiceImpl implements AuctionService{
         }catch (KoiException e){
             throw e;
         }
-    }
-
-    @Override
-    public void changeStatus(Integer requestId, UpdateStatusDTO request) {
-        AuctionRequest auctionRequest = auctionRequestService.findByRequestId(requestId);
-        auctionRequest.setStatus(request.getRequestStatus());
-        auctionRequestService.saveRequest(auctionRequest);
     }
 }

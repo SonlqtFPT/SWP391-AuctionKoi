@@ -55,12 +55,6 @@ public class AuctionController {
         }
     }
 
-    @PatchMapping("/manager/request/{requestId}/status")
-    public ResponseData<?> changeStatus(@PathVariable Integer requestId, @RequestBody UpdateStatusDTO request){
-        auctionService.changeStatus(requestId, request);
-        return new ResponseData<>(ResponseCode.AUCTION_STATUS_CHANGE);
-    }
-
     @PostMapping("/manager/createBreeder")
     public ResponseData<KoiBreederResponseDTO> createKoiBreeder(@Valid @RequestBody KoiBreederDTO request){
         try{

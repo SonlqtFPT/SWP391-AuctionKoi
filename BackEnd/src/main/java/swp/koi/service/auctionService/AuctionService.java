@@ -8,6 +8,4 @@ import swp.koi.model.Auction;
 
 public interface AuctionService {
     AuctionResponseDTO createAuctionWithLots(@Valid AuctionWithLotsDTO request);
-
-    void changeStatus(Integer requestId, UpdateStatusDTO request);
 }
