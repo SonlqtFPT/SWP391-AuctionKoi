@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   FaBars,
   FaHome,
@@ -10,6 +10,7 @@ import {
 } from "react-icons/fa";
 import Logo from "../assets/logo/koi69Logo_white.png";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "./AuthContext";
 
 const Header = () => {
   // State to manage the visibility of the mobile (hamburger) menu
@@ -18,21 +19,6 @@ const Header = () => {
   const navigate = useNavigate();
   // State to manage the visibility of the user dropdown when logged in
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
-
-  // State to store the user's name and role fetched from localStorage
-  const [userName, setUserName] = useState("");
-  const [userRole, setUserRole] = useState("");
-
-  // Fetch user data from localStorage on component mount
-  useEffect(() => {
-    const storedData = localStorage.getItem("accountData");
-    if (storedData) {
-      const accountData = JSON.parse(storedData);
-      // Set the user's name and role based on the data in localStorage
-      setUserName(`${accountData.firstName} ${accountData.lastName}`);
-      setUserRole(accountData.role);
-    }
-  }, []);
 
   // Toggle function to show or hide the hamburger menu on mobile screens
   const toggleDropdown = () => {
@@ -43,24 +29,26 @@ const Header = () => {
   const toggleUserDropdown = () => {
     setIsUserDropdownOpen(!isUserDropdownOpen);
   };
-
+  const { userName, role, setUserName, setRole, setAccessToken, setRefreshToken } = useAuth();
   // Function to handle logout: remove user-related data from localStorage
   const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("accountData");
-    setUserName("");
-    setUserRole(""); // Reset role on logout
-    navigate("/");
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('accountData');
+    setAccessToken('');
+    setRefreshToken('');
+    setUserName('');
+    setRole('')
+    navigate('/');
   };
 
   // Dynamically generate the account link based on the user's role
   const getAccountLink = () => {
-    switch (userRole) {
+    switch (role) {
       case "Manager":
         return "/manager-account";
-      case "Admin":
-        return "/admin-account";
+      case "Staff":
+        return "/staff-account";
       case "User":
         return "/user-account";
       default:
@@ -74,7 +62,7 @@ const Header = () => {
       <nav className="flex justify-between items-center bg-[#171817] text-white fixed w-full z-10 shadow-2xl">
 
         {/* Logo section */}
-        <div className="px-5 lg:px-12 py-5 flex items-center">
+        <div className="px-5 lg:px-20 py-5 flex items-center">
           <Link to="/" className="flex items-center space-x-2">
             <img
               src={Logo}
@@ -85,7 +73,7 @@ const Header = () => {
         </div>
 
         {/* Desktop menu items (hidden on small screens) */}
-        <ul className="hidden lg:flex mx-auto font-semibold font-heading space-x-6">
+        <ul className="hidden lg:flex font-semibold font-heading space-x-8 content-center lg:ml-8">
           <li className="flex items-center space-x-2 hover:bg-red-500 min-w-max rounded-full hover:text-black">
             <NavLink
               to="/"

@@ -1,6 +1,10 @@
 import { Link } from 'react-router-dom';
+import { useAuth } from './AuthContext';
 
 function MainPage() {
+    const { userName } = useAuth();
+
+
     return (
         <div className="flex-auto bg-[#131313]">
             {/* Hero-section */}
@@ -18,32 +22,54 @@ function MainPage() {
             {/* Introduction Section */}
             <section className="text-center py-10 lg:py-20">
                 <img src="/src/assets/Divider/t1HeaderDivider.png" alt="Divider" className="block w-full" />
-                <h3 className="text-2xl lg:text-3xl font-bold text-yellow-200 mt-2">Our Main Goals</h3>
+                <h3 className="text-2xl lg:text-3xl font-bold text-[#bcab6f] mt-2">Our Main Goals</h3>
                 <p className="max-w-2xl mx-auto text-gray-50 mt-4 px-4">
                     At <span className="text-yellow-500 font-bold">Prestige KoiAuction</span>, our mission is to revolutionize the online auction experience by providing a transparent, user-friendly platform for buyers and sellers alike.
                 </p>
             </section>
 
-            {/* Call to Action Section */}
-            <section className="bg-section-pattern bg-cover text-center flex flex-col lg:flex-row items-center justify-center py-6 saturate-50 brightness-100">
-                {/* Hide on small screens */}
-                <h4 className="hidden lg:block text-3xl font-extrabold text-amber-500 py-6">
-                    Want To Dive Into The World Of Koi?
-                </h4>
-                <button>
-                    <Link to="/register" className="font-bold text-2xl bg-amber-500 hover:bg-amber-400 rounded-full px-20 py-3 ml-0 lg:ml-10 lg:py-5">
+
+            {userName ? (
+                // Call to Action Section
+                <section className="relative bg-section-pattern bg-cover text-center flex flex-col lg:flex-row items-center justify-center py-6">
+                    {/* Dark overlay (placed under the content) */}
+                    <div className='absolute bg-black bg-opacity-70 inset-0 z-0'></div>
+
+                    {/* Visible heading */}
+                    <h4 className="relative text-3xl font-extrabold text-[#bcab6f] py-6 z-10">
+                        Thank You For Trusting Us!
+                    </h4>
+
+                    {/* Register button */}
+                    <Link to="/auction" className="relative z-10 font-bold text-2xl bg-amber-500 hover:bg-amber-400 rounded-full px-20 py-3 lg:ml-10 lg:py-5">
+                        View Auction Now!
+                    </Link>
+                </section>
+            ) : (
+                // Call to Action Section
+                <section className="relative bg-section-pattern bg-cover text-center flex flex-col lg:flex-row items-center justify-center py-6">
+                    {/* Dark overlay (placed under the content) */}
+                    <div className='absolute bg-black bg-opacity-70 inset-0 z-0'></div>
+
+                    {/* Visible heading */}
+                    <h4 className="relative text-3xl font-extrabold text-[#bcab6f] py-6 z-10">
+                        Want To Dive Into The World Of Koi?
+                    </h4>
+
+                    {/* Register button */}
+                    <Link to="/register" className="relative z-10 font-bold text-2xl bg-amber-500 hover:bg-amber-400 rounded-full px-20 py-3 lg:ml-10 lg:py-5">
                         Register!
                     </Link>
-                </button>
-            </section>
+                </section>
+            )}
 
             {/* Breeder Section */}
             <section className="text-center py-10 lg:py-20">
-                <h5 className="text-3xl font-bold text-yellow-200">Breeders Participated</h5>
+                <h5 className="text-3xl font-bold text-[#bcab6f]">Breeders Participated</h5>
                 <p className="max-w-2xl mx-auto text-gray-50 mt-4 mb-10">
                     Your direct connection to the top Japanese koi breeders
                 </p>
-                <div className="gap-2 w-full mb-10 z-20 grid grid-cols-2 sm:flex flex-wrap justify-center">
+                <div className="gap-2 w-full mb-10 z-20 sm:flex flex-wrap justify-center">
                     {/* Breeder Cards */}
                     {[
                         { name: "Marushin", logo: "marushin-logo.png" },

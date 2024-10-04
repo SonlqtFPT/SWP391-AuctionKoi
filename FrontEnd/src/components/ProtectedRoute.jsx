@@ -5,11 +5,10 @@ const ProtectedRoute = ({ allowedRoles, children }) => {
     const accessToken = localStorage.getItem('accessToken');
     const storedData = localStorage.getItem('accountData');
     const accountData = JSON.parse(storedData);  // Convert back to an object
-
-    // Check if user is logged in (accessToken) and has a valid role
+    console.log("NAME: " + accountData.role);
+    // Check if user is logged in and has a valid role
     if (!accessToken || !allowedRoles.includes(accountData.role)) {
-        console.log("return to home page")
-        // Redirect to login page if unauthorized
+        console.log("Redirecting to home page");
         return <Navigate to="/" replace />;
     }
 
