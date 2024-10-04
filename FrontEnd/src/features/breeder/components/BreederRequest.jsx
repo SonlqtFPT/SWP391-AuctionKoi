@@ -29,7 +29,7 @@ const BreederRequest = () => {
   const [imageList, setImageList] = useState([]); //danh sách hình ảnh
   const [videoList, setVideoList] = useState([]); // Danh sách video
 
-  const fish_api = "http://localhost:8080/auctionRequest/addRequest";
+  const fish_api = "http://localhost:8080/breeder/request/addRequest";
 
   // Lấy api
   const fetchFish = async () => {

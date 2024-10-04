@@ -1,25 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Button, Table, Modal, Select, Spin } from "antd";
+import { Button, Table, Modal, Spin } from "antd";
 import { toast } from "react-toastify";
-import api from "../../../config/axios"; // Axios instance for API calls
-import RequestDetails from "./RequestDetails"; // Import the new RequestDetails component
+import api from "../../../config/axios";
+import RequestDetails from "./RequestDetails";
 
 const ManageRequest = () => {
   const [auctionRequests, setAuctionRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showList, setShowList] = useState(true);
-  const [staffList, setStaffList] = useState([]); // Store staff list
-  const [assigningRequest, setAssigningRequest] = useState(null); // Request being assigned
-  const [selectedStaff, setSelectedStaff] = useState(null); // Selected staff for assignment
-  const [loading, setLoading] = useState(true); // Loading state
+  const [staffList, setStaffList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch auction requests from the server
+  // Fetch auction requests
   const fetchRequest = async () => {
     setLoading(true);
     try {
       const response = await api.get("manager/request/getRequest");
       const auctionData = response.data.data;
-      console.log(auctionData);
       const formattedRequests = auctionData.map((item) => ({
         requestId: item.requestId,
         status: item.status,
@@ -35,69 +32,42 @@ const ManageRequest = () => {
         auctionTypeName: item.koiFish.auctionTypeName,
         varietyName: item.koiFish.variety.varietyName,
       }));
-
       setAuctionRequests(formattedRequests);
     } catch (error) {
-      console.error("Error fetching auction request data:", error);
       toast.error("Failed to fetch auction request data");
     } finally {
-      setLoading(false); // Set loading to false after fetching
+      setLoading(false);
     }
   };
 
-  // Fetch staff list for assignment
+  // Fetch staff members
   const fetchStaff = async () => {
     try {
       const response = await api.get("/manager/request/assign-staff/getStaff");
-      setStaffList(response.data.data); // Store the staff data
+      setStaffList(response.data.data);
     } catch (error) {
-      console.error("Error fetching staff data:", error);
       toast.error("Failed to fetch staff list");
     }
   };
 
   useEffect(() => {
     fetchRequest();
-    fetchStaff(); // Fetch staff when component loads
+    fetchStaff();
   }, []);
 
-  // Assign staff to a request
-  const handleAssignStaff = async (assigningRequest, selectedStaff) => {
-    if (!assigningRequest || !selectedStaff) {
-      toast.error("Please select a staff member");
-      return;
-    }
-
-    try {
-      console.log(selectedStaff);
-      const response = await api.post(
-        `/manager/request/assign-staff/${assigningRequest.requestId}?accountId=${selectedStaff}`
-      );
-
-      if (response.status === 200) {
-        toast.success("Staff assigned successfully");
-        fetchRequest(); // Refresh the data after assignment
-      } else {
-        throw new Error("Failed to assign staff");
-      }
-    } catch (error) {
-      console.error("Error assigning staff:", error);
-      toast.error("Failed to assign staff");
-    }
+  // View request details
+  const handleViewDetail = (request) => {
+    setSelectedRequest(request);
+    setShowList(false);
   };
 
-  // Show assign modal
-  const showAssignModal = (record) => {
-    setAssigningRequest(record); // Set the request for which staff will be assigned
+  // Go back to the request list
+  const handleGoBack = () => {
+    setShowList(true);
+    setSelectedRequest(null);
   };
 
-  // Close the assign modal
-  const closeAssignModal = () => {
-    setAssigningRequest(null);
-    setSelectedStaff(null); // Clear selected staff when modal is closed
-  };
-
-  // Table columns definition
+  // Table columns
   const columns = [
     {
       title: "Request ID",
@@ -129,35 +99,28 @@ const ManageRequest = () => {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (text) => formatStatus(text), // Display status without editing
+      render: (text) => formatStatus(text),
     },
     {
       title: "Action",
       dataIndex: "action",
       key: "action",
       render: (text, record) => (
-        <div>
-          <Button onClick={() => handleViewDetail(record)} type="link">
-            View Detail
-          </Button>
-          {record.status === "PENDING" && ( // Only show the button if status is "PENDING"
-            <Button onClick={() => showAssignModal(record)} type="primary">
-              Assign Staff
-            </Button>
-          )}
-        </div>
+        <Button onClick={() => handleViewDetail(record)} type="link">
+          View Detail
+        </Button>
       ),
     },
   ];
 
-  // Format status for display
+  // Format the status
   const formatStatus = (status) => {
     switch (status) {
       case "INSPECTION_PASSED":
         return "Pass";
       case "INSPECTION_FAILED":
         return "Fail";
-      case "INSPECTION_IN_PROGRESS": // Add this case
+      case "INSPECTION_IN_PROGRESS":
         return "Checking";
       case "PENDING":
         return "Pending";
@@ -166,25 +129,13 @@ const ManageRequest = () => {
       case "CANCELLED":
         return "Cancelled";
       default:
-        return status.charAt(0) + status.slice(1).toLowerCase(); // Capitalizes the first letter for other statuses
+        return status.charAt(0) + status.slice(1).toLowerCase();
     }
-  };
-
-  // View auction request details
-  const handleViewDetail = (request) => {
-    setSelectedRequest(request);
-    setShowList(false); // Hide the list and show the details
-  };
-
-  // Go back to the request list
-  const handleGoBack = () => {
-    setShowList(true); // Show the list again
-    setSelectedRequest(null); // Clear selected request
   };
 
   return (
     <div>
-      {loading ? ( // Show loading spinner while fetching data
+      {loading ? (
         <Spin size="large" />
       ) : (
         <>
@@ -194,53 +145,17 @@ const ManageRequest = () => {
               <Table
                 columns={columns}
                 dataSource={auctionRequests}
-                pagination={{ pageSize: 10 }} // Add pagination if needed
+                pagination={{ pageSize: 10 }}
               />
-
-              {/* Assign Staff Modal */}
-              <Modal
-                visible={!!assigningRequest}
-                title="Assign Staff"
-                onCancel={closeAssignModal}
-                onOk={() => {
-                  handleAssignStaff(assigningRequest, selectedStaff);
-                  closeAssignModal();
-                }}
-                okText="Assign"
-                cancelText="Cancel"
-              >
-                <p>
-                  Assign a staff member to request ID:{" "}
-                  {assigningRequest?.requestId}
-                </p>
-                <Select
-                  placeholder="Select staff"
-                  style={{ width: "100%" }}
-                  onChange={(value) => setSelectedStaff(value)}
-                >
-                  {staffList.map((staff) => (
-                    <Select.Option
-                      key={staff.accountId}
-                      value={staff.accountId}
-                    >
-                      {staff.firstName} | {staff.lastName} | AccountID :
-                      {staff.accountId}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Modal>
             </>
           ) : (
-            <>
-              <Button onClick={handleGoBack}>Go Back</Button>
-              {/* Pass the necessary props to RequestDetails */}
-              <RequestDetails
-                selectedRequest={selectedRequest}
-                staffList={staffList}
-                onAssign={handleAssignStaff} // Pass the assignment handler
-                fetchRequest={fetchRequest} // Pass fetchRequest for refreshing
-              />
-            </>
+            <RequestDetails
+              selectedRequest={selectedRequest}
+              staffList={staffList}
+              onAssign={fetchRequest} // To refresh the request list after assignment
+              fetchRequest={fetchRequest} // For refresh in RequestDetails
+              onGoBack={handleGoBack} // Function to go back to the list
+            />
           )}
         </>
       )}

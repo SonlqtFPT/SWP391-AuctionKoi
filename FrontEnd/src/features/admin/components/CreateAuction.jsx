@@ -7,10 +7,8 @@ import {
   Form,
   DatePicker,
   Select,
-  InputNumber,
   Table,
-  Modal,
-  Image,
+  InputNumber,
 } from "antd";
 import dayjs from "dayjs"; // Use dayjs for date management
 
@@ -56,18 +54,14 @@ const CreateAuction = () => {
 
   // Final form submission
   const onFinish = async () => {
-    // Ensure the auction state is up-to-date
     const auctionData = {
       auctionTypeName: auction.auctionTypeName,
       startTime: auction.startTime,
       endTime: auction.endTime,
       lots: lots.map((lot) => ({
         fishId: lot.fishId,
-        deposit: lot.deposit,
         startingPrice: lot.startingPrice,
         increment: lot.increment,
-        startingTime: lot.startingTime.toISOString(),
-        endingTime: lot.endingTime.toISOString(),
       })),
     };
 
@@ -147,7 +141,11 @@ const CreateAuction = () => {
     {
       title: "Add Lots",
       content: (
-        <AddLots setLots={setLots} auctionTypeName={auction.auctionTypeName} />
+        <AddLots
+          setLots={setLots}
+          auctionTypeName={auction.auctionTypeName}
+          lots={lots}
+        />
       ),
     },
     {
@@ -160,10 +158,8 @@ const CreateAuction = () => {
           <ul>
             {lots.map((lot, index) => (
               <li key={index}>
-                {lot.fishId}: Deposit {lot.deposit}, Starting Price{" "}
-                {lot.startingPrice}, Increment {lot.increment}, Starting Time{" "}
-                {dayjs(lot.startingTime).format("YYYY-MM-DD HH:mm:ss")}, Ending
-                Time {dayjs(lot.endingTime).format("YYYY-MM-DD HH:mm:ss")}
+                Fish ID: {lot.fishId}, Starting Price: {lot.startingPrice},
+                Increment: {lot.increment}
               </li>
             ))}
           </ul>
@@ -202,11 +198,8 @@ const CreateAuction = () => {
 };
 
 // AddLots Component for Step 2
-const AddLots = ({ setLots, auctionTypeName }) => {
+const AddLots = ({ setLots, auctionTypeName, lots }) => {
   const [fishData, setFishData] = useState([]);
-  const [selectedFish, setSelectedFish] = useState(null);
-  const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
-  const [lotDetails, setLotDetails] = useState({}); // Store lot details for each fish
 
   // Fetch fish data from API based on auctionTypeName
   useEffect(() => {
@@ -219,7 +212,6 @@ const AddLots = ({ setLots, auctionTypeName }) => {
           }
         );
         setFishData(response.data.data); // Assuming response structure matches your specification
-        console.log(fishData);
       } catch (err) {
         console.error("Error fetching fish data", err);
       }
@@ -230,14 +222,43 @@ const AddLots = ({ setLots, auctionTypeName }) => {
     }
   }, [auctionTypeName]);
 
-  const handleAddLot = (fishId) => {
-    const currentLot = lotDetails[fishId];
-    if (currentLot) {
-      setLots((prev) => [...prev, { fishId, ...currentLot }]);
+  const handleAddRemoveLot = (fish) => {
+    const existingIndex = lots.findIndex((lot) => lot.fishId === fish.fishId);
+    if (existingIndex === -1) {
+      // Add lot if it doesn't exist
+      const newLot = {
+        fishId: fish.fishId,
+        startingPrice: fish.price, // Use the price from the fetched data
+        increment: 0, // Initialize increment to 0
+      };
+      setLots((prev) => [...prev, newLot]);
       message.success("Lot added successfully!");
     } else {
-      message.error("Please fill in all details before adding the lot.");
+      // Remove lot if it exists
+      setLots((prev) => prev.filter((lot) => lot.fishId !== fish.fishId));
+      message.success("Lot removed successfully!");
     }
+  };
+
+  const handleIncrementChange = (fishId, value) => {
+    setLots((prev) =>
+      prev.map((lot) =>
+        lot.fishId === fishId ? { ...lot, increment: value } : lot
+      )
+    );
+  };
+
+  const handleIncrement = (fishId, operation) => {
+    setLots((prev) =>
+      prev.map((lot) => {
+        if (lot.fishId === fishId) {
+          const newIncrement =
+            operation === "increase" ? lot.increment + 1 : lot.increment - 1;
+          return { ...lot, increment: Math.max(0, newIncrement) }; // Prevent negative increment
+        }
+        return lot;
+      })
+    );
   };
 
   return (
@@ -247,46 +268,67 @@ const AddLots = ({ setLots, auctionTypeName }) => {
         rowKey="fishId"
         columns={[
           {
+            title: "Fish ID",
+            dataIndex: "fishId",
+            key: "fishId",
+          },
+          {
             title: "Variety",
             dataIndex: "variety",
             key: "variety",
-            render: (variety) => variety.varietyName,
+            render: (variety) => <span>{variety.varietyName}</span>, // Correctly rendering the variety name
           },
           {
-            title: "Gender",
-            dataIndex: "gender",
-            key: "gender",
+            title: "Starting Price",
+            dataIndex: "price", // Change to "price" from the API response
+            key: "price",
+            render: (price) => <span>{price}</span>, // Display starting price as read-only
+          },
+          {
+            title: "Increment",
+            key: "increment",
+            render: (text, record) => {
+              const existingLot = lots.find(
+                (lot) => lot.fishId === record.fishId
+              );
+              return (
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <Button
+                    onClick={() => handleIncrement(record.fishId, "decrease")}
+                    disabled={!existingLot || existingLot.increment <= 0}
+                  >
+                    -
+                  </Button>
+                  <InputNumber
+                    min={0}
+                    value={existingLot ? existingLot.increment : 0} // Show the current increment value
+                    onChange={(value) =>
+                      handleIncrementChange(record.fishId, value)
+                    } // Update the increment
+                    style={{ margin: "0 8px" }}
+                  />
+                  <Button
+                    onClick={() => handleIncrement(record.fishId, "increase")}
+                  >
+                    +
+                  </Button>
+                </div>
+              );
+            },
           },
           {
             title: "Action",
             key: "action",
-            render: (_, fish) => (
-              <Button type="link" onClick={() => setSelectedFish(fish)}>
-                View Detail
+            render: (text, record) => (
+              <Button type="primary" onClick={() => handleAddRemoveLot(record)}>
+                {lots.some((lot) => lot.fishId === record.fishId)
+                  ? "Remove Lot"
+                  : "Add Lot"}
               </Button>
-            ),
-          },
-          {
-            title: "Add Lot",
-            key: "addLot",
-            render: (_, fish) => (
-              <Button onClick={() => handleAddLot(fish.fishId)}>Add Lot</Button>
             ),
           },
         ]}
       />
-      <Modal
-        title={selectedFish?.variety?.varietyName || "Fish Details"}
-        visible={!!selectedFish}
-        onCancel={() => setSelectedFish(null)}
-      >
-        {selectedFish && (
-          <>
-            <p>Gender: {selectedFish.gender}</p>
-            <Image src={selectedFish.media.imageUrl} alt="Fish" width={200} />
-          </>
-        )}
-      </Modal>
     </>
   );
 };

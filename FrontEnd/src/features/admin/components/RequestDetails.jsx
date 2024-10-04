@@ -1,15 +1,48 @@
-import React, { useState } from "react";
-import { Image, Button, Modal, Select } from "antd";
+import React, { useState, useEffect } from "react";
+import { Image, Button, Modal, Select, Input, notification } from "antd";
+import api from "../../../config/axios";
 
-// Component to display auction request details
 const RequestDetails = ({
   selectedRequest,
-  staffList,
   onAssign,
   fetchRequest,
+  onGoBack,
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState(null);
+  const [offerPrice, setOfferPrice] = useState(selectedRequest.price);
+  const [offerAuctionType, setOfferAuctionType] = useState(
+    selectedRequest.auctionTypeName
+  );
+  const [staffList, setStaffList] = useState([]); // State for storing staff data
+
+  useEffect(() => {
+    // Fetch staff data on component mount
+    const fetchStaff = async () => {
+      try {
+        const response = await api.get(
+          "/manager/request/assign-staff/getStaff"
+        );
+        if (response.data.status === 200) {
+          setStaffList(response.data.data); // Store staff data in state
+        } else {
+          console.error("Failed to fetch staff:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching staff:", error);
+      }
+    };
+
+    fetchStaff();
+  }, []); // Empty dependency array means this runs once when the component mounts
+
+  // Fetch the request details again when selectedRequest changes
+  useEffect(() => {
+    if (selectedRequest) {
+      setOfferPrice(selectedRequest.price);
+      setOfferAuctionType(selectedRequest.auctionTypeName);
+    }
+  }, [selectedRequest]); // Fetch request details whenever selectedRequest changes
 
   if (!selectedRequest) return <p>No request selected.</p>;
 
@@ -21,6 +54,12 @@ const RequestDetails = ({
         return "Fail";
       case "INSPECTION_IN_PROGRESS":
         return "Checking";
+      case "PENDING":
+        return "Pending";
+      case "COMPLETED":
+        return "Completed";
+      case "CANCELLED":
+        return "Cancelled";
       default:
         return status.charAt(0) + status.slice(1).toLowerCase();
     }
@@ -43,37 +82,48 @@ const RequestDetails = ({
     }
   };
 
-  const handleAssign = async () => {
-    if (selectedStaff) {
-      await onAssign(selectedRequest, selectedStaff); // Pass selected request and staff ID to onAssign
-      setIsModalVisible(false); // Close the modal after assignment
-      setSelectedStaff(null); // Clear selected staff
-      await fetchRequest(); // Refresh the auction requests
-    } else {
-      alert("Please select a staff member.");
+  // Handle negotiation request
+  const handleNegotiate = async () => {
+    try {
+      const payload = {
+        offerPrice: offerPrice || selectedRequest.price,
+        offerAuctionType: offerAuctionType || selectedRequest.auctionTypeName,
+      };
+
+      await api.post(
+        `/manager/request/negotiation/${selectedRequest.requestId}`,
+        payload
+      );
+
+      notification.success({
+        message: "Success",
+        description: "Offer submitted successfully!",
+      });
+      fetchRequest(); // Refresh the list after negotiation
+    } catch (error) {
+      console.error("Error submitting negotiation offer:", error);
+      notification.error({
+        message: "Error",
+        description: "Failed to submit the offer.",
+      });
     }
   };
 
   return (
     <div>
       <h2>Auction Request Details</h2>
-      {/* Request Info */}
       <p>
         <strong>Request ID:</strong> {selectedRequest.requestId}
       </p>
       <p>
         <strong>Request Status:</strong> {formatStatus(selectedRequest.status)}
       </p>
-
-      {/* Breeder Info */}
       <p>
         <strong>Breeder ID:</strong> {selectedRequest.breederId}
       </p>
       <p>
         <strong>Breeder Name:</strong> {selectedRequest.breederName}
       </p>
-
-      {/* Fish Info */}
       <p>
         <strong>Fish ID:</strong> {selectedRequest.fishId}
       </p>
@@ -93,13 +143,10 @@ const RequestDetails = ({
         <strong>Auction Type:</strong>{" "}
         {capitalizeAuctionType(selectedRequest.auctionTypeName)}
       </p>
-
-      {/* Variety Info */}
       <p>
         <strong>Variety:</strong> {selectedRequest.varietyName}
       </p>
 
-      {/* Media Info */}
       <Image
         width={200}
         src={selectedRequest.image}
@@ -112,47 +159,97 @@ const RequestDetails = ({
           <video width="300" controls>
             <source src={selectedRequest.videoUrl} type="video/mp4" />
             Your browser does not support the video tag.
-            <p>Your browser does not support the video playback.</p>
           </video>
         </div>
-      ) : (
-        <p>No video available for this auction request.</p>
-      )}
+      ) : null}
 
-      {/* Only show Assign button if status is PENDING */}
+      {/* Staff Assignment Section */}
       {selectedRequest.status === "PENDING" && (
-        <>
-          <Button type="primary" onClick={() => setIsModalVisible(true)}>
-            Assign Staff
+        <div>
+          <h3>Assign Staff</h3>
+          <Select
+            placeholder="Select staff"
+            onChange={setSelectedStaff}
+            style={{ width: "300px", marginBottom: "16px" }}
+          >
+            {staffList.map((staff) => (
+              <Select.Option key={staff.accountId} value={staff.accountId}>
+                {staff.firstName} {staff.lastName} (ID: {staff.accountId})
+              </Select.Option>
+            ))}
+          </Select>
+          <Button
+            onClick={() => setIsModalVisible(true)}
+            disabled={!selectedStaff}
+            type="primary"
+          >
+            Assign
           </Button>
 
-          {/* Assign Staff Modal */}
           <Modal
+            title="Confirm Staff Assignment"
             visible={isModalVisible}
-            title="Assign Staff"
+            onOk={async () => {
+              try {
+                await api.post(
+                  `/manager/request/assign-staff/${selectedRequest.requestId}?accountId=${selectedStaff}`
+                );
+                notification.success({
+                  message: "Success",
+                  description: "Staff assigned successfully!",
+                });
+                onAssign(); // Refresh the auction requests after assigning staff
+                fetchRequest(); // Ensure to refresh the request list
+                setIsModalVisible(false); // Close modal
+              } catch (error) {
+                console.error("Error assigning staff:", error);
+                notification.error({
+                  message: "Error",
+                  description: "Failed to assign staff.",
+                });
+              }
+            }}
             onCancel={() => setIsModalVisible(false)}
-            onOk={handleAssign}
-            okText="Assign"
-            cancelText="Cancel"
           >
-            <p>
-              Assign a staff member to request ID: {selectedRequest.requestId}
-            </p>
-            <Select
-              placeholder="Select staff"
-              style={{ width: "100%" }}
-              onChange={(value) => setSelectedStaff(value)}
-            >
-              {staffList.map((staff) => (
-                <Select.Option key={staff.accountId} value={staff.accountId}>
-                  {staff.firstName} | {staff.lastName} | AccountID :
-                  {staff.accountId}
-                </Select.Option>
-              ))}
-            </Select>
+            <p>Are you sure you want to assign this staff member?</p>
           </Modal>
-        </>
+        </div>
       )}
+
+      {/* Negotiation Section */}
+      {selectedRequest.status === "INSPECTION_PASSED" && (
+        <div style={{ marginTop: "16px" }}>
+          <h3>Negotiate</h3>
+          <Input
+            type="number"
+            placeholder="Offer Price"
+            value={offerPrice}
+            onChange={(e) => setOfferPrice(e.target.value)}
+            style={{ width: "200px", marginBottom: "16px" }}
+          />
+          <Select
+            placeholder="Select Auction Type"
+            value={offerAuctionType}
+            onChange={setOfferAuctionType}
+            style={{ width: "200px", marginBottom: "16px" }}
+          >
+            <Select.Option value="ASCENDING_BID">Ascending Bid</Select.Option>
+            <Select.Option value="DESCENDING_BID">Descending Bid</Select.Option>
+            <Select.Option value="SEALED_BID">Sealed Bid</Select.Option>
+            <Select.Option value="FIXED_PRICE_SALE">
+              Fixed Price Sale
+            </Select.Option>
+          </Select>
+          <Button onClick={handleNegotiate} type="primary">
+            Submit Offer
+          </Button>
+        </div>
+      )}
+
+      {/* Back to List Button */}
+      <Button style={{ marginTop: "16px" }} onClick={onGoBack}>
+        Back to Requests
+      </Button>
     </div>
   );
 };
