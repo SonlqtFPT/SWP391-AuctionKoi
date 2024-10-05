@@ -174,10 +174,12 @@ public class AccountServiceImpl implements AccountService{
     @Override
     public void createAccountStaff(AccountRegisterDTO staffDto) {
         Account account = new Account();
-        modelMapper.map(staffDto, account);
         if(accountRepository.existsByEmail(account.getEmail()))
             throw new KoiException(ResponseCode.EMAIL_ALREADY_EXISTS);
+        modelMapper.map(staffDto, account);
+        account.setPassword(passwordEncoder.encode(staffDto.getPassword()));
         account.setRole(AccountRoleEnum.STAFF);
+        account.setStatus(true);
         accountRepository.save(account);
     }
 }
