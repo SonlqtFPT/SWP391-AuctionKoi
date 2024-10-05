@@ -2,6 +2,7 @@ package swp.koi.service.lotService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import swp.koi.dto.response.ResponseCode;
@@ -34,9 +35,10 @@ public class LotServiceImpl implements LotService {
     }
 
     @Override
+    @Async
     @Scheduled(fixedRate = 1000 * 60) //60s
     public void startLotBy() {
-        //get time at the moment for use
+        //get time at the moment for ubse
         LocalDateTime now = LocalDateTime.now();
 
         //get list of lot that have time less than atm => start time < now -> start lot

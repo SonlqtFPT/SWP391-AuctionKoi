@@ -136,6 +136,15 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-cache</artifactId>
 		</dependency>
+		<!--	===========REDIS DEPENDENCY============	-->
+
+
+		<!--	===========MAIL DEPENDENCY============	-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+		<!--	===========MAIL DEPENDENCY============	-->
 	</dependencies>
 
 	<build>

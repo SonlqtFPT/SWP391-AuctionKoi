@@ -40,53 +40,49 @@ public class AuctionServiceImpl implements AuctionService{
 
     @Override
     public AuctionResponseDTO createAuctionWithLots(AuctionWithLotsDTO request) throws KoiException{
-        try{
-            Auction auction = new Auction();
-            AuctionType auctionType = auctionTypeService.findByAuctionTypeName(request.getAuctionTypeName());
+        Auction auction = new Auction();
+        AuctionType auctionType = auctionTypeService.findByAuctionTypeName(request.getAuctionTypeName());
 
-            for(LotDTO lotDTO : request.getLots()){
-                KoiFish koiFish = koiFishService.findByFishId(lotDTO.getFishId());
-                if(koiFish == null || !koiFish.getStatus().equals(KoiFishStatusEnum.WAITING) ||
-                        !koiFish.getAuctionType().equals(auctionType)){
-                    throw new KoiException(ResponseCode.FAIL);
-                }
+        for(LotDTO lotDTO : request.getLots()){
+            KoiFish koiFish = koiFishService.findByFishId(lotDTO.getFishId());
+            if(koiFish == null || !koiFish.getStatus().equals(KoiFishStatusEnum.WAITING) ||
+                    !koiFish.getAuctionType().equals(auctionType)){
+                throw new KoiException(ResponseCode.FAIL);
             }
-
-            auction.setAuctionType(auctionType);
-            auction.setStartTime(request.getStartTime());
-            auction.setEndTime(request.getEndTime());
-            auction.setStatus(AuctionStatusEnum.WAITING);
-
-            Auction savedAuction = auctionRepository.save(auction);
-
-            List<Lot> lots = new ArrayList<>();
-            for(LotDTO lotDTO : request.getLots()){
-                Lot lot = new Lot();
-                KoiFish koiFish = koiFishService.findByFishId(lotDTO.getFishId());
-                    lot.setAuction(auction);
-                    lot.setKoiFish(koiFish);
-                    lot.setDeposit(lotDTO.getDeposit());
-                    lot.setStartingPrice(lotDTO.getStartingPrice());
-                    lot.setIncrement(lotDTO.getIncrement());
-                    lot.setCurrentPrice(lot.getStartingPrice());
-                    lot.setStartingTime(savedAuction.getStartTime());
-                    lot.setEndingTime(savedAuction.getEndTime());
-                    lot.setStatus(LotStatusEnum.WAITING);
-                    lots.add(lot);
-            }
-
-            lotService.createLots(lots);
-            savedAuction.setLots(lots);
-
-            List<FullLotResponseDTO> lotResponse = lots.stream()
-                    .map(lot -> modelMapper.map(lot, FullLotResponseDTO.class))
-                    .collect(Collectors.toList());
-            AuctionResponseDTO auctionResponse = modelMapper.map(savedAuction, AuctionResponseDTO.class);
-            auctionResponse.setLots(lotResponse);
-            return auctionResponse;
-        }catch (KoiException e){
-            throw e;
         }
+
+        auction.setAuctionType(auctionType);
+        auction.setStartTime(request.getStartTime());
+        auction.setEndTime(request.getEndTime());
+        auction.setStatus(AuctionStatusEnum.WAITING);
+
+        Auction savedAuction = auctionRepository.save(auction);
+
+        List<Lot> lots = new ArrayList<>();
+        for(LotDTO lotDTO : request.getLots()){
+            Lot lot = new Lot();
+            KoiFish koiFish = koiFishService.findByFishId(lotDTO.getFishId());
+                lot.setAuction(auction);
+                lot.setKoiFish(koiFish);
+                lot.setDeposit(lotDTO.getDeposit());
+                lot.setStartingPrice(lotDTO.getStartingPrice());
+                lot.setIncrement(lotDTO.getIncrement());
+                lot.setCurrentPrice(lot.getStartingPrice());
+                lot.setStartingTime(savedAuction.getStartTime());
+                lot.setEndingTime(savedAuction.getEndTime());
+                lot.setStatus(LotStatusEnum.WAITING);
+                lots.add(lot);
+        }
+
+        lotService.createLots(lots);
+        savedAuction.setLots(lots);
+
+        List<FullLotResponseDTO> lotResponse = lots.stream()
+                .map(lot -> modelMapper.map(lot, FullLotResponseDTO.class))
+                .collect(Collectors.toList());
+        AuctionResponseDTO auctionResponse = modelMapper.map(savedAuction, AuctionResponseDTO.class);
+        auctionResponse.setLots(lotResponse);
+        return auctionResponse;
     }
 
     @Override
