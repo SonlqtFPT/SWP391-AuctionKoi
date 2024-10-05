@@ -114,9 +114,9 @@ function FormLogin() {
     };
 
     return (
-        <div className='flex min-h-full flex-1 columns-2 justify-center px-6 py-12 lg:px-8 bg-hero-pattern mt-20 bg-cover relative'>
+        <div className='flex min-h-full flex-1 columns-2 justify-center px-6 py-20 lg:px-8 bg-hero-pattern mt-25 bg-cover relative'>
             <div className='absolute bg-black bg-opacity-70 inset-0'></div>
-            <div className='max-w-md mx-auto md:max-w-2xl shadow-xl'>
+            <div className='max-w-md mx-auto md:max-w-2xl shadow-xl mt-10'>
                 <div className='md:flex'>
                     <div className="md:shrink-0">
                         <img

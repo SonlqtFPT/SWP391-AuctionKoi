@@ -32,9 +32,9 @@ function FormRegister() {
 
 
     return (
-        <div className='flex min-h-full flex-1 flex-col justify-center mt-20 px-6 py-9 lg:px-8 bg-hero-pattern relative bg-cover z-0'>
+        <div className='flex min-h-full flex-1 flex-col justify-center mt-25 px-6 py-9 lg:px-8 bg-hero-pattern relative bg-cover z-0'>
             <div className='absolute bg-black bg-opacity-70 inset-0 '></div>
-            <div className='max-w-md mx-auto md:max-w-2xl shadow-xl'>
+            <div className='max-w-md mx-auto md:max-w-2xl shadow-xl mt-10'>
                 <div className='md:flex'>
                     <div className="md:shrink-0">
                         <img

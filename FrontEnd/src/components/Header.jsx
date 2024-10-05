@@ -62,7 +62,7 @@ const Header = () => {
       <nav className="flex justify-between items-center bg-[#171817] text-white fixed w-full z-10 shadow-2xl">
 
         {/* Logo section */}
-        <div className="px-5 lg:px-20 py-5 flex items-center">
+        <div className="px-5 lg:px-20 py-3 flex items-center">
           <Link to="/" className="flex items-center space-x-2">
             <img
               src={Logo}
