@@ -7,24 +7,21 @@ import {
   Tag,
   Select,
   Input,
-  Modal,
   notification,
   Image,
 } from "antd";
 import api from "../../../config/axios";
 import { FaFish, FaFlag } from "react-icons/fa"; // Importing required icons
 
-const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedStaff, setSelectedStaff] = useState(null);
+const RequestDetails = ({ request, onBack, fetchRequest }) => {
   const [offerPrice, setOfferPrice] = useState(null);
   const [offerAuctionType, setOfferAuctionType] = useState(null);
 
   useEffect(() => {
     if (request) {
       console.log("Request Object:", request);
-      setOfferPrice(request.price);
-      setOfferAuctionType(request.auctionTypeName);
+      setOfferPrice(request.price); // This can be kept as is since it uses the request's price
+      setOfferAuctionType(request.auctionTypeNameBreeder);
     }
   }, [request]);
 
@@ -37,11 +34,11 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
       INSPECTION_IN_PROGRESS: "Checking",
       PENDING: "Pending",
       PENDING_NEGOTIATION: "Negotiating",
-      PENDING_MANAGER_OFFER: "Waiting for Manager Approve", // Custom status for manager offer
-      PENDING_BREEDER_OFFER: "Waiting for Breeder Approve", // Custom status for breeder offer
+      PENDING_MANAGER_OFFER: "Waiting for Manager Approve",
+      PENDING_BREEDER_OFFER: "Waiting for Breeder Approve",
       COMPLETED: "Completed",
       CANCELLED: "Cancelled",
-      APPROVE: "Approved", // Added new status for APPROVE
+      APPROVE: "Approved",
     };
     return (
       statusMap[status] || status.charAt(0) + status.slice(1).toLowerCase()
@@ -60,15 +57,15 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
         return "blue";
       case "PENDING_NEGOTIATION":
         return "purple";
-      case "PENDING_MANAGER_OFFER": // Color for manager offer
+      case "PENDING_MANAGER_OFFER":
         return "cyan";
-      case "PENDING_BREEDER_OFFER": // Color for breeder offer
+      case "PENDING_BREEDER_OFFER":
         return "gold";
       case "COMPLETED":
         return "geekblue";
       case "CANCELLED":
         return "volcano";
-      case "APPROVE": // Color for APPROVE status
+      case "APPROVE":
         return "cyan";
       default:
         return "default";
@@ -85,15 +82,17 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
     }
 
     try {
-      await api.post(`/manager/request/negotiation/${request.requestId}`, {
-        offerPrice,
-        auctionTypeName: offerAuctionType,
-      });
+      await api.post(
+        `/breeder/request/negotiation/send-negotiation/${request.requestId}`,
+        {
+          price: offerPrice,
+          auctionTypeName: offerAuctionType,
+        }
+      );
       notification.success({
         message: "Success",
         description: "Offer submitted successfully!",
       });
-      fetchRequest();
     } catch (error) {
       console.error("Error submitting negotiation offer:", error);
       notification.error({
@@ -103,30 +102,38 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
     }
   };
 
-  const handleAssignStaff = async () => {
-    if (!selectedStaff) {
-      notification.error({
-        message: "Error",
-        description: "Please select a staff member.",
-      });
-      return;
-    }
-
+  const handleAccept = async () => {
     try {
       await api.post(
-        `/manager/request/assign-staff/${request.requestId}?accountId=${selectedStaff}`
+        `/breeder/request/negotiation/accept/${request.requestId}`
       );
       notification.success({
         message: "Success",
-        description: "Staff assigned successfully!",
+        description: "Offer accepted successfully!",
       });
       fetchRequest();
-      setIsModalVisible(false);
     } catch (error) {
-      console.error("Error assigning staff:", error);
+      console.error("Error accepting offer:", error);
       notification.error({
         message: "Error",
-        description: "Failed to assign staff.",
+        description: "Failed to accept the offer.",
+      });
+    }
+  };
+
+  const handleCancel = async () => {
+    try {
+      await api.post(`/manager/request/cancel/${request.requestId}`); // Assuming you have this API
+      notification.success({
+        message: "Success",
+        description: "Request cancelled successfully!",
+      });
+      fetchRequest();
+    } catch (error) {
+      console.error("Error cancelling request:", error);
+      notification.error({
+        message: "Error",
+        description: "Failed to cancel the request.",
       });
     }
   };
@@ -181,7 +188,8 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
                   <strong>Age:</strong> {request.age}
                 </p>
                 <p style={{ margin: "0 0 4px" }}>
-                  <strong>Variety:</strong> {request.varietyName}
+                  <strong>Variety:</strong> {request.varietyName}{" "}
+                  {/* Update to use varietyName */}
                 </p>
               </Col>
 
@@ -214,106 +222,15 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
                   {new Date(request.requestedAt).toLocaleString()}
                 </p>
                 <p style={{ margin: "0 0 4px" }}>
-                  <strong>Price:</strong> ${request.price}
+                  <strong>Price:</strong> ${request.price}{" "}
+                  {/* Fixed this line */}
                 </p>
                 <p style={{ margin: "0 0 4px" }}>
-                  <strong>Auction Type:</strong> {request.auctionTypeName}
+                  <strong>Auction Type:</strong>{" "}
+                  {request.auctionTypeNameBreeder}
                 </p>
               </Col>
             </Row>
-          </Card>
-
-          {/* Staff Assignment and Negotiation Section */}
-          <Card className="mb-4">
-            <h3>
-              <strong>Actions</strong>
-            </h3>
-            {request.status === "PENDING" && (
-              <>
-                <Select
-                  placeholder="Select staff"
-                  onChange={setSelectedStaff}
-                  style={{ width: "300px", marginBottom: "16px" }}
-                >
-                  {staffList.map((staff) => (
-                    <Select.Option
-                      key={staff.accountId}
-                      value={staff.accountId}
-                    >
-                      {staff.firstName} {staff.lastName} (ID: {staff.accountId})
-                    </Select.Option>
-                  ))}
-                </Select>
-                <Button
-                  onClick={() => setIsModalVisible(true)}
-                  disabled={!selectedStaff}
-                  type="primary"
-                  className="bg-red-500 hover:bg-red-700 text-white"
-                >
-                  Assign
-                </Button>
-
-                <Modal
-                  title="Confirm Staff Assignment"
-                  visible={isModalVisible}
-                  onOk={handleAssignStaff}
-                  onCancel={() => setIsModalVisible(false)}
-                >
-                  <p>Are you sure you want to assign this staff member?</p>
-                </Modal>
-              </>
-            )}
-
-            {(request.status === "INSPECTION_PASSED" ||
-              request.status === "PENDING_MANAGER_OFFER") && (
-              <>
-                <h3>
-                  <strong>Negotiate</strong>
-                </h3>
-                {request.status === "PENDING_MANAGER_OFFER" && (
-                  <p>Waiting for Manager Approve</p>
-                )}
-                <Input
-                  type="number"
-                  placeholder="Offer Price"
-                  value={offerPrice || ""}
-                  onChange={(e) =>
-                    setOfferPrice(
-                      e.target.value ? Number(e.target.value) : null
-                    )
-                  }
-                  style={{ width: "200px", marginBottom: "16px" }}
-                />
-                <Select
-                  placeholder="Select Auction Type"
-                  value={offerAuctionType || undefined}
-                  onChange={setOfferAuctionType}
-                  style={{ width: "200px", marginBottom: "16px" }}
-                >
-                  <Select.Option value="ASCENDING_BID">
-                    Ascending Bid
-                  </Select.Option>
-                  <Select.Option value="DESCENDING_BID">
-                    Descending Bid
-                  </Select.Option>
-                  <Select.Option value="SEALED_BID">Sealed Bid</Select.Option>
-                  <Select.Option value="FIXED_PRICE_SALE">
-                    Fixed Price Sale
-                  </Select.Option>
-                </Select>
-                <Button
-                  onClick={handleNegotiate}
-                  type="primary"
-                  className="bg-red-500 hover:bg-red-700 text-white"
-                >
-                  Submit Offer
-                </Button>
-              </>
-            )}
-
-            {request.status === "PENDING_BREEDER_OFFER" && (
-              <p>Waiting for Breeder Approve</p>
-            )}
           </Card>
         </Col>
 
@@ -350,7 +267,85 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
         </Col>
       </Row>
 
-      <Button onClick={onBack} type="default" className="mt-4">
+      {/* Negotiation Section */}
+      <Card className="mb-4">
+        <h4>Negotiation</h4>
+        {/* Display Manager Offer Price for the Breeder */}
+        {request.offerPriceManager !== undefined && (
+          <p style={{ marginTop: "16px" }}>
+            <strong>Manager Offer Price:</strong> ${request.offerPriceManager}
+          </p>
+        )}
+        {request.auctionTypeNameManager !== undefined && (
+          <p style={{ marginTop: "16px" }}>
+            <strong>Manager Offer Auction Type:</strong>{" "}
+            {request.auctionTypeNameManager}
+          </p>
+        )}
+
+        {(request.status === "PENDING_MANAGER_OFFER" ||
+          request.status === "PENDING_BREEDER_OFFER") && (
+          <>
+            {request.status === "PENDING_MANAGER_OFFER" && (
+              <p>Waiting for Manager Approval</p>
+            )}
+            {request.status === "PENDING_BREEDER_OFFER" && (
+              <p>Waiting for Breeder Approval</p>
+            )}
+            {(request.status === "PENDING_BREEDER_OFFER" ||
+              request.status === "INSPECTION_PASSED") && (
+              <>
+                <Input
+                  type="number"
+                  placeholder="Offer Price"
+                  value={offerPrice || ""}
+                  onChange={(e) =>
+                    setOfferPrice(
+                      e.target.value ? Number(e.target.value) : null
+                    )
+                  }
+                  style={{ width: "200px", marginBottom: "16px" }}
+                />
+                <Select
+                  placeholder="Select Auction Type"
+                  value={offerAuctionType || undefined}
+                  onChange={setOfferAuctionType}
+                  style={{ width: "200px", marginBottom: "16px" }}
+                >
+                  <Select.Option value="ASCENDING_BID">
+                    Ascending Bid
+                  </Select.Option>
+                  <Select.Option value="DESCENDING_BID">
+                    Descending Bid
+                  </Select.Option>
+                  <Select.Option value="SEALED_BID">Sealed Bid</Select.Option>
+                  <Select.Option value="DIRECT_SALE">Direct Sale</Select.Option>
+                </Select>
+                <Button type="primary" onClick={handleNegotiate}>
+                  Submit Offer
+                </Button>
+              </>
+            )}
+            {request.status === "PENDING_BREEDER_OFFER" && (
+              <div style={{ marginTop: "16px" }}>
+                <Button
+                  type="primary"
+                  onClick={handleAccept}
+                  style={{ marginRight: "8px" }}
+                >
+                  Accept Offer
+                </Button>
+                <Button type="default" onClick={handleCancel}>
+                  Cancel Offer
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+      </Card>
+
+      {/* Back Button */}
+      <Button type="default" onClick={onBack}>
         Back
       </Button>
     </div>

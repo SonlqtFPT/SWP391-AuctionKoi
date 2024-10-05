@@ -10,7 +10,7 @@ const ManageRequestStatus = ({ onGoBack }) => {
   const [showList, setShowList] = useState(true);
   const [updatingRequest, setUpdatingRequest] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState(null);
-  const accountId = 4;
+  const accountId = 1;
 
   const fetchRequest = async () => {
     try {
