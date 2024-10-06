@@ -1,139 +1,128 @@
+import React, { useState } from "react";
 import {
-  FaHome,
-  FaUser,
-  FaBell,
-  FaSignOutAlt,
-  FaTasks,
-  FaGavel,
-  FaTruck, // Import FaTruck icon for Manage Transport
-  FaReceipt, // Import FaReceipt icon for View Transaction
-} from "react-icons/fa"; // Importing React icons
-import Logo from "../assets/logo/koi69Logo_white.png";
+  DesktopOutlined,
+  FileOutlined,
+  PieChartOutlined,
+  TeamOutlined,
+  UserOutlined,
+  HomeOutlined,
+  BellOutlined,
+  LogoutOutlined,
+  FormOutlined,
+  CarOutlined,
+  AuditOutlined,
+  EyeOutlined, // For viewing auctions
+  PlusOutlined, // For creating auctions
+} from "@ant-design/icons";
+import { Layout, Menu } from "antd";
+import Logo from "../assets/logo/PrestigeKoi_White.png"; // Assuming the logo path is correct
 
-const SidebarAdmin = () => {
+const { Header, Content, Sider } = Layout;
+
+function getItem(label, key, icon, children) {
+  return {
+    key,
+    icon,
+    children,
+    label,
+  };
+}
+
+const items = [
+  getItem("Dashboard", "1", <HomeOutlined />),
+  getItem("Profile", "2", <UserOutlined />),
+  getItem("Manage Request", "3", <FormOutlined />),
+
+  // "Manage Auction" with dropdown items "View Auction" and "Create Auction"
+  getItem("Manage Auction", "sub1", <AuditOutlined />, [
+    getItem("View Auction", "4", <EyeOutlined />),
+    getItem("Create Auction", "5", <PlusOutlined />),
+  ]),
+
+  getItem("Manage Transport", "6", <CarOutlined />),
+  getItem("View Transaction", "7", <FileOutlined />),
+  getItem("Notifications", "8", <BellOutlined />, [], "5"),
+  getItem("Logout", "9", <LogoutOutlined />),
+];
+
+const SidebarAdmin = ({ setActiveComponent }) => {
+  const [collapsed, setCollapsed] = useState(false);
+
+  const handleMenuClick = (e) => {
+    // Use e.key to determine which item was clicked
+    switch (e.key) {
+      case "1":
+        setActiveComponent("Dashboard");
+        break;
+      case "2":
+        setActiveComponent("Profile");
+        break;
+      case "3":
+        setActiveComponent("Manage Request");
+        break;
+      case "4":
+        setActiveComponent("View Auction");
+        break;
+      case "5":
+        setActiveComponent("Create Auction");
+        break;
+      case "6":
+        setActiveComponent("Manage Transport");
+        break;
+      case "7":
+        setActiveComponent("View Transaction");
+        break;
+      case "8":
+        setActiveComponent("Notifications");
+        break;
+      case "9":
+        setActiveComponent("Logout");
+        break;
+      default:
+        setActiveComponent("Dashboard");
+    }
+  };
+
   return (
-    <div className="min-h-screen flex flex-row bg-orange-400">
-      <div className="flex flex-col w-56 bg-[#c74743] rounded-r-3xl overflow-hidden">
-        <div className="flex flex-col items-center justify-center h-20 shadow-md">
-          <img
-            src={Logo}
-            alt="Koi69 Logo"
-            className="h-10 w-auto object-contain"
-          />
-          <p className="text-white text-sm font-semibold mt-1">
+    <Sider
+      collapsible
+      collapsed={collapsed}
+      onCollapse={(value) => setCollapsed(value)}
+      width={220}
+      style={{ backgroundColor: "#c74743" }}
+    >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "64px",
+          backgroundColor: "#c74743",
+          padding: "16px 0",
+        }}
+      >
+        <img
+          src={Logo}
+          alt="Koi Logo"
+          style={{ height: "40px", width: "auto", objectFit: "contain" }}
+        />
+        {!collapsed && (
+          <p style={{ color: "#fff", marginTop: "8px", fontWeight: "bold" }}>
             Admin Dashboard
           </p>
-        </div>
-        {/* Dashboard */}
-        <ul className="flex flex-col py-4">
-          <li>
-            <a
-              href="#"
-              className="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-white hover:text-gray-200"
-            >
-              <span className="inline-flex items-center justify-center h-12 w-12 text-lg text-white">
-                <FaHome />
-              </span>
-              <span className="text-sm font-medium">Dashboard</span>
-            </a>
-          </li>
-
-          {/* Profile */}
-          <li>
-            <a
-              href="#"
-              className="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-white hover:text-gray-200"
-            >
-              <span className="inline-flex items-center justify-center h-12 w-12 text-lg text-white">
-                <FaUser />
-              </span>
-              <span className="text-sm font-medium">Profile</span>
-            </a>
-          </li>
-
-          {/* Manage Request */}
-          <li>
-            <a
-              href="#"
-              className="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-white hover:text-gray-200"
-            >
-              <span className="inline-flex items-center justify-center h-12 w-12 text-lg text-white">
-                <FaTasks />
-              </span>
-              <span className="text-sm font-medium">Manage Request</span>
-            </a>
-          </li>
-
-          {/* Manage Auction */}
-          <li>
-            <a
-              href="#"
-              className="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-white hover:text-gray-200"
-            >
-              <span className="inline-flex items-center justify-center h-12 w-12 text-lg text-white">
-                <FaGavel />
-              </span>
-              <span className="text-sm font-medium">Manage Auction</span>
-            </a>
-          </li>
-
-          {/* Manage Transport */}
-          <li>
-            <a
-              href="#"
-              className="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-white hover:text-gray-200"
-            >
-              <span className="inline-flex items-center justify-center h-12 w-12 text-lg text-white">
-                <FaTruck />
-              </span>
-              <span className="text-sm font-medium">Manage Transport</span>
-            </a>
-          </li>
-
-          {/* View Transaction */}
-          <li>
-            <a
-              href="#"
-              className="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-white hover:text-gray-200"
-            >
-              <span className="inline-flex items-center justify-center h-12 w-12 text-lg text-white">
-                <FaReceipt />
-              </span>
-              <span className="text-sm font-medium">View Transaction</span>
-            </a>
-          </li>
-
-          {/* Notifications */}
-          <li>
-            <a
-              href="#"
-              className="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-white hover:text-gray-200"
-            >
-              <span className="inline-flex items-center justify-center h-12 w-12 text-lg text-white">
-                <FaBell />
-              </span>
-              <span className="text-sm font-medium">Notifications</span>
-              <span className="ml-auto mr-6 text-sm bg-red-100 rounded-full px-3 py-px text-red-500">
-                5
-              </span>
-            </a>
-          </li>
-
-          {/* Logout */}
-          <li>
-            <a
-              href="#"
-              className="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-white hover:text-gray-200"
-            >
-              <span className="inline-flex items-center justify-center h-12 w-12 text-lg text-white">
-                <FaSignOutAlt />
-              </span>
-              <span className="text-sm font-medium">Logout</span>
-            </a>
-          </li>
-        </ul>
+        )}
       </div>
-    </div>
+
+      <Menu
+        theme="dark"
+        mode="inline"
+        defaultSelectedKeys={["1"]}
+        items={items}
+        style={{ backgroundColor: "#c74743", color: "#fff" }}
+        onClick={handleMenuClick}
+      />
+    </Sider>
   );
 };
 
