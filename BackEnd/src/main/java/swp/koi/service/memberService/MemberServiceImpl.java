@@ -22,12 +22,21 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public void createMember(Account account) {
+
         if(account.getRole() == AccountRoleEnum.MEMBER){
             Member member = Member.builder()
                     .account(account)
                     .build();
             memberRepository.save(member);
         }
+
+
+        Member member = Member.builder()
+                .account(account)
+                .build();
+
+        memberRepository.save(member);
+
     }
 
     @Override

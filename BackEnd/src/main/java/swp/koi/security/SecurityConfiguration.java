@@ -40,6 +40,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+
                         .requestMatchers("/authenticate/**").permitAll()
 //                        .requestMatchers("/api/pay/vn-pay-callback").permitAll()
 //                        .requestMatchers("/auctionRequest/addRequest").hasAuthority("ROLE_BREEDER")
@@ -51,6 +52,14 @@ public class SecurityConfiguration {
 //                        .requestMatchers("/api/v1/createBreeder").hasAuthority("ROLE_MANAGER")
 //                        .requestMatchers("/manager/**").hasAuthority("ROLE_MANAGER")
                         .anyRequest().permitAll()
+
+                        .requestMatchers("authenticate/**").permitAll()
+                        .requestMatchers("/api/v1/getRequest").hasAuthority("ROLE_BREEDER")
+                        .requestMatchers("/register-lot/regis").hasAuthority("ROLE_MEMBER")
+                        .requestMatchers("/register-lot/list").hasAuthority("ROLE_MEMBER")
+                        .requestMatchers("/bid/bidAuction").hasAuthority("ROLE_MEMBER")
+                        .anyRequest().authenticated()
+
                 )
                 .formLogin(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
