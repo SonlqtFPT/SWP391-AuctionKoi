@@ -4,12 +4,11 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import swp.koi.convert.LotEntityToDtoConverter;
 import swp.koi.dto.request.AuctionWithLotsDTO;
 import swp.koi.dto.request.LotDTO;
 import swp.koi.dto.request.UpdateStatusDTO;
-import swp.koi.dto.response.AuctionResponseDTO;
-import swp.koi.dto.response.FullLotResponseDTO;
-import swp.koi.dto.response.ResponseCode;
+import swp.koi.dto.response.*;
 import swp.koi.exception.KoiException;
 import swp.koi.model.*;
 import swp.koi.model.enums.AuctionStatusEnum;
@@ -26,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.antlr.v4.runtime.tree.xpath.XPath.findAll;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -37,6 +38,7 @@ public class AuctionServiceImpl implements AuctionService{
     private final KoiFishService koiFishService;
     private final ModelMapper modelMapper;
     private final AuctionRequestService auctionRequestService;
+    private final LotEntityToDtoConverter lotEntityToDtoConverter;
 
     @Override
     public AuctionResponseDTO createAuctionWithLots(AuctionWithLotsDTO request) throws KoiException{
@@ -80,14 +82,33 @@ public class AuctionServiceImpl implements AuctionService{
             lotService.createLots(lots);
             savedAuction.setLots(lots);
 
-            List<FullLotResponseDTO> lotResponse = lots.stream()
-                    .map(lot -> modelMapper.map(lot, FullLotResponseDTO.class))
-                    .collect(Collectors.toList());
+            List<LotResponseDto> lotResponse = lotEntityToDtoConverter.convertLotList(lots);
             AuctionResponseDTO auctionResponse = modelMapper.map(savedAuction, AuctionResponseDTO.class);
             auctionResponse.setLots(lotResponse);
             return auctionResponse;
         }catch (KoiException e){
             throw e;
         }
+    }
+
+    @Override
+    public LotResponseDto getLot(Integer lotId) throws KoiException{
+        Lot lot = lotService.findLotById(lotId);
+        LotResponseDto dto = new LotResponseDto();
+        modelMapper.map(lot, dto);
+        dto.getKoiFish().setImageUrl(lot.getKoiFish().getMedia().getImageUrl());
+        dto.getKoiFish().setVideoUrl(lot.getKoiFish().getMedia().getVideoUrl());
+        dto.getKoiFish().setBreederName(lot.getKoiFish().getAuctionRequest().getKoiBreeder().getBreederName());
+        return dto;
+    }
+
+    @Override
+    public List<Auction> getAllAuction() {
+        return auctionRepository.findAll();
+    }
+
+    @Override
+    public Auction getAuction(Integer auctionId) throws KoiException{
+        return auctionRepository.findById(auctionId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_NOT_FOUND));
     }
 }

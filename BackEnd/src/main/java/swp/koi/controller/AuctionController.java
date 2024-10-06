@@ -27,6 +27,7 @@ public class AuctionController {
     private final KoiFishService koiFishService;
     private final KoiFishEntityToDtoConverter koiFishEntityToDtoConverter;
     private final AuctionRequestEntityToDtoConverter auctionRequestEntityToDtoConverter;
+    private final AuctionEntityToDtoConverter auctionEntityToDtoConverter;
     private final AuctionRequestService auctionRequestService;
     private final KoiBreederService koiBreederService;
     private final AccountService accountService;
@@ -69,6 +70,23 @@ public class AuctionController {
     public ResponseData<?> createStaff(@RequestBody AccountRegisterDTO staffDto){
         accountService.createAccountStaff(staffDto);
         return new ResponseData<>(ResponseCode.CREATED_SUCCESS);
+    }
+
+    @GetMapping("/auction/get-all-auction")
+    public ResponseData<List<AuctionResponseDTO>> getAllAuction(){
+        List<AuctionResponseDTO> response = auctionEntityToDtoConverter.converAuctiontList(auctionService.getAllAuction());
+        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+    }
+
+    @GetMapping("/auction/get-auction/{auctionId}")
+    public ResponseData<AuctionResponseDTO> getAuction(@PathVariable Integer auctionId){
+        AuctionResponseDTO response = auctionEntityToDtoConverter.convertAuction(auctionService.getAuction(auctionId));
+        return new ResponseData<>(ResponseCode.SUCCESS, response);
+    }
+
+    @GetMapping("/auction/get-lot/{lotId}")
+    public ResponseData<LotResponseDto> getLot(@PathVariable Integer lotId){
+        return new ResponseData<>(ResponseCode.SUCCESS, auctionService.getLot(lotId));
     }
 
 }

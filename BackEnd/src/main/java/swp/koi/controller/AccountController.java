@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,6 +44,11 @@ public class AccountController {
         } catch (KoiException e) {
             return new ResponseData<>(e.getResponseCode());
         }
+    }
+
+    @PostMapping("/login-google")
+    public ResponseData<?> loginGoogle(@AuthenticationPrincipal OidcUser principal){
+        return new ResponseData<>(ResponseCode.SUCCESS);
     }
 
     @PostMapping("/signup")

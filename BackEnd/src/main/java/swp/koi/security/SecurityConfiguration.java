@@ -40,7 +40,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-//                        .requestMatchers("authenticate/**").permitAll()
+                        .requestMatchers("/authenticate/**").permitAll()
 //                        .requestMatchers("/api/pay/vn-pay-callback").permitAll()
 //                        .requestMatchers("/auctionRequest/addRequest").hasAuthority("ROLE_BREEDER")
 //                        .requestMatchers("/auctionRequest/getRequest").permitAll()
@@ -52,8 +52,9 @@ public class SecurityConfiguration {
 //                        .requestMatchers("/manager/**").hasAuthority("ROLE_MANAGER")
                         .anyRequest().permitAll()
                 )
-//                .formLogin(Customizer.withDefaults())
+                .formLogin(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
+                .oauth2Login(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(provider()).addFilterBefore(preFilter, UsernamePasswordAuthenticationFilter.class)

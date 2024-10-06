@@ -39,7 +39,10 @@ public enum ResponseCode {
     BID_PRICE_TOO_LOW(5003, "Bid price is lower than the current price"),
     MEMBER_NOT_REGISTERED_FOR_LOT(5004, "Member is not registered for the Lot"),
 
-    // AuctionRequest related statuses
+    //Auction
+    AUCTION_NOT_FOUND(6000, "Auction not found"),
+
+    // AuctionRequest
     AUCTION_REQUEST_NOT_FOUND(7001, "Auction request not found"),
     AUCTION_STATUS_CHANGE(7002, "Auction request status changed"),
     STAFF_ASSIGN_SUCCESSFULLY(7003, "Staff assigned successfully"),
