@@ -197,6 +197,7 @@ const ManageRequest = () => {
           <Button onClick={() => handleViewDetail(record)} type="link">
             <FaEye className="mr-1" /> View Detail
           </Button>
+
         </div>
       ),
     },
@@ -230,29 +231,29 @@ const ManageRequest = () => {
 
   // Determine the color for the status tag
   const getStatusColor = (status) => {
-    switch (
-      status.toUpperCase() // Ensure status is case-insensitive
-    ) {
-      case "PENDING":
-        return "blue"; // Color for pending status
-      case "INSPECTION_IN_PROGRESS":
-        return "orange"; // Color for inspection in progress
+
+    switch (status) {
       case "INSPECTION_PASSED":
-        return "green"; // Color for inspection passed
+        return "green";
       case "INSPECTION_FAILED":
-        return "red"; // Color for inspection failed
+        return "red";
+      case "INSPECTION_IN_PROGRESS":
+        return "orange";
+      case "PENDING":
+        return "blue";
+      case "PENDING_NEGOTIATION":
+        return "purple";
       case "PENDING_MANAGER_OFFER":
-        return "gold"; // Color for pending manager offer
+        return "gold"; // Color for manager approval status
       case "PENDING_BREEDER_OFFER":
-        return "lime"; // Color for pending breeder offer
-      case "APPROVE":
-        return "cyan"; // Color for approval
-      case "REJECT":
-        return "magenta"; // Color for rejection
+        return "lime"; // Color for breeder approval status
+      case "COMPLETED":
+        return "geekblue";
       case "CANCELLED":
-        return "volcano"; // Color for cancelled status
+        return "volcano";
       default:
-        return "default"; // Default color for unknown status
+        return "default";
+
     }
   };
 
