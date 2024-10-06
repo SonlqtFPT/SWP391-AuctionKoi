@@ -6,6 +6,7 @@ import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
 import swp.koi.model.Account;
 import swp.koi.model.Member;
+import swp.koi.model.enums.AccountRoleEnum;
 import swp.koi.repository.MemberRepository;
 
 @Service
@@ -22,11 +23,20 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public void createMember(Account account) {
 
+        if(account.getRole() == AccountRoleEnum.MEMBER){
+            Member member = Member.builder()
+                    .account(account)
+                    .build();
+            memberRepository.save(member);
+        }
+
+
         Member member = Member.builder()
                 .account(account)
                 .build();
 
         memberRepository.save(member);
+
     }
 
     @Override

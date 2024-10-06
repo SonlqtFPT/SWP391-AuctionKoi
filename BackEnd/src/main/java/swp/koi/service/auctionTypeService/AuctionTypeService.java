@@ -5,4 +5,8 @@ import swp.koi.model.AuctionType;
 
 public interface AuctionTypeService {
     AuctionType findByAuctionTypeName(String auctionTypeDTO);
+
+    boolean existById(Integer auctionTypeId);
+
+    void saveType(AuctionType auctionType);
 }

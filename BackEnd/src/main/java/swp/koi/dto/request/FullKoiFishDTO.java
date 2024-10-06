@@ -1,17 +1,20 @@
 package swp.koi.dto.request;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import swp.koi.model.AuctionType;
-import swp.koi.model.Media;
 
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class KoiFishDTO {
+public class FullKoiFishDTO {
+
+    Integer fishId;
 
     @NotBlank(message = "Variety name is required")
     private String varietyName;
@@ -29,7 +32,6 @@ public class KoiFishDTO {
     @Positive(message = "Price must be a positive number")
     private float price;
 
-    String auctionTypeName;
-
     private MediaDTO media;
 }
+
