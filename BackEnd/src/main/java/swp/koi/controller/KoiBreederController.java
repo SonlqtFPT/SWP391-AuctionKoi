@@ -16,9 +16,20 @@ import swp.koi.model.KoiBreeder;
 import swp.koi.service.koiBreederService.KoiBreederService;
 
 @RestController
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class KoiBreederController {
 
     private final KoiBreederService koiBreederService;
+
+    @PostMapping("/createBreeder")
+    public ResponseData<KoiBreederResponseDTO> createKoiBreeder(@Valid @RequestBody KoiBreederDTO request){
+        try{
+            koiBreederService.createKoiBreeder(request);
+            return new ResponseData<>(ResponseCode.CREATED_SUCCESS);
+        } catch (KoiException e) {
+            return new ResponseData<>(e.getResponseCode());
+        }
+    }
 
 }

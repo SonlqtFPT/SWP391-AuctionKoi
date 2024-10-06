@@ -9,8 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface KoiBreederRepository extends JpaRepository<KoiBreeder, Integer> {
-    Optional<KoiBreeder> findByAccount(Account account);
-
     Optional<KoiBreeder> findByBreederId(Integer breederId);
 
     Optional<KoiBreeder> findByAccount(Account account);

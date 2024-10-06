@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import swp.koi.model.Lot;
 import swp.koi.model.enums.AuctionStatusEnum;
 
 import java.util.List;
@@ -18,6 +17,6 @@ public class AuctionResponseDTO {
     java.time.LocalDateTime startTime;
     java.time.LocalDateTime endTime;
     AuctionStatusEnum status;
-    List<LotResponseDto> lots;
+    List<FullLotResponseDTO> lots;
 
 }

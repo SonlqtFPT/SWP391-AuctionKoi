@@ -4,14 +4,10 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import swp.koi.model.enums.AuctionRequestStatusEnum;
-import swp.koi.model.enums.AuctionTypeNameEnum;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -23,27 +19,13 @@ public class AuctionRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer requestId;
 
-    @Column(name = "requestedAt", updatable = false)
-    LocalDateTime requestedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        requestedAt = LocalDateTime.now();
-    }
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     AuctionRequestStatusEnum status;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "accountId")
     Account account;
-
-    float offerPrice;
-
-    @ManyToOne
-    @JoinColumn(name = "auctionTypeId")
-    AuctionType auctionType;
 
     @ManyToOne
     @JoinColumn(name = "breederId")

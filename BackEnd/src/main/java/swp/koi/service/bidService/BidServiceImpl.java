@@ -71,9 +71,6 @@ public class BidServiceImpl implements BidService{
             // Find the Lot by ID and fetch all bids associated with it
             Lot lot = lotRepository.findById(lotId)
                     .orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
-            List<Bid> list = bidRepository.getBidByLot(lot)
-                    .orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
-
             return bidRepository.getBidByLot(lot)
                     .orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND)); // Handle case where no bids are found
         }catch (KoiException e){

@@ -11,14 +11,10 @@ import swp.koi.dto.response.KoiBreederResponseDTO;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
 import swp.koi.model.Account;
-import swp.koi.model.AuctionRequest;
 import swp.koi.model.KoiBreeder;
-import swp.koi.model.KoiFish;
 import swp.koi.model.enums.AccountRoleEnum;
 import swp.koi.repository.KoiBreederRepository;
 import swp.koi.service.accountService.AccountService;
-
-import java.util.List;
 
 @Service
 public class KoiBreederServiceImpl implements KoiBreederService{
@@ -33,6 +29,11 @@ public class KoiBreederServiceImpl implements KoiBreederService{
         this.accountService = accountService;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    @Override
+    public KoiBreeder findByBreederId(Integer breederId) {
+        return koiBreederRepository.findByBreederId(breederId).orElseThrow(() -> new KoiException(ResponseCode.BREEDER_ID_NOT_FOUND));
     }
 
     @Override
@@ -59,19 +60,7 @@ public class KoiBreederServiceImpl implements KoiBreederService{
 
             return breederResponse;
         } catch (KoiException e) {
-            throw e;
+            throw new KoiException(ResponseCode.FAILED_CREATE_BREEDER);
         }
     }
-
-    @Override
-    public KoiBreeder findByAccount(Account account) {
-        return koiBreederRepository.findByAccount(account).orElseThrow(() -> new KoiException(ResponseCode.BREEDER_NOT_FOUND));
-    }
-
-    @Override
-    public KoiBreeder findByBreederId(Integer breederId) {
-        return koiBreederRepository.findByBreederId(breederId).orElseThrow(() -> new KoiException(ResponseCode.BREEDER_NOT_FOUND));
-    }
-
-
 }
