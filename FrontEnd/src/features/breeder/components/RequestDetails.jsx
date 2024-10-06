@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import {
   Button,
@@ -7,6 +8,7 @@ import {
   notification,
 } from "antd";
 import api from "../../../config/axios";
+
 
 const RequestDetails = ({ request, onBack, fetchRequest }) => {
   const [offerPrice, setOfferPrice] = useState(null);
@@ -21,7 +23,6 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
   }, [request]);
 
   if (!request) return <p>No request selected.</p>;
-
 
   const formatAuctionType = (auctionTypeName) => {
     switch (auctionTypeName) {
@@ -58,7 +59,9 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
 
   const getStatusColor = (status) => {
     switch (
-    status.toUpperCase() // Ensure status is case-insensitive
+
+    status.toUpperCase() 
+
     ) {
       case "PENDING":
         return "blue"; // Color for pending status
@@ -122,7 +125,7 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
         message: "Success",
         description: "Offer accepted successfully!",
       });
-      fetchRequest();
+
     } catch (error) {
       console.error("Error accepting offer:", error);
       notification.error({
@@ -139,7 +142,7 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
         message: "Success",
         description: "Request cancelled successfully!",
       });
-      fetchRequest();
+
     } catch (error) {
       console.error("Error cancelling request:", error);
       notification.error({
@@ -150,6 +153,7 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
   };
 
   return (
+
     <div className="p-6 bg-[#131313] rounded-2xl text-white my-5 mx-5">
       <h2 className="text-2xl font-bold mb-6 text-[#bcab6f]">Request Details</h2>
 
@@ -302,6 +306,7 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
       <button type="default" onClick={onBack} className="bg-red-600 text-white rounded-lg px-4 py-2 hover:bg-red-500">
         Back
       </button>
+
     </div>
   );
 };

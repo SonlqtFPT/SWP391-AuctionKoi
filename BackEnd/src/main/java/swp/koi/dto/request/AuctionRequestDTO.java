@@ -16,8 +16,8 @@ import swp.koi.model.enums.AuctionRequestStatusEnum;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuctionRequestDTO {
-    @NotNull(message = "Breeder Id is required")
-    Integer breederId;
+    @NotNull(message = "Account Id is required")
+    Integer accountId;
     @Valid
     KoiFishDTO koiFish;
 

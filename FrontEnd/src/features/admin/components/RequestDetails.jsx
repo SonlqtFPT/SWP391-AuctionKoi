@@ -20,11 +20,23 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
   const [offerPrice, setOfferPrice] = useState(null);
   const [offerAuctionType, setOfferAuctionType] = useState(null);
 
+
+  // New state variables for Breeder Offer
+  const [breederOfferPrice, setBreederOfferPrice] = useState(null);
+  const [breederOfferAuctionType, setBreederOfferAuctionType] = useState(null);
+
+
   useEffect(() => {
     if (request) {
       console.log("Request Object:", request);
       setOfferPrice(request.price);
       setOfferAuctionType(request.auctionTypeName);
+
+
+      // Initialize Breeder Offer state with request data
+      setBreederOfferPrice(request.price); // Assuming the request object has these properties
+      setBreederOfferAuctionType(request.auctionTypeName); // Assuming the request object has these properties
+
     }
   }, [request]);
 
@@ -37,11 +49,13 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
       INSPECTION_IN_PROGRESS: "Checking",
       PENDING: "Pending",
       PENDING_NEGOTIATION: "Negotiating",
-      PENDING_MANAGER_OFFER: "Waiting for Manager Approve", // Custom status for manager offer
-      PENDING_BREEDER_OFFER: "Waiting for Breeder Approve", // Custom status for breeder offer
+
+      PENDING_MANAGER_OFFER: "Waiting for Manager Approve",
+      PENDING_BREEDER_OFFER: "Waiting for Breeder Approve",
       COMPLETED: "Completed",
       CANCELLED: "Cancelled",
-      APPROVE: "Approved", // Added new status for APPROVE
+      APPROVE: "Approved",
+
     };
     return (
       statusMap[status] || status.charAt(0) + status.slice(1).toLowerCase()
@@ -49,11 +63,14 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
   };
 
   const getStatusColor = (status) => {
+
     switch (status) {
+
       case "INSPECTION_PASSED":
         return "green";
       case "INSPECTION_FAILED":
         return "red";
+
       case "INSPECTION_IN_PROGRESS":
         return "orange";
       case "PENDING":
@@ -70,6 +87,7 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
         return "volcano";
       case "APPROVE": // Color for APPROVE status
         return "cyan";
+
       default:
         return "default";
     }
@@ -308,6 +326,21 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
                 >
                   Submit Offer
                 </Button>
+
+
+                {/* Breeder Offer Fields (Read-Only) */}
+                <h3>
+                  <strong>Breeder Offer</strong>
+                </h3>
+                <p style={{ margin: "0 0 4px" }}>
+                  <strong>Breeder Offer Price:</strong> $
+                  {breederOfferPrice || "N/A"}
+                </p>
+                <p style={{ margin: "0 0 4px" }}>
+                  <strong>Breeder Auction Type:</strong>{" "}
+                  {breederOfferAuctionType || "N/A"}
+                </p>
+
               </>
             )}
 

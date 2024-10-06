@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+
+import React, { useEffect, useState } from "react";
+
 import {
   Table,
   Button,
@@ -11,14 +13,17 @@ import {
 } from "antd";
 import { SearchOutlined, ReloadOutlined } from "@ant-design/icons";
 import RequestDetails from "../components/RequestDetails";
+
 import AddBreederRequest from "../components/AddBreederRequest"; // Import the AddBreederRequest component
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
 import { useAuth } from "../../protectedRoutes/AuthContext";
 
 
+
 const { RangePicker } = DatePicker;
 const { Option } = Select;
+
 
 
 const BreederRequest = () => {
@@ -28,10 +33,10 @@ const BreederRequest = () => {
   const [addingRequest, setAddingRequest] = useState(false); // State for adding request
   const [viewingDetails, setViewingDetails] = useState(false); // New state for viewing request details
   const [filteredRequests, setFilteredRequests] = useState([]);
+
   const [search, setSearch] = useState("");
   const [searchField, setSearchField] = useState("requestId");
   const [dateRange, setDateRange] = useState(null);
-
 
   useEffect(() => {
     fetchRequests();
@@ -43,14 +48,17 @@ const BreederRequest = () => {
       const breederId = 1; // Assuming you want to fetch requests for this breeder
       const response = await api.get(`/breeder/request/${breederId}`);
 
+
       // Log the raw response data
       console.log("Fetched requests data:", response.data.data);
 
       // Map to include full details needed
+
       const requestData = response.data.data.map((item) => ({
         requestId: item.requestId,
         status: item.status,
         requestedAt: item.requestedAt,
+
         auctionTypeNameManager: item.auctionTypeName,
         auctionTypeNameBreeder: item.koiFish.auctionTypeName,
         fishId: item.koiFish.fishId,
@@ -99,6 +107,7 @@ const BreederRequest = () => {
   };
 
   const handleViewDetails = (request) => {
+
     setSelectedRequest(request); // This now contains all details
     setViewingDetails(true); // Set state to indicate we're viewing details
     setRequests([]); // Clear the request list when viewing details
@@ -151,6 +160,70 @@ const BreederRequest = () => {
   };
 
 
+  const columns = [
+    {
+      title: (
+        <span className="flex items-center">
+          <FaIdBadge className="mr-2" /> Request ID
+        </span>
+      ),
+      dataIndex: "requestId",
+      key: "requestId",
+      sorter: (a, b) => a.requestId - b.requestId,
+    },
+    {
+      title: (
+        <span className="flex items-center">
+          <FaFish className="mr-2" /> Fish ID
+        </span>
+      ),
+      dataIndex: "fishId",
+      key: "fishId",
+      sorter: (a, b) => a.fishId - b.fishId,
+    },
+    {
+      title: (
+        <span className="flex items-center">
+          <FaCalendarAlt className="mr-2" /> Created At
+        </span>
+      ),
+      dataIndex: "requestedAt",
+      key: "requestedAt",
+      render: (text) => new Date(text).toLocaleString(),
+      sorter: (a, b) => new Date(a.requestedAt) - new Date(b.requestedAt),
+    },
+    {
+      title: (
+        <span className="flex items-center">
+          <FaGavel className="mr-2" /> Auction Type
+        </span>
+      ),
+      dataIndex: "auctionTypeNameBreeder",
+      key: "auctionTypeNameBreeder",
+    },
+    {
+      title: (
+        <span className="flex items-center">
+          <FaInfoCircle className="mr-2" /> Status
+        </span>
+      ),
+      dataIndex: "status",
+      key: "status",
+      render: (text) => (
+        <Tag color={getStatusColor(text)}>{formatStatus(text)}</Tag>
+      ),
+      sorter: (a, b) => a.status.localeCompare(b.status),
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (text, record) => (
+        <Button onClick={() => handleViewDetails(record)}>View Details</Button>
+      ),
+    },
+  ];
+
+
   const formatStatus = (status) => {
     switch (status) {
       case "APPROVE":
@@ -194,6 +267,7 @@ const BreederRequest = () => {
   };
 
   return (
+
     <div className="w-full mt-16 bg-hero-pattern relative bg-cover">
       <div className='absolute bg-black bg-opacity-70 inset-0'></div>
       {loading ? (
@@ -342,6 +416,7 @@ const BreederRequest = () => {
             </div>
           )}
         </div>
+
       )}
     </div>
   );
