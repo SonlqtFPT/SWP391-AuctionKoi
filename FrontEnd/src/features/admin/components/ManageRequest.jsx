@@ -197,7 +197,6 @@ const ManageRequest = () => {
           <Button onClick={() => handleViewDetail(record)} type="link">
             <FaEye className="mr-1" /> View Detail
           </Button>
-          {/* Removed the Negotiate button */}
         </div>
       ),
     },

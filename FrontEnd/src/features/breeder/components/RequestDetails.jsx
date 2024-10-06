@@ -27,6 +27,21 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
 
   if (!request) return <p>No request selected.</p>;
 
+  const formatAuctionType = (auctionTypeName) => {
+    switch (auctionTypeName) {
+      case "DESCENDING_BID":
+        return "Descending Bid";
+      case "ASCENDING_BID":
+        return "Ascending Bid";
+      case "SEALED_BID":
+        return "Sealed Bid";
+      case "FIXED_PRICE_SALE":
+        return "Fixed Price Sale";
+      default:
+        return auctionTypeName;
+    }
+  };
+
   const formatStatus = (status) => {
     const statusMap = {
       INSPECTION_PASSED: "Passed",
@@ -111,7 +126,6 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
         message: "Success",
         description: "Offer accepted successfully!",
       });
-      fetchRequest();
     } catch (error) {
       console.error("Error accepting offer:", error);
       notification.error({
@@ -128,7 +142,6 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
         message: "Success",
         description: "Request cancelled successfully!",
       });
-      fetchRequest();
     } catch (error) {
       console.error("Error cancelling request:", error);
       notification.error({
@@ -274,19 +287,24 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
         <Card className="mb-4">
           <h4>Negotiation</h4>
 
-          {request.status === "PENDING_MANAGER_OFFER" && (
-            <p>Waiting for Manager Approval</p>
-          )}
-          {request.status === "PENDING_BREEDER_OFFER" && (
-            <p>Waiting for Breeder Approval</p>
-          )}
-
-          {/* Negotiation Form */}
           {request.status === "PENDING_BREEDER_OFFER" && (
             <>
+              {/* Display Manager's Offer */}
+              <div style={{ marginBottom: "16px" }}>
+                <h3>Manager's Offer</h3>
+                <p>
+                  <strong>Offer Price:</strong> ${request.offerPriceManager}
+                </p>
+                <p>
+                  <strong>Auction Type:</strong>{" "}
+                  {formatAuctionType(request.auctionTypeNameManager)}
+                </p>
+              </div>
+
+              {/* Negotiation Form */}
               <Input
                 type="number"
-                placeholder="Offer Price"
+                placeholder="Your Offer Price"
                 value={offerPrice || ""}
                 onChange={(e) =>
                   setOfferPrice(e.target.value ? Number(e.target.value) : null)
@@ -311,23 +329,21 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
               <Button type="primary" onClick={handleNegotiate}>
                 Submit Offer
               </Button>
-            </>
-          )}
 
-          {/* Actions for Breeder Offer */}
-          {request.status === "PENDING_BREEDER_OFFER" && (
-            <div style={{ marginTop: "16px" }}>
-              <Button
-                type="primary"
-                onClick={handleAccept}
-                style={{ marginRight: "8px" }}
-              >
-                Accept Offer
-              </Button>
-              <Button type="default" onClick={handleCancel}>
-                Cancel Offer
-              </Button>
-            </div>
+              {/* Actions for Breeder Offer */}
+              <div style={{ marginTop: "16px" }}>
+                <Button
+                  type="primary"
+                  onClick={handleAccept}
+                  style={{ marginRight: "8px" }}
+                >
+                  Accept Offer
+                </Button>
+                <Button type="default" onClick={handleCancel}>
+                  Cancel Offer
+                </Button>
+              </div>
+            </>
           )}
         </Card>
       )}

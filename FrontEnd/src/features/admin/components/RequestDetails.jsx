@@ -20,11 +20,19 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
   const [offerPrice, setOfferPrice] = useState(null);
   const [offerAuctionType, setOfferAuctionType] = useState(null);
 
+  // New state variables for Breeder Offer
+  const [breederOfferPrice, setBreederOfferPrice] = useState(null);
+  const [breederOfferAuctionType, setBreederOfferAuctionType] = useState(null);
+
   useEffect(() => {
     if (request) {
       console.log("Request Object:", request);
       setOfferPrice(request.price);
       setOfferAuctionType(request.auctionTypeName);
+
+      // Initialize Breeder Offer state with request data
+      setBreederOfferPrice(request.price); // Assuming the request object has these properties
+      setBreederOfferAuctionType(request.auctionTypeName); // Assuming the request object has these properties
     }
   }, [request]);
 
@@ -37,11 +45,11 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
       INSPECTION_IN_PROGRESS: "Checking",
       PENDING: "Pending",
       PENDING_NEGOTIATION: "Negotiating",
-      PENDING_MANAGER_OFFER: "Waiting for Manager Approve", // Custom status for manager offer
-      PENDING_BREEDER_OFFER: "Waiting for Breeder Approve", // Custom status for breeder offer
+      PENDING_MANAGER_OFFER: "Waiting for Manager Approve",
+      PENDING_BREEDER_OFFER: "Waiting for Breeder Approve",
       COMPLETED: "Completed",
       CANCELLED: "Cancelled",
-      APPROVE: "Approved", // Added new status for APPROVE
+      APPROVE: "Approved",
     };
     return (
       statusMap[status] || status.charAt(0) + status.slice(1).toLowerCase()
@@ -49,29 +57,27 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
   };
 
   const getStatusColor = (status) => {
-    switch (
-      status.toUpperCase() // Ensure status is case-insensitive
-    ) {
+    switch (status.toUpperCase()) {
       case "PENDING":
-        return "blue"; // Color for pending status
+        return "blue";
       case "INSPECTION_IN_PROGRESS":
-        return "orange"; // Color for inspection in progress
+        return "orange";
       case "INSPECTION_PASSED":
-        return "green"; // Color for inspection passed
+        return "green";
       case "INSPECTION_FAILED":
-        return "red"; // Color for inspection failed
+        return "red";
       case "PENDING_MANAGER_OFFER":
-        return "gold"; // Color for pending manager offer
+        return "gold";
       case "PENDING_BREEDER_OFFER":
-        return "lime"; // Color for pending breeder offer
+        return "lime";
       case "APPROVE":
-        return "cyan"; // Color for approval
+        return "cyan";
       case "REJECT":
-        return "magenta"; // Color for rejection
+        return "magenta";
       case "CANCELLED":
-        return "volcano"; // Color for cancelled status
+        return "volcano";
       default:
-        return "default"; // Default color for unknown status
+        return "default";
     }
   };
 
@@ -308,6 +314,19 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
                 >
                   Submit Offer
                 </Button>
+
+                {/* Breeder Offer Fields (Read-Only) */}
+                <h3>
+                  <strong>Breeder Offer</strong>
+                </h3>
+                <p style={{ margin: "0 0 4px" }}>
+                  <strong>Breeder Offer Price:</strong> $
+                  {breederOfferPrice || "N/A"}
+                </p>
+                <p style={{ margin: "0 0 4px" }}>
+                  <strong>Breeder Auction Type:</strong>{" "}
+                  {breederOfferAuctionType || "N/A"}
+                </p>
               </>
             )}
 

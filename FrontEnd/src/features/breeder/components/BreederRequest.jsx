@@ -8,10 +8,10 @@ import {
   DatePicker,
   Select,
   Space,
-} from "antd"; // Add Select component for dropdown
+} from "antd";
 import { SearchOutlined, ReloadOutlined } from "@ant-design/icons";
 import RequestDetails from "../components/RequestDetails";
-import AddBreederRequest from "../components/AddBreederRequest"; // Import the AddBreederRequest component
+import AddBreederRequest from "../components/AddBreederRequest";
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
 import {
@@ -20,21 +20,21 @@ import {
   FaCalendarAlt,
   FaGavel,
   FaInfoCircle,
-} from "react-icons/fa"; // Import relevant icons
+} from "react-icons/fa";
 
-const { RangePicker } = DatePicker; // Use Antd's RangePicker for date selection
-const { Option } = Select; // Use Antd's Select Option
+const { RangePicker } = DatePicker;
+const { Option } = Select;
 
 const BreederRequest = () => {
   const [requests, setRequests] = useState([]);
-  const [filteredRequests, setFilteredRequests] = useState([]); // For storing filtered requests
+  const [filteredRequests, setFilteredRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [addingRequest, setAddingRequest] = useState(false); // State for adding request
-  const [viewingDetails, setViewingDetails] = useState(false); // New state for viewing request details
-  const [search, setSearch] = useState(""); // State for search input
-  const [searchField, setSearchField] = useState("requestId"); // State for search field selection
-  const [dateRange, setDateRange] = useState(null); // Separate state for date range if 'Created At' is selected
+  const [addingRequest, setAddingRequest] = useState(false);
+  const [viewingDetails, setViewingDetails] = useState(false);
+  const [search, setSearch] = useState("");
+  const [searchField, setSearchField] = useState("requestId");
+  const [dateRange, setDateRange] = useState(null);
 
   useEffect(() => {
     fetchRequests();
@@ -45,28 +45,27 @@ const BreederRequest = () => {
     try {
       const breederId = 1; // Assuming you want to fetch requests for this breeder
       const response = await api.get(`/breeder/request/${breederId}`);
-
       const requestData = response.data.data.map((item) => ({
         requestId: item.requestId,
         status: item.status,
         requestedAt: item.requestedAt,
-        auctionTypeNameManager: item.auctionTypeName,
-        auctionTypeNameBreeder: item.koiFish.auctionTypeName,
+        auctionTypeNameBreeder: formatAuctionType(item.koiFish.auctionTypeName),
+        auctionTypeNameManager: formatAuctionType(item.auctionTypeName),
         fishId: item.koiFish.fishId,
         breederId: item.breeder.breederId,
         breederName: item.breeder.breederName,
-        breederLocation: item.breeder.location, // include breeder location
+        breederLocation: item.breeder.location,
         price: item.koiFish.price,
-        offerPriceManager: item.offerPrice, // include offer price
-        age: item.koiFish.age, // include age
-        size: item.koiFish.size, // include size
-        varietyName: item.koiFish.variety.varietyName, // include variety name
-        image: item.koiFish.media.imageUrl, // include image URL
-        videoUrl: item.koiFish.media.videoUrl, // include video URL
+        offerPriceManager: item.offerPrice,
+        age: item.koiFish.age,
+        size: item.koiFish.size,
+        varietyName: item.koiFish.variety.varietyName,
+        image: item.koiFish.media.imageUrl,
+        videoUrl: item.koiFish.media.videoUrl,
       }));
 
       setRequests(requestData);
-      setFilteredRequests(requestData); // Initially set filtered data to full data
+      setFilteredRequests(requestData);
     } catch (error) {
       toast.error("Failed to fetch breeder requests");
       console.error("Error fetching requests:", error);
@@ -75,19 +74,34 @@ const BreederRequest = () => {
     }
   };
 
+  // Format auction type names for display
+  const formatAuctionType = (auctionTypeName) => {
+    switch (auctionTypeName) {
+      case "DESCENDING_BID":
+        return "Descending Bid";
+      case "ASCENDING_BID":
+        return "Ascending Bid";
+      case "SEALED_BID":
+        return "Sealed Bid";
+      case "FIXED_PRICE_SALE":
+        return "Fixed Price Sale";
+      default:
+        return auctionTypeName;
+    }
+  };
+
   const handleViewDetails = (request) => {
-    setSelectedRequest(request); // This now contains all details
-    setViewingDetails(true); // Set state to indicate we're viewing details
-    setRequests([]); // Clear the request list when viewing details
+    setSelectedRequest(request);
+    setViewingDetails(true);
+    setRequests([]); // Clear requests while viewing details
   };
 
   const handleBackToRequests = () => {
-    setAddingRequest(false); // Set addingRequest to false to show the requests
-    setViewingDetails(false); // Reset viewing details state
-    fetchRequests(); // Optionally refetch requests to refresh the list
+    setAddingRequest(false);
+    setViewingDetails(false);
+    fetchRequests();
   };
 
-  // Filter logic based on search criteria
   const handleSearch = () => {
     const filtered = requests.filter((item) => {
       switch (searchField) {
@@ -117,14 +131,13 @@ const BreederRequest = () => {
           return true;
       }
     });
-    setFilteredRequests(filtered); // Update the filtered requests
+    setFilteredRequests(filtered);
   };
 
-  // Reset search inputs and show all data
   const resetSearch = () => {
-    setSearch(""); // Clear search input
-    setDateRange(null); // Reset date range
-    setFilteredRequests(requests); // Reset to the full request list
+    setSearch("");
+    setDateRange(null);
+    setFilteredRequests(requests);
   };
 
   const columns = [
@@ -208,29 +221,27 @@ const BreederRequest = () => {
   };
 
   const getStatusColor = (status) => {
-    switch (
-      status.toUpperCase() // Ensure status is case-insensitive
-    ) {
+    switch (status.toUpperCase()) {
       case "PENDING":
-        return "blue"; // Color for pending status
+        return "blue";
       case "INSPECTION_IN_PROGRESS":
-        return "orange"; // Color for inspection in progress
+        return "orange";
       case "INSPECTION_PASSED":
-        return "green"; // Color for inspection passed
+        return "green";
       case "INSPECTION_FAILED":
-        return "red"; // Color for inspection failed
+        return "red";
       case "PENDING_MANAGER_OFFER":
-        return "gold"; // Color for pending manager offer
+        return "gold";
       case "PENDING_BREEDER_OFFER":
-        return "lime"; // Color for pending breeder offer
+        return "lime";
       case "APPROVE":
-        return "cyan"; // Color for approval
+        return "cyan";
       case "REJECT":
-        return "magenta"; // Color for rejection
+        return "magenta";
       case "CANCELLED":
-        return "volcano"; // Color for cancelled status
+        return "volcano";
       default:
-        return "default"; // Default color for unknown status
+        return "default";
     }
   };
 
@@ -242,7 +253,6 @@ const BreederRequest = () => {
         <>
           <h1>Breeder Requests</h1>
           <Space style={{ marginBottom: 16 }}>
-            {/* Dropdown to select search field */}
             <Select
               value={searchField}
               onChange={(value) => setSearchField(value)}
@@ -255,7 +265,6 @@ const BreederRequest = () => {
               <Option value="requestedAt">Created At</Option>
             </Select>
 
-            {/* Conditionally render input field or date picker based on selected search field */}
             {searchField === "requestedAt" ? (
               <RangePicker
                 onChange={(dates) => setDateRange(dates)}
@@ -272,7 +281,6 @@ const BreederRequest = () => {
               />
             )}
 
-            {/* Search Button */}
             <Button
               type="primary"
               onClick={handleSearch}
@@ -281,14 +289,13 @@ const BreederRequest = () => {
               Search
             </Button>
 
-            {/* Reset Button */}
             <Button onClick={resetSearch} icon={<ReloadOutlined />}>
               Reset
             </Button>
           </Space>
 
           {addingRequest ? (
-            <AddBreederRequest onBack={handleBackToRequests} /> // Render AddBreederRequest
+            <AddBreederRequest onBack={handleBackToRequests} />
           ) : viewingDetails ? (
             <div
               style={{
@@ -299,12 +306,12 @@ const BreederRequest = () => {
             >
               <RequestDetails
                 request={selectedRequest}
-                onBack={handleBackToRequests} // Go back to the requests list
+                onBack={handleBackToRequests}
               />
             </div>
           ) : (
             <Table
-              dataSource={filteredRequests} // Use filtered requests for data
+              dataSource={filteredRequests}
               columns={columns}
               rowKey="requestId"
             />
