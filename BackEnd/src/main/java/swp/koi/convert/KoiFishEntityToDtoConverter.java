@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.ModelMap;
-import swp.koi.dto.request.KoiFishDTO;
 import swp.koi.dto.response.KoiFishResponseDTO;
 import swp.koi.model.KoiFish;
 

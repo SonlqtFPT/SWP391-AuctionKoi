@@ -14,10 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import org.springframework.web.server.ResponseStatusException;
-
-import swp.koi.convert.AccountEntityToDtoConverter;
-=======
-
 import swp.koi.dto.request.AccountLoginDTO;
 import swp.koi.dto.request.AccountRegisterDTO;
 import swp.koi.dto.response.AuthenticateResponse;
@@ -32,11 +28,6 @@ import swp.koi.service.jwtService.JwtServiceImpl;
 import swp.koi.service.memberService.MemberServiceImpl;
 import javax.security.auth.login.AccountNotFoundException;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService{
@@ -50,26 +41,15 @@ public class AccountServiceImpl implements AccountService{
     private final KoiBreederRepository koiBreederRepository;
     private final AccountDetailService accountDetailService;
 
-    private final AccountEntityToDtoConverter accountEntityToDtoConverter;
-
-
 
     @Override
     public AccountRegisterDTO findByAccountId(Integer accountId) {
-        return accountRepository.findByAccountId(accountId).orElseThrow(() -> new KoiException(ResponseCode.ACCOUNT_ID_NOT_FOUND));
+        return accountRepository.findByAccountId(accountId).orElseThrow(() -> new KoiException(ResponseCode.NOT_FOUND));
     }
 
     @Override
-    public Account findById(Integer accountId) {
-        return accountRepository.findById(accountId).orElseThrow(() -> new KoiException(ResponseCode.ACCOUNT_ID_NOT_FOUND));
-    }
-
-    @Override
-    public Account createAccount(Account account) throws KoiException{
-        if(accountRepository.existsByEmail(account.getEmail()))
-            throw new KoiException(ResponseCode.EMAIL_ALREADY_EXISTS);
-        else
-            return accountRepository.save(account);
+    public Account createAccount(Account account) {
+        return accountRepository.save(account);
     }
 
     @Override
@@ -99,9 +79,7 @@ public class AccountServiceImpl implements AccountService{
     @Override
     public AuthenticateResponse login(AccountLoginDTO request) throws KoiException {
         AuthenticateResponse authenticateResponse;
-
         Integer breederId = 0;
-
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
             var account = findByEmail(request.getEmail());
@@ -109,10 +87,6 @@ public class AccountServiceImpl implements AccountService{
             String accessToken = jwtService.generateToken(account.getEmail(), TokenType.ACCESS_TOKEN);
 
             String refreshToken = jwtService.generateRefreshToken(account.getEmail(), TokenType.REFRESH_TOKEN);
-
-
-            authenticateResponse = AuthenticateResponse.builder()
-                    .account(accountEntityToDtoConverter.convertAccount(account))
 
             var memberId = memberService.getMemberIdByAccount(account);
 
@@ -124,7 +98,6 @@ public class AccountServiceImpl implements AccountService{
             authenticateResponse = AuthenticateResponse.builder()
                     .memberId(memberId)
                     .breederId(breederId)
-
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
                     .build();
@@ -171,50 +144,14 @@ public class AccountServiceImpl implements AccountService{
 
 
         AuthenticateResponse tokenResponse = AuthenticateResponse.builder()
-                .account(accountEntityToDtoConverter.convertAccount(account))
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-
-
-        AuthenticateResponse tokenResponse = AuthenticateResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .breederId(breederId)
                 .memberId(memberId)
-
                 .build();
 
 
         return tokenResponse;
-
-    }
-
-    @Override
-    public List<Account> getAllStaff() {
-        List<Account> list = accountRepository.findAll();
-        List<Account> staffList = list
-                .stream()
-                .filter(staff -> staff.getRole() == AccountRoleEnum.STAFF)
-                .collect(Collectors.toList());
-        return staffList;
-    }
-
-    @Override
-    public boolean existById(Integer accountId) {
-        return accountRepository.existsById(accountId);
-    }
-
-    @Override
-    public void createAccountStaff(AccountRegisterDTO staffDto) {
-        Account account = new Account();
-        if(accountRepository.existsByEmail(account.getEmail()))
-            throw new KoiException(ResponseCode.EMAIL_ALREADY_EXISTS);
-        modelMapper.map(staffDto, account);
-        account.setPassword(passwordEncoder.encode(staffDto.getPassword()));
-        account.setRole(AccountRoleEnum.STAFF);
-        account.setStatus(true);
-        accountRepository.save(account);
-
     }
 
 

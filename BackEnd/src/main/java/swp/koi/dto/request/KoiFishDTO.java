@@ -5,7 +5,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import swp.koi.model.AuctionType;
 import swp.koi.model.Media;
 
 @Getter
@@ -28,8 +27,6 @@ public class KoiFishDTO {
 
     @Positive(message = "Price must be a positive number")
     private float price;
-
-    String auctionTypeName;
 
     private MediaDTO media;
 }
