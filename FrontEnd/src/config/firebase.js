@@ -1,8 +1,5 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-
-import { getAnalytics } from "firebase/analytics";
-
 import { getStorage } from "firebase/storage";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -10,19 +7,17 @@ import { getStorage } from "firebase/storage";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-
-  apiKey: "AIzaSyBlGL4qCxdt1O9ZFVTt52pscyY4nqI4gHA",
-  authDomain: "student-management-41928.firebaseapp.com",
-  projectId: "student-management-41928",
-  storageBucket: "student-management-41928.appspot.com",
-  messagingSenderId: "253865371368",
-  appId: "1:253865371368:web:fb4826f10aac328fe2cb5d",
-  measurementId: "G-T7MKB6N6TF",
+  apiKey: "AIzaSyBpVDDAW3sY0-5QK3uAJZDC0l3XfeojOW4",
+  authDomain: "koifish-e7d4c.firebaseapp.com",
+  projectId: "koifish-e7d4c",
+  storageBucket: "koifish-e7d4c.appspot.com",
+  messagingSenderId: "739005138123",
+  appId: "1:739005138123:web:0d3a200dc37ed670f6c74e",
+  measurementId: "G-HKD5SS3FWM"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 const storage = getStorage(app);
-export { storage };
 
+export {storage};

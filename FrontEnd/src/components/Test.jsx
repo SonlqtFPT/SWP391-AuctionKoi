@@ -1,29 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import {
-  Button,
-  Form,
-  Image,
-  Input,
-  InputNumber,
-  Modal,
-  Popconfirm,
-  Table,
-  Upload,
-} from "antd";
+import { Form, Input, InputNumber, Modal, Table } from "antd";
 import { useForm } from "antd/es/form/Form";
-import { PlusOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
-import uploadFile from "../utils/file";
 
 const Test = () => {
   const [students, setStudents] = useState([]);
   const [openModel, setOpenModel] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [form] = useForm();
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState("");
-  const [fileList, setFileList] = useState([]);
 
   const api = "https://66f500119aa4891f2a23708f.mockapi.io/StudentManager";
 
@@ -48,34 +33,6 @@ const Test = () => {
       dataIndex: "name",
       key: "name",
     },
-    {
-      title: "Image",
-      dataIndex: "image",
-      key: "image",
-      render: (image) => {
-        return <img src={image} alt="" width={200} />;
-      },
-    },
-    {
-      title: "Action",
-      dataIndex: "id",
-      key: "id",
-      render: (id) => {
-        return (
-          <>
-            <Popconfirm
-              title="Delete"
-              description="Are u sure?"
-              onConfirm={() => handleDeleteStudent(id)}
-            >
-              <Button type="primary" danger>
-                Delete
-              </Button>
-            </Popconfirm>
-          </>
-        );
-      },
-    },
   ];
 
   const handleOpenModal = () => {
@@ -89,18 +46,6 @@ const Test = () => {
   const handleSubmitStudent = async (student) => {
     // xử lý lấy thông tin lấy thằng student trong form
     // => post xuống api
-
-    //upload ảnh lên trước
-    if (fileList.length > 0) {
-      const file = fileList[0];
-      console.log(file);
-
-      const url = await uploadFile(file.originFileObj);
-      console.log(url);
-      student.image = url;
-    }
-    //quăng data xuống cho BE
-
     console.log(student);
     try {
       setSubmitting(true);
@@ -123,55 +68,15 @@ const Test = () => {
     }
   };
 
-  const handleDeleteStudent = async (studentId) => {
-    try {
-      await axios.delete(`${api}/${studentId}`);
-      toast.success("Bye bye");
-      fetchStudent();
-    } catch (error) {
-      toast.error("oh no cant delete");
-    }
-  };
-
-  const getBase64 = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
-
-  const handlePreview = async (file) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
-    }
-    setPreviewImage(file.url || file.preview);
-    setPreviewOpen(true);
-  };
-  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
-  const uploadButton = (
-    <button
-      style={{
-        border: 0,
-        background: "none",
-      }}
-      type="button"
-    >
-      <PlusOutlined />
-      <div
-        style={{
-          marginTop: 8,
-        }}
-      >
-        Upload
-      </div>
-    </button>
-  );
-
   return (
     <div>
       <h1>StudentManager</h1>
-      <button onClick={handleOpenModal}>Create new student</button>
+      <button
+        onClick={handleOpenModal}
+        className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
+      >
+        Create new student
+      </button>
       <Table columns={columns} dataSource={students} />
       {/* nếu open là true => modal hiện, false => modal ẩn đi*/}
       {/*onCancel : antd cung cấp*/}
@@ -236,34 +141,8 @@ const Test = () => {
           >
             <InputNumber step={0.5} />
           </Form.Item>
-
-          <Form.Item label="image" name="image">
-            <Upload
-              action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-              listType="picture-card"
-              fileList={fileList}
-              onPreview={handlePreview}
-              onChange={handleChange}
-            >
-              {fileList.length >= 8 ? null : uploadButton}
-            </Upload>
-          </Form.Item>
         </Form>
       </Modal>
-
-      {previewImage && (
-        <Image
-          wrapperStyle={{
-            display: "none",
-          }}
-          preview={{
-            visible: previewOpen,
-            onVisibleChange: (visible) => setPreviewOpen(visible),
-            afterOpenChange: (visible) => !visible && setPreviewImage(""),
-          }}
-          src={previewImage}
-        />
-      )}
     </div>
   );
 };
