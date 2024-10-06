@@ -2,37 +2,49 @@ package swp.koi.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Null;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
+import swp.koi.model.enums.TransactionTypeEnum;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "[Transaction]")
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Transaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer transactionId;
+    private Integer transactionId;
 
     @Column(nullable = false)
-    String transactionType;
+    @Enumerated(EnumType.STRING)
+    private TransactionTypeEnum transactionType;
+
+    private LocalDateTime transactionDate;
 
     @Column(nullable = false)
-    int docNo;
+    private float amount;
 
     @Column(nullable = false)
-    float amount;
+    private String paymentStatus;
 
-    public Transaction() {
-    }
+    @ManyToOne
+    @JoinColumn(name = "lot_id")
+    private Lot lot;
 
-    public Transaction(String transactionType, int docNo, float amount) {
-        this.transactionType = transactionType;
-        this.docNo = docNo;
-        this.amount = amount;
-    }
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @ManyToOne
+    @JoinColumn(name = "breeder_id")
+    private KoiBreeder breeder;
+
+    @OneToOne(mappedBy = "transaction")
+    private Invoice invoice;
 }

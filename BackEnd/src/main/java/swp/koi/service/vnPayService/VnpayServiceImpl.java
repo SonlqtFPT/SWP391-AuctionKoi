@@ -9,10 +9,13 @@ import swp.koi.exception.KoiException;
 import swp.koi.model.Lot;
 import swp.koi.model.LotRegister;
 import swp.koi.model.Member;
+import swp.koi.model.Transaction;
 import swp.koi.model.enums.LotRegisterStatusEnum;
 import swp.koi.repository.LotRegisterRepository;
 import swp.koi.repository.LotRepository;
 import swp.koi.repository.MemberRepository;
+import swp.koi.service.transactionService.TransactionServiceImpl;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -27,7 +30,7 @@ public class VnpayServiceImpl implements VnpayService {
     private final LotRepository lotRepository;
     private final LotRegisterRepository lotRegisterRepository;
     private final MemberRepository memberRepository;
-
+    private final TransactionServiceImpl transactionService;
 
     //generate invoice that's it!!!
     @Override
@@ -197,6 +200,8 @@ public class VnpayServiceImpl implements VnpayService {
                     .member(member)
                     .lot(lot)
                     .build();
+
+            Transaction transaction = transactionService.createTransactionForLotDeposit(lot.getLotId(), member.getMemberId());
 
             lotRegisterRepository.save(lotRegister);
         }

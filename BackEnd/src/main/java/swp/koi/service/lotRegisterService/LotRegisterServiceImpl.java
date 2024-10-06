@@ -63,10 +63,9 @@ public class LotRegisterServiceImpl implements LotRegisterService{
 
         if(isUserRegistered) {
             throw new KoiException((ResponseCode.MEMBER_ALREADY_REGISTERED));
-        }else {
-            var paymentUrl = vnpayService.generateInvoice(lotRegisDto.getLotId(),lotRegisDto.getMemberId(),request);
-            return paymentUrl;
         }
+        return vnpayService.generateInvoice(lotRegisDto.getLotId(),lotRegisDto.getMemberId(),request);
+
     }
 
     @Override

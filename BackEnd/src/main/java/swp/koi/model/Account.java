@@ -53,6 +53,7 @@ public class Account {
     @OneToMany(mappedBy = "account")
     List<AuctionRequest> auctionRequest;
 
+
     public Account() {
     }
 

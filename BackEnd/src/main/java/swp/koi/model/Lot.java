@@ -62,6 +62,9 @@ public class Lot {
     @JoinColumn(name = "auctionId")
     Auction auction;
 
+    @OneToMany(mappedBy = "lot")
+    List<Transaction> transactions;
+
     public Lot() {
     }
 

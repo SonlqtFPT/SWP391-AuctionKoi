@@ -31,6 +31,9 @@ public class Member {
     @OneToMany(mappedBy = "member",fetch = FetchType.LAZY)
     List<Bid> bids;
 
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    List<Transaction> transactions;
+
     public Member() {
     }
 
