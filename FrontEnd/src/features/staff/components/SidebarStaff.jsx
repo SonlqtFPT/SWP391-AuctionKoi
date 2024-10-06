@@ -6,9 +6,7 @@ import {
   FaTasks,
   FaTruck, // Import FaTruck icon for Transport
 } from "react-icons/fa"; // Importing React icons
-
 import Logo from "../../../assets/logo/PrestigeKoi_White.png";
-
 
 const SidebarAdmin = () => {
   return (

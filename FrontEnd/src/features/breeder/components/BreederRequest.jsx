@@ -1,6 +1,4 @@
-
 import React, { useEffect, useState } from "react";
-
 import {
   Table,
   Button,
@@ -13,27 +11,27 @@ import {
 } from "antd";
 import { SearchOutlined, ReloadOutlined } from "@ant-design/icons";
 import RequestDetails from "../components/RequestDetails";
-
-import AddBreederRequest from "../components/AddBreederRequest"; // Import the AddBreederRequest component
+import AddBreederRequest from "../components/AddBreederRequest";
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
-import { useAuth } from "../../protectedRoutes/AuthContext";
-
-
+import {
+  FaIdBadge,
+  FaFish,
+  FaCalendarAlt,
+  FaGavel,
+  FaInfoCircle,
+} from "react-icons/fa";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
-
-
 const BreederRequest = () => {
   const [requests, setRequests] = useState([]);
+  const [filteredRequests, setFilteredRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [addingRequest, setAddingRequest] = useState(false); // State for adding request
-  const [viewingDetails, setViewingDetails] = useState(false); // New state for viewing request details
-  const [filteredRequests, setFilteredRequests] = useState([]);
-
+  const [addingRequest, setAddingRequest] = useState(false);
+  const [viewingDetails, setViewingDetails] = useState(false);
   const [search, setSearch] = useState("");
   const [searchField, setSearchField] = useState("requestId");
   const [dateRange, setDateRange] = useState(null);
@@ -47,38 +45,24 @@ const BreederRequest = () => {
     try {
       const breederId = 1; // Assuming you want to fetch requests for this breeder
       const response = await api.get(`/breeder/request/${breederId}`);
-
-
-      // Log the raw response data
-      console.log("Fetched requests data:", response.data.data);
-
-      // Map to include full details needed
-
       const requestData = response.data.data.map((item) => ({
         requestId: item.requestId,
         status: item.status,
         requestedAt: item.requestedAt,
-
-        auctionTypeNameManager: item.auctionTypeName,
-        auctionTypeNameBreeder: item.koiFish.auctionTypeName,
+        auctionTypeNameBreeder: formatAuctionType(item.koiFish.auctionTypeName),
+        auctionTypeNameManager: formatAuctionType(item.auctionTypeName),
         fishId: item.koiFish.fishId,
         breederId: item.breeder.breederId,
         breederName: item.breeder.breederName,
-        breederLocation: item.breeder.location, // include breeder location
+        breederLocation: item.breeder.location,
         price: item.koiFish.price,
-        offerPriceManager: item.offerPrice, // include offer price
-        age: item.koiFish.age, // include age
-        size: item.koiFish.size, // include size
-        gender: item.koiFish.gender, // include gender
-        varietyName: item.koiFish.variety.varietyName, // include variety name
-        image: item.koiFish.media.imageUrl, // include image URL
-        videoUrl: item.koiFish.media.videoUrl, // include video URL
-        // Include additional fields if needed
-        staff: item.staff, // Add staff details if needed
+        offerPriceManager: item.offerPrice,
+        age: item.koiFish.age,
+        size: item.koiFish.size,
+        varietyName: item.koiFish.variety.varietyName,
+        image: item.koiFish.media.imageUrl,
+        videoUrl: item.koiFish.media.videoUrl,
       }));
-
-      // Log the processed requestData
-      console.log("Processed request data:", requestData);
 
       setRequests(requestData);
       setFilteredRequests(requestData);
@@ -107,19 +91,16 @@ const BreederRequest = () => {
   };
 
   const handleViewDetails = (request) => {
-
-    setSelectedRequest(request); // This now contains all details
-    setViewingDetails(true); // Set state to indicate we're viewing details
-    setRequests([]); // Clear the request list when viewing details
+    setSelectedRequest(request);
+    setViewingDetails(true);
+    setRequests([]); // Clear requests while viewing details
   };
 
-  // New function to handle going back to the request list
   const handleBackToRequests = () => {
-    setAddingRequest(false); // Set addingRequest to false to show the requests
-    setViewingDetails(false); // Reset viewing details state
-    fetchRequests(); // Optionally refetch requests to refresh the list
+    setAddingRequest(false);
+    setViewingDetails(false);
+    fetchRequests();
   };
-
 
   const handleSearch = () => {
     const filtered = requests.filter((item) => {
@@ -158,7 +139,6 @@ const BreederRequest = () => {
     setDateRange(null);
     setFilteredRequests(requests);
   };
-
 
   const columns = [
     {
@@ -223,7 +203,6 @@ const BreederRequest = () => {
     },
   ];
 
-
   const formatStatus = (status) => {
     switch (status) {
       case "APPROVE":
@@ -267,156 +246,77 @@ const BreederRequest = () => {
   };
 
   return (
-
-    <div className="w-full mt-16 bg-hero-pattern relative bg-cover">
-      <div className='absolute bg-black bg-opacity-70 inset-0'></div>
+    <div>
       {loading ? (
         <Spin size="large" />
       ) : (
-        <div className="relative">
-          <div className="flex flex-col justify-center text-center">
-            <h1 className="text-2xl lg:text-3xl font-bold text-[#bcab6f] my-5">Breeder Requests</h1>
-            {/* Button to add a new breeder request */}
-            <div className="flex items-center justify-center space-x-4">
-              {/* Left Image */}
-              <span>
-                <img src="\src\assets\Divider\diamondLeft.png" alt="Left Divider" className="w-auto transform scale-x-[-1]" />
-              </span>
+        <>
+          <h1>Breeder Requests</h1>
+          <Space style={{ marginBottom: 16 }}>
+            <Select
+              value={searchField}
+              onChange={(value) => setSearchField(value)}
+              style={{ width: 200 }}
+            >
+              <Option value="requestId">Request ID</Option>
+              <Option value="fishId">Fish ID</Option>
+              <Option value="auctionTypeNameBreeder">Auction Type</Option>
+              <Option value="status">Status</Option>
+              <Option value="requestedAt">Created At</Option>
+            </Select>
 
-              {/* Button in the middle */}
-              <Button
-                type="primary"
-                onClick={() => setAddingRequest(true)}
-                className="font-bold text-2xl bg-amber-500 hover:bg-amber-400 rounded-full px-16 py-5 lg:py-7 text-black"
-              >
-                Add Breeder Request
-              </Button>
-
-              {/* Right Image */}
-              <span>
-                <img src="\src\assets\Divider\diamondRight.png" alt="Right Divider" className="w-auto" />
-              </span>
-            </div>
-          </div>
-
-          {/* Conditionally render search bar only when not adding request or viewing details */}
-          {!addingRequest && !viewingDetails && (
-            <Space className="mx-5 mt-5">
-              <Select
-                value={searchField}
-                onChange={(value) => setSearchField(value)}
+            {searchField === "requestedAt" ? (
+              <RangePicker
+                onChange={(dates) => setDateRange(dates)}
+                format="YYYY-MM-DD"
+                placeholder={["Start Date", "End Date"]}
+              />
+            ) : (
+              <Input
+                placeholder={`Search by ${searchField}`}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 style={{ width: 200 }}
-              >
-                <Option value="requestId">Request ID</Option>
-                <Option value="fishId">Fish ID</Option>
-                <Option value="auctionTypeNameBreeder">Auction Type</Option>
-                <Option value="status">Status</Option>
-                <Option value="requestedAt">Created At</Option>
-              </Select>
+                prefix={<SearchOutlined />}
+              />
+            )}
 
-              {searchField === "requestedAt" ? (
-                <RangePicker
-                  onChange={(dates) => setDateRange(dates)}
-                  format="YYYY-MM-DD"
-                  placeholder={["Start Date", "End Date"]}
-                />
-              ) : (
-                <Input
-                  placeholder={`Search by ${searchField}`}
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  style={{ width: 200 }}
-                  prefix={<SearchOutlined />}
-                />
-              )}
+            <Button
+              type="primary"
+              onClick={handleSearch}
+              icon={<SearchOutlined />}
+            >
+              Search
+            </Button>
 
-              <Button
-                type="primary"
-                onClick={handleSearch}
-                icon={<SearchOutlined />}
-              >
-                Search
-              </Button>
-
-              <Button onClick={resetSearch} icon={<ReloadOutlined />}>
-                Reset
-              </Button>
-            </Space>
-          )}
+            <Button onClick={resetSearch} icon={<ReloadOutlined />}>
+              Reset
+            </Button>
+          </Space>
 
           {addingRequest ? (
-            <AddBreederRequest onBack={handleBackToRequests} /> // Render AddBreederRequest
+            <AddBreederRequest onBack={handleBackToRequests} />
           ) : viewingDetails ? (
-            <div>
+            <div
+              style={{
+                marginTop: "20px",
+                border: "1px solid #d9d9d9",
+                padding: "20px",
+              }}
+            >
               <RequestDetails
                 request={selectedRequest}
-                onBack={handleBackToRequests} // Go back to the requests list
+                onBack={handleBackToRequests}
               />
             </div>
           ) : (
-            <div className="overflow-x-auto bg-amber-500 shadow-md rounded-lg my-5 mx-5">
-              <Table
-                dataSource={filteredRequests}
-                columns={[
-                  {
-                    title: <span className="text-black">Request ID</span>,
-                    dataIndex: "requestId",
-                    key: "requestId",
-                    sorter: (a, b) => a.requestId - b.requestId,
-                    render: (text) => <span className="text-blue-500">{text}</span>,
-                    className: "text-gray-200 text-left px-4 py-2 font-semibold",
-                  },
-                  {
-                    title: <span className="text-black">Fish ID</span>,
-                    dataIndex: "fishId",
-                    key: "fishId",
-                    sorter: (a, b) => a.fishId - b.fishId,
-                    render: (text) => <span className="font-bold text-orange-500">{text}</span>,
-                    className: "text-gray-200 text-left px-4 py-2 font-semibold",
-                  },
-                  {
-                    title: <span className="text-black">Created At</span>,
-                    dataIndex: "requestedAt",
-                    key: "requestedAt",
-                    render: (text) => (
-                      <span className="text-gray-500">{new Date(text).toLocaleString()}</span>
-                    ),
-                    sorter: (a, b) => new Date(a.requestedAt) - new Date(b.requestedAt),
-                    className: "text-left px-4 py-2 font-semibold",
-                  },
-                  {
-                    title: <span className="text-black">Status</span>,
-                    dataIndex: "status",
-                    key: "status",
-                    render: (text) => (
-                      <Tag color={getStatusColor(text)} className="text-sm px-2 py-1">
-                        {formatStatus(text)}
-                      </Tag>
-                    ),
-                    sorter: (a, b) => a.status.localeCompare(b.status),
-                    className: "text-left px-4 py-2 font-semibold",
-                  },
-                  {
-                    title: <span className="text-black">Action</span>,
-                    key: "action",
-                    render: (text, record) => (
-                      <button
-                        onClick={() => handleViewDetails(record)}
-                        className="bg-red-600 text-white rounded-lg px-4 py-2 hover:bg-red-500"
-                      >
-                        View Details
-                      </button>
-                    ),
-                    className: "text-left px-4 py-2 font-semibold",
-                  },
-                ]}
-                rowKey="requestId"
-                className="min-w-full border-collapse"
-              />
-            </div>
+            <Table
+              dataSource={filteredRequests}
+              columns={columns}
+              rowKey="requestId"
+            />
           )}
-        </div>
-
+        </>
       )}
     </div>
   );
