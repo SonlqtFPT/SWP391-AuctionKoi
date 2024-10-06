@@ -1,14 +1,17 @@
-
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Card,
+  Row,
+  Col,
+  Tag,
   Select,
   Input,
   notification,
+  Image,
 } from "antd";
 import api from "../../../config/axios";
-
+import { FaFish, FaFlag } from "react-icons/fa"; // Importing required icons
 
 const RequestDetails = ({ request, onBack, fetchRequest }) => {
   const [offerPrice, setOfferPrice] = useState(null);
@@ -59,9 +62,7 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
 
   const getStatusColor = (status) => {
     switch (
-
-    status.toUpperCase() 
-
+      status.toUpperCase() // Ensure status is case-insensitive
     ) {
       case "PENDING":
         return "blue"; // Color for pending status
@@ -125,7 +126,6 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
         message: "Success",
         description: "Offer accepted successfully!",
       });
-
     } catch (error) {
       console.error("Error accepting offer:", error);
       notification.error({
@@ -142,7 +142,6 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
         message: "Success",
         description: "Request cancelled successfully!",
       });
-
     } catch (error) {
       console.error("Error cancelling request:", error);
       notification.error({
@@ -153,160 +152,206 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
   };
 
   return (
-
-    <div className="p-6 bg-[#131313] rounded-2xl text-white my-5 mx-5">
-      <h2 className="text-2xl font-bold mb-6 text-[#bcab6f]">Request Details</h2>
-
-      <div className="grid grid-cols-3 gap-6 mb-8">
+    <div>
+      <h2>Request Details</h2>
+      <Row gutter={16}>
         {/* Left Side: All Information Section */}
-        <div className="col-span-2">
-          <div className="bg-gray-700 p-4 rounded-lg shadow mb-5">
-            <h3 className="text-lg font-semibold mb-4">All Information</h3>
-            <div className="grid grid-cols-3 gap-4">
-              {/* Breeder Info */}
-              <div>
-                <h4 className="font-semibold text-[#bcab6f]">Breeder Info</h4>
-                <p><strong>Breeder ID:</strong> {request.breederId}</p>
-                <p><strong>Breeder Name:</strong> {request.breederName}</p>
-                <p><strong>Location:</strong> {request.breederLocation}</p>
-              </div>
-
-              {/* Koi Info */}
-              <div>
-                <h4 className="font-semibold text-[#bcab6f]">Koi Info</h4>
-                <p><strong>Fish ID:</strong> {request.fishId}</p>
-                <p><strong>Size:</strong> {request.size}</p>
-                <p><strong>Age:</strong> {request.age}</p>
-                <p><strong>Variety:</strong> {request.varietyName}</p>
-                <p><strong>Gender:</strong> {request.gender}</p>
-              </div>
-
-              {/* Request Info */}
-              <div>
-                <h4 className="font-semibold text-[#bcab6f]">Request Info</h4>
-                <p><strong>Status:</strong>
-                  <span className={getStatusColor(request.status)}>
-                    {formatStatus(request.status)}
-                  </span>
+        <Col span={16}>
+          <Card title={<strong>All Information</strong>} className="mb-4">
+            <Row gutter={8}>
+              {/* Breeder Info Column */}
+              <Col span={8}>
+                <h4>
+                  <strong>Breeder Info</strong>
+                </h4>
+                <p style={{ margin: "0 0 4px" }}>
+                  <strong>Breeder ID:</strong> {request.breederId}
                 </p>
-                <p><strong>Requested At:</strong> {new Date(request.requestedAt).toLocaleString()}</p>
-                <p><strong>Price:</strong> ${request.price}</p>
-                <p><strong>Auction Type:</strong> {request.auctionTypeNameBreeder}</p>
+                <p style={{ margin: "0 0 4px" }}>
+                  <strong>Breeder Name:</strong> {request.breederName}
+                </p>
+                <p style={{ margin: "0 0 4px" }}>
+                  <strong>Location:</strong> {request.breederLocation}
+                </p>
+              </Col>
+
+              {/* Vertical Divider */}
+              <Col span={1} style={{ textAlign: "center" }}>
+                <div
+                  style={{
+                    borderLeft: "1px solid #d9d9d9",
+                    height: "100%",
+                    margin: "0 0 4px",
+                  }}
+                />
+              </Col>
+
+              {/* Koi Info Column */}
+              <Col span={7}>
+                <h4>
+                  <strong>Koi Info</strong>
+                </h4>
+                <p style={{ margin: "0 0 4px" }}>
+                  <strong>Fish ID:</strong> {request.fishId}
+                </p>
+                <p style={{ margin: "0 0 4px" }}>
+                  <strong>Size:</strong> {request.size}
+                </p>
+                <p style={{ margin: "0 0 4px" }}>
+                  <strong>Age:</strong> {request.age}
+                </p>
+                <p style={{ margin: "0 0 4px" }}>
+                  <strong>Variety:</strong> {request.varietyName}{" "}
+                  {/* Update to use varietyName */}
+                </p>
+              </Col>
+
+              {/* Vertical Divider */}
+              <Col span={1} style={{ textAlign: "center" }}>
+                <div
+                  style={{
+                    borderLeft: "1px solid #d9d9d9",
+                    height: "100%",
+                    margin: "0 0 4px",
+                  }}
+                />
+              </Col>
+
+              {/* Request Info Column */}
+              <Col span={7}>
+                <h4>
+                  <strong>Request Info</strong>
+                </h4>
+                <p style={{ margin: "0 0 4px" }}>
+                  <strong>
+                    <FaFlag /> Status:
+                  </strong>{" "}
+                  <Tag color={getStatusColor(request.status)}>
+                    {formatStatus(request.status)}
+                  </Tag>
+                </p>
+                <p style={{ margin: "0 0 4px" }}>
+                  <strong>Requested At:</strong>{" "}
+                  {new Date(request.requestedAt).toLocaleString()}
+                </p>
+                <p style={{ margin: "0 0 4px" }}>
+                  <strong>Price:</strong> ${request.price}{" "}
+                  {/* Fixed this line */}
+                </p>
+                <p style={{ margin: "0 0 4px" }}>
+                  <strong>Auction Type:</strong>{" "}
+                  {request.auctionTypeNameBreeder}
+                </p>
+              </Col>
+            </Row>
+          </Card>
+        </Col>
+
+        {/* Right Side: Media Section */}
+        <Col span={8}>
+          <Card title={<strong>Media</strong>} className="mb-4">
+            {/* Video Preview */}
+            {request.videoUrl ? (
+              <div style={{ marginTop: 16 }}>
+                <strong>Video:</strong>
+                <video width="300" controls>
+                  <source src={request.videoUrl} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
               </div>
-            </div>
-          </div>
+            ) : (
+              <p>No video available for this auction request.</p>
+            )}
 
+            {/* Image Display */}
+            <h4>
+              <strong>Image:</strong>
+            </h4>
+            {request.image ? (
+              <Image
+                src={request.image}
+                alt="Koi Fish"
+                style={{ width: 200 }}
+              />
+            ) : (
+              <p>No image available for this auction request.</p>
+            )}
+          </Card>
+        </Col>
+      </Row>
 
-          {/* Media Section */}
-          <div className="bg-gray-700 p-4 rounded-lg shadow">
-            <h3 className="text-lg font-semibold mb-4">Media</h3>
-            <div className="flex flex-row justify-between gap-10">
-              {/* Image Display */}
-              <div className="w-1/2">
-                <strong className="text-[#bcab6f]">Image:</strong>
-                {request.image ? (
-                  <img src={request.image} alt="Koi Fish" className="w-full mt-2 rounded-md" />
-                ) : (
-                  <div className="flex items-center justify-center bg-gray-800 h-48 rounded-md">
-                    <p>No image available.</p>
-                  </div>
-                )}
+      {/* Negotiation Section */}
+      {/* Only render the negotiation card when the status is PENDING_MANAGER_OFFER or PENDING_BREEDER_OFFER */}
+      {(request.status === "PENDING_MANAGER_OFFER" ||
+        request.status === "PENDING_BREEDER_OFFER") && (
+        <Card className="mb-4">
+          <h4>Negotiation</h4>
+
+          {request.status === "PENDING_BREEDER_OFFER" && (
+            <>
+              {/* Display Manager's Offer */}
+              <div style={{ marginBottom: "16px" }}>
+                <h3>Manager's Offer</h3>
+                <p>
+                  <strong>Offer Price:</strong> ${request.offerPriceManager}
+                </p>
+                <p>
+                  <strong>Auction Type:</strong>{" "}
+                  {formatAuctionType(request.auctionTypeNameManager)}
+                </p>
               </div>
 
-              {/* Video Display */}
-              <div className="w-1/2">
-                <strong className="text-[#bcab6f]">Video:</strong>
-                {request.videoUrl ? (
-                  <video className="w-full h-96 mt-2 rounded-md" controls>
-                    <source src={request.videoUrl} type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-                ) : (
-                  <div className="flex items-center justify-center bg-gray-800 h-48 rounded-md">
-                    <p>No video available.</p>
-                  </div>
-                )}
+              {/* Negotiation Form */}
+              <Input
+                type="number"
+                placeholder="Your Offer Price"
+                value={offerPrice || ""}
+                onChange={(e) =>
+                  setOfferPrice(e.target.value ? Number(e.target.value) : null)
+                }
+                style={{ width: "200px", marginBottom: "16px" }}
+              />
+              <Select
+                placeholder="Select Auction Type"
+                value={offerAuctionType || undefined}
+                onChange={setOfferAuctionType}
+                style={{ width: "200px", marginBottom: "16px" }}
+              >
+                <Select.Option value="ASCENDING_BID">
+                  Ascending Bid
+                </Select.Option>
+                <Select.Option value="DESCENDING_BID">
+                  Descending Bid
+                </Select.Option>
+                <Select.Option value="SEALED_BID">Sealed Bid</Select.Option>
+                <Select.Option value="DIRECT_SALE">Direct Sale</Select.Option>
+              </Select>
+              <Button type="primary" onClick={handleNegotiate}>
+                Submit Offer
+              </Button>
+
+              {/* Actions for Breeder Offer */}
+              <div style={{ marginTop: "16px" }}>
+                <Button
+                  type="primary"
+                  onClick={handleAccept}
+                  style={{ marginRight: "8px" }}
+                >
+                  Accept Offer
+                </Button>
+                <Button type="default" onClick={handleCancel}>
+                  Cancel Offer
+                </Button>
               </div>
-            </div>
-          </div>
-        </div>
-
-
-        {/* Negotiation Section */}
-        {/* Only render the negotiation card when the status is PENDING_MANAGER_OFFER or PENDING_BREEDER_OFFER */}
-        {(request.status === "PENDING_MANAGER_OFFER" ||
-          request.status === "PENDING_BREEDER_OFFER") && (
-            <Card className="bg-gray-700 p-4 rounded-lg shadow mb-6 w-auto h-max">
-              <h4 className="text-lg font-semibold mb-4 text-[#bcab6f]">Negotiation</h4>
-
-              {request.status === "PENDING_BREEDER_OFFER" && (
-                <>
-                  {/* Display Manager's Offer */}
-                  <div style={{ marginBottom: "16px" }}>
-                    <h3>Manager's Offer</h3>
-                    <p>
-                      <strong>Offer Price:</strong> ${request.offerPriceManager}
-                    </p>
-                    <p>
-                      <strong>Auction Type:</strong>{" "}
-                      {formatAuctionType(request.auctionTypeNameManager)}
-                    </p>
-                  </div>
-
-                  {/* Negotiation Form */}
-                  <Input
-                    type="number"
-                    placeholder="Your Offer Price"
-                    value={offerPrice || ""}
-                    onChange={(e) =>
-                      setOfferPrice(e.target.value ? Number(e.target.value) : null)
-                    }
-                    style={{ width: "200px", marginBottom: "16px" }}
-                  />
-                  <Select
-                    placeholder="Select Auction Type"
-                    value={offerAuctionType || undefined}
-                    onChange={setOfferAuctionType}
-                    style={{ width: "200px", marginBottom: "16px" }}
-                  >
-                    <Select.Option value="ASCENDING_BID">
-                      Ascending Bid
-                    </Select.Option>
-                    <Select.Option value="DESCENDING_BID">
-                      Descending Bid
-                    </Select.Option>
-                    <Select.Option value="SEALED_BID">Sealed Bid</Select.Option>
-                    <Select.Option value="DIRECT_SALE">Direct Sale</Select.Option>
-                  </Select>
-                  <Button type="primary" onClick={handleNegotiate}>
-                    Submit Offer
-                  </Button>
-
-                  {/* Actions for Breeder Offer */}
-                  <div style={{ marginTop: "16px" }}>
-                    <Button
-                      type="primary"
-                      onClick={handleAccept}
-                      style={{ marginRight: "8px" }}
-                    >
-                      Accept Offer
-                    </Button>
-                    <Button type="default" onClick={handleCancel}>
-                      Cancel Offer
-                    </Button>
-                  </div>
-                </>
-              )}
-            </Card>
+            </>
           )}
+        </Card>
+      )}
 
-
-      </div>
-
-      <button type="default" onClick={onBack} className="bg-red-600 text-white rounded-lg px-4 py-2 hover:bg-red-500">
+      {/* Back Button */}
+      <Button type="default" onClick={onBack}>
         Back
-      </button>
-
+      </Button>
     </div>
   );
 };
