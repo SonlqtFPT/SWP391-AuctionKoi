@@ -46,29 +46,29 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
   };
 
   const getStatusColor = (status) => {
-    switch (status) {
-      case "INSPECTION_PASSED":
-        return "green";
-      case "INSPECTION_FAILED":
-        return "red";
-      case "INSPECTION_IN_PROGRESS":
-        return "orange";
+    switch (
+      status.toUpperCase() // Ensure status is case-insensitive
+    ) {
       case "PENDING":
-        return "blue";
-      case "PENDING_NEGOTIATION":
-        return "purple";
+        return "blue"; // Color for pending status
+      case "INSPECTION_IN_PROGRESS":
+        return "orange"; // Color for inspection in progress
+      case "INSPECTION_PASSED":
+        return "green"; // Color for inspection passed
+      case "INSPECTION_FAILED":
+        return "red"; // Color for inspection failed
       case "PENDING_MANAGER_OFFER":
-        return "cyan";
+        return "gold"; // Color for pending manager offer
       case "PENDING_BREEDER_OFFER":
-        return "gold";
-      case "COMPLETED":
-        return "geekblue";
-      case "CANCELLED":
-        return "volcano";
+        return "lime"; // Color for pending breeder offer
       case "APPROVE":
-        return "cyan";
+        return "cyan"; // Color for approval
+      case "REJECT":
+        return "magenta"; // Color for rejection
+      case "CANCELLED":
+        return "volcano"; // Color for cancelled status
       default:
-        return "default";
+        return "default"; // Default color for unknown status
     }
   };
 
@@ -268,81 +268,69 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
       </Row>
 
       {/* Negotiation Section */}
-      <Card className="mb-4">
-        <h4>Negotiation</h4>
-        {/* Display Manager Offer Price for the Breeder */}
-        {request.offerPriceManager !== undefined && (
-          <p style={{ marginTop: "16px" }}>
-            <strong>Manager Offer Price:</strong> ${request.offerPriceManager}
-          </p>
-        )}
-        {request.auctionTypeNameManager !== undefined && (
-          <p style={{ marginTop: "16px" }}>
-            <strong>Manager Offer Auction Type:</strong>{" "}
-            {request.auctionTypeNameManager}
-          </p>
-        )}
+      {/* Only render the negotiation card when the status is PENDING_MANAGER_OFFER or PENDING_BREEDER_OFFER */}
+      {(request.status === "PENDING_MANAGER_OFFER" ||
+        request.status === "PENDING_BREEDER_OFFER") && (
+        <Card className="mb-4">
+          <h4>Negotiation</h4>
 
-        {(request.status === "PENDING_MANAGER_OFFER" ||
-          request.status === "PENDING_BREEDER_OFFER") && (
-          <>
-            {request.status === "PENDING_MANAGER_OFFER" && (
-              <p>Waiting for Manager Approval</p>
-            )}
-            {request.status === "PENDING_BREEDER_OFFER" && (
-              <p>Waiting for Breeder Approval</p>
-            )}
-            {(request.status === "PENDING_BREEDER_OFFER" ||
-              request.status === "INSPECTION_PASSED") && (
-              <>
-                <Input
-                  type="number"
-                  placeholder="Offer Price"
-                  value={offerPrice || ""}
-                  onChange={(e) =>
-                    setOfferPrice(
-                      e.target.value ? Number(e.target.value) : null
-                    )
-                  }
-                  style={{ width: "200px", marginBottom: "16px" }}
-                />
-                <Select
-                  placeholder="Select Auction Type"
-                  value={offerAuctionType || undefined}
-                  onChange={setOfferAuctionType}
-                  style={{ width: "200px", marginBottom: "16px" }}
-                >
-                  <Select.Option value="ASCENDING_BID">
-                    Ascending Bid
-                  </Select.Option>
-                  <Select.Option value="DESCENDING_BID">
-                    Descending Bid
-                  </Select.Option>
-                  <Select.Option value="SEALED_BID">Sealed Bid</Select.Option>
-                  <Select.Option value="DIRECT_SALE">Direct Sale</Select.Option>
-                </Select>
-                <Button type="primary" onClick={handleNegotiate}>
-                  Submit Offer
-                </Button>
-              </>
-            )}
-            {request.status === "PENDING_BREEDER_OFFER" && (
-              <div style={{ marginTop: "16px" }}>
-                <Button
-                  type="primary"
-                  onClick={handleAccept}
-                  style={{ marginRight: "8px" }}
-                >
-                  Accept Offer
-                </Button>
-                <Button type="default" onClick={handleCancel}>
-                  Cancel Offer
-                </Button>
-              </div>
-            )}
-          </>
-        )}
-      </Card>
+          {request.status === "PENDING_MANAGER_OFFER" && (
+            <p>Waiting for Manager Approval</p>
+          )}
+          {request.status === "PENDING_BREEDER_OFFER" && (
+            <p>Waiting for Breeder Approval</p>
+          )}
+
+          {/* Negotiation Form */}
+          {request.status === "PENDING_BREEDER_OFFER" && (
+            <>
+              <Input
+                type="number"
+                placeholder="Offer Price"
+                value={offerPrice || ""}
+                onChange={(e) =>
+                  setOfferPrice(e.target.value ? Number(e.target.value) : null)
+                }
+                style={{ width: "200px", marginBottom: "16px" }}
+              />
+              <Select
+                placeholder="Select Auction Type"
+                value={offerAuctionType || undefined}
+                onChange={setOfferAuctionType}
+                style={{ width: "200px", marginBottom: "16px" }}
+              >
+                <Select.Option value="ASCENDING_BID">
+                  Ascending Bid
+                </Select.Option>
+                <Select.Option value="DESCENDING_BID">
+                  Descending Bid
+                </Select.Option>
+                <Select.Option value="SEALED_BID">Sealed Bid</Select.Option>
+                <Select.Option value="DIRECT_SALE">Direct Sale</Select.Option>
+              </Select>
+              <Button type="primary" onClick={handleNegotiate}>
+                Submit Offer
+              </Button>
+            </>
+          )}
+
+          {/* Actions for Breeder Offer */}
+          {request.status === "PENDING_BREEDER_OFFER" && (
+            <div style={{ marginTop: "16px" }}>
+              <Button
+                type="primary"
+                onClick={handleAccept}
+                style={{ marginRight: "8px" }}
+              >
+                Accept Offer
+              </Button>
+              <Button type="default" onClick={handleCancel}>
+                Cancel Offer
+              </Button>
+            </div>
+          )}
+        </Card>
+      )}
 
       {/* Back Button */}
       <Button type="default" onClick={onBack}>

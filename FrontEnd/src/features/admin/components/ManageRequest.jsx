@@ -231,27 +231,29 @@ const ManageRequest = () => {
 
   // Determine the color for the status tag
   const getStatusColor = (status) => {
-    switch (status) {
-      case "INSPECTION_PASSED":
-        return "green";
-      case "INSPECTION_FAILED":
-        return "red";
-      case "INSPECTION_IN_PROGRESS":
-        return "orange";
+    switch (
+      status.toUpperCase() // Ensure status is case-insensitive
+    ) {
       case "PENDING":
-        return "blue";
-      case "PENDING_NEGOTIATION":
-        return "purple";
+        return "blue"; // Color for pending status
+      case "INSPECTION_IN_PROGRESS":
+        return "orange"; // Color for inspection in progress
+      case "INSPECTION_PASSED":
+        return "green"; // Color for inspection passed
+      case "INSPECTION_FAILED":
+        return "red"; // Color for inspection failed
       case "PENDING_MANAGER_OFFER":
-        return "gold"; // Color for manager approval status
+        return "gold"; // Color for pending manager offer
       case "PENDING_BREEDER_OFFER":
-        return "lime"; // Color for breeder approval status
-      case "COMPLETED":
-        return "geekblue";
+        return "lime"; // Color for pending breeder offer
+      case "APPROVE":
+        return "cyan"; // Color for approval
+      case "REJECT":
+        return "magenta"; // Color for rejection
       case "CANCELLED":
-        return "volcano";
+        return "volcano"; // Color for cancelled status
       default:
-        return "default";
+        return "default"; // Default color for unknown status
     }
   };
 

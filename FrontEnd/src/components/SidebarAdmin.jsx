@@ -15,7 +15,7 @@ import {
   PlusOutlined, // For creating auctions
 } from "@ant-design/icons";
 import { Layout, Menu } from "antd";
-import Logo from "../assets/logo/koi69Logo_white.png"; // Assuming the logo path is correct
+import Logo from "../assets/logo/PrestigeKoi_White.png"; // Assuming the logo path is correct
 
 const { Header, Content, Sider } = Layout;
 
@@ -104,7 +104,7 @@ const SidebarAdmin = ({ setActiveComponent }) => {
       >
         <img
           src={Logo}
-          alt="Koi69 Logo"
+          alt="Koi Logo"
           style={{ height: "40px", width: "auto", objectFit: "contain" }}
         />
         {!collapsed && (

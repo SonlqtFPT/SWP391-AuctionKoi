@@ -8,7 +8,7 @@ import {
   FaUserPlus,
 } from "react-icons/fa";
 import { Link } from "react-router-dom"; // Import Link from react-router-dom
-import Logo from "../assets/logo/koi69Logo_white.png";
+import Logo from "../assets/logo/PrestigeKoi_White.png";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -31,7 +31,7 @@ const Header = () => {
             {/* Use Link here */}
             <img
               src={Logo}
-              alt="Koi69 Logo"
+              alt="Koi Logo"
               className="h-10 w-auto object-contain"
             />
             <span className="text-xl sm:text-2xl font-bold">Koi69</span>
