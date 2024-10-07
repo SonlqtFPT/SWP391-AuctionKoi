@@ -41,9 +41,6 @@ public class Account {
     @Enumerated(EnumType.STRING)
     AccountRoleEnum role;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    List<AccountRoleEnum> roles = new ArrayList<>();
-
     @Column(nullable = false)
     boolean status;
 
@@ -53,8 +50,8 @@ public class Account {
     @OneToOne(mappedBy = "account")
     KoiBreeder koiBreeder;
 
-    @OneToOne(mappedBy = "account")
-    AuctionRequest auctionRequest;
+    @OneToMany(mappedBy = "account")
+    List<AuctionRequest> auctionRequest;
 
     public Account() {
     }

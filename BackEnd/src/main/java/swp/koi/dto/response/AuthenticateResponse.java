@@ -1,18 +1,16 @@
 package swp.koi.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuthenticateResponse {
 
-    private int memberId;
-    private int breederId;
+    AccountResponseDTO account;
     private String accessToken;
     private String refreshToken;
 

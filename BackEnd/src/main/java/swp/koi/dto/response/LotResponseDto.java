@@ -4,18 +4,20 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import swp.koi.model.Member;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BidResponseDTO {
-
-    Integer bidId;
+public class LotResponseDto {
     Integer lotId;
-    LocalDateTime bidTime;
-    MemberResponseDTO member;
-
+    float deposit;
+    float startingPrice;
+    LocalDateTime startingTime;
+    LocalDateTime endingTime;
+    float increment;
+    Integer currentMemberId;
+    float currentPrice;
+    KoiFishInLotResponseDto koiFish;
 }
