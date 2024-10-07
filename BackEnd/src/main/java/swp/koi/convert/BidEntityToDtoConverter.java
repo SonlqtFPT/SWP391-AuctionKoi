@@ -26,7 +26,8 @@ public class BidEntityToDtoConverter {
                 .map(bid -> {
                     BidResponseDTO dto = modelMapper.map(bid, BidResponseDTO.class);
                     MemberResponseDTO memberDto = new MemberResponseDTO();
-                    memberDto.setAccount(accountEntityToDtoConverter.convertAccount(bid.getMember().getAccount()));
+                    memberDto.setAccount(accountEntityToDtoConverter
+                            .convertAccount(bid.getMember().getAccount()));
                     dto.setMember(memberDto);
                     return dto;
                 })

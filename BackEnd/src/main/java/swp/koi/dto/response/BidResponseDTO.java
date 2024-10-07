@@ -15,6 +15,7 @@ public class BidResponseDTO {
 
     Integer bidId;
     Integer lotId;
+    float bidAmount;
     LocalDateTime bidTime;
     MemberResponseDTO member;
 
