@@ -92,7 +92,6 @@ public class BidServiceImpl implements BidService {
             throw new KoiException(ResponseCode.BID_TIME_PASSED);
         }
 
-
         AuctionTypeNameEnum auctionType = lot.getAuction().getAuctionType().getAuctionTypeName();
 
         switch (auctionType) {
@@ -103,7 +102,7 @@ public class BidServiceImpl implements BidService {
                 return;
             }
             case SEALED_BID: {
-                if(validateBidTypeSealed(member,lot)){
+                if (validateBidTypeSealed(member, lot)) {
                     throw new KoiException(ResponseCode.BID_SEALED_ALREADY);
                 }
                 return;
@@ -116,7 +115,8 @@ public class BidServiceImpl implements BidService {
             case FIXED_PRICE_SALE: {
                 if (bidRequestDto.getPrice() != lot.getCurrentPrice()) {
                     throw new KoiException((ResponseCode.BID_PRICE_TOO_LOW));
-                };
+                }
+                ;
                 return;
             }
             default:
