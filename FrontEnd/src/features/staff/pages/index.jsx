@@ -9,7 +9,7 @@ const StaffPage = () => {
       <Header />
       <div className="flex flex-grow">
         <SidebarStaff />
-        <div className="flex-grow p-4">
+        <div className="flex-grow p-4 mt-20">
           <ManageRequestStatus />
         </div>
       </div>
