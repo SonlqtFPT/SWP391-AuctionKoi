@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Button,
   Card,
@@ -11,7 +11,7 @@ import {
   Image,
 } from "antd";
 import api from "../../../config/axios";
-import { FaFish, FaFlag } from "react-icons/fa";
+import { FaFlag } from "react-icons/fa";
 
 const RequestDetails = ({ request, onBack, fetchRequest }) => {
   const [offerPrice, setOfferPrice] = useState(null);
