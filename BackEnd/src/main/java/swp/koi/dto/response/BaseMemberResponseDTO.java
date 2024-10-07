@@ -9,5 +9,9 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BaseMemberResponseDTO extends AccountResponseDTO{
-
+    Integer accountId;
+    String email;
+    String firstName;
+    String lastName;
+    String phoneNumber;
 }
