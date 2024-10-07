@@ -19,6 +19,5 @@ import swp.koi.service.koiBreederService.KoiBreederService;
 @RequiredArgsConstructor
 public class KoiBreederController {
 
-    private final KoiBreederService koiBreederService;
 
 }

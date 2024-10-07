@@ -70,7 +70,7 @@ public class AuctionServiceImpl implements AuctionService{
                     lot.setAuction(auction);
                     lot.setKoiFish(koiFish);
                     lot.setDeposit((float)(koiFish.getPrice()*0.1));
-                    lot.setStartingPrice(lotDTO.getStartingPrice());
+                    lot.setStartingPrice(koiFish.getPrice());
                     lot.setIncrement(lotDTO.getIncrement());
                     lot.setCurrentPrice(lot.getStartingPrice());
                     lot.setStartingTime(savedAuction.getStartTime());
