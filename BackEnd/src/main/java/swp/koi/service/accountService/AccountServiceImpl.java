@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import swp.koi.convert.AccountEntityToDtoConverter;
 import swp.koi.dto.request.AccountLoginDTO;
 import swp.koi.dto.request.AccountRegisterDTO;
+import swp.koi.dto.request.LogoutDTO;
 import swp.koi.dto.response.AuthenticateResponse;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
@@ -27,6 +28,8 @@ import swp.koi.repository.AccountRepository;
 import swp.koi.repository.KoiBreederRepository;
 import swp.koi.service.jwtService.JwtServiceImpl;
 import swp.koi.service.memberService.MemberServiceImpl;
+import swp.koi.service.redisService.RedisServiceImpl;
+
 import javax.security.auth.login.AccountNotFoundException;
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +48,7 @@ public class AccountServiceImpl implements AccountService{
     private final KoiBreederRepository koiBreederRepository;
     private final AccountDetailService accountDetailService;
     private final AccountEntityToDtoConverter accountEntityToDtoConverter;
-
+    private final RedisServiceImpl redisService;
 
     @Override
     public AccountRegisterDTO findByAccountId(Integer accountId) {
@@ -113,9 +116,14 @@ public class AccountServiceImpl implements AccountService{
         return authenticateResponse;
     }
 
+    /**
+     * invalid old token when it come with the new refresh token
+     * @param request
+     * @return
+     * @throws KoiException
+     */
     @Override
     public AuthenticateResponse refreshToken(HttpServletRequest request) throws KoiException {
-        Integer breederId = 0;
         String accessToken = null;
 
         //fetch token
@@ -132,19 +140,14 @@ public class AccountServiceImpl implements AccountService{
         var userDetails = accountDetailService.loadUserByUsername(username);
 
         var account = findByEmail(username);
-//        JwtToken token = (JwtToken) redisService.getData(account.getEmail());
-//        System.out.println(token);
 
-        if (jwtService.validateToken(refreshToken, userDetails, TokenType.REFRESH_TOKEN)) {
+        if (jwtService.validateToken(refreshToken, userDetails, TokenType.REFRESH_TOKEN) && !redisService.existData(refreshToken)) {
             accessToken = jwtService.generateToken(username, TokenType.ACCESS_TOKEN);
         } else throw new KoiException(ResponseCode.JWT_INVALID);
 
         var memberId = memberService.getMemberIdByAccount(account);
 
-        if(account.getRole().equals(AccountRoleEnum.BREEDER)) {
-            breederId = koiBreederRepository.findByAccount(account)
-                    .get().getBreederId();
-        }
+
 
         AuthenticateResponse tokenResponse = AuthenticateResponse.builder()
                 .account(accountEntityToDtoConverter.convertAccount(account))
@@ -154,6 +157,18 @@ public class AccountServiceImpl implements AccountService{
 
 
         return tokenResponse;
+    }
+
+    @Override
+    public void createAccountStaff(AccountRegisterDTO staffDto) {
+        Account account = new Account();
+        if(accountRepository.existsByEmail(account.getEmail()))
+            throw new KoiException(ResponseCode.EMAIL_ALREADY_EXISTS);
+        modelMapper.map(staffDto, account);
+        account.setPassword(passwordEncoder.encode(staffDto.getPassword()));
+        account.setRole(AccountRoleEnum.STAFF);
+        account.setStatus(true);
+        accountRepository.save(account);
     }
 
     @Override
@@ -172,14 +187,8 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public void createAccountStaff(AccountRegisterDTO staffDto) {
-        Account account = new Account();
-        if(accountRepository.existsByEmail(account.getEmail()))
-            throw new KoiException(ResponseCode.EMAIL_ALREADY_EXISTS);
-        modelMapper.map(staffDto, account);
-        account.setPassword(passwordEncoder.encode(staffDto.getPassword()));
-        account.setRole(AccountRoleEnum.STAFF);
-        account.setStatus(true);
-        accountRepository.save(account);
+    public void logout(LogoutDTO logoutDTO) {
+        redisService.saveData(logoutDTO.getAccessToken(),"invalid",(long) 1000*60*60*24);
+        redisService.saveData(logoutDTO.getRefreshToken(), "invalid",(long) 1000*60*60*24*15);
     }
 }

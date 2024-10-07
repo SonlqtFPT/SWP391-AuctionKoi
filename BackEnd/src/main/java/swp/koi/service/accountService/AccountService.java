@@ -2,9 +2,13 @@ package swp.koi.service.accountService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
+import jakarta.servlet.http.HttpServletRequest;
 import swp.koi.dto.request.AccountLoginDTO;
 import swp.koi.dto.request.AccountRegisterDTO;
+import swp.koi.dto.request.LogoutDTO;
 import swp.koi.dto.response.AuctionResponseDTO;
+import swp.koi.dto.response.AuthenticateResponse;
+import swp.koi.dto.response.AuthenticateResponse;
 import swp.koi.dto.response.AuthenticateResponse;
 import swp.koi.model.Account;
 import swp.koi.model.AuctionRequest;
@@ -12,6 +16,8 @@ import swp.koi.model.AuctionRequest;
 import javax.security.auth.login.AccountNotFoundException;
 import java.util.List;
 import java.util.Optional;
+
+import javax.security.auth.login.AccountNotFoundException;
 
 public interface AccountService {
     AccountRegisterDTO findByAccountId(Integer accountId);
@@ -27,4 +33,5 @@ public interface AccountService {
     boolean existById(@NotNull(message = "Account Id is required") Integer accountId);
 
     void createAccountStaff(AccountRegisterDTO staffDto);
+    void logout(LogoutDTO logoutDTO);
 }

@@ -22,6 +22,7 @@ public class VnpayController {
     public ResponseEntity<?> vnPayResponse(HttpServletRequest request) throws UnsupportedEncodingException {
 
         var isResponseValid = vnpayService.isResponseValid(request);
+
         if (isResponseValid) {
             vnpayService.regisMemberToLot(request);
             return new ResponseEntity<>("Register user to lot successful",HttpStatus.OK);

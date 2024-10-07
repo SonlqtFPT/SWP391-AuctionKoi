@@ -15,6 +15,7 @@ public enum ResponseCode {
     INVALID_CREDENTIALS(002, "Invalid email or password."),
     EMAIL_ALREADY_EXISTS(003, "Email already exist."),
     JWT_INVALID(004, "JWT is invalid."),
+    LOGOUT_JWT(005, "Logout successful."),
 
     // Account related statuses
     ACCOUNT_ID_NOT_FOUND(1000, "Account ID not found"),
@@ -33,11 +34,15 @@ public enum ResponseCode {
 
     // LotRegister related statuses
     LOT_REGISTER_SUCCESS(4001, "Lot registration successful"),
+    MEMBER_ALREADY_REGISTERED(4002, "Member already REGISTERED."),
 
     // Bid related statuses
     BID_SUCCESS(5001, "Bid placed successfully"),
     BID_PRICE_TOO_LOW(5003, "Bid price is lower than the current price"),
     MEMBER_NOT_REGISTERED_FOR_LOT(5004, "Member is not registered for the Lot"),
+    BID_TIME_PASSED(5005, "Bid time passed"),
+    BID_LIST_EMPTY(5006, "Bid list is empty"),
+    BID_SEALED_ALREADY(5007, "User already bidded to this sealed lot"),
 
     //Auction
     AUCTION_NOT_FOUND(6000, "Auction not found"),
@@ -54,7 +59,7 @@ public enum ResponseCode {
     WRONG_BREEDER_REQUEST(7009, "This breeder does not have this request"),
 
     // Auction type related statuses
-    AUCTION_TYPE_NOT_FOUND(7001, "Auction type not found"),
+    AUCTION_TYPE_NOT_FOUND(7500, "Auction type not found"),
 
     // Lot related statuses
     LOT_NOT_FOUND(8001, "Lot ID not found"),
@@ -63,8 +68,13 @@ public enum ResponseCode {
     VARIETY_NOT_FOUND(9003, "Variety not found"),
 
     // Media
-    MEDIA_NOT_FOUND(9500, "Media not found")
+    MEDIA_NOT_FOUND(9500, "Media not found"),
+
+    //transaction
+    TRANSACTION_EXISTED(6969, "Fuck"),
     ;
+
+
 
     private final int code;
     private final String message;

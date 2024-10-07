@@ -15,6 +15,7 @@ import java.util.List;
 @Table(name = "Member")
 @AllArgsConstructor
 @Builder
+@Data
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +30,9 @@ public class Member {
 
     @OneToMany(mappedBy = "member",fetch = FetchType.LAZY)
     List<Bid> bids;
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    List<Transaction> transactions;
 
     public Member() {
     }

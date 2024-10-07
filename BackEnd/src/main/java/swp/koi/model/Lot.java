@@ -52,15 +52,21 @@ public class Lot {
     @ManyToOne
     KoiFish koiFish;
 
-    @OneToMany(mappedBy = "lot", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "lot")
     List<LotRegister> lotRegisters;
 
-    @OneToMany(mappedBy = "lot", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "lot",fetch = FetchType.LAZY)
     List<Bid> bids;
 
     @ManyToOne
     @JoinColumn(name = "auctionId")
     Auction auction;
+
+    @OneToMany(mappedBy = "lot")
+    List<Transaction> transactions;
+
+    @OneToOne(mappedBy = "lot")
+    Invoice invoice;
 
     public Lot() {
     }

@@ -4,13 +4,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import swp.koi.config.VnpayConfig;
-import swp.koi.model.Lot;
-import swp.koi.model.LotRegister;
-import swp.koi.model.Member;
+import swp.koi.dto.response.ResponseCode;
+import swp.koi.exception.KoiException;
+import swp.koi.model.*;
 import swp.koi.model.enums.LotRegisterStatusEnum;
-import swp.koi.repository.LotRegisterRepository;
-import swp.koi.repository.LotRepository;
-import swp.koi.repository.MemberRepository;
+import swp.koi.model.enums.TransactionTypeEnum;
+import swp.koi.repository.*;
+import swp.koi.service.transactionService.TransactionServiceImpl;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -25,11 +26,13 @@ public class VnpayServiceImpl implements VnpayService {
     private final LotRepository lotRepository;
     private final LotRegisterRepository lotRegisterRepository;
     private final MemberRepository memberRepository;
-
+    private final TransactionServiceImpl transactionService;
+    private final TransactionRepository transactionRepository;
+    private final InvoiceRepository invoiceRepository;
 
     //generate invoice that's it!!!
     @Override
-    public String generateInvoice(int registerLot, int memberId, HttpServletRequest request) throws UnsupportedEncodingException {
+    public String generateInvoice(int registerLot, int memberId, TransactionTypeEnum transactionTypeEnum) throws UnsupportedEncodingException {
 
         Lot lot = lotRepository.findById(registerLot)
                 .orElseThrow(() -> new NoSuchElementException("Lot with such id not found"));
@@ -37,11 +40,16 @@ public class VnpayServiceImpl implements VnpayService {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
-        long amount = (long) lot.getDeposit() * 100;
+        long amount = 0;
+        if(transactionTypeEnum.equals(TransactionTypeEnum.DEPOSIT)){
+            amount = (long) lot.getDeposit()*100;
+        } else {
+            amount = (long) lot.getCurrentPrice()*100;
+        }
         String bankCode = "NCB";
 
         String vnp_TxnRef = VnpayConfig.getRandomNumber(8);
-        String vnp_IpAddr = VnpayConfig.getIpAddress(request);
+        String vnp_IpAddr = "127.0.0.1";
 
         String vnp_TmnCode = VnpayConfig.vnp_TmnCode;
 
@@ -56,7 +64,7 @@ public class VnpayServiceImpl implements VnpayService {
             vnp_Params.put("vnp_BankCode", bankCode);
         }
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-        vnp_Params.put("vnp_OrderInfo", "memberid=" + memberId + "&registerlot=" + registerLot);
+        vnp_Params.put("vnp_OrderInfo", "memberid=" + memberId + "&registerlot=" + registerLot + "&type=" + transactionTypeEnum);
         vnp_Params.put("vnp_OrderType", orderType);
         vnp_Params.put("vnp_Locale", "vn");
         vnp_Params.put("vnp_ReturnUrl", VnpayConfig.vnp_ReturnUrl);
@@ -68,7 +76,7 @@ public class VnpayServiceImpl implements VnpayService {
         String vnp_CreateDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
-        cld.add(Calendar.MINUTE, 15);
+        cld.add(Calendar.MINUTE, 30);
         String vnp_ExpireDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
@@ -112,47 +120,50 @@ public class VnpayServiceImpl implements VnpayService {
     }
 
     //Using to check if response from vnpay after user complete their transactions correct or not
-    @Override
     public boolean isResponseValid(HttpServletRequest request) throws UnsupportedEncodingException {
 
+        // Create a map to hold parameters that start with "vnp_"
         Map<String, String> vnp_Params = new HashMap<>();
         Map<String, String[]> requestParams = request.getParameterMap();
 
+        // Iterate over request parameters to filter those that start with "vnp_"
         for (Map.Entry<String, String[]> entry : requestParams.entrySet()) {
             if (entry.getKey().startsWith("vnp_")) {
                 vnp_Params.put(entry.getKey(), entry.getValue()[0]);
             }
         }
 
-        // Extract the vnp_SecureHash from the request and remove it from the parameters map
+        // Extract the vnp_SecureHash from the parameters and remove it from the map
         String vnpSecureHash = vnp_Params.remove("vnp_SecureHash");
 
-        // Sort the parameters by key
+        // Sort the parameters by their keys for consistent hashing
         List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
         Collections.sort(fieldNames);
 
-        // Build the hash data string
+        // Build the hash data string in the format "key=value"
         StringBuilder hashData = new StringBuilder();
         for (String fieldName : fieldNames) {
             String fieldValue = vnp_Params.get(fieldName);
             if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                hashData.append(fieldName).append("=").append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                hashData.append(fieldName).append("=")
+                        .append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                // Append '&' if this is not the last field
                 if (!fieldName.equals(fieldNames.get(fieldNames.size() - 1))) {
                     hashData.append("&");
                 }
             }
         }
 
-        // Generate the HMAC SHA512 hash
+        // Generate the HMAC SHA512 hash using the secret key and hash data string
         String secureHashGenerated = VnpayConfig.hmacSHA512(VnpayConfig.secretKey, hashData.toString());
 
-        // Validate the secure hash
+        // Validate the secure hash against the one received in the request
         if (secureHashGenerated.equals(vnpSecureHash)) {
             // Hashes match, proceed to check the response status
             String responseCode = vnp_Params.get("vnp_ResponseCode");
-            return "00".equals(responseCode);
+            return "00".equals(responseCode); // "00" indicates a successful response
         }
-        return false;
+        return false; // Return false if hashes do not match
     }
 
 
@@ -179,21 +190,37 @@ public class VnpayServiceImpl implements VnpayService {
             // Extract memberid and registerlot from the map
             String memberId = orderInfoMap.get("memberid");
             String registerLot = orderInfoMap.get("registerlot");
+            String type = orderInfoMap.get("type");
 
             Lot lot = lotRepository.findById(Integer.parseInt(registerLot))
-                    .orElseThrow(()-> new RuntimeException("Lot not found"));
+                    .orElseThrow(()-> new KoiException(ResponseCode.LOT_NOT_FOUND));
 
             Member member = memberRepository.findById(Integer.parseInt(memberId))
-                    .orElseThrow(()-> new RuntimeException("Member not found"));
+                    .orElseThrow(()-> new KoiException(ResponseCode.MEMBER_NOT_FOUND));
 
-            LotRegister lotRegister = LotRegister.builder()
-                    .deposit(lot.getDeposit())
-                    .status(LotRegisterStatusEnum.WAITING)
-                    .member(member)
-                    .lot(lot)
-                    .build();
+            var isUserTrashingMyDb = transactionRepository.existsByTransactionTypeAndLotAndMember(TransactionTypeEnum.valueOf(type),lot,member);
 
-            lotRegisterRepository.save(lotRegister);
+            if(isUserTrashingMyDb){
+                throw new KoiException(ResponseCode.TRANSACTION_EXISTED);
+            }
+
+            if (type.equals(TransactionTypeEnum.DEPOSIT.toString())) {
+                LotRegister lotRegister = LotRegister.builder()
+                        .deposit(lot.getDeposit())
+                        .status(LotRegisterStatusEnum.WAITING)
+                        .member(member)
+                        .lot(lot)
+                        .build();
+
+                lotRegisterRepository.save(lotRegister);
+                Transaction transaction = transactionService.createTransactionForLotDeposit(lot.getLotId(), member.getMemberId());
+            } else {
+                Transaction transaction = transactionService.createTransactionForInvoicePayment(lot.getLotId(), member.getMemberId());
+                Invoice invoice = invoiceRepository.findByLot(lot);
+                invoice.setTransaction(transaction);
+                invoiceRepository.save(invoice);
+            }
+
         }
     }
 }

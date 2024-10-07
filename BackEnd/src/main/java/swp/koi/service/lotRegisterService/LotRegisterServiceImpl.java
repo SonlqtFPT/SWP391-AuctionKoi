@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import swp.koi.dto.request.LotRegisterDTO;
 import swp.koi.dto.response.LotRegisterResponseDTO;
@@ -13,8 +15,9 @@ import swp.koi.model.Lot;
 import swp.koi.model.LotRegister;
 import swp.koi.model.Member;
 import swp.koi.model.enums.LotRegisterStatusEnum;
+import swp.koi.model.enums.TransactionTypeEnum;
+import swp.koi.repository.AccountRepository;
 import swp.koi.repository.LotRegisterRepository;
-import swp.koi.service.bidService.BidService;
 import swp.koi.service.lotService.LotServiceImpl;
 import swp.koi.service.memberService.MemberServiceImpl;
 import swp.koi.service.vnPayService.VnpayService;
@@ -33,25 +36,35 @@ public class LotRegisterServiceImpl implements LotRegisterService{
     private final MemberServiceImpl memberServiceImpl;
     private final ModelMapper modelMapper;
     private final VnpayService vnpayService;
+    private final AccountRepository accountRepository;
 
 
+    /**
+     *
+     * @param lotRegisDto
+     * @param request
+     * @return
+     * @throws UnsupportedEncodingException
+     */
     @Override
-    public String regisSlotWithLotId(LotRegisterDTO lotRegisDto, HttpServletRequest request) throws UnsupportedEncodingException {
-//        Lot lot = lotServiceImpl.findLotById(lotRegisDto.getLotId());
-        Member member = memberServiceImpl.getMemberById(lotRegisDto.getMemberId());
+    public String regisSlotWithLotId(LotRegisterDTO lotRegisDto,
+                                     HttpServletRequest request) throws UnsupportedEncodingException {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+
+        Member member = memberServiceImpl.getMemberByAccount(accountRepository.findByEmail(username)
+        .orElseThrow(() -> new KoiException(ResponseCode.MEMBER_NOT_FOUND)));
+
 
         // Validate if the member is already registered for this lot
-        var isUserRegisted = validateMemberRegistration(lotRegisDto.getLotId(), member);
+        var isUserRegistered = validateMemberRegistration(lotRegisDto.getLotId(), member);
 
-        if(isUserRegisted) {
-            return null;
-        }else {
-            var paymentUrl = vnpayService.generateInvoice(lotRegisDto.getLotId(),lotRegisDto.getMemberId(),request);
-            return paymentUrl;
+        if(isUserRegistered) {
+            throw new KoiException((ResponseCode.MEMBER_ALREADY_REGISTERED));
         }
-        // Register the member for the lot
-//        LotRegister lotRegister = createLotRegister(lot, member);
-//        lotRegisterRepository.save(lotRegister);
+        return vnpayService.generateInvoice(lotRegisDto.getLotId(),member.getMemberId(), TransactionTypeEnum.DEPOSIT);
+
     }
 
     @Override
@@ -61,10 +74,9 @@ public class LotRegisterServiceImpl implements LotRegisterService{
 
             List<LotRegister> lotRegisters = lotRegisterRepository.findByLot(lot).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
 
-            List<LotRegisterResponseDTO> lotResponses = lotRegisters
+            return lotRegisters
                     .stream()
                     .map(lotRegister -> modelMapper.map(lotRegister, LotRegisterResponseDTO.class)).collect(Collectors.toList());
-            return lotResponses;
         }catch (KoiException e){
             throw e;
         }
