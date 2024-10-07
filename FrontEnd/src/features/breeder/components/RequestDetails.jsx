@@ -11,7 +11,7 @@ import {
   Image,
 } from "antd";
 import api from "../../../config/axios";
-import { FaFlag } from "react-icons/fa"; // Importing required icons
+import { FaFish, FaFlag } from "react-icons/fa";
 
 const RequestDetails = ({ request, onBack, fetchRequest }) => {
   const [offerPrice, setOfferPrice] = useState(null);
