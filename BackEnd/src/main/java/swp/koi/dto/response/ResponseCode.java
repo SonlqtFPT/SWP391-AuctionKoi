@@ -40,7 +40,7 @@ public enum ResponseCode {
 
     // Bid related statuses
     BID_SUCCESS(5001, "Bid placed successfully"),
-    BID_PRICE_TOO_LOW(5003, "Bid price is lower than the current price"),
+    BID_PRICE_TOO_LOW(5003, "Bid price is lower or different from requested price"),
     MEMBER_NOT_REGISTERED_FOR_LOT(5004, "Member is not registered for the Lot"),
     BID_TIME_PASSED(5005, "Bid time passed"),
     BID_LIST_EMPTY(5006, "Bid list is empty"),
@@ -74,6 +74,7 @@ public enum ResponseCode {
 
     //transaction
     TRANSACTION_EXISTED(6969, "Fuck"),
+    TRANSACTION_NOT_FOUND(9700, "Transaction not found"),
     ;
 
 

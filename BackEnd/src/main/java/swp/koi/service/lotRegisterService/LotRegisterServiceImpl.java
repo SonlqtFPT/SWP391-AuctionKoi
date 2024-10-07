@@ -1,6 +1,5 @@
 package swp.koi.service.lotRegisterService;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -40,15 +39,12 @@ public class LotRegisterServiceImpl implements LotRegisterService{
 
 
     /**
-     *
      * @param lotRegisDto
-     * @param request
      * @return
      * @throws UnsupportedEncodingException
      */
     @Override
-    public String regisSlotWithLotId(LotRegisterDTO lotRegisDto,
-                                     HttpServletRequest request) throws UnsupportedEncodingException {
+    public String regisSlotWithLotId(LotRegisterDTO lotRegisDto) throws UnsupportedEncodingException {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
@@ -69,17 +65,13 @@ public class LotRegisterServiceImpl implements LotRegisterService{
 
     @Override
     public List<LotRegisterResponseDTO> listLotRegistersByLotId(int lotId) throws KoiException {
-        try{
-            Lot lot = lotServiceImpl.findLotById(lotId);
+        Lot lot = lotServiceImpl.findLotById(lotId);
 
-            List<LotRegister> lotRegisters = lotRegisterRepository.findByLot(lot).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
+        List<LotRegister> lotRegisters = lotRegisterRepository.findByLot(lot).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
 
-            return lotRegisters
-                    .stream()
-                    .map(lotRegister -> modelMapper.map(lotRegister, LotRegisterResponseDTO.class)).collect(Collectors.toList());
-        }catch (KoiException e){
-            throw e;
-        }
+        return lotRegisters
+                .stream()
+                .map(lotRegister -> modelMapper.map(lotRegister, LotRegisterResponseDTO.class)).collect(Collectors.toList());
     }
 
     private boolean validateMemberRegistration(Integer lotId, Member member){
