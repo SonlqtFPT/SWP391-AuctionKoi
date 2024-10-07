@@ -7,6 +7,7 @@ import swp.koi.config.VnpayConfig;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
 import swp.koi.model.*;
+import swp.koi.model.enums.InvoiceStatusEnums;
 import swp.koi.model.enums.LotRegisterStatusEnum;
 import swp.koi.model.enums.TransactionTypeEnum;
 import swp.koi.repository.*;
@@ -41,11 +42,13 @@ public class VnpayServiceImpl implements VnpayService {
         String vnp_Command = "pay";
         String orderType = "other";
         long amount = 0;
+
         if(transactionTypeEnum.equals(TransactionTypeEnum.DEPOSIT)){
             amount = (long) lot.getDeposit()*100;
         } else {
             amount = (long) lot.getCurrentPrice()*100;
         }
+
         String bankCode = "NCB";
 
         String vnp_TxnRef = VnpayConfig.getRandomNumber(8);
@@ -218,6 +221,7 @@ public class VnpayServiceImpl implements VnpayService {
                 Transaction transaction = transactionService.createTransactionForInvoicePayment(lot.getLotId(), member.getMemberId());
                 Invoice invoice = invoiceRepository.findByLot(lot);
                 invoice.setTransaction(transaction);
+                invoice.setStatus(InvoiceStatusEnums.PAID);
                 invoiceRepository.save(invoice);
             }
 

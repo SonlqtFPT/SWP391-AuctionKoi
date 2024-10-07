@@ -12,8 +12,6 @@ import lombok.experimental.FieldDefaults;
 public class LotRegisterDTO {
 
     @NotNull
-    int memberId;
-    @NotNull
     int lotId;
 
 }

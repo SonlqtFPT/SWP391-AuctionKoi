@@ -17,6 +17,4 @@ public class BidRequestDto {
     @Min(value = 0, message = "Price must be positive")
     float price;
 
-    @NotNull
-    int memberId;
 }

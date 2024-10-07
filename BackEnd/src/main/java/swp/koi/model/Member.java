@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -33,6 +34,9 @@ public class Member {
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     List<Transaction> transactions;
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    List<Invoice> invoices;
 
     public Member() {
     }
