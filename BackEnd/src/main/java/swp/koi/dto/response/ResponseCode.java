@@ -16,6 +16,8 @@ public enum ResponseCode {
     EMAIL_ALREADY_EXISTS(003, "Email already exist."),
     JWT_INVALID(004, "JWT is invalid."),
     LOGOUT_JWT(005, "Logout successful."),
+    EMAIL_NOT_FOUND(006, "Email not found"),
+    INVALID_TOKEN(007, "Invalid token"),
 
     // Account related statuses
     ACCOUNT_ID_NOT_FOUND(1000, "Account ID not found"),

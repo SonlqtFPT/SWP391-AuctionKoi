@@ -2,26 +2,14 @@ package swp.koi.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import swp.koi.dto.request.AccountLoginDTO;
-import swp.koi.dto.request.AccountRegisterDTO;
-import swp.koi.dto.request.LogoutDTO;
-import swp.koi.dto.request.KoiBreederDTO;
+import org.springframework.web.bind.annotation.*;
+import swp.koi.dto.request.*;
 import swp.koi.dto.response.AuthenticateResponse;
-import swp.koi.dto.response.KoiBreederResponseDTO;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.dto.response.ResponseData;
 import swp.koi.exception.KoiException;
 import swp.koi.service.accountService.AccountService;
-import swp.koi.service.jwtService.JwtService;
-import swp.koi.service.redisService.RedisService;
 import swp.koi.service.koiBreederService.KoiBreederService;
 
 import javax.security.auth.login.AccountNotFoundException;
@@ -50,8 +38,9 @@ public class AccountController {
     }
 
     @PostMapping("/login-google")
-    public ResponseData<?> loginGoogle(@AuthenticationPrincipal OidcUser principal){
-        return new ResponseData<>(ResponseCode.SUCCESS);
+    public ResponseData<AuthenticateResponse> loginGoogle(@RequestBody GoogleTokenRequestDto idToken){
+        AuthenticateResponse authenticateResponse = accountService.loginGoogle(idToken);
+        return new ResponseData<>(ResponseCode.SUCCESS, authenticateResponse);
     }
 
     @PostMapping("/signup")

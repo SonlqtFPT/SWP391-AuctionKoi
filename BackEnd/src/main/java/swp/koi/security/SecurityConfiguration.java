@@ -50,7 +50,7 @@ public class SecurityConfiguration {
 //                        .requestMatchers("/bid/list").hasAuthority("ROLE_MANAGER")
 //                        .requestMatchers("/api/v1/createBreeder").hasAuthority("ROLE_MANAGER")
 //                        .requestMatchers("/manager/**").hasAuthority("ROLE_MANAGER")
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
                 .formLogin(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
