@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "Invoice")
+@Builder
 public class Invoice {
 
     @Id
@@ -31,12 +32,12 @@ public class Invoice {
 
     float subTotal;
 
+    @Column(name = "paymentLink", length = 2048)
     String paymentLink;
 
-
     @OneToOne
-    @JoinColumn(name = "LRID")
-    LotRegister lotRegister;
+    @JoinColumn(name = "Lot_id")
+    Lot lot;
 
     @OneToOne
     @JoinColumn(name = "transaction_id")

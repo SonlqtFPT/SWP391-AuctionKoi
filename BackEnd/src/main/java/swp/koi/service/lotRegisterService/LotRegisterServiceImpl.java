@@ -15,10 +15,9 @@ import swp.koi.model.Lot;
 import swp.koi.model.LotRegister;
 import swp.koi.model.Member;
 import swp.koi.model.enums.LotRegisterStatusEnum;
+import swp.koi.model.enums.TransactionTypeEnum;
 import swp.koi.repository.AccountRepository;
 import swp.koi.repository.LotRegisterRepository;
-import swp.koi.repository.LotRepository;
-import swp.koi.service.bidService.BidService;
 import swp.koi.service.lotService.LotServiceImpl;
 import swp.koi.service.memberService.MemberServiceImpl;
 import swp.koi.service.vnPayService.VnpayService;
@@ -64,7 +63,7 @@ public class LotRegisterServiceImpl implements LotRegisterService{
         if(isUserRegistered) {
             throw new KoiException((ResponseCode.MEMBER_ALREADY_REGISTERED));
         }
-        return vnpayService.generateInvoice(lotRegisDto.getLotId(),lotRegisDto.getMemberId(),request);
+        return vnpayService.generateInvoice(lotRegisDto.getLotId(),member.getMemberId(), TransactionTypeEnum.DEPOSIT);
 
     }
 

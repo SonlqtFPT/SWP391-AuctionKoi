@@ -65,8 +65,13 @@ public enum ResponseCode {
     VARIETY_NOT_FOUND(9003, "Variety not found"),
 
     // Media
-    MEDIA_NOT_FOUND(9500, "Media not found")
+    MEDIA_NOT_FOUND(9500, "Media not found"),
+
+    //transaction
+    TRANSACTION_EXISTED(6969, "Fuck"),
     ;
+
+
 
     private final int code;
     private final String message;

@@ -33,8 +33,6 @@ public class LotRegister {
     @JoinColumn(name = "memberId")
     Member member;
 
-    @OneToOne(mappedBy = "lotRegister", fetch = FetchType.LAZY)
-    Invoice invoice;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "lotId")

@@ -65,6 +65,9 @@ public class Lot {
     @OneToMany(mappedBy = "lot")
     List<Transaction> transactions;
 
+    @OneToOne(mappedBy = "lot")
+    Invoice invoice;
+
     public Lot() {
     }
 

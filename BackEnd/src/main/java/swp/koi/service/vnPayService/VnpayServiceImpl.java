@@ -6,14 +6,10 @@ import org.springframework.stereotype.Service;
 import swp.koi.config.VnpayConfig;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
-import swp.koi.model.Lot;
-import swp.koi.model.LotRegister;
-import swp.koi.model.Member;
-import swp.koi.model.Transaction;
+import swp.koi.model.*;
 import swp.koi.model.enums.LotRegisterStatusEnum;
-import swp.koi.repository.LotRegisterRepository;
-import swp.koi.repository.LotRepository;
-import swp.koi.repository.MemberRepository;
+import swp.koi.model.enums.TransactionTypeEnum;
+import swp.koi.repository.*;
 import swp.koi.service.transactionService.TransactionServiceImpl;
 
 import java.io.UnsupportedEncodingException;
@@ -31,10 +27,12 @@ public class VnpayServiceImpl implements VnpayService {
     private final LotRegisterRepository lotRegisterRepository;
     private final MemberRepository memberRepository;
     private final TransactionServiceImpl transactionService;
+    private final TransactionRepository transactionRepository;
+    private final InvoiceRepository invoiceRepository;
 
     //generate invoice that's it!!!
     @Override
-    public String generateInvoice(int registerLot, int memberId, HttpServletRequest request) throws UnsupportedEncodingException {
+    public String generateInvoice(int registerLot, int memberId, TransactionTypeEnum transactionTypeEnum) throws UnsupportedEncodingException {
 
         Lot lot = lotRepository.findById(registerLot)
                 .orElseThrow(() -> new NoSuchElementException("Lot with such id not found"));
@@ -42,11 +40,16 @@ public class VnpayServiceImpl implements VnpayService {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
-        long amount = (long) lot.getDeposit() * 100;
+        long amount = 0;
+        if(transactionTypeEnum.equals(TransactionTypeEnum.DEPOSIT)){
+            amount = (long) lot.getDeposit()*100;
+        } else {
+            amount = (long) lot.getCurrentPrice()*100;
+        }
         String bankCode = "NCB";
 
         String vnp_TxnRef = VnpayConfig.getRandomNumber(8);
-        String vnp_IpAddr = VnpayConfig.getIpAddress(request);
+        String vnp_IpAddr = "127.0.0.1";
 
         String vnp_TmnCode = VnpayConfig.vnp_TmnCode;
 
@@ -61,7 +64,7 @@ public class VnpayServiceImpl implements VnpayService {
             vnp_Params.put("vnp_BankCode", bankCode);
         }
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-        vnp_Params.put("vnp_OrderInfo", "memberid=" + memberId + "&registerlot=" + registerLot);
+        vnp_Params.put("vnp_OrderInfo", "memberid=" + memberId + "&registerlot=" + registerLot + "&type=" + transactionTypeEnum);
         vnp_Params.put("vnp_OrderType", orderType);
         vnp_Params.put("vnp_Locale", "vn");
         vnp_Params.put("vnp_ReturnUrl", VnpayConfig.vnp_ReturnUrl);
@@ -73,7 +76,7 @@ public class VnpayServiceImpl implements VnpayService {
         String vnp_CreateDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
-        cld.add(Calendar.MINUTE, 15);
+        cld.add(Calendar.MINUTE, 30);
         String vnp_ExpireDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
@@ -187,6 +190,7 @@ public class VnpayServiceImpl implements VnpayService {
             // Extract memberid and registerlot from the map
             String memberId = orderInfoMap.get("memberid");
             String registerLot = orderInfoMap.get("registerlot");
+            String type = orderInfoMap.get("type");
 
             Lot lot = lotRepository.findById(Integer.parseInt(registerLot))
                     .orElseThrow(()-> new KoiException(ResponseCode.LOT_NOT_FOUND));
@@ -194,16 +198,29 @@ public class VnpayServiceImpl implements VnpayService {
             Member member = memberRepository.findById(Integer.parseInt(memberId))
                     .orElseThrow(()-> new KoiException(ResponseCode.MEMBER_NOT_FOUND));
 
-            LotRegister lotRegister = LotRegister.builder()
-                    .deposit(lot.getDeposit())
-                    .status(LotRegisterStatusEnum.WAITING)
-                    .member(member)
-                    .lot(lot)
-                    .build();
+            var isUserTrashingMyDb = transactionRepository.existsByTransactionTypeAndLotAndMember(TransactionTypeEnum.valueOf(type),lot,member);
 
-            Transaction transaction = transactionService.createTransactionForLotDeposit(lot.getLotId(), member.getMemberId());
+            if(isUserTrashingMyDb){
+                throw new KoiException(ResponseCode.TRANSACTION_EXISTED);
+            }
 
-            lotRegisterRepository.save(lotRegister);
+            if (type.equals(TransactionTypeEnum.DEPOSIT.toString())) {
+                LotRegister lotRegister = LotRegister.builder()
+                        .deposit(lot.getDeposit())
+                        .status(LotRegisterStatusEnum.WAITING)
+                        .member(member)
+                        .lot(lot)
+                        .build();
+
+                lotRegisterRepository.save(lotRegister);
+                Transaction transaction = transactionService.createTransactionForLotDeposit(lot.getLotId(), member.getMemberId());
+            } else {
+                Transaction transaction = transactionService.createTransactionForInvoicePayment(lot.getLotId(), member.getMemberId());
+                Invoice invoice = invoiceRepository.findByLot(lot);
+                invoice.setTransaction(transaction);
+                invoiceRepository.save(invoice);
+            }
+
         }
     }
 }

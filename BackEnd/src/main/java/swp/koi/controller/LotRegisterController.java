@@ -30,7 +30,7 @@ public class LotRegisterController {
         try{
             var paymentLink = lotRegisterService.regisSlotWithLotId(lotRegisterDTO,request);
             if(paymentLink != null) {
-                return ResponseEntity.status(HttpStatus.CREATED).body(paymentLink);
+                return ResponseEntity.status(HttpStatus.OK).body(paymentLink);
             }
             return ResponseEntity.status(HttpStatus.CONFLICT).body("User already registered to lot");
         }catch (KoiException | UnsupportedEncodingException e){
@@ -47,5 +47,6 @@ public class LotRegisterController {
             return new ResponseData<>(e.getResponseCode());
         }
     }
-
 }
+
+

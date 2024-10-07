@@ -116,6 +116,12 @@ public class AccountServiceImpl implements AccountService{
         return authenticateResponse;
     }
 
+    /**
+     * invalid old token when it come with the new refresh token
+     * @param request
+     * @return
+     * @throws KoiException
+     */
     @Override
     public AuthenticateResponse refreshToken(HttpServletRequest request) throws KoiException {
         String accessToken = null;
