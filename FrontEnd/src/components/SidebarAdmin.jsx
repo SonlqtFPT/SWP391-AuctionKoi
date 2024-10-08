@@ -7,15 +7,15 @@ import {
   UserOutlined,
   HomeOutlined,
   BellOutlined,
-  LogoutOutlined,
   FormOutlined,
   CarOutlined,
   AuditOutlined,
   EyeOutlined, // For viewing auctions
   PlusOutlined, // For creating auctions
 } from "@ant-design/icons";
-import { Layout, Menu } from "antd";
-import Logo from "../assets/logo/PrestigeKoi_White.png"; // Assuming the logo path is correct
+
+import { Button, Layout, Menu } from "antd";
+import Logo from "../assets/logo/koi69Logo_white.png"; // Assuming the logo path is correct
 
 const { Header, Content, Sider } = Layout;
 
@@ -42,7 +42,6 @@ const items = [
   getItem("Manage Transport", "6", <CarOutlined />),
   getItem("View Transaction", "7", <FileOutlined />),
   getItem("Notifications", "8", <BellOutlined />, [], "5"),
-  getItem("Logout", "9", <LogoutOutlined />),
 ];
 
 const SidebarAdmin = ({ setActiveComponent }) => {
@@ -75,9 +74,6 @@ const SidebarAdmin = ({ setActiveComponent }) => {
       case "8":
         setActiveComponent("Notifications");
         break;
-      case "9":
-        setActiveComponent("Logout");
-        break;
       default:
         setActiveComponent("Dashboard");
     }
@@ -85,30 +81,12 @@ const SidebarAdmin = ({ setActiveComponent }) => {
 
   return (
     <Sider
-      collapsible
       collapsed={collapsed}
-      onCollapse={(value) => setCollapsed(value)}
-      width={220}
-      style={{ backgroundColor: "#c74743" }}
+      className="bg-black"
     >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "64px",
-          backgroundColor: "#c74743",
-          padding: "16px 0",
-        }}
-      >
-        <img
-          src={Logo}
-          alt="Koi Logo"
-          style={{ height: "40px", width: "auto", objectFit: "contain" }}
-        />
+      <div className="flex justify-center items-center flex-col mt-20">
         {!collapsed && (
-          <p style={{ color: "#fff", marginTop: "8px", fontWeight: "bold" }}>
+          <p className="text-white mt-2 font-bold">
             Admin Dashboard
           </p>
         )}
@@ -119,9 +97,21 @@ const SidebarAdmin = ({ setActiveComponent }) => {
         mode="inline"
         defaultSelectedKeys={["1"]}
         items={items}
-        style={{ backgroundColor: "#c74743", color: "#fff" }}
+        className="bg-[#c74743] text-white"
         onClick={handleMenuClick}
       />
+
+      {/* Full-width button for collapse/expand */}
+      <div className="absolute bottom-0 w-full">
+        <Button
+          type="primary"
+          className="w-full my-10"
+          onClick={() => setCollapsed(!collapsed)}
+        >
+          {collapsed ? "Expand" : "Collapse"}
+        </Button>
+      </div>
+
     </Sider>
   );
 };

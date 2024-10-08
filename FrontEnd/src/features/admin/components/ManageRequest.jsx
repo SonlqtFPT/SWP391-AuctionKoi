@@ -197,6 +197,7 @@ const ManageRequest = () => {
           <Button onClick={() => handleViewDetail(record)} type="link">
             <FaEye className="mr-1" /> View Detail
           </Button>
+
         </div>
       ),
     },
@@ -230,6 +231,7 @@ const ManageRequest = () => {
 
   // Determine the color for the status tag
   const getStatusColor = (status) => {
+
     switch (
       status.toUpperCase() // Ensure status is case-insensitive
     ) {
@@ -253,6 +255,7 @@ const ManageRequest = () => {
         return "volcano"; // Color for cancelled status
       default:
         return "default"; // Default color for unknown status
+
     }
   };
 

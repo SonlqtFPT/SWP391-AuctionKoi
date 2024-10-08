@@ -1,17 +1,14 @@
-import React, { useState, useEffect } from "react";
+
+import { useState, useEffect } from "react";
 import {
   Button,
   Card,
-  Row,
-  Col,
-  Tag,
   Select,
   Input,
   notification,
-  Image,
 } from "antd";
 import api from "../../../config/axios";
-import { FaFish, FaFlag } from "react-icons/fa"; // Importing required icons
+
 
 const RequestDetails = ({ request, onBack, fetchRequest }) => {
   const [offerPrice, setOfferPrice] = useState(null);
@@ -62,7 +59,9 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
 
   const getStatusColor = (status) => {
     switch (
+
       status.toUpperCase() // Ensure status is case-insensitive
+
     ) {
       case "PENDING":
         return "blue"; // Color for pending status
@@ -126,6 +125,7 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
         message: "Success",
         description: "Offer accepted successfully!",
       });
+
     } catch (error) {
       console.error("Error accepting offer:", error);
       notification.error({
@@ -142,6 +142,7 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
         message: "Success",
         description: "Request cancelled successfully!",
       });
+
     } catch (error) {
       console.error("Error cancelling request:", error);
       notification.error({
@@ -152,6 +153,7 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
   };
 
   return (
+
     <div>
       <h2>Request Details</h2>
       <Row gutter={16}>
@@ -352,6 +354,8 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
       <Button type="default" onClick={onBack}>
         Back
       </Button>
+
+
     </div>
   );
 };
