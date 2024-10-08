@@ -1,5 +1,6 @@
 package swp.koi.service.lotService;
 
+import com.corundumstudio.socketio.SocketIOServer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -10,9 +11,12 @@ import swp.koi.model.*;
 import swp.koi.model.enums.*;
 import swp.koi.repository.*;
 import swp.koi.service.bidService.BidServiceImpl;
+import swp.koi.service.socketIoService.EventListenerFactoryImpl;
+import swp.koi.service.socketIoService.SocketDetail;
 import swp.koi.service.vnPayService.VnpayServiceImpl;
 
 import java.io.UnsupportedEncodingException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -28,6 +32,8 @@ public class LotServiceImpl implements LotService {
     private final VnpayServiceImpl vnpayService;
     private final MemberRepository memberRepository;
     private final InvoiceRepository invoiceRepository;
+    private final EventListenerFactoryImpl eventListenerFactory;
+    private final SocketIOServer socketServer;
 
     @Override
     public Lot findLotById(int id) {
@@ -46,12 +52,18 @@ public class LotServiceImpl implements LotService {
 
         List<Lot> runningLots = lotRepository.findAllByStatusAndEndingTimeLessThan(LotStatusEnum.AUCTIONING, now);
         runningLots.forEach(this::endLot);
+
+        List<Lot> descendingLots = lotRepository.findAllByStatusAndAuctionAuctionTypeAuctionTypeName(LotStatusEnum.AUCTIONING, AuctionTypeNameEnum.DESCENDING_BID);
+        descendingLots.forEach(this::decreasePrice);
     }
+
+
 
     private void startLot(Lot lot) {
         updateKoiFishStatus(lot.getKoiFish(), KoiFishStatusEnum.AUCTIONING);
         updateAuctionStatus(lot.getAuction(), AuctionStatusEnum.AUCTIONING);
         lot.setStatus(LotStatusEnum.AUCTIONING);
+        createSocketForLot(socketServer, lot);
         lotRepository.save(lot);
     }
 
@@ -64,6 +76,25 @@ public class LotServiceImpl implements LotService {
         } else {
             concludeLot(lot, bidList);
         }
+
+        SocketDetail socketDetail = SocketDetail.builder()
+                .lotId(lot.getLotId())
+                .newPrice(lot.getCurrentPrice())
+                .build();
+
+        eventListenerFactory.sendDataToClient(socketDetail,lot.getLotId().toString());
+    }
+
+    private void decreasePrice(Lot lot) {
+
+        Duration timeDiff = Duration.between(lot.getStartingTime(), LocalDateTime.now());
+
+        if (timeDiff.toMinutes() % 60 == 0) {
+            lot.setCurrentPrice((float) (lot.getCurrentPrice() * 0.95));
+        } else {
+            System.out.println("hi");
+        }
+
     }
 
     @Override
@@ -175,5 +206,9 @@ public class LotServiceImpl implements LotService {
 
     private Bid getFirstBid(List<Bid> bidList) {
         return bidList.getFirst();
+    }
+
+    public void createSocketForLot(SocketIOServer socketIOServer, Lot lot) {
+        eventListenerFactory.createDataListener(socketIOServer,lot.getLotId().toString());
     }
 }
