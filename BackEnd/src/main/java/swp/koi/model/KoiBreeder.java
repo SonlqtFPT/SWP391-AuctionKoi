@@ -34,6 +34,8 @@ public class KoiBreeder {
     @OneToMany(mappedBy = "koiBreeder")
     List<AuctionRequest> auctionRequests;
 
+    @OneToMany(mappedBy = "breeder",fetch = FetchType.LAZY)
+    List<Transaction> transactions;
 
     public KoiBreeder() {
     }

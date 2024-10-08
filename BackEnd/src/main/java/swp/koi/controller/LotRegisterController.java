@@ -25,15 +25,16 @@ public class LotRegisterController {
     private final LotRegisterService lotRegisterService;
 
     @PostMapping("/regis")
-    public ResponseEntity<?> registerLot(@RequestBody LotRegisterDTO lotRegisterDTO, HttpServletRequest request) throws KoiException {
+    public ResponseEntity<?> registerLot(@RequestBody LotRegisterDTO lotRegisterDTO,
+                                         HttpServletRequest request) throws KoiException {
         try{
-            var userRegisted = lotRegisterService.regisSlotWithLotId(lotRegisterDTO,request);
-            if(userRegisted != null) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(userRegisted);
+            var paymentLink = lotRegisterService.regisSlotWithLotId(lotRegisterDTO);
+            if(paymentLink != null) {
+                return ResponseEntity.status(HttpStatus.OK).body(paymentLink);
             }
-            return ResponseEntity.status(HttpStatus.CREATED).body("User already registered to lot");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("User already registered to lot");
         }catch (KoiException | UnsupportedEncodingException e){
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -46,5 +47,6 @@ public class LotRegisterController {
             return new ResponseData<>(e.getResponseCode());
         }
     }
-
 }
+
+

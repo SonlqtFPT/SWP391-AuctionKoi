@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -23,8 +25,13 @@ public class Bid {
     @Column(nullable = false)
     float bidAmount;
 
-    @Column(nullable = false)
-    Date bidTime;
+    @Column(name = "bidTime", nullable = false)
+    LocalDateTime bidTime;
+
+    @PrePersist
+    protected void onCreate() {
+        bidTime = LocalDateTime.now();
+    }
 
     @ManyToOne
     @JoinColumn(name = "memberId")

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -15,6 +16,7 @@ import java.util.List;
 @Table(name = "Member")
 @AllArgsConstructor
 @Builder
+@Data
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +31,12 @@ public class Member {
 
     @OneToMany(mappedBy = "member",fetch = FetchType.LAZY)
     List<Bid> bids;
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    List<Transaction> transactions;
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    List<Invoice> invoices;
 
     public Member() {
     }

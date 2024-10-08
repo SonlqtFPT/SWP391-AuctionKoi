@@ -16,6 +16,7 @@ import swp.koi.model.enums.TokenType;
 import swp.koi.service.accountService.AccountDetailService;
 import swp.koi.service.accountService.AccountServiceImpl;
 import swp.koi.service.jwtService.JwtServiceImpl;
+import swp.koi.service.redisService.RedisService;
 
 import java.io.IOException;
 
@@ -25,6 +26,7 @@ public class PreFilter extends OncePerRequestFilter {
 
     private final JwtServiceImpl jwtService;
     private final AccountDetailService accountDetailService;
+    private final RedisService redisService;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -49,7 +51,7 @@ public class PreFilter extends OncePerRequestFilter {
             UserDetails userDetails = accountDetailService.loadUserByUsername(username);
                     /*accountService.getUserDetailsService().loadUserByUsername(username);*/
             /*JwtToken jwtToken = (JwtToken) redisService.getData(username);*/
-            if(jwtService.validateToken(jwt, userDetails, TokenType.ACCESS_TOKEN) /*&& !jwtToken.getAccessToken().equals(jwt)*/) {
+            if(jwtService.validateToken(jwt, userDetails, TokenType.ACCESS_TOKEN) && !redisService.existData(jwt)) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 

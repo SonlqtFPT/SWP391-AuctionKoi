@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import swp.koi.model.Member;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +15,8 @@ public class BidResponseDTO {
 
     Integer bidId;
     Integer lotId;
-    LocalDateTime bitTime;
-    BaseMemberResponseDTO member;
+    float bidAmount;
+    LocalDateTime bidTime;
+    MemberResponseDTO member;
 
 }

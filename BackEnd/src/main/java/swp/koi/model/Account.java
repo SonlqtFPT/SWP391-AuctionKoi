@@ -26,23 +26,19 @@ public class Account {
     @Column(nullable = false, unique = true)
     String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "NVARCHAR(100)")
     String firstName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "NVARCHAR(100)")
     String lastName;
 
     @Column(nullable = false)
     String password;
 
-    @Column(nullable = false)
     String phoneNumber;
 
     @Enumerated(EnumType.STRING)
     AccountRoleEnum role;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    List<AccountRoleEnum> roles = new ArrayList<>();
 
     @Column(nullable = false)
     boolean status;
@@ -53,8 +49,9 @@ public class Account {
     @OneToOne(mappedBy = "account")
     KoiBreeder koiBreeder;
 
-    @OneToOne(mappedBy = "account")
-    AuctionRequest auctionRequest;
+    @OneToMany(mappedBy = "account")
+    List<AuctionRequest> auctionRequest;
+
 
     public Account() {
     }
