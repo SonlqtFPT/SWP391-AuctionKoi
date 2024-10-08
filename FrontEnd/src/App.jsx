@@ -1,3 +1,4 @@
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "../src/features/Home.jsx";
 import AdminPage from "../src/features/admin/pages/index.jsx";
@@ -60,4 +61,5 @@ export default function App() {
       </Router>
     </AuthProvider>
   );
+
 }

@@ -8,9 +8,11 @@ import {
   FaUserPlus,
   FaUserCircle,
 } from "react-icons/fa";
-import Logo from "../assets/logo/koi69Logo_white.png";
+
+import Logo from "../assets/logo/PrestigeKoi_White.png";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../features/protectedRoutes/AuthContext";
+
 
 const Header = () => {
   // State to manage the visibility of the mobile (hamburger) menu
@@ -59,17 +61,20 @@ const Header = () => {
 
   return (
     <>
+
       {/* Main navigation container */}
       <nav className="flex justify-between items-center bg-[#171817] text-white fixed w-full z-20 shadow-2xl">
 
         {/* Logo section */}
         <div className="px-5 lg:px-20 py-3 flex items-center">
           <Link to="/" className="flex items-center space-x-2">
+
             <img
               src={Logo}
-              alt="Koi69 Logo"
+              alt="Koi Logo"
               className="h-10 w-auto object-contain"
             />
+
           </Link>
         </div>
 
@@ -173,6 +178,7 @@ const Header = () => {
               </NavLink>
             </div>
           )}
+
         </div>
 
         {/* Hamburger menu button for mobile screens */}
@@ -184,6 +190,68 @@ const Header = () => {
           <FaBars className="h-6 w-6 hover:text-gray-200" />
         </button>
       </nav>
+
+
+      {/* Dropdown Menu */}
+      <div
+        className={`bg-blue-800 text-white ${
+          isOpen ? "block" : "hidden"
+        } md:hidden`}
+      >
+        <ul className="flex flex-col space-y-2 px-5 py-4">
+          <li>
+            <Link
+              to="/"
+              className="hover:text-gray-200 flex items-center space-x-2"
+              onClick={handleLinkClick}
+            >
+              <FaHome className="h-5 w-5" />
+              <span>Home</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/auction"
+              className="hover:text-gray-200 flex items-center space-x-2"
+              onClick={handleLinkClick}
+            >
+              <FaGavel className="h-5 w-5" />
+              <span>Auction</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/about"
+              className="hover:text-gray-200 flex items-center space-x-2"
+              onClick={handleLinkClick}
+            >
+              <FaInfoCircle className="h-5 w-5" />
+              <span>About Us</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/login"
+              className="hover:text-gray-200 flex items-center space-x-2"
+              onClick={handleLinkClick}
+            >
+              <FaSignInAlt className="h-6 w-6" />
+              <span>Login</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/register"
+              className="hover:text-gray-200 flex items-center space-x-2"
+              onClick={handleLinkClick}
+            >
+              <FaUserPlus className="h-6 w-6" />
+              <span>Register</span>
+            </Link>
+          </li>
+        </ul>
+      </div>
+
     </>
   );
 };

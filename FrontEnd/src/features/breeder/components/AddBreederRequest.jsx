@@ -1,16 +1,21 @@
+
 import { useState } from "react";
+
 import { Form, InputNumber, Select, Upload, Button, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import api from "../../../config/axios"; // Assuming Axios instance is set up properly
 import uploadFile from "../../../utils/file"; // Firebase file upload utility
 import { useAuth } from "../../protectedRoutes/AuthContext";
 
+
 const AddBreederRequest = ({ onBack }) => {
   const [form] = Form.useForm();
   const [imageList, setImageList] = useState([]);
   const [videoList, setVideoList] = useState([]);
   const [loading, setLoading] = useState(false);
+
   const { accountId } = useAuth();
+
 
   // Handles the form submission
   const handleSubmitFish = async (values) => {
@@ -19,7 +24,9 @@ const AddBreederRequest = ({ onBack }) => {
 
       // Prepare request payload
       const payload = {
+
         accountId: accountId, // Replace with actual account ID
+
         koiFish: {
           varietyName: values.varietyName,
           gender: values.gender,
@@ -116,6 +123,8 @@ const AddBreederRequest = ({ onBack }) => {
   };
 
   return (
+
+
     <div className="bg-[#131313] my-10 max-w-md mx-auto md:max-w-2xl shadow-xl mt-10 rounded-2xl p-6">
       <div className="flex justify-between mb-6">
         <button onClick={onBack} className="bg-[#bcab6f] font-semibold text-black hover:bg-[#a9995d] rounded-md p-1">
@@ -257,6 +266,7 @@ const AddBreederRequest = ({ onBack }) => {
             Submit Request
           </button>
         </div>
+
       </Form>
     </div>
   );
