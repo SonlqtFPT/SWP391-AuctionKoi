@@ -1,11 +1,17 @@
 package swp.koi.service.accountService;
 
 import ch.qos.logback.core.util.StringUtil;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 import swp.koi.convert.AccountEntityToDtoConverter;
 import swp.koi.dto.request.AccountLoginDTO;
 import swp.koi.dto.request.AccountRegisterDTO;
+import swp.koi.dto.request.GoogleTokenRequestDto;
 import swp.koi.dto.request.LogoutDTO;
 import swp.koi.dto.response.AuthenticateResponse;
 import swp.koi.dto.response.ResponseCode;
@@ -25,14 +32,13 @@ import swp.koi.model.Account;
 import swp.koi.model.enums.AccountRoleEnum;
 import swp.koi.model.enums.TokenType;
 import swp.koi.repository.AccountRepository;
-import swp.koi.repository.KoiBreederRepository;
+import swp.koi.service.googleApiService.GoogleApiService;
 import swp.koi.service.jwtService.JwtServiceImpl;
 import swp.koi.service.memberService.MemberServiceImpl;
 import swp.koi.service.redisService.RedisServiceImpl;
 
-import javax.security.auth.login.AccountNotFoundException;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,10 +51,13 @@ public class AccountServiceImpl implements AccountService{
     private final AuthenticationManager authenticationManager;
     private final MemberServiceImpl memberService;
     private final JwtServiceImpl jwtService;
-    private final KoiBreederRepository koiBreederRepository;
     private final AccountDetailService accountDetailService;
     private final AccountEntityToDtoConverter accountEntityToDtoConverter;
     private final RedisServiceImpl redisService;
+    private final GoogleApiService googleApiService;
+
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    private String clientId;
 
     @Override
     public AccountRegisterDTO findByAccountId(Integer accountId) {
@@ -116,6 +125,50 @@ public class AccountServiceImpl implements AccountService{
         return authenticateResponse;
     }
 
+    @Override
+    public AuthenticateResponse loginGoogle(GoogleTokenRequestDto googleTokenDto) {
+        String idToken = googleTokenDto.getIdToken();
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
+                .setAudience(Collections.singleton(clientId))
+                .build();
+        GoogleIdToken idTokenObj;
+        try{
+            idTokenObj = verifier.verify(idToken);
+        }catch (Exception e){
+            throw new KoiException(ResponseCode.INVALID_TOKEN);
+        }
+        if(idTokenObj == null)
+            throw  new KoiException(ResponseCode.INVALID_TOKEN);
+
+        GoogleIdToken.Payload payload = idTokenObj.getPayload();
+        String email = payload.getEmail();
+
+        Account account = accountRepository.findByEmail(email).orElseGet(() -> {
+            Account newAccount = Account.builder()
+                    .email(email)
+                    .firstName((String) payload.get("given_name"))
+                    .lastName((String) payload.get("family_name"))
+                    .password(passwordEncoder.encode("123123"))
+                    .role(AccountRoleEnum.MEMBER)
+                    .status(true)
+                    .build();
+            accountRepository.save(newAccount);
+            memberService.createMember(newAccount);
+            return newAccount;
+        });
+
+        AuthenticateResponse authenticateResponse;
+
+        String accessToken = jwtService.generateToken(account.getEmail(), TokenType.ACCESS_TOKEN);
+        String refreshToken = jwtService.generateRefreshToken(account.getEmail(), TokenType.REFRESH_TOKEN);
+
+        return authenticateResponse = AuthenticateResponse.builder()
+                .account(accountEntityToDtoConverter.convertAccount(account))
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
+
     /**
      * invalid old token when it come with the new refresh token
      * @param request
@@ -157,6 +210,18 @@ public class AccountServiceImpl implements AccountService{
 
 
         return tokenResponse;
+    }
+
+    @Override
+    public void createAccountStaff(AccountRegisterDTO staffDto) {
+        Account account = new Account();
+        if(accountRepository.existsByEmail(account.getEmail()))
+            throw new KoiException(ResponseCode.EMAIL_ALREADY_EXISTS);
+        modelMapper.map(staffDto, account);
+        account.setPassword(passwordEncoder.encode(staffDto.getPassword()));
+        account.setRole(AccountRoleEnum.STAFF);
+        account.setStatus(true);
+        accountRepository.save(account);
     }
 
     @Override

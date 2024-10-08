@@ -13,5 +13,5 @@ import swp.koi.model.enums.AuctionTypeNameEnum;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuctionRequestNegotiationManagerDTO {
     float offerPrice;
-    String offerAuctionType;
+    String auctionTypeName;
 }

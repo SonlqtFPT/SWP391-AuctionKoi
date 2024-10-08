@@ -5,7 +5,7 @@ public enum ResponseCode {
     UNAUTHORIZED(403, "UNAUTHORIZED"),
     NOT_FOUND(400, "Not found"),
     INVALID_INFORMATION(400, "Data is invalid"),
-    CREATED_SUCCESS(400, "Created successfully"),
+    CREATED_SUCCESS(010, "Created successfully"),
     SUCCESS_GET_LIST(200, "Data retrieved successfully."),
     SUCCESS_SIGN_UP(200, "Sign up successful."),
     FAIL(000, "Fail"),
@@ -16,6 +16,8 @@ public enum ResponseCode {
     EMAIL_ALREADY_EXISTS(003, "Email already exist."),
     JWT_INVALID(004, "JWT is invalid."),
     LOGOUT_JWT(005, "Logout successful."),
+    EMAIL_NOT_FOUND(006, "Email not found"),
+    INVALID_TOKEN(007, "Invalid token"),
 
     // Account related statuses
     ACCOUNT_ID_NOT_FOUND(1000, "Account ID not found"),
@@ -44,7 +46,10 @@ public enum ResponseCode {
     BID_LIST_EMPTY(5006, "Bid list is empty"),
     BID_SEALED_ALREADY(5007, "User already bidded to this sealed lot"),
 
-    // AuctionRequest related statuses
+    //Auction
+    AUCTION_NOT_FOUND(6000, "Auction not found"),
+
+    // AuctionRequest
     AUCTION_REQUEST_NOT_FOUND(7001, "Auction request not found"),
     AUCTION_STATUS_CHANGE(7002, "Auction request status changed"),
     STAFF_ASSIGN_SUCCESSFULLY(7003, "Staff assigned successfully"),

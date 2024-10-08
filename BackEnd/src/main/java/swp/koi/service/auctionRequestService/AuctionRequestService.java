@@ -22,7 +22,6 @@ public interface AuctionRequestService {
 
     void breederCancelRequest(Integer requestId);
 
-
     AuctionRequest updateRequest(Integer requestId, AuctionRequestUpdateDTO auctionRequest);
 
     void changeStatus(Integer requestId, UpdateStatusDTO request);
@@ -36,4 +35,8 @@ public interface AuctionRequestService {
     void managerAcceptNegotiation(Integer requestId);
 
     void managerCancelRequest(Integer requestId);
+
+    void managerAcceptRequest(Integer requestId);
+
+    AuctionRequest getRequestDetail(Integer requestId);
 }

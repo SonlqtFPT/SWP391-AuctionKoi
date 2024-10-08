@@ -134,7 +134,6 @@ public class BidServiceImpl implements BidService {
     private Bid createBid(BidRequestDto bidRequestDto, Member member, Lot lot) {
         return Bid.builder()
                 .bidAmount(bidRequestDto.getPrice()) // Set bid amount
-                .bidTime(new Date()) // Record the current date/time for the bid
                 .member(member) // Associate the bid with the member
                 .lot(lot) // Associate the bid with the lot
                 .build();

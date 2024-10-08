@@ -25,22 +25,18 @@ public class AuctionRequestEntityToDtoConverter {
         return response;
     }
 
-    public List<AuctionRequestResponseDTO> convertAuctionRequestList(List<AuctionRequest> auctionRequests, boolean isStaff){
+    public List<AuctionRequestResponseDTO> convertAuctionRequestList(List<AuctionRequest> auctionRequests){
         List<AuctionRequestResponseDTO> response = auctionRequests
                 .stream()
                 .filter(Objects::nonNull)
                 .map(auctionRequest -> {
                     AuctionRequestResponseDTO dto = modelMapper.map(auctionRequest, AuctionRequestResponseDTO.class);
                     dto.getKoiFish().setAuctionTypeName(auctionRequest.getKoiFish().getAuctionType().getAuctionTypeName());
-                    if(!isStaff) {
-                        if(auctionRequest.getAccount() == null) {
-                            dto.setStaff(null);
-                        }else {
-                            dto.setStaff(accountEntityToDtoConverter.convertAccount(auctionRequest.getAccount()));
-                        }
-                    }
-                    else
+                    if(auctionRequest.getAccount() == null) {
                         dto.setStaff(null);
+                    }else {
+                        dto.setStaff(accountEntityToDtoConverter.convertAccount(auctionRequest.getAccount()));
+                    }
                     return dto;
                 })
                 .collect(Collectors.toList());

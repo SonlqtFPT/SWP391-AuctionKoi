@@ -6,14 +6,12 @@ import org.springframework.web.bind.annotation.*;
 import swp.koi.convert.AuctionEntityToDtoConverter;
 import swp.koi.convert.AuctionRequestEntityToDtoConverter;
 import swp.koi.convert.KoiFishEntityToDtoConverter;
-import swp.koi.dto.request.AuctionTypeDTO;
-import swp.koi.dto.request.AuctionWithLotsDTO;
-import swp.koi.dto.request.KoiBreederDTO;
-import swp.koi.dto.request.UpdateStatusDTO;
+import swp.koi.dto.request.*;
 import swp.koi.dto.response.*;
 import swp.koi.exception.KoiException;
 import swp.koi.model.Auction;
 import swp.koi.model.KoiBreeder;
+import swp.koi.service.accountService.AccountService;
 import swp.koi.service.auctionRequestService.AuctionRequestService;
 import swp.koi.service.auctionService.AuctionService;
 import swp.koi.service.koiBreederService.KoiBreederService;
@@ -29,8 +27,10 @@ public class AuctionController {
     private final KoiFishService koiFishService;
     private final KoiFishEntityToDtoConverter koiFishEntityToDtoConverter;
     private final AuctionRequestEntityToDtoConverter auctionRequestEntityToDtoConverter;
+    private final AuctionEntityToDtoConverter auctionEntityToDtoConverter;
     private final AuctionRequestService auctionRequestService;
     private final KoiBreederService koiBreederService;
+    private final AccountService accountService;
 
     @GetMapping("/manager/getFish")
     public ResponseData<?> getKoiFishFromApproveRequest(){
@@ -56,12 +56,6 @@ public class AuctionController {
         }
     }
 
-    @PatchMapping("/manager/request/{requestId}/status")
-    public ResponseData<?> changeStatus(@PathVariable Integer requestId, @RequestBody UpdateStatusDTO request){
-        auctionService.changeStatus(requestId, request);
-        return new ResponseData<>(ResponseCode.AUCTION_STATUS_CHANGE);
-    }
-
     @PostMapping("/manager/createBreeder")
     public ResponseData<KoiBreederResponseDTO> createKoiBreeder(@Valid @RequestBody KoiBreederDTO request){
         try{
@@ -70,6 +64,29 @@ public class AuctionController {
         } catch (KoiException e) {
             return new ResponseData<>(e.getResponseCode());
         }
+    }
+
+    @PostMapping("/manager/createStaff")
+    public ResponseData<?> createStaff(@RequestBody AccountRegisterDTO staffDto){
+        accountService.createAccountStaff(staffDto);
+        return new ResponseData<>(ResponseCode.CREATED_SUCCESS);
+    }
+
+    @GetMapping("/auction/get-all-auction")
+    public ResponseData<List<AuctionResponseDTO>> getAllAuction(){
+        List<AuctionResponseDTO> response = auctionEntityToDtoConverter.converAuctiontList(auctionService.getAllAuction());
+        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+    }
+
+    @GetMapping("/auction/get-auction/{auctionId}")
+    public ResponseData<AuctionResponseDTO> getAuction(@PathVariable Integer auctionId){
+        AuctionResponseDTO response = auctionEntityToDtoConverter.convertAuction(auctionService.getAuction(auctionId));
+        return new ResponseData<>(ResponseCode.SUCCESS, response);
+    }
+
+    @GetMapping("/auction/get-lot/{lotId}")
+    public ResponseData<LotResponseDto> getLot(@PathVariable Integer lotId){
+        return new ResponseData<>(ResponseCode.SUCCESS, auctionService.getLot(lotId));
     }
 
 }

@@ -41,7 +41,7 @@ public class AuctionRequestController {
     @GetMapping("/breeder/request/{breederId}")
     public ResponseData<List<AuctionRequestResponseDTO>> getAllBreederRequest(@PathVariable Integer breederId){
         try{
-            List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllBreederRequest(breederId), false);
+            List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllBreederRequest(breederId));
             return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
         }catch (KoiException e){
             return new ResponseData<>(e.getResponseCode());
@@ -91,7 +91,7 @@ public class AuctionRequestController {
 
     @GetMapping("/manager/request/getRequest")
     public ResponseData<List<AuctionRequestResponseDTO>> getAllAuctionRequest(){
-        List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllAuctionRequest(), false);
+        List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllAuctionRequest());
         return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
     }
 
@@ -110,6 +110,12 @@ public class AuctionRequestController {
         }catch (KoiException e){
             return new ResponseData<>(e.getResponseCode());
         }
+    }
+
+    @PatchMapping("/manager/request/accept/{requestId}")
+    public ResponseData<?> managerAcceptRequest(@PathVariable Integer requestId){
+        auctionRequestService.managerAcceptRequest(requestId);
+        return new ResponseData<>(ResponseCode.AUCTION_STATUS_CHANGE);
     }
 
     @PostMapping("/manager/request/negotiation/{requestId}")
@@ -145,7 +151,7 @@ public class AuctionRequestController {
     @GetMapping("/staff/list-request/{accountId}")
     public ResponseData<List<AuctionRequestResponseDTO>> getAllStaffRequest(@PathVariable Integer accountId){
         try{
-            List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllStaffRequest(accountId), false);
+            List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllStaffRequest(accountId));
             return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
         }catch (KoiException e){
             return new ResponseData<>(e.getResponseCode());
@@ -156,6 +162,16 @@ public class AuctionRequestController {
     public ResponseData<?> changeStatus(@PathVariable Integer requestId, @RequestBody UpdateStatusDTO request){
         auctionRequestService.changeStatus(requestId, request);
         return new ResponseData<>(ResponseCode.AUCTION_STATUS_CHANGE);
+    }
+
+    @GetMapping("/request/get/{requestId}")
+    public ResponseData<AuctionRequestResponseDTO> getRequestDetail(@PathVariable Integer requestId){
+        try{
+            AuctionRequestResponseDTO response = auctionRequestEntityToDtoConverter.convertAuctionRequest(auctionRequestService.getRequestDetail(requestId));
+            return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+        }catch (KoiException e){
+            return new ResponseData<>(e.getResponseCode());
+        }
     }
 
 }

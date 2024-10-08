@@ -57,7 +57,7 @@ public class KoiFishServiceImpl implements KoiFishService{
                 koiFish.setPrice(koiRequest.getPrice());
                 koiFish.setSize(koiRequest.getSize());
 
-                // Set the status of the koi fish to 'WAITING' (probably waiting for auction or approval)
+                // Set the status of the koi fish to 'PENDING' (probably waiting for auction or approval)
                 koiFish.setStatus(KoiFishStatusEnum.PENDING);
 
                 // Save the koi fish to the repository and return the saved entity
@@ -87,30 +87,6 @@ public class KoiFishServiceImpl implements KoiFishService{
     @Override
     public void saveFish(KoiFish koiFish) {
         koiFishRepository.save(koiFish);
-    }
-
-    @Override
-    public KoiFish updateFish(KoiFishUpdateDTO koiFishDTO) {
-
-        AuctionType auctionType = auctionTypeService.findByAuctionTypeName(koiFishDTO.getAuctionTypeName());
-
-        Variety variety = varietyService.findByVarietyName(koiFishDTO.getVarietyName());
-
-        Media media = mediaService.findByMediaId(koiFishDTO.getMedia().getMediaId());
-        media.setImageUrl(koiFishDTO.getMedia().getImageUrl());
-        media.setVideoUrl(koiFishDTO.getMedia().getVideoUrl());
-
-        KoiFish koiFish = koiFishRepository.findByFishId(koiFishDTO.getFishId()).orElseThrow(() -> new KoiException(ResponseCode.FISH_NOT_FOUND));
-
-        koiFish.setAuctionType(auctionType);
-        koiFish.setMedia(media);
-        koiFish.setVariety(variety);
-        koiFish.setAge(koiFishDTO.getAge());
-        koiFish.setGender(koiFishDTO.getGender());
-        koiFish.setSize(koiFishDTO.getSize());
-        koiFish.setPrice(koiFishDTO.getPrice());
-
-        return koiFishRepository.save(koiFish);
     }
 
     @Override
