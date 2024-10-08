@@ -7,6 +7,7 @@ import com.google.api.client.json.gson.GsonFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -34,6 +35,8 @@ import swp.koi.model.enums.TokenType;
 import swp.koi.repository.AccountRepository;
 import swp.koi.service.googleApiService.GoogleApiService;
 import swp.koi.service.jwtService.JwtServiceImpl;
+import swp.koi.service.mailService.EmailContent;
+import swp.koi.service.mailService.EmailService;
 import swp.koi.service.memberService.MemberServiceImpl;
 import swp.koi.service.redisService.RedisServiceImpl;
 
@@ -55,6 +58,8 @@ public class AccountServiceImpl implements AccountService{
     private final AccountEntityToDtoConverter accountEntityToDtoConverter;
     private final RedisServiceImpl redisService;
     private final GoogleApiService googleApiService;
+    private final EmailService emailService;
+    private final EmailContent emailContent;
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String clientId;
@@ -144,14 +149,16 @@ public class AccountServiceImpl implements AccountService{
         String email = payload.getEmail();
 
         Account account = accountRepository.findByEmail(email).orElseGet(() -> {
+            String randomPassword = generateRandomPassword();
             Account newAccount = Account.builder()
                     .email(email)
                     .firstName((String) payload.get("given_name"))
                     .lastName((String) payload.get("family_name"))
-                    .password(passwordEncoder.encode("123123"))
+                    .password(passwordEncoder.encode(randomPassword))
                     .role(AccountRoleEnum.MEMBER)
                     .status(true)
                     .build();
+            emailService.sendEmail(email, "Your account information", emailContent.createEmailSignUpGoogle((String) payload.get("given_name"), email, randomPassword));
             accountRepository.save(newAccount);
             memberService.createMember(newAccount);
             return newAccount;
@@ -167,6 +174,10 @@ public class AccountServiceImpl implements AccountService{
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    private String generateRandomPassword() {
+        return RandomStringUtils.random(6, true, true);
     }
 
     /**
