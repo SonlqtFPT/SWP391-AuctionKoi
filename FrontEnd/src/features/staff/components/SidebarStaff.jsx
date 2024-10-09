@@ -6,18 +6,12 @@ import {
   FaTasks,
   FaTruck, // Import FaTruck icon for Transport
 } from "react-icons/fa"; // Importing React icons
-import Logo from "../../../assets/logo/koi69Logo_white.png";
 
 const SidebarAdmin = () => {
   return (
     <div className="min-h-screen flex flex-row bg-orange-400">
       <div className="flex flex-col w-56 bg-[#c74743] rounded-r-3xl overflow-hidden">
         <div className="flex flex-col items-center justify-center h-20 shadow-md">
-          <img
-            src={Logo}
-            alt="Koi69 Logo"
-            className="h-10 w-auto object-contain"
-          />
           <p className="text-white text-sm font-semibold mt-1">
             Staff Dashboard
           </p>

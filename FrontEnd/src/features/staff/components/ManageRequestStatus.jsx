@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Select, Table, Modal } from "antd";
 import { toast } from "react-toastify";
 import api from "../../../config/axios";
 import RequestDetails from "../components/RequestDetails";
+import { useAuth } from "../../protectedRoutes/AuthContext";
 
 const ManageRequestStatus = ({ onGoBack }) => {
+  const { accountId } = useAuth();
   const [auctionRequests, setAuctionRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showList, setShowList] = useState(true);
   const [updatingRequest, setUpdatingRequest] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState(null);
-  const accountId = 4;
 
   const fetchRequest = async () => {
     try {
