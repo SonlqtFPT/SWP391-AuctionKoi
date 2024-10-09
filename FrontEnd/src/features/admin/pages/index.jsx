@@ -28,7 +28,7 @@ const AdminPage = () => {
       <Header />
       <div className="flex flex-grow">
         <SidebarAdmin setActiveComponent={setActiveComponent} />
-        <div className="flex-grow p-4">
+        <div className="flex-grow p-4 mt-20">
           {renderComponent()} {/* Render the appropriate component */}
         </div>
       </div>
