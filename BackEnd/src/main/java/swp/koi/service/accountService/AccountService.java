@@ -30,5 +30,5 @@ public interface AccountService {
     void createAccountStaff(AccountRegisterDTO staffDto);
     void logout(LogoutDTO logoutDTO);
 
-    AuthenticateResponse loginGoogle(GoogleTokenRequestDto googleToken)
+    AuthenticateResponse loginGoogle(GoogleTokenRequestDto googleToken);
 }
