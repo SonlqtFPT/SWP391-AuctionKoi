@@ -10,7 +10,7 @@ const AddBreederRequest = ({ onBack }) => {
   const [imageList, setImageList] = useState([]);
   const [videoList, setVideoList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { accountId } = useAuth(5);
+  const { accountId } = useAuth();
 
   // Handles the form submission
   const handleSubmitFish = async (values) => {
