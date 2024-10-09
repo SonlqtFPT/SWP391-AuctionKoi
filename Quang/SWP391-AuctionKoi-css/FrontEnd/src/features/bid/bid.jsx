@@ -48,20 +48,18 @@ function Bid() {
   }, [lot]);
 
   return (
-    <div className="bg-black h-full">
-      <Header />
+    <div className="bg-black h-screen">
       <div>{lot && <Time remainingTime={remainingTime} />}</div>
-      {/* Truyền remainingTime xuống Time */}
-      <div className="flex justify-center">
+      <div className="flex flex-col lg:flex-row justify-center items-center">
         <div>
-          <div className="">
+          <div className="max-w-full">
             {lot && <Picture img={lot.koiFish.imageUrl} />}
           </div>
-          <div className="mt-[30px]">
+          <div className="mt-4 lg:mt-[30px]">
             {lot && <Video vid={lot.koiFish.videoUrl} />}
           </div>
         </div>
-        <div className="mr-[190px]">
+        <div className="mr-0 lg:mr-[190px] mt-4 lg:mt-0">
           <div>
             {lot && (
               <Information
@@ -72,7 +70,7 @@ function Bid() {
               />
             )}
           </div>
-          <div className="">
+          <div>
             {lot && (
               <EnterPrice
                 currentPrice={lot.currentPrice}
@@ -84,11 +82,11 @@ function Bid() {
               />
             )}
           </div>
-          <div className="mt-[30px]">{lot && <TopBid />}</div>
+          <div className="mt-4 lg:mt-[30px]">{lot && <TopBid />}</div>
         </div>
       </div>
-      <Footer />
     </div>
+
   );
 }
 

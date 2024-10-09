@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-function Picture({}) {
+function Picture({ }) {
   const [pic, setPic] = useState("");
 
   useEffect(() => {
@@ -9,7 +9,7 @@ function Picture({}) {
     );
   }, []);
   return (
-    <div className="w-[300px]">
+    <div className="w-96">
       <img
         className="rounded-tl-[50px] rounded-tr-[50px]"
         src={pic}

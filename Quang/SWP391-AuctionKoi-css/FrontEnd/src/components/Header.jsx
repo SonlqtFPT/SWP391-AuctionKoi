@@ -8,7 +8,7 @@ import {
   FaUserPlus,
   FaUserCircle,
 } from "react-icons/fa";
-import Logo from "../assets/logo/koi69Logo_dark.png";
+import Logo from "../assets/logo/PrestigeKoi_White.png";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../features/protectedRoutes/AuthContext";
 
@@ -68,14 +68,14 @@ const Header = () => {
   return (
     <>
       {/* Main navigation container */}
-      <nav className="flex justify-between items-center bg-[#171817] text-white fixed w-full z-20 shadow-2xl">
+      <nav className="flex justify-between items-center bg-[#171817] text-white fixed w-full z-50 shadow-2xl">
         {/* Logo section */}
         <div className="px-5 lg:px-20 py-3 flex items-center">
           <Link to="/" className="flex items-center space-x-2">
             <img
               src={Logo}
-              alt="Koi69 Logo"
-              className="h-10 w-auto object-contain"
+              alt="PrestigeKoi Auctions Logo"
+              className="h-14 w-14 object-contain"
             />
           </Link>
         </div>
