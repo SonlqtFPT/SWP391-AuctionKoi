@@ -46,18 +46,22 @@ function TopBid() {
         <h1 className="font-bold text-3xl p-5">Top Bid</h1>
         <Button className="font-bold m-6 rounded-3xl">Refesh </Button>
       </div>
-      {/* Hiển thị 5 bid cao nhất */}
-      {topBids.map((bid, index) => (
-        <div
-          key={index}
-          className={`h-[70px] w-[700px] m-5 rounded-[20px] flex items-center justify-between pl-7 ml-10 ${
-            bid.bidAmount === highestBid ? "bg-green-500" : "bg-slate-400"
-          }`}
-        >
-          <h1 className="text-xl font-bold">{bid.lastName}</h1>
-          <h1 className="text-xl font-bold mr-8">{bid.bidAmount}</h1>
-        </div>
-      ))}
+      {/* Hiển thị 5 bid cao nhất và cho phép cuộn để xem thêm */}
+      <div className="overflow-y-auto h-[400px]">
+        {" "}
+        {/* Thêm div cuộn */}
+        {list.map((bid, index) => (
+          <div
+            key={index}
+            className={`h-[70px] w-[700px] m-5 rounded-[20px] flex items-center justify-between pl-7 ml-10 ${
+              bid.bidAmount === highestBid ? "bg-green-500" : "bg-slate-400"
+            }`}
+          >
+            <h1 className="text-xl font-bold">{bid.lastName}</h1>
+            <h1 className="text-xl font-bold mr-8">{bid.bidAmount}</h1>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

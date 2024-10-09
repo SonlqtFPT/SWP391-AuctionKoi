@@ -8,6 +8,8 @@ import EnterPrice from "./components-bid/EnterPrice";
 import TopBid from "./components-bid/TopBid";
 import Video from "./components-bid/Video";
 import axios from "axios";
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
 
 function Bid() {
   const [lot, setLot] = useState();
@@ -27,26 +29,27 @@ function Bid() {
 
   useEffect(() => {
     if (lot) {
-      // Kiểm tra lot và endingTime
-      const endingTime = new Date(lot.endingTime).getTime(); // Lấy thời gian kết thúc
+      const endingTime = new Date(lot.endingTime).getTime();
       const interval = setInterval(() => {
         const now = Date.now();
-        const timeLeft = endingTime - now; // Tính thời gian còn lại
-        setRemainingTime(timeLeft);
+        const timeLeft = endingTime - now;
 
         // Nếu thời gian còn lại <= 0, dừng interval
         if (timeLeft <= 0) {
           clearInterval(interval);
-          setRemainingTime("Ended"); // Đặt thời gian còn lại về 0
+          setRemainingTime(-1); // Đặt giá trị đặc biệt để chỉ ra đã kết thúc
+        } else {
+          setRemainingTime(timeLeft);
         }
-      }, 1000); // Cập nhật mỗi giây
+      }, 1000);
 
-      return () => clearInterval(interval); // Dọn dẹp interval khi component unmount
+      return () => clearInterval(interval);
     }
   }, [lot]);
 
   return (
-    <div className="bg-black pt-10 h-full">
+    <div className="bg-black h-full">
+      <Header />
       <div>{lot && <Time remainingTime={remainingTime} />}</div>
       {/* Truyền remainingTime xuống Time */}
       <div className="flex justify-center">
@@ -75,7 +78,7 @@ function Bid() {
                 currentPrice={lot.currentPrice}
                 startingPrice={lot.startingPrice}
                 increment={lot.increment}
-                currentMemberId={4}
+                currentMemberId={1}
                 lotId={1}
                 fetchLot={fetchLot}
               />
@@ -84,6 +87,7 @@ function Bid() {
           <div className="mt-[30px]">{lot && <TopBid />}</div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

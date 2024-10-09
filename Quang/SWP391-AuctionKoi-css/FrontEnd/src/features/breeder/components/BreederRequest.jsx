@@ -16,10 +16,8 @@ import api from "../../../config/axios";
 import { toast } from "react-toastify";
 import { useAuth } from "../../protectedRoutes/AuthContext";
 
-
 const { RangePicker } = DatePicker;
 const { Option } = Select;
-
 
 const BreederRequest = () => {
   const [requests, setRequests] = useState([]);
@@ -31,7 +29,6 @@ const BreederRequest = () => {
   const [search, setSearch] = useState("");
   const [searchField, setSearchField] = useState("requestId");
   const [dateRange, setDateRange] = useState(null);
-
 
   useEffect(() => {
     fetchRequests();
@@ -111,7 +108,6 @@ const BreederRequest = () => {
     fetchRequests(); // Optionally refetch requests to refresh the list
   };
 
-
   const handleSearch = () => {
     const filtered = requests.filter((item) => {
       switch (searchField) {
@@ -149,7 +145,6 @@ const BreederRequest = () => {
     setDateRange(null);
     setFilteredRequests(requests);
   };
-
 
   const formatStatus = (status) => {
     switch (status) {
@@ -195,18 +190,24 @@ const BreederRequest = () => {
 
   return (
     <div className="w-full mt-16 bg-hero-pattern relative bg-cover">
-      <div className='absolute bg-black bg-opacity-70 inset-0'></div>
+      <div className="absolute bg-black bg-opacity-70 inset-0"></div>
       {loading ? (
         <Spin size="large" />
       ) : (
         <div className="relative">
           <div className="flex flex-col justify-center text-center">
-            <h1 className="text-2xl lg:text-3xl font-bold text-[#bcab6f] my-5">Breeder Requests</h1>
+            <h1 className="text-2xl lg:text-3xl font-bold text-[#bcab6f] my-5">
+              Breeder Requests
+            </h1>
             {/* Button to add a new breeder request */}
             <div className="flex items-center justify-center space-x-4">
               {/* Left Image */}
               <span>
-                <img src="\src\assets\Divider\diamondLeft.png" alt="Left Divider" className="w-auto transform scale-x-[-1]" />
+                <img
+                  src="\src\assets\Divider\diamondLeft.png"
+                  alt="Left Divider"
+                  className="w-auto transform scale-x-[-1]"
+                />
               </span>
 
               {/* Button in the middle */}
@@ -220,7 +221,11 @@ const BreederRequest = () => {
 
               {/* Right Image */}
               <span>
-                <img src="\src\assets\Divider\diamondRight.png" alt="Right Divider" className="w-auto" />
+                <img
+                  src="\src\assets\Divider\diamondRight.png"
+                  alt="Right Divider"
+                  className="w-auto"
+                />
               </span>
             </div>
           </div>
@@ -289,25 +294,34 @@ const BreederRequest = () => {
                     dataIndex: "requestId",
                     key: "requestId",
                     sorter: (a, b) => a.requestId - b.requestId,
-                    render: (text) => <span className="text-blue-500">{text}</span>,
-                    className: "text-gray-200 text-left px-4 py-2 font-semibold",
+                    render: (text) => (
+                      <span className="text-blue-500">{text}</span>
+                    ),
+                    className:
+                      "text-gray-200 text-left px-4 py-2 font-semibold",
                   },
                   {
                     title: <span className="text-black">Fish ID</span>,
                     dataIndex: "fishId",
                     key: "fishId",
                     sorter: (a, b) => a.fishId - b.fishId,
-                    render: (text) => <span className="font-bold text-orange-500">{text}</span>,
-                    className: "text-gray-200 text-left px-4 py-2 font-semibold",
+                    render: (text) => (
+                      <span className="font-bold text-orange-500">{text}</span>
+                    ),
+                    className:
+                      "text-gray-200 text-left px-4 py-2 font-semibold",
                   },
                   {
                     title: <span className="text-black">Created At</span>,
                     dataIndex: "requestedAt",
                     key: "requestedAt",
                     render: (text) => (
-                      <span className="text-gray-500">{new Date(text).toLocaleString()}</span>
+                      <span className="text-gray-500">
+                        {new Date(text).toLocaleString()}
+                      </span>
                     ),
-                    sorter: (a, b) => new Date(a.requestedAt) - new Date(b.requestedAt),
+                    sorter: (a, b) =>
+                      new Date(a.requestedAt) - new Date(b.requestedAt),
                     className: "text-left px-4 py-2 font-semibold",
                   },
                   {
@@ -315,7 +329,10 @@ const BreederRequest = () => {
                     dataIndex: "status",
                     key: "status",
                     render: (text) => (
-                      <Tag color={getStatusColor(text)} className="text-sm px-2 py-1">
+                      <Tag
+                        color={getStatusColor(text)}
+                        className="text-sm px-2 py-1"
+                      >
                         {formatStatus(text)}
                       </Tag>
                     ),

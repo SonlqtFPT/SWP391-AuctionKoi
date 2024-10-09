@@ -13,7 +13,7 @@ function Time({ remainingTime }) {
   };
 
   return (
-    <div className="ml-[200px]">
+    <div className="ml-[200px] pt-[80px]">
       <h1 className="font-bold text-3xl text-white">Auction#63</h1>
       <h2 className="text-2xl text-white">18:30:23</h2>
     </div>

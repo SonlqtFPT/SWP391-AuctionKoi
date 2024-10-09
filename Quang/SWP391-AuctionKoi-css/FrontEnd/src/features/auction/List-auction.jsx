@@ -4,10 +4,13 @@ import { useState } from "react";
 import viteLogo from "/vite.svg";
 import "./index.css";
 import { Link } from "react-router-dom";
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
 
 function Auction() {
   return (
-    <div className="bg-black">
+    <div className="bg-black h-screen">
+      <Header />
       <div className="flex flex-col justify-center items-center h-screen ">
         <button className="bg-yellow-400 rounded-full h-[400px] w-[400px] text-2xl animation-pulse">
           <h1 className="text-white font-bold">Auction#63</h1>
@@ -21,6 +24,7 @@ function Auction() {
           </button>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

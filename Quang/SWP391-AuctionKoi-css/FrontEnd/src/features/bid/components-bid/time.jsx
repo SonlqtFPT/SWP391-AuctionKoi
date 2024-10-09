@@ -12,9 +12,11 @@ function Time({ remainingTime }) {
   };
 
   return (
-    <div className="ml-[200px]">
+    <div className="ml-[200px] pt-[70px]">
       <h1 className="font-bold text-3xl text-white">Auction#63</h1>
-      <h2 className="text-2xl text-white">{formatTime(remainingTime)}</h2>
+      <h2 className="text-2xl text-white">
+        {remainingTime === -1 ? "Ended" : formatTime(remainingTime)}
+      </h2>
     </div>
   );
 }
