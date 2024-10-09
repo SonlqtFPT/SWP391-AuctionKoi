@@ -10,6 +10,8 @@ import axios from "axios";
 function Lot() {
   const [auctionId, setAuctionId] = useState(4);
   const [lots, setLots] = useState([]);
+  const [endTime, setEndTime] = useState();
+  const [remainingTime, setRemainingTime] = useState();
 
   const get_lot_api = `http://localhost:8080/auction/get-auction/${auctionId}`;
 
@@ -29,6 +31,8 @@ function Lot() {
       }));
       setLots(listLots);
       console.log("data nhận dc: ", listLots); // Cập nhật để in ra danh sách lots
+      setEndTime(response.data.data.endTime);
+      console.log("End time ", response.data.data.endTime);
     } catch (error) {
       console.error("Error fetching lots: ", error);
     }
@@ -38,6 +42,26 @@ function Lot() {
     fetchLots();
   }, []);
 
+  useEffect(() => {
+    if (lots) {
+      const endingTime = new Date(endTime).getTime();
+      const interval = setInterval(() => {
+        const now = Date.now();
+        const timeLeft = endingTime - now;
+
+        // Nếu thời gian còn lại <= 0, dừng interval
+        if (timeLeft <= 0) {
+          clearInterval(interval);
+          setRemainingTime(-1); // Đặt giá trị đặc biệt để chỉ ra đã kết thúc
+        } else {
+          setRemainingTime(timeLeft);
+        }
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [lots]);
+
   const handleTranForm = () => {
     window.location.href = "/bid";
   };
@@ -45,7 +69,7 @@ function Lot() {
   return (
     <div className="bg-black h-screen">
       <Header />
-      <Time />
+      {lots && <Time remainingTime={remainingTime} />}
       <div className="flex items-center mt-[50px]">
         {lots.map((lot, index) => (
           <div key={index}>
