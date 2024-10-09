@@ -1,5 +1,6 @@
 package swp.koi.service.jwtService;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.security.core.userdetails.UserDetails;
 import swp.koi.model.enums.TokenType;
 
@@ -16,5 +17,7 @@ public interface JwtService {
     boolean validateToken(String token, UserDetails userDetails, TokenType tokenType);
 
     String extractUsername(String token, TokenType tokenType);
+
+    DecodedJWT verifyToken(String token);
 
 }

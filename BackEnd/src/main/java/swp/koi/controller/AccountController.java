@@ -13,6 +13,8 @@ import swp.koi.service.accountService.AccountService;
 import swp.koi.service.koiBreederService.KoiBreederService;
 
 import javax.security.auth.login.AccountNotFoundException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 @RestController
 @RequestMapping("/authenticate")
@@ -38,8 +40,8 @@ public class AccountController {
     }
 
     @PostMapping("/login-google")
-    public ResponseData<AuthenticateResponse> loginGoogle(@RequestBody GoogleTokenRequestDto idToken){
-        AuthenticateResponse authenticateResponse = accountService.loginGoogle(idToken);
+    public ResponseData<AuthenticateResponse> loginGoogle(@RequestBody GoogleTokenRequestDto token) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        AuthenticateResponse authenticateResponse = accountService.loginGoogle(token);
         return new ResponseData<>(ResponseCode.SUCCESS, authenticateResponse);
     }
 

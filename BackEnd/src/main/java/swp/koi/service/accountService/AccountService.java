@@ -10,6 +10,8 @@ import swp.koi.dto.response.AuthenticateResponse;
 import swp.koi.model.Account;
 
 import javax.security.auth.login.AccountNotFoundException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 
 public interface AccountService {
@@ -28,6 +30,5 @@ public interface AccountService {
     void createAccountStaff(AccountRegisterDTO staffDto);
     void logout(LogoutDTO logoutDTO);
 
-
-    AuthenticateResponse loginGoogle(GoogleTokenRequestDto googleToken);
+    AuthenticateResponse loginGoogle(GoogleTokenRequestDto googleToken)
 }

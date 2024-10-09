@@ -10,7 +10,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class GoogleTokenRequestDto {
 
-    String idToken;
-    String accessToken;
+    String token;
 
 }

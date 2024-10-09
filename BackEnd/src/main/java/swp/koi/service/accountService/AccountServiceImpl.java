@@ -1,6 +1,7 @@
 package swp.koi.service.accountService;
 
 import ch.qos.logback.core.util.StringUtil;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
@@ -34,12 +35,15 @@ import swp.koi.model.enums.AccountRoleEnum;
 import swp.koi.model.enums.TokenType;
 import swp.koi.repository.AccountRepository;
 import swp.koi.service.googleApiService.GoogleApiService;
+import swp.koi.service.jwtService.JwtService;
 import swp.koi.service.jwtService.JwtServiceImpl;
 import swp.koi.service.mailService.EmailContent;
 import swp.koi.service.mailService.EmailService;
 import swp.koi.service.memberService.MemberServiceImpl;
 import swp.koi.service.redisService.RedisServiceImpl;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -132,33 +136,40 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public AuthenticateResponse loginGoogle(GoogleTokenRequestDto googleTokenDto) {
-        String idToken = googleTokenDto.getIdToken();
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
-                .setAudience(Collections.singleton(clientId))
-                .build();
-        GoogleIdToken idTokenObj;
-        try{
-            idTokenObj = verifier.verify(idToken);
-        }catch (Exception e){
-            throw new KoiException(ResponseCode.INVALID_TOKEN);
-        }
-        if(idTokenObj == null)
-            throw  new KoiException(ResponseCode.INVALID_TOKEN);
+//        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
+//                .setAudience(Collections.singleton(clientId))
+//                .build();
+//        GoogleIdToken idTokenObj;
+//        try{
+//            idTokenObj = verifier.verify(idToken);
+//        }catch (Exception e){
+//            throw new KoiException(ResponseCode.INVALID_TOKEN);
+//        }
+//        if(idTokenObj == null)
+//            throw  new KoiException(ResponseCode.INVALID_TOKEN);
 
-        GoogleIdToken.Payload payload = idTokenObj.getPayload();
-        String email = payload.getEmail();
+//        GoogleIdToken.Payload payload = idTokenObj.getPayload();
+//        String email = payload.getEmail();
+        String token = googleTokenDto.getToken();
+        DecodedJWT decodedJWT = jwtService.verifyToken(token);
+        if(decodedJWT == null)
+            throw new KoiException(ResponseCode.INVALID_TOKEN);
+
+        String email = decodedJWT.getClaim("email").asString();
+        String givenName = decodedJWT.getClaim("given_name").asString();
+        String familyName = decodedJWT.getClaim("family_name").asString();
 
         Account account = accountRepository.findByEmail(email).orElseGet(() -> {
             String randomPassword = generateRandomPassword();
             Account newAccount = Account.builder()
                     .email(email)
-                    .firstName((String) payload.get("given_name"))
-                    .lastName((String) payload.get("family_name"))
+                    .firstName(givenName)
+                    .lastName(familyName)
                     .password(passwordEncoder.encode(randomPassword))
                     .role(AccountRoleEnum.MEMBER)
                     .status(true)
                     .build();
-            emailService.sendEmail(email, "Your account information", emailContent.createEmailSignUpGoogle((String) payload.get("given_name"), email, randomPassword));
+            emailService.sendEmail(email, "Your account information", emailContent.createEmailSignUpGoogle(givenName, email, randomPassword));
             accountRepository.save(newAccount);
             memberService.createMember(newAccount);
             return newAccount;
