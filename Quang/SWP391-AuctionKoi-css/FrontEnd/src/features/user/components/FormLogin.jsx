@@ -7,70 +7,94 @@ import api from "../../../config/axios";
 import { toast } from "react-toastify";
 import Logo from "../../../../public/koi69Logo_dark.svg";
 import Picture from "../../../assets/picture/TwoFish.jpg";
-import { GoogleButton } from "react-google-button";
 import { useAuth } from "../../protectedRoutes/AuthContext";
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from "jwt-decode";
 
 function FormLogin() {
   const navigate = useNavigate();
   const { setUserName, setRole, setAccessToken, setRefreshToken } = useAuth(); // Get setters from AuthContext
 
-  const handleLoginGoogle = () => {
-    const auth = getAuth();
-    signInWithPopup(auth, googleProvider)
-      .then(async (result) => {
-        // Get Google Access Token
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
-
-        // Get user information
-        const user = result.user;
-
-        // Send token and user info to your backend for verification and processing
-        try {
-          const response = await api.post("authenticate/google-login", {
-            token, // Google Access Token
-            email: user.email,
-            displayName: user.displayName,
-            photoURL: user.photoURL,
-          });
-
-          // Store tokens or other data from your backend response
-          const accessToken = response.data.data.accessToken;
-          const refreshToken = response.data.data.refreshToken;
-          localStorage.setItem("accessToken", accessToken);
-          localStorage.setItem("refreshToken", refreshToken);
-
-          // Store account data
-          const accountData = response.data.data.account;
-          localStorage.setItem("accountData", JSON.stringify(accountData));
-
-          // Immediately update AuthContext values
-          setUserName(`${accountData.firstName} ${accountData.lastName}`);
-          setRole(accountData.role);
-          setAccessToken(accessToken);
-          setRefreshToken(refreshToken);
-
-          // Navigate based on role
-          const { role } = accountData;
-          if (role === "MANAGER") {
-            navigate("/admin");
-          } else if (role === "MEMBER") {
-            navigate("/member");
-          } else if (role === "BREEDER") {
-            navigate("/breeder");
-          } else if (role === "STAFF") {
-            navigate("/staff");
-          }
-        } catch (error) {
-          toast.error("Google login failed!");
-          console.error(error);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        toast.error("Google sign-in failed!");
-      });
+  const responseGoogle = (response) => {
+    console.log(response);
+    const userObject = jwtDecode(response.credential);
+    console.log(userObject);
   };
+
+  // const handleLoginGoogle1 = () => {
+  //   const auth = getAuth();
+  //   signInWithPopup(auth, googleProvider)
+  //     .then(async (result) => {
+  //       // Get Google Access Token
+  //       const credential = GoogleAuthProvider.credentialFromResult(result);
+  //       const idToken = credential.idToken;
+  //       const oauthAccessToken = credential.oauthAccessToken;
+
+  //       // Get user information
+
+  //       // Send token and user info to your backend for verification and processing
+  //       try {
+  //         const response = await api.post("authenticate/login-google", {
+  //           idToken,
+  //           oauthAccessToken,
+  //         });
+
+  //         // Store tokens or other data from your backend response
+  //         const accessToken = response.data.data.accessToken;
+  //         const refreshToken = response.data.data.refreshToken;
+  //         localStorage.setItem("accessToken", accessToken);
+  //         localStorage.setItem("refreshToken", refreshToken);
+
+  //         // Store account data
+  //         const accountData = response.data.data.account;
+  //         localStorage.setItem("accountData", JSON.stringify(accountData));
+
+  //         // Immediately update AuthContext values
+  //         setUserName(`${accountData.firstName} ${accountData.lastName}`);
+  //         setRole(accountData.role);
+  //         setAccessToken(accessToken);
+  //         setRefreshToken(refreshToken);
+
+  //         // Navigate based on role
+  //         const { role } = accountData;
+  //         if (role === "MANAGER") {
+  //           navigate("/admin");
+  //         } else if (role === "MEMBER") {
+  //           navigate("/member");
+  //         } else if (role === "BREEDER") {
+  //           navigate("/breeder");
+  //         } else if (role === "STAFF") {
+  //           navigate("/staff");
+  //         }
+  //       } catch (error) {
+  //         toast.error("Google login failed!");
+  //         console.error(error);
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //       toast.error("Google sign-in failed!");
+  //     });
+  // };
+
+  // const handleLoginGoogle = (response) => {
+  //   console.log(response);
+  //   const idToken = response.credential;
+  //   const accessToken = response.credential; // or use response object for other tokens
+  //   console.log('ID Token:', idToken);
+  //   console.log('Access Token:', accessToken);
+
+  //   // Send the tokens to the backend
+  //   fetch('/api/auth/google', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({ idToken, accessToken }),
+  //   });
+  // };
+
+
 
   const handleLogin = async (values) => {
     try {
@@ -182,10 +206,13 @@ function FormLogin() {
                 </button>
                 <br></br>
                 <div
-                  className="flex w-full justify-center px-5 py-1.5 text-sm font-semibold leading-6"
-                  onClick={handleLoginGoogle}
-                >
-                  <GoogleButton />
+                  className="flex w-full justify-center px-5 py-1.5 text-sm font-semibold leading-6">
+                  <GoogleLogin
+                    onSuccess={responseGoogle}
+                    onError={() => {
+                      console.log('Login Failed');
+                    }}
+                  />
                 </div>
               </div>
             </Form>

@@ -8,7 +8,7 @@ function Picture({ img }) {
     console.log("Đây là ảnh: ", img);
   }, [img]);
   return (
-    <div className="">
+    <div className="w-96">
       <img
         className="rounded-tl-[50px] rounded-tr-[50px] h-[400px] w-[300px]"
         src={pic}

@@ -67,7 +67,7 @@ function Lot() {
   };
 
   return (
-    <div className="bg-black h-screen">
+    <div className="flex flex-col min-h-screen">
       <Header />
       {lots && <Time remainingTime={remainingTime} />}
       <div className="flex items-center mt-[50px]">
