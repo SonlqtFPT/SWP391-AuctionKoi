@@ -16,6 +16,7 @@ import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
 import swp.koi.model.enums.TokenType;
 
+import java.awt.*;
 import java.math.BigInteger;
 import java.security.Key;
 import java.security.KeyFactory;
@@ -32,6 +33,7 @@ public class JwtServiceImpl implements JwtService {
     // Secret keys used for signing tokens. These should be stored in environment variables for production.
     private final String SECRET_KEY = "921B97A9E1CD33BBD5FF5AF781C8C9C68A71B071B970B23962BD331F5D0B5720";
     private final String SECRET_KEY_FOR_REFRESH = "921B97A9E1CD33BBD5FF5AF781C8C9C68A71B071B970B23962BD331F5D0B5720ABCDE";
+    private final String SECRET_KEY_FOR_RESET = "7TCuxQ2XetlAhwcNqtPyTQ1hZaJ1OwhVW4qYABJeyh8=";
     private static final String n = "4VI56fF0rcWHHVgHFLHrmEO5w8oN9gbSQ9TEQnlIKRg0zCtl2dLKtt0hC6WMrTA9cF7fnK4CLNkfV_Mytk-rydu2qRV_kah62v9uZmpbS5dcz5OMXmPuQdV8fDVIvscDK5dzkwD3_XJ2mzupvQN2reiYgce6-is23vwOyuT-n4vlxSqR7dWdssK5sj9mhPBEIlfbuKNykX5W6Rgu-DyuoKRc_aukWnLxWN-yoroP2IHYdCQm7Ol08vAXmrwMyDfvsmqdXUEx4om1UZ5WLf-JNaZp4lXhgF7Cur5066213jwpp4f_D3MyR-oa43fSa91gqp2berUgUyOWdYSIshABVQ";
     private static final String e = "AQAB";
 
@@ -69,6 +71,16 @@ public class JwtServiceImpl implements JwtService {
                 .compact();
     }
 
+    @Override
+    public String generateResetToken(String username, TokenType tokenType) {
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hours validity for reset token
+                .signWith(getKey(tokenType))
+                .compact();
+    }
+
     /**
      * Retrieves the appropriate secret key for the given token type.
      *
@@ -77,10 +89,11 @@ public class JwtServiceImpl implements JwtService {
      */
     @Override
     public Key getKey(TokenType tokenType) {
-        if (tokenType.equals(TokenType.ACCESS_TOKEN)) {
-            return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
-        } else {
-            return Keys.hmacShaKeyFor(SECRET_KEY_FOR_REFRESH.getBytes());
+        switch (tokenType){
+            case ACCESS_TOKEN -> {return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());}
+            case REFRESH_TOKEN -> {return Keys.hmacShaKeyFor(SECRET_KEY_FOR_REFRESH.getBytes());}
+            case RESET_TOKEN -> {return Keys.hmacShaKeyFor(SECRET_KEY_FOR_RESET.getBytes());}
+            default -> throw new KoiException(ResponseCode.INVALID_TOKEN_TYPE);
         }
     }
 

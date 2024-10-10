@@ -12,6 +12,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
+
 @Service
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
@@ -26,7 +28,7 @@ public class EmailServiceImpl implements EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-            helper.setFrom(fromEmailId);
+            helper.setFrom(fromEmailId, "Koi Auction");
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(body, true);
@@ -35,6 +37,8 @@ public class EmailServiceImpl implements EmailService {
         } catch (MailException e) {
             throw new RuntimeException(e);
         } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
     }

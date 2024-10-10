@@ -38,10 +38,10 @@ public class AuctionRequestController {
         }
     }
 
-    @GetMapping("/breeder/request/{breederId}")
-    public ResponseData<List<AuctionRequestResponseDTO>> getAllBreederRequest(@PathVariable Integer breederId){
+    @GetMapping("/breeder/request/{accountId}")
+    public ResponseData<List<AuctionRequestResponseDTO>> getAllBreederRequest(@PathVariable Integer accountId){
         try{
-            List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllBreederRequest(breederId));
+            List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllBreederRequest(accountId));
             return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
         }catch (KoiException e){
             return new ResponseData<>(e.getResponseCode());

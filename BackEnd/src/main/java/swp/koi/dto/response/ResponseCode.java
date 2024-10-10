@@ -18,9 +18,13 @@ public enum ResponseCode {
     LOGOUT_JWT(005, "Logout successful."),
     EMAIL_NOT_FOUND(006, "Email not found"),
     INVALID_TOKEN(007, "Invalid token"),
+    PASSWORD_NOT_MATCH(010, "Password not match"),
+    INVALID_TOKEN_TYPE(011, "Token type invalid"),
 
     // Account related statuses
     ACCOUNT_ID_NOT_FOUND(1000, "Account ID not found"),
+    ACCOUNT_NOT_FOUND(1001, "Account not found"),
+    ACCOUNT_INACTIVATED(1002, "Account inactivated"),
 
     // Member
     MEMBER_NOT_FOUND(1001, "Member not found"),

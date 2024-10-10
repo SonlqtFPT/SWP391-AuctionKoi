@@ -81,4 +81,22 @@ public class AccountController {
         return new ResponseData<>(ResponseCode.LOGOUT_JWT);
     }
 
+    @PostMapping("/forgot-password")
+    public ResponseData<String> forgotPassword(@RequestBody ForgotPasswordDto request){
+
+        return new ResponseData<>(ResponseCode.SUCCESS, accountService.forgotPassowrd(request));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseData<String> resetPassword(@RequestParam String reset_token){
+
+        return new ResponseData<>(ResponseCode.SUCCESS, accountService.resetPassowrd(reset_token));
+    }
+
+    @PostMapping("/change-password")
+    public ResponseData<String> changePassword(@RequestBody ResetPasswordDto request, @RequestParam String reset_token){
+
+        return new ResponseData<>(ResponseCode.SUCCESS, accountService.changePassowrd(request, reset_token));
+    }
+
 }

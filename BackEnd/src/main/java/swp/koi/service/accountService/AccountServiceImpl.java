@@ -18,15 +18,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import org.springframework.web.server.ResponseStatusException;
 import swp.koi.convert.AccountEntityToDtoConverter;
-import swp.koi.dto.request.AccountLoginDTO;
-import swp.koi.dto.request.AccountRegisterDTO;
-import swp.koi.dto.request.GoogleTokenRequestDto;
-import swp.koi.dto.request.LogoutDTO;
+import swp.koi.dto.request.*;
 import swp.koi.dto.response.AuthenticateResponse;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
@@ -107,7 +106,7 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public Account findByEmail(String email) {
-        return accountRepository.findByEmail(email).orElseThrow(() -> new KoiException(ResponseCode.INVALID_INFORMATION));
+        return accountRepository.findByEmail(email).orElseThrow(() -> new KoiException(ResponseCode.EMAIL_NOT_FOUND));
     }
 
     @Override
@@ -265,5 +264,58 @@ public class AccountServiceImpl implements AccountService{
     public void logout(LogoutDTO logoutDTO) {
         redisService.saveData(logoutDTO.getAccessToken(),"invalid",(long) 1000*60*60*24);
         redisService.saveData(logoutDTO.getRefreshToken(), "invalid",(long) 1000*60*60*24*15);
+    }
+
+    @Override
+    public String forgotPassowrd(ForgotPasswordDto request) {
+        // Check existed email
+        Account account = accountRepository.findByEmail(request.getEmail()).orElseThrow(() -> new KoiException(ResponseCode.ACCOUNT_NOT_FOUND));
+
+        // User is active or inactivated
+        if(!account.isStatus())
+            throw new KoiException(ResponseCode.ACCOUNT_INACTIVATED);
+
+        // Generate reset token
+        String reset_token = jwtService.generateResetToken(request.getEmail(), TokenType.RESET_TOKEN);
+
+        // Send email confirm link
+        String confirmLink = "http://localhost:5174/reset-password?reset_token=" + reset_token;
+        emailService.sendEmail(request.getEmail(), "Reset Password", "Click the link to reset your password: " + confirmLink);
+        return "Send successfully";
+    }
+
+    @Override
+    public String resetPassowrd(String reset_token) {
+
+        isValidAccountByToken(reset_token);
+
+        return "Reset successfully";
+    }
+
+    @Override
+    public String changePassowrd(ResetPasswordDto request, String reset_token) {
+
+        UserDetails userDetails = isValidAccountByToken(reset_token);
+        Account account = findByEmail(userDetails.getUsername());
+
+        if(!request.getPassword().equals(request.getConfirmPassword())){
+            throw new KoiException(ResponseCode.PASSWORD_NOT_MATCH);
+        }
+
+        account.setPassword(passwordEncoder.encode(request.getPassword()));
+        accountRepository.save(account);
+
+        return "Change successfully";
+    }
+
+    private UserDetails isValidAccountByToken(String reset_token){
+        String userName = jwtService.extractUsername(reset_token, TokenType.RESET_TOKEN);
+        System.out.println(userName);
+        var userDetails = accountDetailService.loadUserByUsername(userName);
+
+        if (!jwtService.validateToken(reset_token, userDetails, TokenType.RESET_TOKEN) ) {
+            throw new KoiException(ResponseCode.JWT_INVALID);
+        }
+        return userDetails;
     }
 }

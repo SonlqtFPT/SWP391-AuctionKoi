@@ -12,6 +12,8 @@ public interface JwtService {
 
     String generateRefreshToken(String username, TokenType tokenType);
 
+    String generateResetToken(String username, TokenType tokenType);
+
     Key getKey(TokenType tokenType);
 
     boolean validateToken(String token, UserDetails userDetails, TokenType tokenType);
