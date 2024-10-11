@@ -29,7 +29,10 @@ import swp.koi.service.koiFishService.KoiFishService;
 import swp.koi.service.mediaService.MediaService;
 import swp.koi.service.varietyService.VarietyService;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -303,5 +306,49 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     public AuctionRequest getRequestDetail(Integer requestId) throws KoiException{
         AuctionRequest auctionRequest = auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
         return auctionRequest;
+    }
+
+    @Override
+    public List<AuctionRequest> getAllPendingRequest() {
+        return auctionRequestRepository.findAllByStatus(AuctionRequestStatusEnum.PENDING);
+    }
+
+    @Override
+    public List<AuctionRequest> getAllInspectionPendingRequest() {
+        return auctionRequestRepository.findAllByStatus(AuctionRequestStatusEnum.INSPECTION_IN_PROGRESS);
+    }
+
+    @Override
+    public List<AuctionRequest> getAllInspectionPassedRequest() {
+        return auctionRequestRepository.findAllByStatus(AuctionRequestStatusEnum.INSPECTION_PASSED);
+    }
+
+    @Override
+    public List<AuctionRequest> getAllInspectionFailedRequest() {
+        return auctionRequestRepository.findAllByStatus(AuctionRequestStatusEnum.INSPECTION_FAILED);
+    }
+
+    @Override
+    public List<AuctionRequest> getAllNegotiatingRequest() {
+        List<AuctionRequestStatusEnum> statues = Arrays.asList(
+                AuctionRequestStatusEnum.PENDING_MANAGER_OFFER,
+                AuctionRequestStatusEnum.PENDING_BREEDER_OFFER
+        );
+        return auctionRequestRepository.findAllByStatusIn(statues);
+    }
+
+    @Override
+    public List<AuctionRequest> getAllApprovedRequest() {
+        return auctionRequestRepository.findAllByStatus(AuctionRequestStatusEnum.APPROVE);
+    }
+
+    @Override
+    public List<AuctionRequest> getAllRejectedRequest() {
+        return auctionRequestRepository.findAllByStatus(AuctionRequestStatusEnum.REJECT);
+    }
+
+    @Override
+    public List<AuctionRequest> getAllCancelledRequest() {
+        return auctionRequestRepository.findAllByStatus(AuctionRequestStatusEnum.CANCELLED);
     }
 }

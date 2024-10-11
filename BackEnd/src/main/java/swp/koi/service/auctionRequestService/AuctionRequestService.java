@@ -39,4 +39,20 @@ public interface AuctionRequestService {
     void managerAcceptRequest(Integer requestId);
 
     AuctionRequest getRequestDetail(Integer requestId);
+
+    List<AuctionRequest> getAllPendingRequest();
+
+    List<AuctionRequest> getAllInspectionPendingRequest();
+
+    List<AuctionRequest> getAllInspectionPassedRequest();
+
+    List<AuctionRequest> getAllInspectionFailedRequest();
+
+    List<AuctionRequest> getAllNegotiatingRequest();
+
+    List<AuctionRequest> getAllApprovedRequest();
+
+    List<AuctionRequest> getAllRejectedRequest();
+
+    List<AuctionRequest> getAllCancelledRequest();
 }

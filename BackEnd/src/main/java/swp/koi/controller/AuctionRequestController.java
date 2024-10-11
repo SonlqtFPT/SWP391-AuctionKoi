@@ -89,6 +89,47 @@ public class AuctionRequestController {
         }
     }
 
+    @GetMapping("/breeder/request/get-request/pending")
+    public ResponseData<?> getAllPendingRequest(){
+        List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllPendingRequest());
+        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+    }
+    @GetMapping("/breeder/request/get-request/inspection-pending")
+    public ResponseData<?> getAllInspectionPendingRequest(){
+        List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllInspectionPendingRequest());
+        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+    }
+    @GetMapping("/breeder/request/get-request/inspection-passed")
+    public ResponseData<?> getAllInspectionPassedRequest(){
+        List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllInspectionPassedRequest());
+        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+    }
+    @GetMapping("/breeder/request/get-request/inspection-failed")
+    public ResponseData<?> getAllInspectionFailedRequest(){
+        List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllInspectionFailedRequest());
+        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+    }
+    @GetMapping("/breeder/request/get-request/negotiating")
+    public ResponseData<?> getAllNegotiatingRequest(){
+        List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllNegotiatingRequest());
+        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+    }
+    @GetMapping("/breeder/request/get-request/approved")
+    public ResponseData<?> getAllApprovedRequest(){
+        List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllApprovedRequest());
+        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+    }
+    @GetMapping("/breeder/request/get-request/rejected")
+    public ResponseData<?> getAllRejectedRequest(){
+        List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllRejectedRequest());
+        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+    }
+    @GetMapping("/breeder/request/get-request/cancelled")
+    public ResponseData<?> getAllCancelledRequest(){
+        List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllCancelledRequest());
+        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+    }
+
     @GetMapping("/manager/request/getRequest")
     public ResponseData<List<AuctionRequestResponseDTO>> getAllAuctionRequest(){
         List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllAuctionRequest());
