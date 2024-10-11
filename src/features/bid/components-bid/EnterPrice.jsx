@@ -12,6 +12,7 @@ function EnterPrice({
   currentMemberId,
   lotId,
   fetchLot,
+  fetchBidList,
 }) {
   const [bidPrice, setBidPrice] = useState("");
   const [registrationLink, setRegistrationLink] = useState(""); // Thêm state để lưu link đăng ký
@@ -43,23 +44,24 @@ function EnterPrice({
         const regResponse = await axios.post(
           post_regis_api,
           {
-            memberId: currentMemberId, // Ensure this is correctly passed
+            memberId: currentMemberId,
             lotId: lotId,
           },
           {
             headers: {
-              Authorization: `Bearer ${token}`, // Include token in headers
+              Authorization: `Bearer ${token}`,
             },
           }
         );
 
-        const link = regResponse.data; // Assuming link is returned in regResponse.data
+        const link = regResponse.data;
         console.log("Link: ", link);
-        setRegistrationLink(link); // Update the registration link
+        setRegistrationLink(link);
       } else {
         toast.success(response.data.message);
-        fetchLot(); // Refresh lot details after bid
-        setRegistrationLink(""); // Reset link if no errors
+        fetchLot();
+        fetchBidList();
+        setRegistrationLink("");
       }
     } catch (error) {
       console.error("Error submitting bid:", error);

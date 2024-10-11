@@ -5,7 +5,6 @@ function Picture({ img }) {
 
   useEffect(() => {
     setPic(img);
-    console.log("Đây là ảnh: ", img);
   }, [img]);
   return (
     <div className="w-96">

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import "./index.css";
 import Time from "./components-bid/time";
@@ -10,27 +9,45 @@ import Video from "./components-bid/Video";
 import axios from "axios";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
+import io from "socket.io-client"; // Import socket.io-client
+import { useParams } from "react-router-dom"; // Import useParams
 
 function Bid() {
+  const { lotId } = useParams(); // Lấy lotId từ URL
   const [lot, setLot] = useState();
-  const [remainingTime, setRemainingTime] = useState(0); // Thêm state để lưu thời gian còn lại
+  const [remainingTime, setRemainingTime] = useState(0);
+  const [bidList, setBidList] = useState([]); // State for bid list
 
-  const get_lot_api = "http://localhost:8080/auction/get-lot/6";
+  const get_lot_api = `http://localhost:8080/auction/get-lot/${lotId}`; // Sử dụng lotId
+  const get_bidList_api = `http://localhost:8080/bid/list?lotId=${lotId}`; // API for bid list
 
   const fetchLot = async () => {
     const token = localStorage.getItem("accessToken");
-    console.log(token);
     const response = await axios.get(get_lot_api, {
       headers: {
-        Authorization: `Bearer ${token}`, // Pass token in Authorization header
+        Authorization: `Bearer ${token}`,
       },
     });
-    console.log("Data received from backend:", response.data);
     setLot(response.data.data);
+  };
+
+  const fetchBidList = async () => {
+    try {
+      const response = await axios.get(get_bidList_api);
+      const listData = response.data.data.map((bid) => ({
+        bidAmount: bid.bidAmount,
+        lastName: bid.member.account.lastName,
+      }));
+      listData.sort((a, b) => b.bidAmount - a.bidAmount);
+      setBidList(listData);
+    } catch (error) {
+      console.error("Error fetching bid data:", error);
+    }
   };
 
   useEffect(() => {
     fetchLot();
+    fetchBidList();
   }, []);
 
   useEffect(() => {
@@ -39,11 +56,9 @@ function Bid() {
       const interval = setInterval(() => {
         const now = Date.now();
         const timeLeft = endingTime - now;
-
-        // Nếu thời gian còn lại <= 0, dừng interval
         if (timeLeft <= 0) {
           clearInterval(interval);
-          setRemainingTime(-1); // Đặt giá trị đặc biệt để chỉ ra đã kết thúc
+          setRemainingTime(-1);
         } else {
           setRemainingTime(timeLeft);
         }
@@ -87,13 +102,15 @@ function Bid() {
                   currentPrice={lot.currentPrice}
                   startingPrice={lot.startingPrice}
                   increment={lot.increment}
-                  currentMemberId={4}
-                  lotId={6}
+                  lotId={lotId}
                   fetchLot={fetchLot}
+                  fetchBidList={fetchBidList}
                 />
               )}
             </div>
-            <div className="mt-4 lg:mt-[30px]">{lot && <TopBid />}</div>
+            <div className="mt-4 lg:mt-[30px]">
+              {lot && <TopBid list={bidList} />}
+            </div>
           </div>
         </div>
       </div>

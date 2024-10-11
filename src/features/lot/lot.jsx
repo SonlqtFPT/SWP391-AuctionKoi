@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 function Lot() {
-  const [auctionId, setAuctionId] = useState(6);
+  const [auctionId, setAuctionId] = useState(4);
   const [lots, setLots] = useState([]);
   const [endTime, setEndTime] = useState();
   const [remainingTime, setRemainingTime] = useState();
@@ -27,6 +27,7 @@ function Lot() {
       console.log("API: ", response.data.data);
       const listLots = response.data.data.lots.map((lot) => ({
         // Cập nhật ở đây
+        lotId: lot.lotId,
         varietyName: lot.koiFish.varietyName,
         currentPrice: lot.currentPrice,
         breederName: lot.koiFish.breederName,
@@ -68,8 +69,8 @@ function Lot() {
     }
   }, [lots]);
 
-  const handleTranForm = () => {
-    window.location.href = "/bid";
+  const handleTranForm = (lotId) => {
+    window.location.href = `/bid/${lotId}`; // Chuyển hướng đến trang Bid với lotId
   };
 
   return (
@@ -80,7 +81,7 @@ function Lot() {
         {lots.map((lot, index) => (
           <div key={index}>
             <button
-              onClick={handleTranForm}
+              onClick={() => handleTranForm(lot.lotId)} // Truyền lotId vào hàm
               className="h-[600px] w-[300px] bg-slate-800 ml-[200px] rounded-tl-[50px] rounded-[50px] pb-14 mb-16"
             >
               {lots && <Picture img={lot.imageUrl} />}
