@@ -1,4 +1,4 @@
-package swp.koi.service.socketIoService;
+package swp.koi.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SocketDetail {
-    private String winnerName;
-    private float newPrice;
-    private int lotId;
-
+public class SubscribeRequest {
+    private int memberId;
+    private String token;
 }

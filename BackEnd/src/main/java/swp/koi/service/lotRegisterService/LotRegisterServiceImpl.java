@@ -22,6 +22,7 @@ import swp.koi.service.memberService.MemberServiceImpl;
 import swp.koi.service.vnPayService.VnpayService;
 
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,6 +53,11 @@ public class LotRegisterServiceImpl implements LotRegisterService{
         Member member = memberServiceImpl.getMemberByAccount(accountRepository.findByEmail(username)
         .orElseThrow(() -> new KoiException(ResponseCode.MEMBER_NOT_FOUND)));
 
+        var isLotEnded = lotEndedYet(lotRegisDto.getLotId());
+
+        if(isLotEnded){
+            throw new KoiException(ResponseCode.LOT_BIDTIME_PASSED);
+        }
 
         // Validate if the member is already registered for this lot
         var isUserRegistered = validateMemberRegistration(lotRegisDto.getLotId(), member);
@@ -61,6 +67,11 @@ public class LotRegisterServiceImpl implements LotRegisterService{
         }
         return vnpayService.generateInvoice(lotRegisDto.getLotId(),member.getMemberId(), TransactionTypeEnum.DEPOSIT);
 
+    }
+
+    private boolean lotEndedYet(int lotId) {
+        Lot lot = lotServiceImpl.findLotById(lotId);
+        return lot.getEndingTime().isBefore(LocalDateTime.now());
     }
 
     @Override

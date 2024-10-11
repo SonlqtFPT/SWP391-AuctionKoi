@@ -44,6 +44,7 @@ public enum ResponseCode {
     // LotRegister related statuses
     LOT_REGISTER_SUCCESS(4001, "Lot registration successful"),
     MEMBER_ALREADY_REGISTERED(4002, "Member already REGISTERED."),
+    LOT_BIDTIME_PASSED(4003, "Lot bid time passed"),
 
     // Bid related statuses
     BID_SUCCESS(5001, "Bid placed successfully"),
