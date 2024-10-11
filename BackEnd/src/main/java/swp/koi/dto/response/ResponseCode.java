@@ -25,6 +25,9 @@ public enum ResponseCode {
     ACCOUNT_ID_NOT_FOUND(1000, "Account ID not found"),
     ACCOUNT_NOT_FOUND(1001, "Account not found"),
     ACCOUNT_INACTIVATED(1002, "Account inactivated"),
+    CHANGE_PASSWORD_SUCCESS(1003, "Changed password successfully"),
+    INVALID_OLD_PASSWORD(1004, "Invalid old password"),
+    UPDATE_SAME_PASSWORD(1005, "Your new password is the same as old password"),
 
     // Member
     MEMBER_NOT_FOUND(1001, "Member not found"),

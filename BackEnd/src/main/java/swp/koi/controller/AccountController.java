@@ -82,7 +82,7 @@ public class AccountController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseData<String> forgotPassword(@RequestBody ForgotPasswordDto request){
+    public ResponseData<String> forgotPassword(@Valid @RequestBody ForgotPasswordDto request){
 
         return new ResponseData<>(ResponseCode.SUCCESS, accountService.forgotPassowrd(request));
     }
@@ -94,9 +94,15 @@ public class AccountController {
     }
 
     @PostMapping("/change-password")
-    public ResponseData<String> changePassword(@RequestBody ResetPasswordDto request, @RequestParam String reset_token){
+    public ResponseData<String> changePassword(@Valid @RequestBody ResetPasswordDto request, @RequestParam String reset_token){
 
         return new ResponseData<>(ResponseCode.SUCCESS, accountService.changePassowrd(request, reset_token));
+    }
+
+    @PatchMapping("update-password")
+    public ResponseData<String> updatePassword(@Valid @RequestBody UpdatePasswordDto request){
+        accountService.updatePassword(request);
+        return new ResponseData<>(ResponseCode.CHANGE_PASSWORD_SUCCESS);
     }
 
 }

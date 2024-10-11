@@ -34,4 +34,6 @@ public interface AccountService {
     String resetPassowrd(String resetToken);
 
     String changePassowrd(ResetPasswordDto request, String reset_token);
+
+    void updatePassword(UpdatePasswordDto request);
 }

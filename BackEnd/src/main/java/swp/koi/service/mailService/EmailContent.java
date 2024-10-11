@@ -25,4 +25,10 @@ public class EmailContent {
         context.setVariable("resetLink", resetLink);
         return templateEngine.process("resetPassword", context);
     }
+
+    public String createEmailChangedPassword(String firstName){
+        Context context = new Context();
+        context.setVariable("firstName", firstName);
+        return templateEngine.process("changedPassword", context);
+    }
 }

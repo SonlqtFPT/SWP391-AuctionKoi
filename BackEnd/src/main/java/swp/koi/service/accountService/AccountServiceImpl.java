@@ -270,7 +270,7 @@ public class AccountServiceImpl implements AccountService{
     @Override
     public String forgotPassowrd(ForgotPasswordDto request) {
         // Check existed email
-        Account account = accountRepository.findByEmail(request.getEmail()).orElseThrow(() -> new KoiException(ResponseCode.ACCOUNT_NOT_FOUND));
+        Account account = accountRepository.findByEmail(request.getEmail()).orElseThrow(() -> new KoiException(ResponseCode.EMAIL_NOT_FOUND));
 
         // User is active or inactivated
         if(!account.isStatus())
@@ -321,5 +321,29 @@ public class AccountServiceImpl implements AccountService{
             throw new KoiException(ResponseCode.JWT_INVALID);
         }
         return userDetails;
+    }
+
+    @Override
+    public void updatePassword(UpdatePasswordDto request) {
+        Account account = accountRepository.findByEmail(request.getEmail()).orElseThrow(() -> new KoiException(ResponseCode.ACCOUNT_NOT_FOUND));
+
+        if(!oldPasswordIsValid(account, request.getOldPassword())){
+            throw new KoiException(ResponseCode.INVALID_OLD_PASSWORD);
+        }
+        if(!request.getNewPassword().equals(request.getConfirmNewPassword())){
+            throw new KoiException(ResponseCode.PASSWORD_NOT_MATCH);
+        }
+        if(request.getOldPassword().equals(request.getNewPassword())){
+            throw new KoiException(ResponseCode.UPDATE_SAME_PASSWORD);
+        }
+
+        account.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        accountRepository.save(account);
+
+        emailService.sendEmail(account.getEmail(), "Password changed", emailContent.createEmailChangedPassword(account.getFirstName()));
+    }
+
+    private boolean oldPasswordIsValid(Account account, String oldPassword){
+        return passwordEncoder.matches(oldPassword, account.getPassword());
     }
 }
