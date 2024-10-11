@@ -11,6 +11,7 @@ import swp.koi.model.*;
 import swp.koi.model.enums.*;
 import swp.koi.repository.*;
 import swp.koi.service.bidService.BidServiceImpl;
+import swp.koi.service.redisService.RedisServiceImpl;
 import swp.koi.service.socketIoService.EventListenerFactoryImpl;
 import swp.koi.service.socketIoService.SocketDetail;
 import swp.koi.service.vnPayService.VnpayServiceImpl;
@@ -34,6 +35,7 @@ public class LotServiceImpl implements LotService {
     private final InvoiceRepository invoiceRepository;
     private final EventListenerFactoryImpl eventListenerFactory;
     private final SocketIOServer socketServer;
+    private final RedisServiceImpl redisServiceImpl;
 
     @Override
     public Lot findLotById(int id) {
@@ -77,6 +79,12 @@ public class LotServiceImpl implements LotService {
             concludeLot(lot, bidList);
         }
 
+        notifyClient(lot);
+
+
+    }
+
+    private void notifyClient(Lot lot) {
         SocketDetail socketDetail = SocketDetail.builder()
                 .lotId(lot.getLotId())
                 .newPrice(lot.getCurrentPrice())
@@ -211,4 +219,14 @@ public class LotServiceImpl implements LotService {
     public void createSocketForLot(SocketIOServer socketIOServer, Lot lot) {
         eventListenerFactory.createDataListener(socketIOServer,lot.getLotId().toString());
     }
+
+    public void sendNotificateToFollower(Lot lot){
+        List<SubscribeRequest> subscribeRequests = (List<SubscribeRequest>) redisServiceImpl.getListData(lot.getLotId().toString());
+        for (SubscribeRequest subscribeRequest : subscribeRequests) {
+            subscribeRequest.getToken();
+        }
+
+    }
+
+
 }

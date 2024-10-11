@@ -131,8 +131,9 @@ public class BidServiceImpl implements BidService {
             case FIXED_PRICE_SALE: {
                 if (bidRequestDto.getPrice() != lot.getCurrentPrice()) {
                     throw new KoiException((ResponseCode.BID_PRICE_TOO_LOW));
+
                 }
-                ;
+
                 return;
             }
             default:
