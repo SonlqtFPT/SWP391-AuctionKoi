@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import swp.koi.convert.InvoiceEntityToDtoConverter;
+import swp.koi.dto.response.InvoiceResponseDto;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.dto.response.ResponseData;
 import swp.koi.exception.KoiException;
@@ -20,6 +22,7 @@ import java.util.List;
 public class InvoiceController {
 
     private final InvoiceService invoiceService;
+    private final InvoiceEntityToDtoConverter invoiceEntityToDtoConverter;
 
     @GetMapping("/regenerate-payment-link")
     public ResponseData<String> regeneratePaymentLinkForInvoice(@RequestParam("invoice-id") int invoiceId) throws UnsupportedEncodingException {
@@ -31,9 +34,10 @@ public class InvoiceController {
     }
 
     @GetMapping("/get-invoices")
-    public ResponseData<List<Invoice>> getAllInvoicesOfMember() {
+    public ResponseData<List<InvoiceResponseDto>> getAllInvoicesOfMember() {
         try {
-            return new ResponseData<>(ResponseCode.SUCCESS,invoiceService.getAllInvoicesForAuctionWinner());
+            List<InvoiceResponseDto> response = invoiceEntityToDtoConverter.convertInvoiceList(invoiceService.getAllInvoicesForAuctionWinner());
+            return new ResponseData<>(ResponseCode.SUCCESS, response);
         } catch (KoiException e) {
             throw new KoiException(ResponseCode.MEMBER_NOT_FOUND);
         }
