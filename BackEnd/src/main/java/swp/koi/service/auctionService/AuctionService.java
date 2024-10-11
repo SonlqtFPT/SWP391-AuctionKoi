@@ -18,4 +18,8 @@ public interface AuctionService {
     List<Auction> getAllAuction();
 
     Auction getAuction(Integer auctionId);
+
+    List<Auction> getAllOnGoingAuction();
+
+    List<Auction> getAllCompletedAuction();
 }

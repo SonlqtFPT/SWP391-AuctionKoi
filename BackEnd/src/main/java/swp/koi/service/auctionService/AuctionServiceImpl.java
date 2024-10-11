@@ -111,4 +111,16 @@ public class AuctionServiceImpl implements AuctionService{
     public Auction getAuction(Integer auctionId) throws KoiException{
         return auctionRepository.findById(auctionId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_NOT_FOUND));
     }
+
+    @Override
+    public List<Auction> getAllOnGoingAuction() {
+        List<Auction> list = auctionRepository.findAllByStatus(AuctionStatusEnum.AUCTIONING);
+        return list;
+    }
+
+    @Override
+    public List<Auction> getAllCompletedAuction() {
+        List<Auction> list = auctionRepository.findAllByStatus(AuctionStatusEnum.COMPLETED);
+        return list;
+    }
 }

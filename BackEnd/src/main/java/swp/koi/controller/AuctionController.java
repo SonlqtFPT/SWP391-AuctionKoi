@@ -89,4 +89,16 @@ public class AuctionController {
         return new ResponseData<>(ResponseCode.SUCCESS, auctionService.getLot(lotId));
     }
 
+    @GetMapping("/auction/get-auction/auctioning")
+    public ResponseData<List<AuctionResponseDTO>> getAllOnGoingAuction(){
+        List<AuctionResponseDTO> response = auctionEntityToDtoConverter.converAuctiontList(auctionService.getAllOnGoingAuction());
+        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+    }
+
+    @GetMapping("/auction/get-auction/completed")
+    public ResponseData<List<AuctionResponseDTO>> getAllCompletedAuction(){
+        List<AuctionResponseDTO> response = auctionEntityToDtoConverter.converAuctiontList(auctionService.getAllCompletedAuction());
+        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+    }
+
 }
