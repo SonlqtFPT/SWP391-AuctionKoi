@@ -23,6 +23,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import org.springframework.ui.Model;
 import org.springframework.web.server.ResponseStatusException;
 import swp.koi.convert.AccountEntityToDtoConverter;
 import swp.koi.dto.request.*;
@@ -279,8 +280,11 @@ public class AccountServiceImpl implements AccountService{
         String reset_token = jwtService.generateResetToken(request.getEmail(), TokenType.RESET_TOKEN);
 
         // Send email confirm link
+
         String confirmLink = "http://localhost:5174/reset-password?reset_token=" + reset_token;
-        emailService.sendEmail(request.getEmail(), "Reset Password", "Click the link to reset your password: " + confirmLink);
+
+        emailService.sendEmail(request.getEmail(), "Reset Password", emailContent.createEmailResetPassword(account.getFirstName(), confirmLink));
+
         return "Send successfully";
     }
 
