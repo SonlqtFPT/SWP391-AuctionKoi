@@ -21,7 +21,7 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} /> {/* Login Page*/}
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/auction" element={<Auction />} />
-          <Route path="/lot" element={<Lot />} />
+          <Route path="/lot/:auctionId" element={<Lot />} />
           <Route path="/bid/:lotId" element={<Bid />} />
           {/* Protected Routes */}
           <Route
