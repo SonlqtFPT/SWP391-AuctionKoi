@@ -51,7 +51,6 @@ const Header = () => {
     navigate("/");
   };
 
-  // Dynamically generate the account link based on the user's role
   const getAccountLink = () => {
     switch (role) {
       case "MANAGER":
@@ -61,14 +60,14 @@ const Header = () => {
       case "MEMBER":
         return "/member";
       default:
-        return "/account"; // Default route if no role is matched
+        return "/";
     }
   };
 
   return (
     <>
       {/* Main navigation container */}
-      <nav className="flex justify-between items-center bg-[#171817] text-white fixed w-full z-50 shadow-2xl">
+      <nav className="flex items-center bg-[#171817] text-white fixed w-full z-50 shadow-2xl">
         {/* Logo section */}
         <div className="px-5 lg:px-20 py-3 flex items-center">
           <Link to="/" className="flex items-center space-x-2">
@@ -81,7 +80,7 @@ const Header = () => {
         </div>
 
         {/* Center menu items container */}
-        <div className="hidden flex-grow sm:flex justify-center mr-10">
+        <div className=" hidden flex-grow sm:flex absolute left-1/2 transform -translate-x-1/2">
           <ul className="flex font-semibold font-heading space-x-8 content-center">
             <li className="flex items-center space-x-2 hover:bg-red-500 min-w-max rounded-full hover:text-black">
               <NavLink
@@ -126,9 +125,9 @@ const Header = () => {
         </div>
 
         {/* User dropdown for logged-in users */}
-        <div className="relative">
+        <div className="flex items-center pr-5 ml-auto">
           {userName ? (
-            <div className="flex items-center space-x-4 pr-10">
+            <div className="flex items-center space-x-4 relative">
               {/* User button that toggles the dropdown */}
               <button
                 onClick={toggleUserDropdown}
@@ -158,7 +157,7 @@ const Header = () => {
             </div>
           ) : (
             // If the user is not logged in, show Login and Register links
-            <div className="hidden lg:flex items-center space-x-2 pr-5">
+            <div className="hidden lg:flex items-center space-x-2">
               <NavLink
                 to="/login"
                 className={({ isActive }) =>
@@ -194,6 +193,116 @@ const Header = () => {
           <FaBars className="h-6 w-6 hover:text-gray-200" />
         </button>
       </nav>
+
+
+      {/* Hamburger menu dropdown for mobile screens */}
+      <div
+        className={`bg-[#171817] text-white ${isOpen ? "block" : "hidden"} lg:hidden`}
+      >
+        <ul className="flex flex-col space-y-2 px-5 py-4 mt-20 text-center">
+          <li className="flex items-center justify-center">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive
+                  ? "flex items-center justify-center space-x-2 bg-red-600 min-w-max rounded-full text-black px-4 py-2"
+                  : "flex items-center justify-center space-x-2 px-4 py-2 hover:bg-red-500 hover:text-black rounded-full"
+              }
+              onClick={() => setIsOpen(false)} // Close menu after clicking
+            >
+              <FaHome className="h-5 w-5" />
+              <span>Home</span>
+            </NavLink>
+          </li>
+          <li className="flex items-center justify-center">
+            <NavLink
+              to="/auction"
+              className={({ isActive }) =>
+                isActive
+                  ? "flex items-center justify-center space-x-2 bg-red-600 min-w-max rounded-full text-black px-4 py-2"
+                  : "flex items-center justify-center space-x-2 px-4 py-2 hover:bg-red-500 hover:text-black rounded-full"
+              }
+              onClick={() => setIsOpen(false)} // Close menu after clicking
+            >
+              <FaGavel className="h-5 w-5" />
+              <span>Auction</span>
+            </NavLink>
+          </li>
+          <li className="flex items-center justify-center">
+            <NavLink
+              to="/about"
+              className={({ isActive }) =>
+                isActive
+                  ? "flex items-center justify-center space-x-2 bg-red-600 min-w-max rounded-full text-black px-4 py-2"
+                  : "flex items-center justify-center space-x-2 px-4 py-2 hover:bg-red-500 hover:text-black rounded-full"
+              }
+              onClick={() => setIsOpen(false)} // Close menu after clicking
+            >
+              <FaInfoCircle className="h-5 w-5" />
+              <span>About Us</span>
+            </NavLink>
+          </li>
+          {/* Conditional rendering of the user-specific options */}
+          {userName ? (
+            <>
+              <li className="flex items-center justify-center">
+                <Link
+                  to={getAccountLink()} // Dynamically generated link based on role
+                  className="hover:bg-red-500 flex items-center justify-center space-x-2 rounded-full px-4 py-2 hover:text-black"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <FaUserCircle className="h-5 w-5" />
+                  <span>Account</span>
+                </Link>
+              </li>
+              <li className="flex items-center justify-center">
+                <button
+                  onClick={() => {
+                    handleLogout(); // Call logout and close the menu
+                    setIsOpen(false);
+                  }}
+                  className="hover:bg-red-500 flex items-center justify-center space-x-2 rounded-full px-4 py-2 hover:text-black"
+                >
+                  <FaSignInAlt className="h-5 w-5" />
+                  <span>Log Out</span>
+                </button>
+              </li>
+            </>
+          ) : (
+            <>
+              <li className="flex items-center justify-center">
+                <NavLink
+                  to="/login"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "bg-red-600 flex items-center justify-center space-x-2 rounded-full px-4 py-2 text-black"
+                      : "hover:bg-red-500 flex items-center justify-center space-x-2 rounded-full px-4 py-2 hover:text-black"
+                  }
+                  onClick={() => setIsOpen(false)} // Close menu after clicking
+                >
+                  <FaSignInAlt className="h-5 w-5" />
+                  <span>Login</span>
+                </NavLink>
+              </li>
+              <li className="flex items-center justify-center">
+                <NavLink
+                  to="/register"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "bg-amber-600 flex items-center justify-center space-x-2 rounded-full px-4 py-2 text-black"
+                      : "hover:bg-amber-500 flex items-center justify-center space-x-2 rounded-full px-4 py-2 hover:text-black"
+                  }
+                  onClick={() => setIsOpen(false)} // Close menu after clicking
+                >
+                  <FaUserPlus className="h-5 w-5" />
+                  <span>Register</span>
+                </NavLink>
+              </li>
+            </>
+          )}
+        </ul>
+      </div>
+
     </>
   );
 };

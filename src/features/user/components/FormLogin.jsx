@@ -1,7 +1,5 @@
 import { Form, Input } from "antd";
 import FormItem from "antd/es/form/FormItem";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { googleProvider } from "../../../config/firebase";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
