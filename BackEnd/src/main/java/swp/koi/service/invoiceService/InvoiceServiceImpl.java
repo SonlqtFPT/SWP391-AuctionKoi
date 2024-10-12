@@ -6,9 +6,11 @@ import org.springframework.stereotype.Service;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
 import swp.koi.model.Invoice;
+import swp.koi.model.Member;
 import swp.koi.model.enums.InvoiceStatusEnums;
 import swp.koi.model.enums.TransactionTypeEnum;
 import swp.koi.repository.InvoiceRepository;
+import swp.koi.service.authService.GetUserInfoByUsingAuth;
 import swp.koi.service.vnPayService.VnpayServiceImpl;
 
 import java.io.UnsupportedEncodingException;
@@ -24,6 +26,7 @@ public class InvoiceServiceImpl implements InvoiceService{
 
     private final InvoiceRepository invoiceRepository;
     private final VnpayServiceImpl vnpayService;
+    private final GetUserInfoByUsingAuth getUserInfoByUsingAuth;
 
     @Override
     public Invoice createInvoiceForAuctionWinner() {
@@ -65,8 +68,14 @@ public class InvoiceServiceImpl implements InvoiceService{
         int registerLot = Integer.parseInt(values[1].split("=")[1]);
         String type = values[2].split("=")[1];
 
-
-
         return vnpayService.generateInvoice(registerLot,memberId, TransactionTypeEnum.valueOf(type));
+    }
+
+    @Override
+    public List<Invoice> getAllInvoicesForAuctionWinner() {
+
+        Member member = getUserInfoByUsingAuth.getMemberFromAuth();
+
+        return invoiceRepository.findAllByStatusAndMember(InvoiceStatusEnums.PENDING,member);
     }
 }

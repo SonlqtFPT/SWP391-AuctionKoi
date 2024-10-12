@@ -25,8 +25,7 @@ public class LotRegisterController {
     private final LotRegisterService lotRegisterService;
 
     @PostMapping("/regis")
-    public ResponseEntity<?> registerLot(@RequestBody LotRegisterDTO lotRegisterDTO,
-                                         HttpServletRequest request) throws KoiException {
+    public ResponseEntity<?> registerLot(@RequestBody LotRegisterDTO lotRegisterDTO) throws KoiException {
         try{
             var paymentLink = lotRegisterService.regisSlotWithLotId(lotRegisterDTO);
             if(paymentLink != null) {

@@ -1,5 +1,6 @@
 package swp.koi.service.bidService;
 
+import com.corundumstudio.socketio.SocketIOServer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -20,6 +21,8 @@ import swp.koi.repository.LotRepository;
 import swp.koi.service.accountService.AccountService;
 import swp.koi.service.lotService.LotServiceImpl;
 import swp.koi.service.memberService.MemberServiceImpl;
+import swp.koi.service.socketIoService.EventListenerFactoryImpl;
+import swp.koi.service.socketIoService.SocketDetail;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -37,7 +40,7 @@ public class BidServiceImpl implements BidService {
     private final LotRepository lotRepository;
     private final LotRegisterRepository lotRegisterRepository;
     private final AccountRepository accountRepository;
-
+    private final EventListenerFactoryImpl socketService;
 
     @Override
     public void bid(BidRequestDto bidRequestDto) throws KoiException {
@@ -61,9 +64,22 @@ public class BidServiceImpl implements BidService {
 
         lot = updateLotWithSpecialType(bidRequestDto.getPrice(), lot, member);
 
+        updateDataOnClient(lot.getLotId(),bidRequestDto.getPrice(),account.getFirstName());
         // Persist the bid and the updated lot into the repository
         bidRepository.save(bid);
         lotRepository.save(lot);
+    }
+
+    private void updateDataOnClient(int lotId, float amount, String bidderName) throws KoiException {
+
+        SocketDetail socketDetail = SocketDetail.builder()
+                .winnerName(bidderName)
+                .newPrice(amount)
+                .lotId(lotId)
+                .build();
+
+        socketService.sendDataToClient(socketDetail, String.valueOf(lotId));
+
     }
 
     @Override
@@ -115,8 +131,9 @@ public class BidServiceImpl implements BidService {
             case FIXED_PRICE_SALE: {
                 if (bidRequestDto.getPrice() != lot.getCurrentPrice()) {
                     throw new KoiException((ResponseCode.BID_PRICE_TOO_LOW));
+
                 }
-                ;
+
                 return;
             }
             default:

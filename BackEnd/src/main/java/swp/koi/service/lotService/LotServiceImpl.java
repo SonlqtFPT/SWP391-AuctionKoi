@@ -1,5 +1,6 @@
 package swp.koi.service.lotService;
 
+import com.corundumstudio.socketio.SocketIOServer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -10,9 +11,14 @@ import swp.koi.model.*;
 import swp.koi.model.enums.*;
 import swp.koi.repository.*;
 import swp.koi.service.bidService.BidServiceImpl;
+import swp.koi.service.fireBase.fireBase.FCMService;
+import swp.koi.service.redisService.RedisServiceImpl;
+import swp.koi.service.socketIoService.EventListenerFactoryImpl;
+import swp.koi.service.socketIoService.SocketDetail;
 import swp.koi.service.vnPayService.VnpayServiceImpl;
 
 import java.io.UnsupportedEncodingException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -28,6 +34,10 @@ public class LotServiceImpl implements LotService {
     private final VnpayServiceImpl vnpayService;
     private final MemberRepository memberRepository;
     private final InvoiceRepository invoiceRepository;
+    private final EventListenerFactoryImpl eventListenerFactory;
+    private final SocketIOServer socketServer;
+    private final RedisServiceImpl redisServiceImpl;
+    private final FCMService fcmService;
 
     @Override
     public Lot findLotById(int id) {
@@ -46,12 +56,18 @@ public class LotServiceImpl implements LotService {
 
         List<Lot> runningLots = lotRepository.findAllByStatusAndEndingTimeLessThan(LotStatusEnum.AUCTIONING, now);
         runningLots.forEach(this::endLot);
+
+        List<Lot> descendingLots = lotRepository.findAllByStatusAndAuctionAuctionTypeAuctionTypeName(LotStatusEnum.AUCTIONING, AuctionTypeNameEnum.DESCENDING_BID);
+        descendingLots.forEach(this::decreasePrice);
     }
+
+
 
     private void startLot(Lot lot) {
         updateKoiFishStatus(lot.getKoiFish(), KoiFishStatusEnum.AUCTIONING);
         updateAuctionStatus(lot.getAuction(), AuctionStatusEnum.AUCTIONING);
         lot.setStatus(LotStatusEnum.AUCTIONING);
+        createSocketForLot(socketServer, lot);
         lotRepository.save(lot);
     }
 
@@ -64,6 +80,32 @@ public class LotServiceImpl implements LotService {
         } else {
             concludeLot(lot, bidList);
         }
+        //real time update - remind me to delete this
+        notifyClient(lot);
+        //send push notification to user who followed this lot
+        sendNotificateToFollower(lot);
+
+    }
+
+    private void notifyClient(Lot lot) {
+        SocketDetail socketDetail = SocketDetail.builder()
+                .lotId(lot.getLotId())
+                .newPrice(lot.getCurrentPrice())
+                .build();
+
+        eventListenerFactory.sendDataToClient(socketDetail,lot.getLotId().toString());
+    }
+
+    private void decreasePrice(Lot lot) {
+
+        Duration timeDiff = Duration.between(lot.getStartingTime(), LocalDateTime.now());
+
+        if (timeDiff.toMinutes() % 60 == 0) {
+            lot.setCurrentPrice((float) (lot.getCurrentPrice() * 0.95));
+        } else {
+            System.out.println("hi");
+        }
+
     }
 
     @Override
@@ -176,4 +218,24 @@ public class LotServiceImpl implements LotService {
     private Bid getFirstBid(List<Bid> bidList) {
         return bidList.getFirst();
     }
+
+    private void createSocketForLot(SocketIOServer socketIOServer, Lot lot) {
+        eventListenerFactory.createDataListener(socketIOServer,lot.getLotId().toString());
+    }
+
+    @Async
+    public void sendNotificateToFollower(Lot lot){
+        Set<SubscribeRequest> subscribeRequests = (Set<SubscribeRequest>) redisServiceImpl.getSetData("Notify_"+lot.getLotId().toString());
+        if(subscribeRequests != null && !subscribeRequests.isEmpty()){
+            for(SubscribeRequest subscribeRequest : subscribeRequests){
+
+                String title = "Lot with id " + lot.getLotId() + " just ended!!";
+                String body = "The auction for the lot you followed has just ended. Check the final bid and see if you won!";
+                String token = subscribeRequest.getToken();
+                fcmService.sendPushNotification(title, body, token);
+            }
+        }
+    }
+
+
 }
