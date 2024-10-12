@@ -51,7 +51,7 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
 
   const getStatusColor = (status) => {
     switch (
-      status.toUpperCase() // Ensure status is case-insensitive
+    status.toUpperCase() // Ensure status is case-insensitive
     ) {
       case "PENDING":
         return "blue"; // Color for pending status
@@ -142,20 +142,27 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
   };
 
   return (
+
     <div className="p-6 bg-[#131313] rounded-2xl text-white my-5 mx-5">
-      <h2 className="text-2xl font-bold mb-6 text-[#bcab6f]">
+      <button
+        type="default"
+        onClick={onBack}
+        className="bg-red-600 text-white rounded-lg px-4 py-2 mb-3 hover:bg-red-500"
+      >
+        Back
+      </button>
+
+      <h2 className="text-3xl font-extrabold mb-6 text-[#bcab6f] text-center">
         Request Details
       </h2>
 
-      <div className="grid grid-cols-3 gap-6 mb-8">
+      <div className="flex flex-col gap-9 mb-8 divide-y">
         {/* Left Side: All Information Section */}
         <div className="col-span-2">
-          <div className="bg-gray-700 p-4 rounded-lg shadow mb-5">
-            <h3 className="text-lg font-semibold mb-4">All Information</h3>
+          <div className="p-3 mb-5">
             <div className="grid grid-cols-3 gap-4">
               {/* Breeder Info */}
-              <div>
-                <h4 className="font-semibold text-[#bcab6f]">Breeder Info</h4>
+              <div className="bg-gray-900 hover:bg-gray-800 rounded-2xl  my-4 border-2 border-[#bcab6f] py-4 pl-10 outline outline-offset-4 mx-2">
                 <p>
                   <strong>Breeder ID:</strong> {request.breederId}
                 </p>
@@ -165,33 +172,35 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
                 <p>
                   <strong>Location:</strong> {request.breederLocation}
                 </p>
+                <h4 className="font-extrabold text-2xl text-[#bcab6f] mt-6">Breeder Info</h4>
               </div>
 
               {/* Koi Info */}
-              <div>
-                <h4 className="font-semibold text-[#bcab6f]">Koi Info</h4>
-                <p>
-                  <strong>Fish ID:</strong> {request.fishId}
-                </p>
-                <p>
-                  <strong>Size:</strong> {request.size}
-                </p>
-                <p>
-                  <strong>Age:</strong> {request.age}
-                </p>
-                <p>
-                  <strong>Variety:</strong> {request.varietyName}
-                </p>
-                <p>
-                  <strong>Gender:</strong> {request.gender}
-                </p>
+              <div className="bg-gray-900 hover:bg-gray-800 rounded-2xl my-4 border-2 border-[#bcab6f] py-4 pl-10 outline outline-offset-4 mx-2">
+                <div className="grid grid-cols-2">
+                  <p>
+                    <strong>Fish ID:</strong> {request.fishId}
+                  </p>
+                  <p>
+                    <strong>Size:</strong> {request.size}
+                  </p>
+                  <p>
+                    <strong>Age:</strong> {request.age}
+                  </p>
+                  <p>
+                    <strong>Variety:</strong> {request.varietyName}
+                  </p>
+                  <p>
+                    <strong>Gender:</strong> {request.gender}
+                  </p>
+                </div>
+                <h5 className="font-extrabold text-2xl text-[#bcab6f] mt-6">Koi Info</h5>
               </div>
 
               {/* Request Info */}
-              <div>
-                <h4 className="font-semibold text-[#bcab6f]">Request Info</h4>
+              <div className="bg-gray-900 hover:bg-gray-800 rounded-2xl text-balance my-4 border-2 border-[#bcab6f] py-4 pl-10 outline outline-offset-4 mx-2">
                 <p>
-                  <strong>Status:</strong>
+                  <strong>Status:</strong>{" "}
                   <span className={getStatusColor(request.status)}>
                     {formatStatus(request.status)}
                   </span>
@@ -207,128 +216,125 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
                   <strong>Auction Type:</strong>{" "}
                   {request.auctionTypeNameBreeder}
                 </p>
+                <h6 className="font-extrabold text-2xl text-[#bcab6f]">Request Info</h6>
               </div>
             </div>
           </div>
 
-          {/* Media Section */}
-          <div className="bg-gray-700 p-4 rounded-lg shadow">
-            <h3 className="text-lg font-semibold mb-4">Media</h3>
-            <div className="flex flex-row justify-between gap-10">
-              {/* Image Display */}
-              <div className="w-1/2">
-                <strong className="text-[#bcab6f]">Image:</strong>
-                {request.image ? (
-                  <img
-                    src={request.image}
-                    alt="Koi Fish"
-                    className="w-full mt-2 rounded-md"
-                  />
-                ) : (
-                  <div className="flex items-center justify-center bg-gray-800 h-48 rounded-md">
-                    <p>No image available.</p>
-                  </div>
-                )}
-              </div>
 
-              {/* Video Display */}
-              <div className="w-1/2">
-                <strong className="text-[#bcab6f]">Video:</strong>
-                {request.videoUrl ? (
-                  <video className="w-full h-96 mt-2 rounded-md" controls>
-                    <source src={request.videoUrl} type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-                ) : (
-                  <div className="flex items-center justify-center bg-gray-800 h-48 rounded-md">
-                    <p>No video available.</p>
-                  </div>
+
+
+          {/* Negotiation Section */}
+          {/* Only render the negotiation card when the status is PENDING_MANAGER_OFFER or PENDING_BREEDER_OFFER */}
+          {(request.status === "PENDING_MANAGER_OFFER" ||
+            request.status === "PENDING_BREEDER_OFFER") && (
+              <Card className="bg-gray-900 hover:bg-gray-800 rounded-2xl  my-4 border-2 border-[#bcab6f] py-4 pl-10 outline outline-offset-4 outline-white mx-60">
+                <h7 className="font-extrabold text-2xl text-[#bcab6f]">
+                  Negotiation
+                </h7>
+
+                {request.status === "PENDING_BREEDER_OFFER" && (
+                  <>
+                    {/* Display Manager's Offer */}
+                    <div style={{ marginBottom: "16px" }}>
+                      <h8 className="text-white font-semibold underline underline-offset-1">Manager's Offer</h8>
+                      <p className="text-white font-semibold">
+                        <strong>Offer Price:</strong> ${request.offerPriceManager}
+                      </p>
+                      <p className="text-white font-semibold">
+                        <strong>Auction Type:</strong>{" "}
+                        {formatAuctionType(request.auctionTypeNameManager)}
+                      </p>
+                    </div>
+
+                    {/* Negotiation Form */}
+                    <Input
+                      type="number"
+                      placeholder="Your Offer Price"
+                      value={offerPrice || ""}
+                      onChange={(e) =>
+                        setOfferPrice(e.target.value ? Number(e.target.value) : null)
+                      }
+                      className="text-white w-48 mb-4 mr-4 px-3 py-2 border-2 border-gray-300 rounded bg-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-transparent"
+                      style={{ backgroundColor: "transparent" }}
+                    />
+                    <Select
+                      placeholder="Select Auction Type"
+                      value={offerAuctionType || undefined}
+                      onChange={setOfferAuctionType}
+                      style={{ width: "200px", marginBottom: "16px", height: "38px" }}
+                      className="pr-5"
+                    >
+                      <Select.Option value="ASCENDING_BID">
+                        Ascending Bid
+                      </Select.Option>
+                      <Select.Option value="DESCENDING_BID">
+                        Descending Bid
+                      </Select.Option>
+                      <Select.Option value="SEALED_BID">Sealed Bid</Select.Option>
+                      <Select.Option value="DIRECT_SALE">Direct Sale</Select.Option>
+                    </Select>
+                    <Button type="primary" onClick={handleNegotiate}>
+                      Submit Offer
+                    </Button>
+
+                    {/* Actions for Breeder Offer */}
+                    <div className="mt-4">
+                      <h9 className="font-mono text-[#bcab6f]">Note! Clicking Accept Offer only if you have confirmed your deal with us.</h9>
+                      <button
+                        type="primary"
+                        onClick={handleAccept}
+                        className="bg-red-600 font-bold rounded-lg px-4 py-2 hover:bg-red-500 mx-4"
+                      >
+                        Accept Offer
+                      </button>
+                      <button type="default" onClick={handleCancel} className="bg-slate-400 rounded-lg px-4 py-2 hover:bg-slate-300">
+                        Cancel Offer
+                      </button>
+                    </div>
+                  </>
                 )}
-              </div>
+              </Card>
+            )}
+        </div>
+
+        {/* Media Section */}
+        <div>
+          <div className="flex flex-row justify-between gap-5 p-3">
+            {/* Image Display */}
+            <div className="">
+              <strong className="text-[#bcab6f] font-extrabold text-2xl">Image:</strong>
+              {request.image ? (
+                <img
+                  src={request.image}
+                  alt="Koi Fish"
+                  className="w-80 h-80"
+                />
+              ) : (
+                <div className="flex items-center justify-center bg-gray-800 h-48 rounded-md">
+                  <p>No image available.</p>
+                </div>
+              )}
+            </div>
+
+            {/* Video Display */}
+            <div className="w-1/2">
+              <strong className="text-[#bcab6f] font-extrabold text-2xl">Video:</strong>
+              {request.videoUrl ? (
+                <video className="w-full h-96 mt-2 rounded-md" controls>
+                  <source src={request.videoUrl} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              ) : (
+                <div className="flex items-center justify-center bg-gray-800 h-48 rounded-md">
+                  <p>No video available.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
-
-        {/* Negotiation Section */}
-        {/* Only render the negotiation card when the status is PENDING_MANAGER_OFFER or PENDING_BREEDER_OFFER */}
-        {(request.status === "PENDING_MANAGER_OFFER" ||
-          request.status === "PENDING_BREEDER_OFFER") && (
-          <Card className="bg-gray-700 p-4 rounded-lg shadow mb-6 w-auto h-max">
-            <h4 className="text-lg font-semibold mb-4 text-[#bcab6f]">
-              Negotiation
-            </h4>
-
-            {request.status === "PENDING_BREEDER_OFFER" && (
-              <>
-                {/* Display Manager's Offer */}
-                <div style={{ marginBottom: "16px" }}>
-                  <h3>Manager's Offer</h3>
-                  <p>
-                    <strong>Offer Price:</strong> ${request.offerPriceManager}
-                  </p>
-                  <p>
-                    <strong>Auction Type:</strong>{" "}
-                    {formatAuctionType(request.auctionTypeNameManager)}
-                  </p>
-                </div>
-
-                {/* Negotiation Form */}
-                <Input
-                  type="number"
-                  placeholder="Your Offer Price"
-                  value={offerPrice || ""}
-                  onChange={(e) =>
-                    setOfferPrice(
-                      e.target.value ? Number(e.target.value) : null
-                    )
-                  }
-                  style={{ width: "200px", marginBottom: "16px" }}
-                />
-                <Select
-                  placeholder="Select Auction Type"
-                  value={offerAuctionType || undefined}
-                  onChange={setOfferAuctionType}
-                  style={{ width: "200px", marginBottom: "16px" }}
-                >
-                  <Select.Option value="ASCENDING_BID">
-                    Ascending Bid
-                  </Select.Option>
-                  <Select.Option value="DESCENDING_BID">
-                    Descending Bid
-                  </Select.Option>
-                  <Select.Option value="SEALED_BID">Sealed Bid</Select.Option>
-                  <Select.Option value="DIRECT_SALE">Direct Sale</Select.Option>
-                </Select>
-                <Button type="primary" onClick={handleNegotiate}>
-                  Submit Offer
-                </Button>
-
-                {/* Actions for Breeder Offer */}
-                <div style={{ marginTop: "16px" }}>
-                  <Button
-                    type="primary"
-                    onClick={handleAccept}
-                    style={{ marginRight: "8px" }}
-                  >
-                    Accept Offer
-                  </Button>
-                  <Button type="default" onClick={handleCancel}>
-                    Cancel Offer
-                  </Button>
-                </div>
-              </>
-            )}
-          </Card>
-        )}
       </div>
 
-      <button
-        type="default"
-        onClick={onBack}
-        className="bg-red-600 text-white rounded-lg px-4 py-2 hover:bg-red-500"
-      >
-        Back
-      </button>
     </div>
   );
 };

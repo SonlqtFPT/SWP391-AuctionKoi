@@ -197,7 +197,7 @@ const BreederRequest = () => {
   };
 
   return (
-    <div className="w-full mt-16 bg-hero-pattern relative bg-cover">
+    <div className="w-full mt-20 bg-hero-pattern relative bg-cover">
       <div className="absolute bg-black bg-opacity-70 inset-0"></div>
       {loading ? (
         <Spin size="large" />
@@ -222,7 +222,7 @@ const BreederRequest = () => {
               <Button
                 type="primary"
                 onClick={() => setAddingRequest(true)}
-                className="font-bold text-2xl bg-amber-500 hover:bg-amber-400 rounded-full px-16 py-5 lg:py-7 text-black"
+                className="font-bold text-2xl bg-amber-500 hover:bg-amber-400 rounded-full px-16 py-5 lg:py-7 text-black my-3"
               >
                 Add Breeder Request
               </Button>
