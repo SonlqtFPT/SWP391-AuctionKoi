@@ -39,8 +39,10 @@ const BreederRequest = () => {
     try {
       const token = localStorage.getItem("accessToken");
       console.log(token);
-      const breederId = 1; // Assuming you want to fetch requests for this breeder
-      const response = await api.get(`/breeder/request/${breederId}`, {
+      const storedData = localStorage.getItem('accountData');
+      const accountData = JSON.parse(storedData);  // Convert back to an object
+      const accountId = accountData.accountId;
+      const response = await api.get(`/breeder/request/${accountId}`, {
         headers: {
           Authorization: `Bearer ${token}`, // Pass token in Authorization header
         },

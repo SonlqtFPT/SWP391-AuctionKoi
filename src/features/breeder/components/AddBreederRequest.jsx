@@ -3,14 +3,16 @@ import { Form, InputNumber, Select, Upload, Button, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import api from "../../../config/axios"; // Assuming Axios instance is set up properly
 import uploadFile from "../../../utils/file"; // Firebase file upload utility
-import { useAuth } from "../../protectedRoutes/AuthContext";
 
 const AddBreederRequest = ({ onBack }) => {
   const [form] = Form.useForm();
   const [imageList, setImageList] = useState([]);
   const [videoList, setVideoList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { accountId } = useAuth();
+  const storedData = localStorage.getItem('accountData');
+  const accountData = JSON.parse(storedData);  // Convert back to an object
+  const accountId = accountData.accountId;
+  console.log("AccountId: " + accountId);
 
   // Handles the form submission
   const handleSubmitFish = async (values) => {
