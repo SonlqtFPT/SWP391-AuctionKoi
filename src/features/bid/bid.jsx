@@ -9,11 +9,11 @@ import Video from "./components-bid/Video";
 import axios from "axios";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import io from "socket.io-client"; // Import socket.io-client
 import { useParams } from "react-router-dom"; // Import useParams
 
 function Bid() {
   const { lotId } = useParams(); // Lấy lotId từ URL
+  const { auctionId } = useParams();
   const [lot, setLot] = useState();
   const [remainingTime, setRemainingTime] = useState(0);
   const [bidList, setBidList] = useState([]); // State for bid list
@@ -74,7 +74,7 @@ function Bid() {
       <div className="bg-hero-pattern bg-cover relative">
         <div className="absolute bg-black bg-opacity-70 inset-0"></div>
         <div className="relative mt-5">
-          {lot && <Time remainingTime={remainingTime} />}
+          {lot && <Time remainingTime={remainingTime} auctionId={auctionId} />}
         </div>
         <div className="flex flex-col lg:flex-row justify-center items-center relative mb-10">
           <div>

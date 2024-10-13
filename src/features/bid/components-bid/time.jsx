@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 
-function Time({ remainingTime }) {
+function Time({ remainingTime, auctionId }) {
   // Hàm để chuyển đổi thời gian còn lại thành định dạng giờ:phút:giây
   const formatTime = (time) => {
     const seconds = Math.floor((time / 1000) % 60);
@@ -13,7 +13,7 @@ function Time({ remainingTime }) {
 
   return (
     <div className="ml-[200px] pt-[70px]">
-      <h1 className="font-bold text-3xl text-white">Auction#6</h1>
+      <h1 className="font-bold text-3xl text-white">Auction#{auctionId}</h1>
       <h2 className="text-2xl text-white">
         {remainingTime === -1 ? "Ended" : formatTime(remainingTime)}
       </h2>

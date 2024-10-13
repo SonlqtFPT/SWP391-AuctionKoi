@@ -6,13 +6,14 @@ import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function Lot() {
   const { auctionId } = useParams();
   const [lots, setLots] = useState([]);
   const [endTime, setEndTime] = useState();
   const [remainingTime, setRemainingTime] = useState();
+  const navigate = useNavigate();
 
   const get_lot_api = `http://localhost:8080/auction/get-auction/${auctionId}`;
 
@@ -70,13 +71,13 @@ function Lot() {
   }, [lots]);
 
   const handlePageChange = (lotId) => {
-    window.location.href = `/bid/${lotId}`; // Chuyển hướng đến trang Bid với lotId
+    navigate(`/bid/${lotId}/${auctionId}`); // Chuyển hướng đến trang Bid với lotId
   };
 
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      {lots && <Time remainingTime={remainingTime} />}
+      {lots && <Time remainingTime={remainingTime} auctionId={auctionId} />}
       <div className="flex items-center mt-[50px]">
         {lots.map((lot, index) => (
           <div key={index}>

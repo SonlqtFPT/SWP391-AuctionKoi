@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 
 import viteLogo from "/vite.svg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import Auctioning from "./component-auction/auctioning";
@@ -10,6 +10,7 @@ import axios from "axios";
 
 function Auction() {
   const [auctionId, setAuctionId] = useState();
+  const navigate = useNavigate();
 
   const get_auctioning_api =
     "http://localhost:8080/auction/get-auction/auctioning";
@@ -30,6 +31,10 @@ function Auction() {
   useEffect(() => {
     fetchAuctioning();
   }, [auctionId]);
+
+  const handlePastAuction = () => {
+    navigate("/auctioned");
+  };
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -37,7 +42,10 @@ function Auction() {
         <div className="absolute bg-black bg-opacity-70 inset-0"></div>
         {auctionId && <Auctioning auctionId={auctionId} />}
         <div className="mt-96 absolute">
-          <button className="mt-56 bg-yellow-200 rounded-3xl h-[50px] w-[200px] flex justify-center items-center hover:bg-yellow-300 transition-colors duration-300">
+          <button
+            onClick={handlePastAuction}
+            className="mt-56 bg-yellow-200 rounded-3xl h-[50px] w-[200px] flex justify-center items-center hover:bg-yellow-300 transition-colors duration-300"
+          >
             <h1>View Past Auctions</h1>
           </button>
         </div>
