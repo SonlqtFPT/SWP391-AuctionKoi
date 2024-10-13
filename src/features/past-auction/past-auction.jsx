@@ -36,7 +36,6 @@ function Auctioned() {
       })),
     }));
     setAuctioned(auction);
-    console.log("hjajaja: ", auction);
   };
 
   useEffect(() => {

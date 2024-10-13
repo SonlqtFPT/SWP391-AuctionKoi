@@ -39,12 +39,12 @@ const BreederRequest = () => {
     try {
       const token = localStorage.getItem("accessToken");
       console.log(token);
-      const storedData = localStorage.getItem('accountData');
-      const accountData = JSON.parse(storedData);  // Convert back to an object
+      const storedData = localStorage.getItem("accountData");
+      const accountData = JSON.parse(storedData);
       const accountId = accountData.accountId;
       const response = await api.get(`/breeder/request/${accountId}`, {
         headers: {
-          Authorization: `Bearer ${token}`, // Pass token in Authorization header
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -61,18 +61,22 @@ const BreederRequest = () => {
         fishId: item.koiFish.fishId,
         breederId: item.breeder.breederId,
         breederName: item.breeder.breederName,
-        breederLocation: item.breeder.location, // include breeder location
+        breederLocation: item.breeder.location,
         price: item.koiFish.price,
-        offerPriceManager: item.offerPrice, // include offer price
-        age: item.koiFish.age, // include age
-        size: item.koiFish.size, // include size
-        gender: item.koiFish.gender, // include gender
-        varietyName: item.koiFish.variety.varietyName, // include variety name
-        image: item.koiFish.media.imageUrl, // include image URL
-        videoUrl: item.koiFish.media.videoUrl, // include video URL
-        // Include additional fields if needed
-        staff: item.staff, // Add staff details if needed
+        offerPriceManager: item.offerPrice,
+        age: item.koiFish.age,
+        size: item.koiFish.size,
+        gender: item.koiFish.gender,
+        varietyName: item.koiFish.variety.varietyName,
+        image: item.koiFish.media.imageUrl,
+        videoUrl: item.koiFish.media.videoUrl,
+        staff: item.staff,
       }));
+
+      // Sort the requestData in descending order by requestedAt
+      requestData.sort(
+        (a, b) => new Date(b.requestedAt) - new Date(a.requestedAt)
+      );
 
       // Log the processed requestData
       console.log("Processed request data:", requestData);
@@ -280,6 +284,18 @@ const BreederRequest = () => {
               <Button onClick={resetSearch} icon={<ReloadOutlined />}>
                 Reset
               </Button>
+
+              {/* List all status */}
+              <Button>All</Button>
+
+              {/* List cancel status */}
+              <Button>Cancel</Button>
+
+              {/* List Inspection_in_progress status */}
+              <Button>Inspection_in_progress</Button>
+
+              {/* List Approved */}
+              <Button>Approved</Button>
             </Space>
           )}
 
