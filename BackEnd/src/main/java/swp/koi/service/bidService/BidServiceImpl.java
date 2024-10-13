@@ -1,34 +1,32 @@
 package swp.koi.service.bidService;
 
-import com.corundumstudio.socketio.SocketIOServer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import swp.koi.dto.request.AutoBidRequestDTO;
 import swp.koi.dto.request.BidRequestDto;
 import swp.koi.dto.response.ResponseCode;
-import swp.koi.dto.response.ResponseData;
 import swp.koi.exception.KoiException;
 import swp.koi.model.*;
 import swp.koi.model.enums.AuctionTypeNameEnum;
 import swp.koi.model.enums.LotRegisterStatusEnum;
-import swp.koi.model.enums.LotStatusEnum;
 import swp.koi.repository.AccountRepository;
 import swp.koi.repository.BidRepository;
 import swp.koi.repository.LotRegisterRepository;
 import swp.koi.repository.LotRepository;
-import swp.koi.service.accountService.AccountService;
-import swp.koi.service.lotService.LotServiceImpl;
+import swp.koi.service.authService.GetUserInfoByUsingAuth;
+import swp.koi.service.mailService.EmailServiceImpl;
 import swp.koi.service.memberService.MemberServiceImpl;
+import swp.koi.service.redisService.RedisServiceImpl;
 import swp.koi.service.socketIoService.EventListenerFactoryImpl;
 import swp.koi.service.socketIoService.SocketDetail;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +39,9 @@ public class BidServiceImpl implements BidService {
     private final LotRegisterRepository lotRegisterRepository;
     private final AccountRepository accountRepository;
     private final EventListenerFactoryImpl socketService;
+    private final RedisServiceImpl redisServiceImpl;
+    private final GetUserInfoByUsingAuth getUserInfoByUsingAuth;
+    private final EmailServiceImpl emailService;
 
     @Override
     public void bid(BidRequestDto bidRequestDto) throws KoiException {
@@ -61,12 +62,44 @@ public class BidServiceImpl implements BidService {
         // Create a Bid entity and update the Lot with the new bid
 
         Bid bid = createBid(bidRequestDto, member, lot);
+        bidRepository.save(bid);
 
-        lot = updateLotWithSpecialType(bidRequestDto.getPrice(), lot, member);
+        if(checkIfAutoBidderExistAndHaveHigherPrice(lot, bidRequestDto.getPrice())){
+
+            Optional<AutoBid> autoBidEntity = Optional.ofNullable(getAutoBidEntity(lot));
+
+            Member memberOfAutoBid = memberService.getMemberById(autoBidEntity.get().getMemberId());
+            //check if auto-bid can afford the bid request price + bid increment
+
+            float updatedPrice = autoBidderCanAffordNewPrice(lot, bidRequestDto.getPrice())
+                    ? bidRequestDto.getPrice() + lot.getStartingPrice() * 0.1f
+                    : autoBidEntity.get().getAmount();
+
+            Bid autoBid = Bid.builder()
+                    .bidAmount(updatedPrice)
+                    .member(memberOfAutoBid)
+                    .lot(lot)
+                    .build();
+
+            bidRepository.save(autoBid);
+            lot = updateLotWithSpecialType(updatedPrice, lot, memberOfAutoBid);
+        } else if (checkIfAutoBidderExistAndHaveLowerPrice(lot, bidRequestDto.getPrice())) {
+            Optional<AutoBid> autoBidEntity = Optional.ofNullable(getAutoBidEntity(lot));
+
+            String subject = "\uD83D\uDD34 Outbid. Raise your bid of "
+                    + autoBidEntity.get().getAmount()
+                    + " for lot with id " + lot.getLotId();
+
+            emailService.sendEmail("mentionable9999@gmail.com",subject,"idk bro");
+
+            lot = updateLotWithSpecialType(bidRequestDto.getPrice(), lot, member);
+
+        } else {
+            lot = updateLotWithSpecialType(bidRequestDto.getPrice(), lot, member);
+        }
 
         updateDataOnClient(lot.getLotId(),bidRequestDto.getPrice(),account.getFirstName());
-        // Persist the bid and the updated lot into the repository
-        bidRepository.save(bid);
+
         lotRepository.save(lot);
     }
 
@@ -90,6 +123,23 @@ public class BidServiceImpl implements BidService {
 
         return bidRepository.getBidByLot(lot)
                 .orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND)); // Handle case where no bids are found
+    }
+
+    @Override
+    public void activeAutoBid(AutoBidRequestDTO autoBidRequestDTO) throws KoiException {
+
+        Lot lot = lotRepository.findById(autoBidRequestDTO.getLotId())
+                .orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
+
+        Member member = getUserInfoByUsingAuth.getMemberFromAuth();
+
+        AutoBid autoBidRequest = AutoBid.builder()
+                .amount(autoBidRequestDTO.getAmount())
+                .memberId(member.getMemberId())
+                .build();
+
+        redisServiceImpl.saveDataWithoutTime("Auto_bid_"+lot.getLotId(),autoBidRequest);
+
     }
 
     // Validates the bid request, ensuring the member is registered and that the bid price is valid
@@ -195,4 +245,22 @@ public class BidServiceImpl implements BidService {
         return bidList.stream().anyMatch(lr -> lr.getMember().equals(member));
     }
 
+    private AutoBid getAutoBidEntity(Lot lot) {
+        return (AutoBid) redisServiceImpl.getData("Auto_bid_" + lot.getLotId());
+    }
+
+    private boolean checkIfAutoBidderExistAndHaveHigherPrice(Lot lot, float bidAmount) {
+        Optional<AutoBid> autoBidEntity = Optional.ofNullable(getAutoBidEntity(lot));
+        return autoBidEntity.isPresent() && bidAmount <= autoBidEntity.get().getAmount();
+    }
+
+    private boolean autoBidderCanAffordNewPrice(Lot lot, float bidAmount) {
+        Optional<AutoBid> autoBidEntity = Optional.ofNullable(getAutoBidEntity(lot));
+        return autoBidEntity.isPresent() && autoBidEntity.get().getAmount() >= bidAmount + lot.getStartingPrice() * 0.1;
+    }
+
+    private boolean checkIfAutoBidderExistAndHaveLowerPrice(Lot lot, float bidAmount){
+        Optional<AutoBid> autoBidEntity = Optional.ofNullable(getAutoBidEntity(lot));
+        return autoBidEntity.isPresent() && bidAmount > autoBidEntity.get().getAmount();
+    }
 }

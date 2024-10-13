@@ -22,6 +22,11 @@ public class RedisServiceImpl implements RedisService {
 
 
     @Override
+    public void saveDataWithoutTime(String key, Object value) {
+        redisTemplate.opsForValue().set(key, value);
+    }
+
+    @Override
     public void saveDataToSet(String key, Object object) {
         redisTemplate.opsForSet().add(key, object);
     }
