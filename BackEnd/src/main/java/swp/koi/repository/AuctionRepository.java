@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface AuctionRepository extends JpaRepository<Auction, Integer> {
     List<Auction> findAllByStatus(AuctionStatusEnum status);
+
+    List<Auction> findAllByStatusIn(List<AuctionStatusEnum> statues);
 }
