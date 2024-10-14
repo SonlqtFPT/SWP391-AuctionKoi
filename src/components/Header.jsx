@@ -139,15 +139,15 @@ const Header = () => {
 
               {/* Dropdown content with Account and Log Out options */}
               {isUserDropdownOpen && (
-                <div className="absolute top-7 left-5 mt-2 bg-[#171817] border border-gray-700 rounded-lg shadow-lg z-20">
+                <div className="flex flex-col absolute top-7 w-full items-center mt-2 bg-[#171817] border border-gray-700 rounded-lg shadow-lg z-20">
                   <Link
                     to={getAccountLink()} // Dynamically generated link based on role
-                    className="block px-4 py-2 text-left text-white hover:bg-red-500"
+                    className="block px-4 py-2 text-white hover:bg-red-500 w-full text-center hover:rounded-lg"
                   >
                     Account
                   </Link>
                   <button
-                    className="block px-4 py-2 text-left text-white hover:bg-red-500"
+                    className="block px-4 py-2 text-center text-white hover:bg-red-500 w-full hover:rounded-lg"
                     onClick={handleLogout}
                   >
                     Log Out
