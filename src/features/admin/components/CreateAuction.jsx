@@ -24,7 +24,6 @@ const CreateAuction = () => {
     lots: [],
   });
   const [lots, setLots] = useState([]);
-
   const handleNext = () => {
     form
       .validateFields()
@@ -33,8 +32,12 @@ const CreateAuction = () => {
           setAuction((prevAuction) => ({
             ...prevAuction,
             auctionTypeName: values.auctionType,
-            startTime: values.startTime ? values.startTime.toISOString() : null,
-            endTime: values.endTime ? values.endTime.toISOString() : null,
+            startTime: values.startTime
+              ? dayjs(values.startTime).format("YYYY-MM-DDTHH:mm:ss")
+              : null, // Format the time without converting to UTC
+            endTime: values.endTime
+              ? dayjs(values.endTime).format("YYYY-MM-DDTHH:mm:ss")
+              : null,
           }));
         }
         setCurrent(current + 1);
@@ -372,10 +375,11 @@ const AddLots = ({ setLots, auctionTypeName, lots }) => {
                 <Button
                   type="primary"
                   onClick={() => handleAddRemoveLot(record)}
-                  className={`${lots.some((lot) => lot.fishId === record.fishId)
-                    ? "bg-red-500 hover:bg-red-600"
-                    : "bg-gold hover:bg-yellow-600"
-                    } text-white`}
+                  className={`${
+                    lots.some((lot) => lot.fishId === record.fishId)
+                      ? "bg-red-500 hover:bg-red-600"
+                      : "bg-gold hover:bg-yellow-600"
+                  } text-white`}
                 >
                   {lots.some((lot) => lot.fishId === record.fishId)
                     ? "Remove Lot"

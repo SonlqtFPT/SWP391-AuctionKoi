@@ -33,7 +33,12 @@ function Bid() {
 
   const fetchBidList = async () => {
     try {
-      const response = await axios.get(get_bidList_api);
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.get(get_bidList_api, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const listData = response.data.data.map((bid) => ({
         bidAmount: bid.bidAmount,
         lastName: bid.member.account.lastName,
