@@ -77,30 +77,38 @@ function Lot() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      {lots && <Time remainingTime={remainingTime} auctionId={auctionId} />}
-      <div className="flex items-center mt-[50px]">
-        {lots.map((lot, index) => (
-          <div key={index}>
-            <button
-              onClick={() => handlePageChange(lot.lotId)} // Truyền lotId vào hàm
-              className="h-[600px] w-[300px] bg-slate-800 ml-[200px] rounded-tl-[50px] rounded-[50px] pb-14 mb-16"
-            >
-              {lots && <Picture img={lot.imageUrl} />}
-              <div>
-                {lots && (
-                  <Information
-                    varietyName={lot.varietyName}
-                    currentPrice={lot.currentPrice}
-                    breederName={lot.breederName}
-                    gender={lot.gender}
-                    size={lot.size}
-                    age={lot.age}
-                  />
-                )}
-              </div>
-            </button>
-          </div>
-        ))}
+      <div className="mt-[50px] bg-hero-pattern bg-cover relative">
+        <div className="absolute bg-black bg-opacity-70 inset-0"></div>
+        <div className="relative">{lots && <Time remainingTime={remainingTime} auctionId={auctionId} />}</div>
+        <div className="mb-10 z-20 sm:flex flex-wrap justify-center gap-36 relative">
+          {lots.map((lot, index) => (
+            <div key={index}>
+              <button
+                onClick={() => handlePageChange(lot.lotId)} // Truyền lotId vào hàm
+                className="h-[600px] w-full bg-gray-900 rounded-[50px] pb-14 my-10 border-2 border-[#bcab6f] hover:bg-gray-800 hover:border-4"
+              >
+                {lots &&
+                  <div className="w-full h-auto object-cover">
+                    <Picture
+                      img={lot.imageUrl}
+                    />
+                  </div>}
+                <div className="flex justify-center font-bold mt-3 ">
+                  {lots && (
+                    <Information
+                      varietyName={lot.varietyName}
+                      currentPrice={lot.currentPrice}
+                      breederName={lot.breederName}
+                      gender={lot.gender}
+                      size={lot.size}
+                      age={lot.age}
+                    />
+                  )}
+                </div>
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
       <Footer />
     </div>

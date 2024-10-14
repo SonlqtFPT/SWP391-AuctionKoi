@@ -73,11 +73,11 @@ function Bid() {
       <Header />
       <div className="bg-hero-pattern bg-cover relative">
         <div className="absolute bg-black bg-opacity-70 inset-0"></div>
-        <div className="relative mt-5">
+        <h1 className="relative mt-5">
           {lot && <Time remainingTime={remainingTime} auctionId={auctionId} />}
-        </div>
-        <div className="flex flex-col lg:flex-row justify-center items-center relative mb-10">
-          <div>
+        </h1>
+        <div className="flex flex-row justify-center relative mb-10">
+          <div className="mt-16">
             <div className="max-w-full">
               {lot && <Picture img={lot.koiFish.imageUrl} />}
             </div>
@@ -85,7 +85,7 @@ function Bid() {
               {lot && <Video vid={lot.koiFish.videoUrl} />}
             </div>
           </div>
-          <div className="mr-0 lg:mr-[190px] mt-4 lg:mt-0">
+          <div className="mr-0 lg:mr-[190px] mt-10 ">
             <div>
               {lot && (
                 <Information
@@ -108,7 +108,7 @@ function Bid() {
                 />
               )}
             </div>
-            <div className="mt-4 lg:mt-[30px]">
+            <div className="mt-4 lg:mt-[20px]">
               {lot && <TopBid list={bidList} />}
             </div>
           </div>

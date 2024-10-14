@@ -81,19 +81,18 @@ function EnterPrice({
 
   return (
     <div
-      className={`ml-[30px] mt-[20px] rounded-3xl ${
-        registrationLink ? "h-[170px]" : "h-[150px]"
-      } w-[800px] text-white shadow-md bg-slate-500`}
+      className={`ml-[30px] mt-[20px] rounded-2xl border-2 hover:border-4 border-[#bcab6f] outline outline-offset-2 outline-white ${registrationLink ? "h-[170px]" : "h-[150px]"
+        } w-[800px] text-white shadow-md bg-gray-900 hover:bg-gray-800`}
     >
-      <div className="flex items-center justify-between gap-3 mt-7">
-        <div className="bg-slate-400 h-[40px] w-[550px] rounded-[50px] flex items-center justify-between pl-7 ml-3 mt-5">
+      <div className="flex items-center justify-between gap-3 text-black">
+        <div className="bg-slate-500 h-[40px] w-[550px] rounded-[50px] flex items-center justify-between pl-7 ml-3 mt-5 ">
           <h1 className="text-xl font-bold">Highest price</h1>
-          <h1 className="text-xl font-bold mr-8">
+          <h1 className="text-xl font-extrabold mr-8 text-[#af882b]">
             {formatNumber(currentPrice)}
           </h1>
         </div>
-        <div className="bg-slate-400 h-[40px] w-[550px] rounded-[50px] flex items-center justify-between pl-7 mr-3 mt-5">
-          <h1 className="text-xl font-bold">Giá khởi điểm</h1>
+        <div className="bg-slate-500 h-[40px] w-[550px] rounded-[50px] flex items-center justify-between pl-7 mr-3 mt-5">
+          <h1 className="text-xl font-bold">Started Price</h1>
           <h1 className="text-xl font-bold mr-8">
             {formatNumber(startingPrice)}
           </h1>
@@ -101,12 +100,12 @@ function EnterPrice({
       </div>
       <div className="flex items-center justify-between gap-3 mt-7">
         <div className="ml-3 ">
-          <Button
-            className="bg-blue-500 rounded-[50px] h-[40px] w-[100px] text-white"
+          <button
+            className="bg-red-600 hover:bg-red-500 rounded-2xl h-[40px] w-[100px] font-bold text-black hover:border-2 hover:border-[#bcab6f]"
             onClick={handleBid}
           >
             Bid
-          </Button>
+          </button>
         </div>
         <div>
           <Input
@@ -117,8 +116,8 @@ function EnterPrice({
           />
         </div>
 
-        <div className="bg-slate-400 h-[40px] w-[550px] rounded-[50px] flex items-center justify-between pl-7 mr-3">
-          <h1 className="text-xl font-bold">Bước giá</h1>
+        <div className="bg-slate-500 h-[40px] w-[550px] rounded-[50px] flex items-center justify-between pl-7 mr-3 text-black">
+          <h1 className="text-xl font-bold ">Increment</h1>
           <h1 className="text-xl font-bold mr-8">{formatNumber(increment)}</h1>
         </div>
       </div>
