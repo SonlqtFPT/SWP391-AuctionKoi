@@ -14,7 +14,7 @@ function Information({ gender, size, age, breeder, varietyName, auctionId }) {
   return (
     <div className="ml-[30px] mt-[20px] h-[200px] w-[800px] bg-gray-900 hover:bg-gray-800 rounded-2xl border-2 hover:border-4 border-[#bcab6f] outline outline-offset-2 outline-white">
       <h1 className="font-bold text-3xl pt-3 pl-3 text-[#bcab6f]">
-        {varietyName + "#" + auctionId}
+        {varietyName}
       </h1>
       <div className="flex items-center justify-between gap-3 mt-7">
         <div className="bg-slate-500 h-[40px] w-[550px] rounded-[50px] flex items-center justify-between pl-7 ml-3 ">

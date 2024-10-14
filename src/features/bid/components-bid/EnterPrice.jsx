@@ -120,7 +120,7 @@ function EnterPrice({
           />
         </div>
       )}
-      <div className="flex items-center justify-between gap-3 mt-7">
+      <div className="flex items-center justify-between gap-3 mt-7 ml-3">
         <div className="bg-slate-500 h-[40px] w-[550px] rounded-[50px] flex items-center justify-between pl-7 mr-3 text-black">
           <h1 className="text-xl font-bold ">Increment</h1>
           <h1 className="text-xl font-bold mr-8">{formatNumber(increment)}</h1>
