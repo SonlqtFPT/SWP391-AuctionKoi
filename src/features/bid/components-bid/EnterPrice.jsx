@@ -13,6 +13,7 @@ function EnterPrice({
   lotId,
   fetchLot,
   fetchBidList,
+  remainingTime,
 }) {
   const [bidPrice, setBidPrice] = useState("");
   const [registrationLink, setRegistrationLink] = useState(""); // Thêm state để lưu link đăng ký
@@ -81,8 +82,9 @@ function EnterPrice({
 
   return (
     <div
-      className={`ml-[30px] mt-[20px] rounded-2xl border-2 hover:border-4 border-[#bcab6f] outline outline-offset-2 outline-white ${registrationLink ? "h-[170px]" : "h-[150px]"
-        } w-[800px] text-white shadow-md bg-gray-900 hover:bg-gray-800`}
+      className={`ml-[30px] mt-[20px] rounded-2xl border-2 hover:border-4 border-[#bcab6f] outline outline-offset-2 outline-white ${
+        registrationLink ? "h-[170px]" : "h-[150px]"
+      } w-[800px] text-white shadow-md bg-gray-900 hover:bg-gray-800`}
     >
       <div className="flex items-center justify-between gap-3 text-black">
         <div className="bg-slate-500 h-[40px] w-[550px] rounded-[50px] flex items-center justify-between pl-7 ml-3 mt-5 ">
@@ -98,24 +100,27 @@ function EnterPrice({
           </h1>
         </div>
       </div>
-      <div className="flex items-center justify-between gap-3 mt-7">
-        <div className="ml-3 ">
-          <button
-            className="bg-red-600 hover:bg-red-500 rounded-2xl h-[40px] w-[100px] font-bold text-black hover:border-2 hover:border-[#bcab6f]"
-            onClick={handleBid}
-          >
-            Bid
-          </button>
-        </div>
-        <div>
-          <Input
-            className="rounded-3xl mr-2 h-[40px] w-[270px] text-black"
-            type="text"
-            value={formatNumber(bidPrice)} // Hiển thị giá trị đã định dạng
-            onChange={(e) => setBidPrice(e.target.value.replace(/\./g, ""))} // Lưu giá trị không có dấu phẩy
-          />
-        </div>
-
+      <div className="flex justify-between gap-3 mt-7">
+        {remainingTime > 0 && (
+          <div className="ml-3 ">
+            <button
+              className="bg-red-600 hover:bg-red-500 rounded-2xl h-[40px] w-[100px] font-bold text-black hover:border-2 hover:border-[#bcab6f]"
+              onClick={handleBid}
+            >
+              Bid
+            </button>
+          </div>
+        )}
+        {remainingTime > 0 && ( // Thêm điều kiện để kiểm tra thời gian còn lại
+          <div>
+            <Input
+              className="rounded-3xl mr-2 h-[40px] w-[270px] text-black"
+              type="text"
+              value={formatNumber(bidPrice)} // Hiển thị giá trị đã định dạng
+              onChange={(e) => setBidPrice(e.target.value.replace(/\./g, ""))} // Lưu giá trị không có dấu phẩy
+            />
+          </div>
+        )}
         <div className="bg-slate-500 h-[40px] w-[550px] rounded-[50px] flex items-center justify-between pl-7 mr-3 text-black">
           <h1 className="text-xl font-bold ">Increment</h1>
           <h1 className="text-xl font-bold mr-8">{formatNumber(increment)}</h1>
