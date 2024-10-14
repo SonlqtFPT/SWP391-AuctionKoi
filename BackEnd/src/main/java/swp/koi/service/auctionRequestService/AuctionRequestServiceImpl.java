@@ -309,46 +309,77 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     }
 
     @Override
-    public List<AuctionRequest> getAllPendingRequest() {
-        return auctionRequestRepository.findAllByStatus(AuctionRequestStatusEnum.PENDING);
+    public List<AuctionRequest> getAllPendingRequest(Integer accountId) {
+        Account account = accountService.findById(accountId);
+        if(account != null && account.getRole().equals(AccountRoleEnum.BREEDER))
+            return auctionRequestRepository.findAllByStatusAndBreederId(AuctionRequestStatusEnum.PENDING, account.getKoiBreeder().getBreederId());
+        else
+            throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
     }
 
     @Override
-    public List<AuctionRequest> getAllInspectionPendingRequest() {
-        return auctionRequestRepository.findAllByStatus(AuctionRequestStatusEnum.INSPECTION_IN_PROGRESS);
+    public List<AuctionRequest> getAllInspectionPendingRequest(Integer accountId) {
+        Account account = accountService.findById(accountId);
+        if(account != null && account.getRole().equals(AccountRoleEnum.BREEDER))
+            return auctionRequestRepository.findAllByStatusAndBreederId(AuctionRequestStatusEnum.INSPECTION_IN_PROGRESS, account.getKoiBreeder().getBreederId());
+        else
+            throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
     }
 
     @Override
-    public List<AuctionRequest> getAllInspectionPassedRequest() {
-        return auctionRequestRepository.findAllByStatus(AuctionRequestStatusEnum.INSPECTION_PASSED);
+    public List<AuctionRequest> getAllInspectionPassedRequest(Integer accountId) {
+        Account account = accountService.findById(accountId);
+        if(account != null && account.getRole().equals(AccountRoleEnum.BREEDER))
+            return auctionRequestRepository.findAllByStatusAndBreederId(AuctionRequestStatusEnum.INSPECTION_PASSED, account.getKoiBreeder().getBreederId());
+        else
+            throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
     }
 
     @Override
-    public List<AuctionRequest> getAllInspectionFailedRequest() {
-        return auctionRequestRepository.findAllByStatus(AuctionRequestStatusEnum.INSPECTION_FAILED);
+    public List<AuctionRequest> getAllInspectionFailedRequest(Integer accountId) {
+        Account account = accountService.findById(accountId);
+        if(account != null && account.getRole().equals(AccountRoleEnum.BREEDER))
+            return auctionRequestRepository.findAllByStatusAndBreederId(AuctionRequestStatusEnum.INSPECTION_FAILED, account.getKoiBreeder().getBreederId());
+        else
+            throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
     }
 
     @Override
-    public List<AuctionRequest> getAllNegotiatingRequest() {
+    public List<AuctionRequest> getAllNegotiatingRequest(Integer accountId) {
+        Account account = accountService.findById(accountId);
+        if(account == null || !account.getRole().equals(AccountRoleEnum.BREEDER))
+            throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
         List<AuctionRequestStatusEnum> statues = Arrays.asList(
                 AuctionRequestStatusEnum.PENDING_MANAGER_OFFER,
                 AuctionRequestStatusEnum.PENDING_BREEDER_OFFER
         );
-        return auctionRequestRepository.findAllByStatusIn(statues);
+        return auctionRequestRepository.findAllByStatusInAndBreederId(statues, account.getKoiBreeder().getBreederId());
     }
 
     @Override
-    public List<AuctionRequest> getAllApprovedRequest() {
-        return auctionRequestRepository.findAllByStatus(AuctionRequestStatusEnum.APPROVE);
+    public List<AuctionRequest> getAllApprovedRequest(Integer accountId) {
+        Account account = accountService.findById(accountId);
+        if(account != null && account.getRole().equals(AccountRoleEnum.BREEDER))
+            return auctionRequestRepository.findAllByStatusAndBreederId(AuctionRequestStatusEnum.APPROVE, account.getKoiBreeder().getBreederId());
+        else
+            throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
     }
 
     @Override
-    public List<AuctionRequest> getAllRejectedRequest() {
-        return auctionRequestRepository.findAllByStatus(AuctionRequestStatusEnum.REJECT);
+    public List<AuctionRequest> getAllRejectedRequest(Integer accountId) {
+        Account account = accountService.findById(accountId);
+        if(account != null && account.getRole().equals(AccountRoleEnum.BREEDER))
+            return auctionRequestRepository.findAllByStatusAndBreederId(AuctionRequestStatusEnum.REJECT, account.getKoiBreeder().getBreederId());
+        else
+            throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
     }
 
     @Override
-    public List<AuctionRequest> getAllCancelledRequest() {
-        return auctionRequestRepository.findAllByStatus(AuctionRequestStatusEnum.CANCELLED);
+    public List<AuctionRequest> getAllCancelledRequest(Integer accountId) {
+        Account account = accountService.findById(accountId);
+        if(account != null && account.getRole().equals(AccountRoleEnum.BREEDER))
+            return auctionRequestRepository.findAllByStatusAndBreederId(AuctionRequestStatusEnum.CANCELLED, account.getKoiBreeder().getBreederId());
+        else
+            throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
     }
 }
