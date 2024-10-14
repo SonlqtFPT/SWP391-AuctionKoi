@@ -3,10 +3,11 @@ import { Button, Select, Table, Modal } from "antd";
 import { toast } from "react-toastify";
 import api from "../../../config/axios";
 import RequestDetails from "../components/RequestDetails";
-import { useAuth } from "../../protectedRoutes/AuthContext";
 
 const ManageRequestStatus = ({ onGoBack }) => {
-  const { accountId } = useAuth();
+  const storedData = localStorage.getItem("accountData");
+  const accountData = JSON.parse(storedData);
+  const accountId = accountData.accountId;
   const [auctionRequests, setAuctionRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showList, setShowList] = useState(true);
@@ -15,7 +16,6 @@ const ManageRequestStatus = ({ onGoBack }) => {
 
   const fetchRequest = async () => {
     try {
-      const accountId = 1;
       console.log(accountId ? accountId : "none");
       const token = localStorage.getItem("accessToken");
       const response = await api.get(`/staff/list-request/${accountId}`, {
