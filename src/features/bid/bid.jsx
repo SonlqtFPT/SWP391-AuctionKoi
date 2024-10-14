@@ -22,18 +22,28 @@ function Bid() {
   const get_bidList_api = `http://localhost:8080/bid/list?lotId=${lotId}`; // API for bid list
 
   const fetchLot = async () => {
-    const token = localStorage.getItem("accessToken");
-    const response = await axios.get(get_lot_api, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    setLot(response.data.data);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.get(get_lot_api, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("Api lot: ", response.data.data);
+      setLot(response.data.data);
+    } catch (error) {
+      console.error("Error fetching lot data at bid.jsx:", error);
+    }
   };
 
   const fetchBidList = async () => {
     try {
-      const response = await axios.get(get_bidList_api);
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.get(get_bidList_api, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const listData = response.data.data.map((bid) => ({
         bidAmount: bid.bidAmount,
         lastName: bid.member.account.lastName,
@@ -41,7 +51,7 @@ function Bid() {
       listData.sort((a, b) => b.bidAmount - a.bidAmount);
       setBidList(listData);
     } catch (error) {
-      console.error("Error fetching bid data:", error);
+      console.error("Error fetching bid data at bid.jsx:", error);
     }
   };
 
@@ -93,6 +103,8 @@ function Bid() {
                   size={lot.koiFish.size}
                   age={lot.koiFish.age}
                   breeder={lot.koiFish.breederName}
+                  varietyName={lot.koiFish.varietyName}
+                  auctionId={auctionId}
                 />
               )}
             </div>
@@ -105,6 +117,7 @@ function Bid() {
                   lotId={lotId}
                   fetchLot={fetchLot}
                   fetchBidList={fetchBidList}
+                  remainingTime={remainingTime}
                 />
               )}
             </div>
