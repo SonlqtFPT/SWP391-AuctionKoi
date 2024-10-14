@@ -13,7 +13,7 @@ import {
 import dayjs from "dayjs";
 
 const { Step } = Steps;
-
+const token = localStorage.getItem("accessToken");
 const CreateAuction = () => {
   const [current, setCurrent] = useState(0);
   const [form] = Form.useForm();
@@ -66,7 +66,6 @@ const CreateAuction = () => {
     };
 
     try {
-      const token = localStorage.getItem("accessToken");
       const response = await axios.post(
         "http://localhost:8080/manager/createAuction",
         auctionData,
@@ -251,8 +250,14 @@ const AddLots = ({ setLots, auctionTypeName, lots }) => {
       try {
         const response = await axios.post(
           "http://localhost:8080/manager/get-fish-auction",
-          { auctionTypeName }
+          { auctionTypeName },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Replace yourToken with the actual token
+            },
+          }
         );
+        console.log(response);
         setFishData(response.data.data);
       } catch (err) {
         console.error("Error fetching fish data", err);
@@ -367,11 +372,10 @@ const AddLots = ({ setLots, auctionTypeName, lots }) => {
                 <Button
                   type="primary"
                   onClick={() => handleAddRemoveLot(record)}
-                  className={`${
-                    lots.some((lot) => lot.fishId === record.fishId)
-                      ? "bg-red-500 hover:bg-red-600"
-                      : "bg-gold hover:bg-yellow-600"
-                  } text-white`}
+                  className={`${lots.some((lot) => lot.fishId === record.fishId)
+                    ? "bg-red-500 hover:bg-red-600"
+                    : "bg-gold hover:bg-yellow-600"
+                    } text-white`}
                 >
                   {lots.some((lot) => lot.fishId === record.fishId)
                     ? "Remove Lot"
