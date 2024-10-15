@@ -224,6 +224,7 @@ public class LotServiceImpl implements LotService {
     }
 
     @Async
+    @Override
     public void sendNotificateToFollower(Lot lot){
         Set<SubscribeRequest> subscribeRequests = (Set<SubscribeRequest>) redisServiceImpl.getSetData("Notify_"+lot.getLotId().toString());
         if(subscribeRequests != null && !subscribeRequests.isEmpty()){

@@ -15,7 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TestController {
 
-    private final LotServiceImpl lotService;
+    private final LotService lotService;
     private final LotRepository lotRepository;
 
     @GetMapping("/send-msg")
