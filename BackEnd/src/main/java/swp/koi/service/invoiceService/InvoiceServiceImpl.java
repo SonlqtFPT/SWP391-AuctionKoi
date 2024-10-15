@@ -36,7 +36,7 @@ public class InvoiceServiceImpl implements InvoiceService{
     @Override
     @Scheduled(fixedRate = 1000 * 60 * 60)
     public void updateStatusOfInvoice() {
-        List<Invoice> invoices = invoiceRepository.findAllByDueDateLessThan(LocalDateTime.now());
+        List<Invoice> invoices = invoiceRepository.findAllByDueDateLessThanAndStatus(LocalDateTime.now(), InvoiceStatusEnums.PENDING );
         for (Invoice invoice : invoices) {
             invoice.setStatus(InvoiceStatusEnums.OVERDUE);
             invoiceRepository.save(invoice);

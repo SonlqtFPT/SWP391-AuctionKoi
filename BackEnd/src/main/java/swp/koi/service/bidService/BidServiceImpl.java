@@ -11,10 +11,7 @@ import swp.koi.exception.KoiException;
 import swp.koi.model.*;
 import swp.koi.model.enums.AuctionTypeNameEnum;
 import swp.koi.model.enums.LotRegisterStatusEnum;
-import swp.koi.repository.AccountRepository;
-import swp.koi.repository.BidRepository;
-import swp.koi.repository.LotRegisterRepository;
-import swp.koi.repository.LotRepository;
+import swp.koi.repository.*;
 import swp.koi.service.authService.GetUserInfoByUsingAuth;
 import swp.koi.service.mailService.EmailServiceImpl;
 import swp.koi.service.memberService.MemberServiceImpl;
@@ -42,6 +39,7 @@ public class BidServiceImpl implements BidService {
     private final RedisServiceImpl redisServiceImpl;
     private final GetUserInfoByUsingAuth getUserInfoByUsingAuth;
     private final EmailServiceImpl emailService;
+    private final MemberRepository memberRepository;
 
     @Override
     public void bid(BidRequestDto bidRequestDto) throws KoiException {
@@ -59,6 +57,7 @@ public class BidServiceImpl implements BidService {
         // Validate the bid request to ensure it's eligible for placing a bid
         validateBidRequest(bidRequestDto, member, lot);
 
+
         // Create a Bid entity and update the Lot with the new bid
 
         Bid bid = createBid(bidRequestDto, member, lot);
@@ -69,7 +68,6 @@ public class BidServiceImpl implements BidService {
             Optional<AutoBid> autoBidEntity = Optional.ofNullable(getAutoBidEntity(lot));
 
             Member memberOfAutoBid = memberService.getMemberById(autoBidEntity.get().getMemberId());
-            //check if auto-bid can afford the bid request price + bid increment
 
             float updatedPrice = autoBidderCanAffordNewPrice(lot, bidRequestDto.getPrice())
                     ? bidRequestDto.getPrice() + lot.getStartingPrice() * 0.1f
@@ -83,6 +81,7 @@ public class BidServiceImpl implements BidService {
 
             bidRepository.save(autoBid);
             lot = updateLotWithSpecialType(updatedPrice, lot, memberOfAutoBid);
+
         } else if (checkIfAutoBidderExistAndHaveLowerPrice(lot, bidRequestDto.getPrice())) {
             Optional<AutoBid> autoBidEntity = Optional.ofNullable(getAutoBidEntity(lot));
 
@@ -91,7 +90,7 @@ public class BidServiceImpl implements BidService {
                     + " for lot with id " + lot.getLotId();
 
             emailService.sendEmail("mentionable9999@gmail.com",subject,"idk bro");
-
+            redisServiceImpl.deleteData("Auto_bid_"+lot.getLotId().toString());
             lot = updateLotWithSpecialType(bidRequestDto.getPrice(), lot, member);
 
         } else {
@@ -132,13 +131,16 @@ public class BidServiceImpl implements BidService {
                 .orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
 
         Member member = getUserInfoByUsingAuth.getMemberFromAuth();
+        Optional<AutoBid> autoBidEntity = Optional.ofNullable(getAutoBidEntity(lot));
 
-        AutoBid autoBidRequest = AutoBid.builder()
-                .amount(autoBidRequestDTO.getAmount())
-                .memberId(member.getMemberId())
-                .build();
+        float incrementPrice = lot.getStartingPrice() * 0.1f; // Example increment price calculation
 
-        redisServiceImpl.saveDataWithoutTime("Auto_bid_"+lot.getLotId(),autoBidRequest);
+        if (autoBidEntity.isEmpty()) {
+            handleNoExistingAutoBid(autoBidRequestDTO, lot, member, incrementPrice);
+        } else {
+            handleExistingAutoBid(autoBidRequestDTO, lot, member, autoBidEntity.get(), incrementPrice);
+        }
+
 
     }
 
@@ -256,11 +258,110 @@ public class BidServiceImpl implements BidService {
 
     private boolean autoBidderCanAffordNewPrice(Lot lot, float bidAmount) {
         Optional<AutoBid> autoBidEntity = Optional.ofNullable(getAutoBidEntity(lot));
-        return autoBidEntity.isPresent() && autoBidEntity.get().getAmount() >= bidAmount + lot.getStartingPrice() * 0.1;
+        return autoBidEntity.isPresent()
+                && autoBidEntity.get().getAmount() >= bidAmount + lot.getStartingPrice() * 0.1;
     }
 
     private boolean checkIfAutoBidderExistAndHaveLowerPrice(Lot lot, float bidAmount){
         Optional<AutoBid> autoBidEntity = Optional.ofNullable(getAutoBidEntity(lot));
         return autoBidEntity.isPresent() && bidAmount > autoBidEntity.get().getAmount();
+    }
+
+    private void handleNoExistingAutoBid(AutoBidRequestDTO autoBidRequestDTO,
+                                         Lot lot, Member member,
+                                         float incrementPrice) {
+        float currentPrice = lot.getCurrentPrice();
+        float minAutoBid = currentPrice + incrementPrice;
+
+        if (lot.getBids().isEmpty()) {
+            // Case 1.2: No one has bid before
+            bidAndSaveAutoBid(member, lot, minAutoBid, autoBidRequestDTO.getAmount());
+        } else {
+            // Case 1.1: Someone already bid
+            float newBidPrice = currentPrice + incrementPrice;
+            bidAndSaveAutoBid(member, lot, newBidPrice, autoBidRequestDTO.getAmount());
+        }
+    }
+
+    private void handleExistingAutoBid(AutoBidRequestDTO autoBidRequestDTO,
+                                       Lot lot, Member member,
+                                       AutoBid existingAutoBid,
+                                       float incrementPrice) {
+        float newMaxPrice = autoBidRequestDTO.getAmount();
+        float oldMaxPrice = existingAutoBid.getAmount();
+
+
+        if(member.getMemberId().equals(existingAutoBid.getMemberId())){
+
+            AutoBid autoBid = AutoBid.builder()
+                    .amount(newMaxPrice)
+                    .memberId(member.getMemberId())
+                    .build();
+            redisServiceImpl.saveDataWithoutTime("Auto_bid_" + lot.getLotId(), autoBid);
+
+            return;
+        }
+
+        if (newMaxPrice > oldMaxPrice) {
+            if (newMaxPrice >= oldMaxPrice + incrementPrice) {
+                // Case 2.1a: New max price >= old max price + increment
+                bidAndSaveAutoBid(member, lot, oldMaxPrice + incrementPrice, newMaxPrice);
+            } else {
+                // Case 2.1b: New max price < old max price + increment
+                bidAndSaveAutoBid(member, lot, newMaxPrice, newMaxPrice);
+            }
+        } else {
+            int autoBidderId = existingAutoBid.getMemberId();
+
+            if (oldMaxPrice >= newMaxPrice + incrementPrice) {
+                // Case 2.2a: Old max price >= new max price + increment
+                logBid(newMaxPrice, member,lot);
+
+                float outBidPrice = newMaxPrice + incrementPrice;
+                activeOldAutoBid(autoBidderId,outBidPrice, lot);
+            } else {
+                // Case 2.2b: Old max price < new max price + increment
+                logBid(newMaxPrice, member,lot);
+                activeOldAutoBid(autoBidderId, oldMaxPrice, lot);
+            }
+        }
+    }
+
+    private void bidAndSaveAutoBid(Member member, Lot lot, float bidAmount, float maxAutoBidAmount) {
+        Bid bid = Bid.builder()
+                .bidAmount(bidAmount)
+                .member(member)
+                .lot(lot)
+                .build();
+        bidRepository.save(bid);
+
+        AutoBid autoBid = AutoBid.builder()
+                .amount(maxAutoBidAmount)
+                .memberId(member.getMemberId())
+                .build();
+        redisServiceImpl.saveDataWithoutTime("Auto_bid_" + lot.getLotId(), autoBid);
+
+        Lot updatedLot = updateLotWithSpecialType(bidAmount, lot, member);
+        lotRepository.save(updatedLot);
+    }
+
+    private void logBid(float bidAmount, Member member, Lot lot) {
+        Bid bid = Bid.builder()
+                .bidAmount(bidAmount)
+                .member(member)
+                .lot(lot)
+                .bidTime(LocalDateTime.now())
+                .build();
+        bidRepository.save(bid);
+    }
+
+    private void activeOldAutoBid(int autoBidderId, float outBidPrice, Lot lot) {
+        Member autoBidderMember = memberRepository.findById(autoBidderId)
+                .orElseThrow(() -> new KoiException(ResponseCode.MEMBER_NOT_FOUND));
+
+        logBid(outBidPrice, autoBidderMember, lot);
+
+        Lot updatedLot = updateLotWithSpecialType(outBidPrice, lot, autoBidderMember);
+        lotRepository.save(updatedLot);
     }
 }
