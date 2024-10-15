@@ -17,7 +17,7 @@ function FormLogin() {
 
     const response = await api.post("authenticate/login-google", { token: googleToken });
 
-    console.log(response);
+    console.log(response.data);
 
     const accessToken = response.data.data.accessToken;
     const refreshToken = response.data.data.refreshToken; // Corrected from resquestToken
