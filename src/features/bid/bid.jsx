@@ -10,6 +10,7 @@ import axios from "axios";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { useParams } from "react-router-dom"; // Import useParams
+import { io } from "socket.io-client";
 
 function Bid() {
   const { lotId } = useParams(); // Lấy lotId từ URL
@@ -17,9 +18,13 @@ function Bid() {
   const [lot, setLot] = useState();
   const [remainingTime, setRemainingTime] = useState(0);
   const [bidList, setBidList] = useState([]); // State for bid list
+  const [connectionStatus, setConnectionStatus] = useState(""); // State để lưu trạng thái kết nối
+  const eventName = "Event_" + lotId;
 
   const get_lot_api = `http://localhost:8080/auction/get-lot/${lotId}`; // Sử dụng lotId
   const get_bidList_api = `http://localhost:8080/bid/list?lotId=${lotId}`; // API for bid list
+
+  const socket = io("http://localhost:8081"); // Kết nối đến server WebSocket
 
   const fetchLot = async () => {
     try {
@@ -78,6 +83,26 @@ function Bid() {
     }
   }, [lot]);
 
+  useEffect(() => {
+    // Lắng nghe sự kiện kết nối thành công
+    socket.on("connect", () => {
+      console.log("WebSocket Connected");
+      setConnectionStatus("WebSocket Connected"); // Cập nhật trạng thái kết nối
+    });
+
+    // Lắng nghe sự kiện từ server
+    socket.on(eventName, (data) => {
+      console.log("Received data from specific event:", data);
+      fetchLot();
+      fetchBidList();
+    });
+
+    // Dọn dẹp khi component unmount
+    return () => {
+      socket.disconnect();
+    };
+  }, []); // Chỉ chạy một lần khi component mount
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -118,6 +143,8 @@ function Bid() {
                   fetchLot={fetchLot}
                   fetchBidList={fetchBidList}
                   remainingTime={remainingTime}
+                  eventName={eventName}
+                  socket={socket}
                 />
               )}
             </div>

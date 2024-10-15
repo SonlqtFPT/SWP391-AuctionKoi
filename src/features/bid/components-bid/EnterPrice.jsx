@@ -4,6 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Socket } from "socket.io-client";
 
 function EnterPrice({
   currentPrice,
@@ -14,12 +15,27 @@ function EnterPrice({
   fetchLot,
   fetchBidList,
   remainingTime,
+  eventName,
+  socket,
 }) {
   const [bidPrice, setBidPrice] = useState("");
   const [registrationLink, setRegistrationLink] = useState(""); // Thêm state để lưu link đăng ký
 
   const post_bid_api = "http://localhost:8080/bid/bidAuction"; //Bid
   const post_regis_api = "http://localhost:8080/register-lot/regis"; //Deposit
+  const post_socket_api = `http://localhost:8080/test/send?eventName=${eventName}`;
+
+  const handleBidNotification = async () => {
+    try {
+      await axios.post(post_socket_api, {
+        winnerName: currentMemberId, // Tên người thắng
+        newPrice: bidPrice.replace(/\./g, ""), // Giá mới
+        lotId: lotId, // ID của lô
+      });
+    } catch (error) {
+      console.error("Error sending bid notification:", error);
+    }
+  };
 
   const handleBid = async () => {
     try {
@@ -62,6 +78,7 @@ function EnterPrice({
         toast.success(response.data.message);
         fetchLot();
         fetchBidList();
+        await handleBidNotification(); // Gọi hàm thông báo sau khi đặt giá thầu
         setRegistrationLink("");
       }
     } catch (error) {
