@@ -67,6 +67,7 @@ public class LotServiceImpl implements LotService {
         updateKoiFishStatus(lot.getKoiFish(), KoiFishStatusEnum.AUCTIONING);
         updateAuctionStatus(lot.getAuction(), AuctionStatusEnum.AUCTIONING);
         lot.setStatus(LotStatusEnum.AUCTIONING);
+        //setup a socket event for real-time communicate
         createSocketForLot(socketServer, lot);
         lotRepository.save(lot);
     }
