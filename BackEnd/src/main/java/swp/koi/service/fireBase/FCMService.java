@@ -4,11 +4,14 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 
 @Service
 public class FCMService {
+
+    @Async
     public void sendPushNotification(String title, String body, String token) {
         // Build the notification using Notification.Builder
         Notification notification = Notification.builder()
