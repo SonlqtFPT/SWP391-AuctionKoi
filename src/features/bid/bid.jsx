@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./index.css";
 import Time from "./components-bid/time";
 import Picture from "./components-bid/picture";
@@ -18,13 +18,15 @@ function Bid() {
   const [lot, setLot] = useState();
   const [remainingTime, setRemainingTime] = useState(0);
   const [bidList, setBidList] = useState([]); // State for bid list
-  const [connectionStatus, setConnectionStatus] = useState(""); // State để lưu trạng thái kết nối
-  const eventName = "Event_" + lotId;
+  const [connectionStatus, setConnectionStatus] = useState(""); // State to store connection status
+
+  const eventName = `Event_${lotId}`;
+
+  // Memoize socket connection using useRef to ensure it's stable across renders
+  const socketRef = useRef(null);
 
   const get_lot_api = `http://localhost:8080/auction/get-lot/${lotId}`; // Sử dụng lotId
   const get_bidList_api = `http://localhost:8080/bid/list?lotId=${lotId}`; // API for bid list
-
-  const socket = io("http://localhost:8081"); // Kết nối đến server WebSocket
 
   const fetchLot = async () => {
     try {
@@ -84,24 +86,31 @@ function Bid() {
   }, [lot]);
 
   useEffect(() => {
-    // Lắng nghe sự kiện kết nối thành công
+    // Only establish the socket connection if it doesn't exist
+    if (!socketRef.current) {
+      socketRef.current = io("http://localhost:8081"); // Establish connection
+    }
+
+    const socket = socketRef.current; // Access the stable socket
+
+    // Listen for the connect event
     socket.on("connect", () => {
       console.log("WebSocket Connected");
-      setConnectionStatus("WebSocket Connected"); // Cập nhật trạng thái kết nối
+      setConnectionStatus("WebSocket Connected");
     });
 
-    // Lắng nghe sự kiện từ server
+    // Listen for specific event
     socket.on(eventName, (data) => {
       console.log("Received data from specific event:", data);
       fetchLot();
       fetchBidList();
     });
 
-    // Dọn dẹp khi component unmount
+    // Clean up the event listener on unmount or when eventName changes
     return () => {
-      socket.disconnect();
+      socket.off(eventName); // Properly remove listener
     };
-  }, []); // Chỉ chạy một lần khi component mount
+  }, [eventName]); // Only re-subscribe when eventName changes
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -144,7 +153,7 @@ function Bid() {
                   fetchBidList={fetchBidList}
                   remainingTime={remainingTime}
                   eventName={eventName}
-                  socket={socket}
+                  socket={socketRef.current} // Use stable socket instance
                 />
               )}
             </div>
