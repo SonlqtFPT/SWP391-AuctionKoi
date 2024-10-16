@@ -126,6 +126,7 @@
 			<artifactId>spring-security-crypto</artifactId>
 			<version>6.3.3</version>
 		</dependency>
+		<!--	===========REAL-TIME DEPENDENCY============	-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-websocket</artifactId>
@@ -134,7 +135,6 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-websocket</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>io.socket</groupId>
 			<artifactId>socket.io-client</artifactId>
@@ -145,6 +145,8 @@
 			<artifactId>netty-socketio</artifactId>
 			<version>2.0.11</version>
 		</dependency>
+		<!--	===========REAL-TIME DEPENDENCY============	-->
+
 		<!--	===========REDIS DEPENDENCY============	-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -164,6 +166,7 @@
 		</dependency>
 		<!--	===========MAIL DEPENDENCY============	-->
 
+		<!--	===========LOCATION DEPENDENCY============	-->
 		<dependency>
 			<groupId>fr.dudie</groupId>
 			<artifactId>nominatim-api</artifactId>
@@ -179,15 +182,46 @@
 			<artifactId>google-maps-services</artifactId>
 			<version>2.2.0</version>
 		</dependency>
+		<!--	===========LOCATION DEPENDENCY============	-->
+
+		<!--	===========PUSH-NOTIFICATION DEPENDENCY============	-->
 		<dependency>
 			<groupId>com.google.firebase</groupId>
 			<artifactId>firebase-admin</artifactId>
 			<version>9.3.0</version> <!-- Check for the latest version -->
 		</dependency>
+
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-netty-shaded</artifactId>
 			<version>1.58.0</version> <!-- Or latest version -->
+		</dependency>
+		<!--	===========PUSH-NOTIFICATION DEPENDENCY============	-->
+
+		<!--	===========EXPORT-PDF DEPENDENCY============	-->
+		<dependency>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>pdfbox</artifactId>
+			<version>2.0.29</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>fontbox</artifactId>
+			<version>2.0.29</version> <!-- Ensure fontbox is included for font operations -->
+		</dependency>
+
+		<!--	===========EXPORT-PDF DEPENDENCY============	-->
+
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>core</artifactId>
+			<version>3.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>javase</artifactId>
+			<version>3.4.0</version>
 		</dependency>
 	</dependencies>
 
