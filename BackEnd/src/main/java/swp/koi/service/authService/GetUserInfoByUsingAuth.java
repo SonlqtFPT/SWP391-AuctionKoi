@@ -25,9 +25,15 @@ public class GetUserInfoByUsingAuth {
 
     public Member getMemberFromAuth(){
 
-        Account account = auctionRepository.findByEmail(getGmailFromAuth()).orElseThrow(() -> new KoiException(ResponseCode.ACCOUNT_ID_NOT_FOUND));
+        Account account = auctionRepository.findByEmail(getGmailFromAuth()).orElseThrow(() -> new KoiException(ResponseCode.ACCOUNT_NOT_FOUND));
 
         return MemberRepository.findByAccount(account);
+    }
+
+    public Account getAccountFromAuth(){
+
+        return auctionRepository.findByEmail(getGmailFromAuth()).orElseThrow(() -> new KoiException(ResponseCode.ACCOUNT_NOT_FOUND));
+
     }
 
 }

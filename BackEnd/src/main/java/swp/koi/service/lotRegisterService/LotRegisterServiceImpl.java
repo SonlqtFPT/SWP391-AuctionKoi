@@ -17,6 +17,7 @@ import swp.koi.model.enums.LotRegisterStatusEnum;
 import swp.koi.model.enums.TransactionTypeEnum;
 import swp.koi.repository.AccountRepository;
 import swp.koi.repository.LotRegisterRepository;
+import swp.koi.service.authService.GetUserInfoByUsingAuth;
 import swp.koi.service.lotService.LotService;
 import swp.koi.service.lotService.LotServiceImpl;
 import swp.koi.service.memberService.MemberServiceImpl;
@@ -38,7 +39,7 @@ public class LotRegisterServiceImpl implements LotRegisterService{
     private final ModelMapper modelMapper;
     private final VnpayService vnpayService;
     private final AccountRepository accountRepository;
-
+    private final GetUserInfoByUsingAuth getUserInfoByUsingAuth;
 
     /**
      * @param lotRegisDto

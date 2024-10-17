@@ -2,6 +2,7 @@ package swp.koi.service.koiBreederService;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,23 +20,19 @@ import swp.koi.model.KoiFish;
 import swp.koi.model.enums.AccountRoleEnum;
 import swp.koi.repository.KoiBreederRepository;
 import swp.koi.service.accountService.AccountService;
+import swp.koi.service.authService.GetUserInfoByUsingAuth;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class KoiBreederServiceImpl implements KoiBreederService{
 
     private final KoiBreederRepository koiBreederRepository;
     private final AccountService accountService;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
-
-    public KoiBreederServiceImpl(KoiBreederRepository koiBreederRepository, AccountService accountService, ModelMapper modelMapper, PasswordEncoder passwordEncoder) {
-        this.koiBreederRepository = koiBreederRepository;
-        this.accountService = accountService;
-        this.modelMapper = modelMapper;
-        this.passwordEncoder = passwordEncoder;
-    }
+    private final GetUserInfoByUsingAuth getUserInfoByUsingAuth;
 
     @Override
     public KoiBreederResponseDTO createKoiBreeder(@Valid KoiBreederDTO request) throws KoiException{
@@ -77,8 +74,8 @@ public class KoiBreederServiceImpl implements KoiBreederService{
 
     @Transactional
     @Override
-    public void updateBreederProfile(Integer accountId, UpdateBreederProfileDto request) {
-        Account account = accountService.findById(accountId);
+    public void updateBreederProfile(UpdateBreederProfileDto request) {
+        Account account = getUserInfoByUsingAuth.getAccountFromAuth();
         KoiBreeder koiBreeder = findByAccount(account);
         if(koiBreeder == null)
             throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);

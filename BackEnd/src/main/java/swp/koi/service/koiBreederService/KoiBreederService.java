@@ -18,5 +18,5 @@ public interface KoiBreederService {
 
     KoiBreeder findByBreederId(Integer breederId);
 
-    void updateBreederProfile(Integer accountId, @Valid UpdateBreederProfileDto request);
+    void updateBreederProfile(@Valid UpdateBreederProfileDto request);
 }

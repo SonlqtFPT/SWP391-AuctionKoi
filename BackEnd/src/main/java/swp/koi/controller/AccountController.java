@@ -105,15 +105,15 @@ public class AccountController {
         return new ResponseData<>(ResponseCode.CHANGE_PASSWORD_SUCCESS);
     }
 
-    @PostMapping("/update-breeder-profile/{accountId}")
-    public ResponseData<?> updateBreederProfile(@PathVariable Integer accountId, @Valid @RequestBody UpdateBreederProfileDto request){
-        koiBreederService.updateBreederProfile(accountId, request);
+    @PostMapping("/update-breeder-profile")
+    public ResponseData<?> updateBreederProfile(@Valid @RequestBody UpdateBreederProfileDto request){
+        koiBreederService.updateBreederProfile(request);
         return new ResponseData<>(ResponseCode.UPDATE_BREEDER_PROFILE_SUCCESS);
     }
 
-    @PostMapping("/update-profile/{accountId}")
-    public ResponseData<?> updateProfile(@PathVariable Integer accountId, @Valid @RequestBody UpdateProfileDto request){
-        accountService.updateProfile(accountId, request);
+    @PostMapping("/update-profile")
+    public ResponseData<?> updateProfile(@Valid @RequestBody UpdateProfileDto request){
+        accountService.updateProfile(request);
         return new ResponseData<>(ResponseCode.UPDATE_PROFILE_SUCCESS);
     }
 

@@ -38,5 +38,5 @@ public interface AccountService {
 
     void saveAccount(Account account);
 
-    void updateProfile(Integer accountId, @Valid UpdateProfileDto request);
+    void updateProfile(@Valid UpdateProfileDto request);
 }

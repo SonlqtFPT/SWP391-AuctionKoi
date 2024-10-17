@@ -27,6 +27,7 @@ import swp.koi.model.Account;
 import swp.koi.model.enums.AccountRoleEnum;
 import swp.koi.model.enums.TokenType;
 import swp.koi.repository.AccountRepository;
+import swp.koi.service.authService.GetUserInfoByUsingAuth;
 import swp.koi.service.googleApiService.GoogleApiService;
 import swp.koi.service.jwtService.JwtServiceImpl;
 import swp.koi.service.mailService.EmailContent;
@@ -53,6 +54,7 @@ public class AccountServiceImpl implements AccountService{
     private final GoogleApiService googleApiService;
     private final EmailService emailService;
     private final EmailContent emailContent;
+    private final GetUserInfoByUsingAuth getUserInfoByUsingAuth;
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String clientId;
@@ -314,7 +316,7 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public void updatePassword(UpdatePasswordDto request) {
-        Account account = accountRepository.findByEmail(request.getEmail()).orElseThrow(() -> new KoiException(ResponseCode.ACCOUNT_NOT_FOUND));
+        Account account = getUserInfoByUsingAuth.getAccountFromAuth();
 
         if(!oldPasswordIsValid(account, request.getOldPassword())){
             throw new KoiException(ResponseCode.INVALID_OLD_PASSWORD);
@@ -342,8 +344,8 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public void updateProfile(Integer accountId, UpdateProfileDto request) {
-        Account account = findById(accountId);
+    public void updateProfile(UpdateProfileDto request) {
+        Account account = getUserInfoByUsingAuth.getAccountFromAuth();
         account.setFirstName(request.getFirstName());
         account.setLastName(request.getLastName());
         account.setPhoneNumber(request.getPhoneNumber());
