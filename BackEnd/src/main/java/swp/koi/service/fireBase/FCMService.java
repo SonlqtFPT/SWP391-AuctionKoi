@@ -27,7 +27,7 @@ public class FCMService {
             response = FirebaseMessaging.getInstance().send(message);
             System.out.println("Successfully sent message: " + response);
         } catch (FirebaseMessagingException e) {
-            System.err.println("Error sending message: " + e.getMessage());
+            System.err.println("Error sending message: " + e.getMessage() + e.getErrorCode());
         }
     }
 }

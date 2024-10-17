@@ -11,7 +11,7 @@ import swp.koi.model.*;
 import swp.koi.model.enums.*;
 import swp.koi.repository.*;
 import swp.koi.service.bidService.BidServiceImpl;
-import swp.koi.service.fireBase.fireBase.FCMService;
+import swp.koi.service.fireBase.FCMService;
 import swp.koi.service.redisService.RedisServiceImpl;
 import swp.koi.service.socketIoService.EventListenerFactoryImpl;
 import swp.koi.service.socketIoService.SocketDetail;
@@ -21,6 +21,7 @@ import java.io.UnsupportedEncodingException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -236,6 +237,17 @@ public class LotServiceImpl implements LotService {
                 fcmService.sendPushNotification(title, body, token);
             }
         }
+    }
+
+    @Override
+    public List<Lot> getLotByMember(Integer memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new KoiException(ResponseCode.MEMBER_NOT_FOUND));
+
+        List<LotRegister> lotRegisters = lotRegisterRepository.findAllByMember(member);
+        List<Lot> lots = lotRegisters.stream().map(lot -> {
+            return lot.getLot();
+        }).collect(Collectors.toList());
+        return lots;
     }
 
 

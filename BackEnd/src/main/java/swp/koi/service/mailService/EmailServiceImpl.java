@@ -38,8 +38,6 @@ public class EmailServiceImpl implements EmailService {
             mailSender.send(message);
         } catch (MailException | MessagingException | UnsupportedEncodingException e) {
             throw new RuntimeException(e);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
         }
     }
 
