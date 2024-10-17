@@ -72,8 +72,8 @@ function EnterPrice({
         );
 
         const link = regResponse.data;
-        console.log("Link: ", link);
-        setRegistrationLink(link);
+        console.log("Link: ", link.data);
+        setRegistrationLink(link.data);
       } else {
         toast.success(response.data.message);
         fetchLot();

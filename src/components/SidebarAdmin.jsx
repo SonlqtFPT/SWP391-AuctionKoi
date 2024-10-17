@@ -30,16 +30,14 @@ const items = [
   getItem("Dashboard", "1", <HomeOutlined />),
   getItem("Profile", "2", <UserOutlined />),
   getItem("Manage Request", "3", <FormOutlined />),
-
-  // "Manage Auction" with dropdown items "View Auction" and "Create Auction"
   getItem("Manage Auction", "sub1", <AuditOutlined />, [
     getItem("View Auction", "4", <EyeOutlined />),
     getItem("Create Auction", "5", <PlusOutlined />),
   ]),
-
   getItem("Manage Transport", "6", <CarOutlined />),
   getItem("View Transaction", "7", <FileOutlined />),
-  getItem("Notifications", "8", <BellOutlined />, [], "5"),
+  getItem("Create Breeder", "8", <PlusOutlined />),
+  getItem("Create Staff", "9", <PlusOutlined />),
 ];
 
 const SidebarAdmin = ({ setActiveComponent }) => {
@@ -70,15 +68,18 @@ const SidebarAdmin = ({ setActiveComponent }) => {
         setActiveComponent("View Transaction");
         break;
       case "8":
-        setActiveComponent("Notifications");
+        setActiveComponent("Create Breeder");
         break;
+      case "9":
+        setActiveComponent("Create Staff");
+        break; // Ensure to include break for the new case
       default:
         setActiveComponent("Dashboard");
     }
   };
 
   return (
-    <Sider collapsed={collapsed} className="bg-black">
+    <Sider collapsed={collapsed} className="bg-black flex flex-col">
       <div className="flex justify-center items-center flex-col mt-20">
         {!collapsed && (
           <p className="text-white mt-2 font-bold">Admin Dashboard</p>
@@ -90,12 +91,12 @@ const SidebarAdmin = ({ setActiveComponent }) => {
         mode="inline"
         defaultSelectedKeys={["1"]}
         items={items}
-        className="bg-[#c74743] text-white"
+        className="bg-[#c74743] text-white flex-grow"
         onClick={handleMenuClick}
       />
 
       {/* Full-width button for collapse/expand */}
-      <div className="absolute bottom-0 w-full">
+      <div className="flex-shrink-0">
         <Button
           type="primary"
           className="w-full my-10"

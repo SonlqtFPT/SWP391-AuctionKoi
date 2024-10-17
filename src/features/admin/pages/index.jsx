@@ -4,6 +4,9 @@ import SidebarAdmin from "../../../components/SidebarAdmin.jsx";
 import ManageAuction from "../components/ManageAuction.jsx";
 import ManageRequest from "../components/ManageRequest.jsx";
 import CreateAuction from "../components/CreateAuction.jsx";
+import CreateBreeder from "../components/CreateBreeder.jsx";
+import CreateStaff from "../components/CreateStaff.jsx";
+import UserProfile from "../components/UserProfile.jsx";
 import { useState } from "react";
 
 const AdminPage = () => {
@@ -18,6 +21,12 @@ const AdminPage = () => {
         return <ManageRequest />;
       case "Create Auction":
         return <CreateAuction />;
+      case "Create Breeder":
+        return <CreateBreeder />;
+      case "Create Staff":
+        return <CreateStaff />;
+      case "Profile":
+        return <UserProfile />;
       default:
         return <div>Welcome to the Admin Dashboard!</div>; // Default content
     }
