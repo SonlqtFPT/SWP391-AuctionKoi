@@ -28,6 +28,8 @@ public enum ResponseCode {
     CHANGE_PASSWORD_SUCCESS(1003, "Changed password successfully"),
     INVALID_OLD_PASSWORD(1004, "Invalid old password"),
     UPDATE_SAME_PASSWORD(1005, "Your new password is the same as old password"),
+    UPDATE_BREEDER_PROFILE_SUCCESS(1006, "Update breeder profile successfully"),
+    UPDATE_PROFILE_SUCCESS(1007, "Update profile successfully"),
 
     // Member
     MEMBER_NOT_FOUND(1001, "Member not found"),
@@ -41,7 +43,7 @@ public enum ResponseCode {
     // KoiFish related statuses
     FISH_NOT_FOUND(3001, "Koi Fish not found"),
 
-    // LotRegister related statuses
+    // LotRegister
     LOT_REGISTER_SUCCESS(4001, "Lot registration successful"),
     MEMBER_ALREADY_REGISTERED(4002, "Member already REGISTERED."),
     LOT_BIDTIME_PASSED(4003, "Lot bid time passed"),

@@ -12,4 +12,6 @@ public interface LotService {
     void endLot(Lot lot);
 
     List<Lot> createLots(List<Lot> lots);
+
+    List<Lot> getLotByMember(Integer memberId);
 }

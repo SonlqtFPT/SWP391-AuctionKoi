@@ -1,14 +1,13 @@
 package swp.koi.service.accountService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import swp.koi.dto.request.*;
 import swp.koi.dto.response.AuthenticateResponse;
 import swp.koi.model.Account;
 
 import javax.security.auth.login.AccountNotFoundException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 
 public interface AccountService {
@@ -36,4 +35,8 @@ public interface AccountService {
     String changePassowrd(ResetPasswordDto request, String reset_token);
 
     void updatePassword(UpdatePasswordDto request);
+
+    void saveAccount(Account account);
+
+    void updateProfile(Integer accountId, @Valid UpdateProfileDto request);
 }

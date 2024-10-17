@@ -99,10 +99,22 @@ public class AccountController {
         return new ResponseData<>(ResponseCode.SUCCESS, accountService.changePassowrd(request, reset_token));
     }
 
-    @PatchMapping("update-password")
+    @PatchMapping("/update-password")
     public ResponseData<String> updatePassword(@Valid @RequestBody UpdatePasswordDto request){
         accountService.updatePassword(request);
         return new ResponseData<>(ResponseCode.CHANGE_PASSWORD_SUCCESS);
+    }
+
+    @PostMapping("/update-breeder-profile/{accountId}")
+    public ResponseData<?> updateBreederProfile(@PathVariable Integer accountId, @Valid @RequestBody UpdateBreederProfileDto request){
+        koiBreederService.updateBreederProfile(accountId, request);
+        return new ResponseData<>(ResponseCode.UPDATE_BREEDER_PROFILE_SUCCESS);
+    }
+
+    @PostMapping("/update-profile/{accountId}")
+    public ResponseData<?> updateProfile(@PathVariable Integer accountId, @Valid @RequestBody UpdateProfileDto request){
+        accountService.updateProfile(accountId, request);
+        return new ResponseData<>(ResponseCode.UPDATE_PROFILE_SUCCESS);
     }
 
 }

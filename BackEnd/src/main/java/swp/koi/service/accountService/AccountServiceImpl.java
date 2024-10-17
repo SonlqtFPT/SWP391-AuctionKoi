@@ -2,16 +2,11 @@ package swp.koi.service.accountService;
 
 import ch.qos.logback.core.util.StringUtil;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
-
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -19,11 +14,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import org.springframework.ui.Model;
 import org.springframework.web.server.ResponseStatusException;
 import swp.koi.convert.AccountEntityToDtoConverter;
 import swp.koi.dto.request.*;
@@ -35,16 +28,12 @@ import swp.koi.model.enums.AccountRoleEnum;
 import swp.koi.model.enums.TokenType;
 import swp.koi.repository.AccountRepository;
 import swp.koi.service.googleApiService.GoogleApiService;
-import swp.koi.service.jwtService.JwtService;
 import swp.koi.service.jwtService.JwtServiceImpl;
 import swp.koi.service.mailService.EmailContent;
 import swp.koi.service.mailService.EmailService;
 import swp.koi.service.memberService.MemberServiceImpl;
 import swp.koi.service.redisService.RedisServiceImpl;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -345,5 +334,19 @@ public class AccountServiceImpl implements AccountService{
 
     private boolean oldPasswordIsValid(Account account, String oldPassword){
         return passwordEncoder.matches(oldPassword, account.getPassword());
+    }
+
+    @Override
+    public void saveAccount(Account account) {
+        accountRepository.save(account);
+    }
+
+    @Override
+    public void updateProfile(Integer accountId, UpdateProfileDto request) {
+        Account account = findById(accountId);
+        account.setFirstName(request.getFirstName());
+        account.setLastName(request.getLastName());
+        account.setPhoneNumber(request.getPhoneNumber());
+        saveAccount(account);
     }
 }

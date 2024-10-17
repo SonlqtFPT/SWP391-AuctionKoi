@@ -80,7 +80,7 @@ public class AuctionServiceImpl implements AuctionService{
                     lot.setKoiFish(koiFish);
                     lot.setDeposit((float)(koiFish.getPrice()*0.1));
                     lot.setStartingPrice(koiFish.getPrice());
-                    lot.setIncrement(lotDTO.getIncrement());
+                    lot.setIncrement((float)(koiFish.getPrice()*0.1));
                     lot.setCurrentPrice(lot.getStartingPrice());
                     lot.setStartingTime(savedAuction.getStartTime());
                     lot.setEndingTime(savedAuction.getEndTime());
@@ -105,6 +105,7 @@ public class AuctionServiceImpl implements AuctionService{
         if(startTime.isBefore(LocalDateTime.now()) ||
                 endTime.isBefore((LocalDateTime.now())) ||
                 startTime.isAfter(endTime) ||
+                startTime.isEqual(endTime) ||
                 isAuctionTimeOverlapping(startTime, endTime)){
             return false;
         }

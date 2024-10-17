@@ -45,7 +45,7 @@ public class LotRegisterServiceImpl implements LotRegisterService{
      * @throws UnsupportedEncodingException
      */
     @Override
-    public String regisSlotWithLotId(LotRegisterDTO lotRegisDto) throws UnsupportedEncodingException {
+    public String regisSlotWithLotId(LotRegisterDTO lotRegisDto) throws UnsupportedEncodingException, KoiException {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
@@ -100,5 +100,30 @@ public class LotRegisterServiceImpl implements LotRegisterService{
                 .member(member)
                 .lot(lot)
                 .build();
+    }
+
+    @Override
+    public LotRegister getLotWinner(Integer lotId) {
+        Lot lot = lotServiceImpl.findLotById(lotId);
+
+        List<LotRegister> lotRegisters = lotRegisterRepository.findByLot(lot).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
+
+        for(LotRegister lotRegis : lotRegisters){
+            if(lotRegis.getStatus().equals(LotRegisterStatusEnum.WON)){
+                return lotRegis;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public boolean isRegistered(Integer lotId, Integer memberId) {
+        Lot lot = lotServiceImpl.findLotById(lotId);
+        Member member = memberServiceImpl.getMemberById(memberId);
+
+        if(lotRegisterRepository.findLotRegisterByLotAndMember(lot, member) == null)
+            return false;
+
+        return true;
     }
 }
