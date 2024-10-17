@@ -5,6 +5,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -21,8 +22,13 @@ public class RedisServiceImpl implements RedisService {
 
 
     @Override
-    public void saveDataToList(String key, Object object) {
-        redisTemplate.opsForList().leftPush(key, object);
+    public void saveDataWithoutTime(String key, Object value) {
+        redisTemplate.opsForValue().set(key, value);
+    }
+
+    @Override
+    public void saveDataToSet(String key, Object object) {
+        redisTemplate.opsForSet().add(key, object);
     }
 
     @Override
@@ -32,6 +38,11 @@ public class RedisServiceImpl implements RedisService {
 
     public List<?> getListData(String key) {
         return redisTemplate.opsForList().range(key, 0, -1);
+    }
+
+    @Override
+    public Set<?> getSetData(String key) {
+        return redisTemplate.opsForSet().members(key);
     }
 
     @Override

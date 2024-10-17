@@ -18,14 +18,14 @@ public class GetUserInfoByUsingAuth {
     private final MemberRepository MemberRepository;
     private final AccountRepository auctionRepository;
 
-    public String getInfo(){
+    public String getGmailFromAuth(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth.getName();
     }
 
     public Member getMemberFromAuth(){
 
-        Account account = auctionRepository.findByEmail(getInfo()).orElseThrow(() -> new KoiException(ResponseCode.ACCOUNT_ID_NOT_FOUND));
+        Account account = auctionRepository.findByEmail(getGmailFromAuth()).orElseThrow(() -> new KoiException(ResponseCode.ACCOUNT_ID_NOT_FOUND));
 
         return MemberRepository.findByAccount(account);
     }

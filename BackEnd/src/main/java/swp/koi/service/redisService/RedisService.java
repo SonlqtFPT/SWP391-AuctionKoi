@@ -1,13 +1,17 @@
 package swp.koi.service.redisService;
 
-import java.util.List;
+import java.util.Set;
 
 public interface RedisService {
     void saveData(String key, Object value, Long expireTime);
 
-    void saveDataToList(String key, Object object);
+    void saveDataWithoutTime(String key, Object value);
+
+    void saveDataToSet(String key, Object object);
 
     Object getData(String key);
+
+    Set<?> getSetData(String key);
 
     void deleteData(String key);
 

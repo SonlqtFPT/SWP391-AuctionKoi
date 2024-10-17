@@ -1,5 +1,6 @@
 package swp.koi.service.lotService;
 
+import org.springframework.scheduling.annotation.Async;
 import swp.koi.model.Lot;
 import java.util.List;
 
@@ -13,5 +14,6 @@ public interface LotService {
 
     List<Lot> createLots(List<Lot> lots);
 
-    List<Lot> getLotByMember(Integer memberId);
+    @Async
+    void sendNotificateToFollower(Lot lot);
 }

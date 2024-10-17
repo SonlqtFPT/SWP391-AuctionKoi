@@ -17,6 +17,7 @@ import swp.koi.model.enums.LotRegisterStatusEnum;
 import swp.koi.model.enums.TransactionTypeEnum;
 import swp.koi.repository.AccountRepository;
 import swp.koi.repository.LotRegisterRepository;
+import swp.koi.service.lotService.LotService;
 import swp.koi.service.lotService.LotServiceImpl;
 import swp.koi.service.memberService.MemberServiceImpl;
 import swp.koi.service.vnPayService.VnpayService;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
 public class LotRegisterServiceImpl implements LotRegisterService{
 
     private final LotRegisterRepository lotRegisterRepository;
-    private final LotServiceImpl lotServiceImpl;
+    private final LotService lotServiceImpl;
     private final MemberServiceImpl memberServiceImpl;
     private final ModelMapper modelMapper;
     private final VnpayService vnpayService;

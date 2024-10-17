@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import swp.koi.convert.BidEntityToDtoConverter;
+import swp.koi.dto.request.AutoBidRequestDTO;
 import swp.koi.dto.request.BidRequestDto;
 import swp.koi.dto.response.BidResponseDTO;
 import swp.koi.dto.response.ResponseCode;
@@ -40,6 +41,18 @@ public class BidController {
             return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
         }catch (KoiException e){
             return new ResponseData<>(e.getResponseCode());
+        }
+    }
+
+    @PostMapping("/active-auto-bid")
+    public ResponseData<?> autoBidForLot(@RequestBody AutoBidRequestDTO autoBidRequestDTO){
+
+        try {
+            bidService.activeAutoBid(autoBidRequestDTO);
+
+            return new ResponseData<>(ResponseCode.SUCCESS);
+        } catch (KoiException e) {
+            throw new RuntimeException(e);
         }
     }
 }
