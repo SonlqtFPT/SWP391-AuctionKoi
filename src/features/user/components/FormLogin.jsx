@@ -12,6 +12,7 @@ function FormLogin() {
   const navigate = useNavigate();
   const { setUserName, setRole, setAccessToken, setRefreshToken } = useAuth(); // Get setters from AuthContext
 
+
   const handleLoginGoogle = async (values) => {
     const googleToken = values.credential;
 
@@ -45,6 +46,8 @@ function FormLogin() {
     } else if (role === "STAFF") {
       navigate("/staff");
     }
+
+    this.sets
 
   };
 

@@ -40,6 +40,7 @@ const Header = () => {
   } = useAuth();
   // Function to handle logout: remove user-related data from localStorage
   const handleLogout = () => {
+
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("accountData");

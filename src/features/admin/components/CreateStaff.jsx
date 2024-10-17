@@ -10,6 +10,11 @@ const CreateStaff = () => {
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
 
+  const [emailError, setEmailError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+  const [firstNameError, setFirstNameError] = useState("");
+  const [lastNameError, setLastNameError] = useState("");
+
   const accessToken = localStorage.getItem("accessToken"); // Get the access token
 
   const handleSubmit = async (e) => {
@@ -41,18 +46,71 @@ const CreateStaff = () => {
     } catch (error) {
       toast.error(
         "Error creating staff: " +
-          (error.response?.data?.message || error.message)
+        (error.response?.data?.message || error.message)
       ); // Show error toast
     }
   };
 
+  const validateEmail = (value) => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(value)) {
+      setEmailError("Please enter a valid email address.");
+    } else {
+      setEmailError("");
+    }
+  };
+
+  const validatePhoneNumber = (value) => {
+    const phonePattern = /^[0-9]{10}$/; // Adjust pattern as needed for your requirements
+    if (!phonePattern.test(value)) {
+      setPhoneError("Please enter a valid 10-digit phone number.");
+    } else {
+      setPhoneError("");
+    }
+  };
+
+  const validateName = (value, fieldName) => {
+    const namePattern = /^[a-zA-Z]+$/;
+    if (!namePattern.test(value)) {
+      fieldName === "firstName"
+        ? setFirstNameError("Please enter a valid first name.")
+        : setLastNameError("Please enter a valid last name.");
+    } else {
+      fieldName === "firstName" ? setFirstNameError("") : setLastNameError("");
+    }
+  };
+
+  const handleEmailChange = (e) => {
+    const value = e.target.value;
+    setEmail(value);
+    validateEmail(value);
+  };
+
+  const handlePhoneChange = (e) => {
+    const value = e.target.value;
+    setPhoneNumber(value);
+    validatePhoneNumber(value);
+  };
+
+  const handleFirstNameChange = (e) => {
+    const value = e.target.value;
+    setFirstName(value);
+    validateName(value, "firstName");
+  };
+
+  const handleLastNameChange = (e) => {
+    const value = e.target.value;
+    setLastName(value);
+    validateName(value, "lastName");
+  };
+
   return (
-    <div className="max-w-md mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Create New Staff</h2>
+    <div className="max-w-md mx-auto p-4 mt-20">
       <form
         onSubmit={handleSubmit}
-        className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+        className="bg-slate-200 shadow-md rounded-2xl px-8 pt-6 pb-8 mb-4"
       >
+        <h2 className="text-2xl font-bold mb-4 text-center">Create New Staff</h2>
         <div className="mb-4">
           <label htmlFor="email" className="block mb-1 text-sm font-medium">
             Email:
@@ -61,10 +119,12 @@ const CreateStaff = () => {
             type="email"
             id="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleEmailChange}
             required
             className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
+
         </div>
         <div className="mb-4">
           <label htmlFor="firstName" className="block mb-1 text-sm font-medium">
@@ -74,10 +134,11 @@ const CreateStaff = () => {
             type="text"
             id="firstName"
             value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
+            onChange={handleFirstNameChange}
             required
             className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          {firstNameError && <p className="text-red-500 text-sm mt-1">{firstNameError}</p>}
         </div>
         <div className="mb-4">
           <label htmlFor="lastName" className="block mb-1 text-sm font-medium">
@@ -87,10 +148,11 @@ const CreateStaff = () => {
             type="text"
             id="lastName"
             value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
+            onChange={handleLastNameChange}
             required
             className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          {lastNameError && <p className="text-red-500 text-sm mt-1">{lastNameError}</p>}
         </div>
         <div className="mb-4">
           <label htmlFor="password" className="block mb-1 text-sm font-medium">
@@ -116,10 +178,11 @@ const CreateStaff = () => {
             type="tel"
             id="phoneNumber"
             value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
+            onChange={handlePhoneChange}
             required
             className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          {phoneError && <p className="text-red-500 text-sm mt-1">{phoneError}</p>}
         </div>
         <button
           type="submit"

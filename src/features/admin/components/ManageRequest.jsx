@@ -272,14 +272,14 @@ const ManageRequest = () => {
   };
 
   return (
-    <div>
+    <div className="mt-20">
       {loading ? (
         <Spin size="large" />
       ) : (
         <>
           {showList ? (
             <>
-              <h1>Auction Request Manager</h1>
+              <h1 className="text-left font-bold text-2xl my-5">Auction Request Manager</h1>
               <div className="flex items-center mb-4">
                 <Select
                   defaultValue="requestId"

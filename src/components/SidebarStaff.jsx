@@ -30,17 +30,10 @@ const items = [
   getItem("Dashboard", "1", <HomeOutlined />),
   getItem("Profile", "2", <UserOutlined />),
   getItem("Manage Request", "3", <FormOutlined />),
-  getItem("Manage Auction", "sub1", <AuditOutlined />, [
-    getItem("View Auction", "4", <EyeOutlined />),
-    getItem("Create Auction", "5", <PlusOutlined />),
-  ]),
-  getItem("Manage Transport", "6", <CarOutlined />),
-  getItem("View Transaction", "7", <FileOutlined />),
-  getItem("Create Breeder", "8", <PlusOutlined />),
-  getItem("Create Staff", "9", <PlusOutlined />),
+  getItem("Manage Transport", "4", <CarOutlined />),
 ];
 
-const SidebarAdmin = ({ setActiveComponent }) => {
+const SidebarStaff = ({ setActiveComponent }) => {
   const [collapsed, setCollapsed] = useState(false);
 
   const handleMenuClick = (e) => {
@@ -56,23 +49,8 @@ const SidebarAdmin = ({ setActiveComponent }) => {
         setActiveComponent("Manage Request");
         break;
       case "4":
-        setActiveComponent("View Auction");
-        break;
-      case "5":
-        setActiveComponent("Create Auction");
-        break;
-      case "6":
         setActiveComponent("Manage Transport");
         break;
-      case "7":
-        setActiveComponent("View Transaction");
-        break;
-      case "8":
-        setActiveComponent("Create Breeder");
-        break;
-      case "9":
-        setActiveComponent("Create Staff");
-        break; // Ensure to include break for the new case
       default:
         setActiveComponent("Dashboard");
     }
@@ -82,7 +60,7 @@ const SidebarAdmin = ({ setActiveComponent }) => {
     <Sider collapsed={collapsed} className="bg-black flex flex-col">
       <div className="flex justify-center items-center flex-col mt-20">
         {!collapsed && (
-          <p className="text-white mt-5 font-bold">Admin Dashboard</p>
+          <p className="text-white mt-5 font-bold">Staff Dashboard</p>
         )}
       </div>
       <div className="flex-shrink-0">
@@ -99,7 +77,7 @@ const SidebarAdmin = ({ setActiveComponent }) => {
         mode="inline"
         defaultSelectedKeys={["1"]}
         items={items}
-        className="bg-[#c74743] text-white flex-grow"
+        className="bg-[#c74743] text-white flex-grow "
         onClick={handleMenuClick}
       />
 
@@ -108,4 +86,4 @@ const SidebarAdmin = ({ setActiveComponent }) => {
   );
 };
 
-export default SidebarAdmin;
+export default SidebarStaff;

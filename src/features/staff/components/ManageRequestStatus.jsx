@@ -170,10 +170,10 @@ const ManageRequestStatus = ({ onGoBack }) => {
   };
 
   return (
-    <div>
+    <div className="mt-20">
       {showList ? (
         <>
-          <h1>Auction Request Manager</h1>
+          <h1 className="text-left font-bold text-2xl my-5">Auction Request Manager</h1>
           <Table columns={columns} dataSource={auctionRequests} />
 
           {/* Update Status Modal */}
