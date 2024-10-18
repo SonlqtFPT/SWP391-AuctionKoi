@@ -48,11 +48,15 @@ const Header = () => {
       accessToken: accessToken,
       refreshToken: refreshToken
     };
-    const response = await api.post(`/authenticate/logout`, data);
-    console.log("Data: " + response.data.message);
+    const response = await api.post(`/authenticate/logout`, data, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    console.log("Data: " + response.data);
     const { status } = response.data;
     const { message } = response.data;
-    if (status === 200) {
+    if (status === 5) {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("accountData");
