@@ -10,6 +10,8 @@ import com.nimbusds.jose.util.Base64URL;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import swp.koi.dto.response.ResponseCode;
@@ -24,6 +26,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
+import java.util.Base64;
 import java.util.Date;
 import java.util.function.Function;
 
@@ -34,8 +37,13 @@ public class JwtServiceImpl implements JwtService {
     private final String SECRET_KEY = "921B97A9E1CD33BBD5FF5AF781C8C9C68A71B071B970B23962BD331F5D0B5720";
     private final String SECRET_KEY_FOR_REFRESH = "921B97A9E1CD33BBD5FF5AF781C8C9C68A71B071B970B23962BD331F5D0B5720ABCDE";
     private final String SECRET_KEY_FOR_RESET = "7TCuxQ2XetlAhwcNqtPyTQ1hZaJ1OwhVW4qYABJeyh8=";
-    private static final String n = "4VI56fF0rcWHHVgHFLHrmEO5w8oN9gbSQ9TEQnlIKRg0zCtl2dLKtt0hC6WMrTA9cF7fnK4CLNkfV_Mytk-rydu2qRV_kah62v9uZmpbS5dcz5OMXmPuQdV8fDVIvscDK5dzkwD3_XJ2mzupvQN2reiYgce6-is23vwOyuT-n4vlxSqR7dWdssK5sj9mhPBEIlfbuKNykX5W6Rgu-DyuoKRc_aukWnLxWN-yoroP2IHYdCQm7Ol08vAXmrwMyDfvsmqdXUEx4om1UZ5WLf-JNaZp4lXhgF7Cur5066213jwpp4f_D3MyR-oa43fSa91gqp2berUgUyOWdYSIshABVQ";
-    private static final String e = "AQAB";
+    private final String KID_DEFAULT_1 = "a50f6e70ef4b548a5fd9142eecd1fb8f54dce9ee";
+    private final String KID_DEFAULT_2 = "73e25f9789119c7875d58087a78ac23f5ef2eda3";
+    private final String N1 = "4VI56fF0rcWHHVgHFLHrmEO5w8oN9gbSQ9TEQnlIKRg0zCtl2dLKtt0hC6WMrTA9cF7fnK4CLNkfV_Mytk-rydu2qRV_kah62v9uZmpbS5dcz5OMXmPuQdV8fDVIvscDK5dzkwD3_XJ2mzupvQN2reiYgce6-is23vwOyuT-n4vlxSqR7dWdssK5sj9mhPBEIlfbuKNykX5W6Rgu-DyuoKRc_aukWnLxWN-yoroP2IHYdCQm7Ol08vAXmrwMyDfvsmqdXUEx4om1UZ5WLf-JNaZp4lXhgF7Cur5066213jwpp4f_D3MyR-oa43fSa91gqp2berUgUyOWdYSIshABVQ";
+    private final String N2 = "tMXbmw7xEDVLLkAJdxpI-6pGywn0x9fHbD_mfgtFGZEs1LDjhDAJq6c-SoODeWQstjpetTgNqVCKOuU6zGyFPNtkDjhJqDW6THy06uJ8I85crILo3h-6NPclZ3bK9OzN5bIbzjbSvxrIM7ORZOlWzByOn5qGsMvI3aDrZ0lXNC1eCDWJpoJznG1fWcHYxbUy_CHDC3Cd26jX19aRALEEQU-y-wi9pv86qxEmrYMLsVN3__eWNNPkzxgf0eSOWFDv5_19YK7irYztqiwin6abxr9RHj3Qs21hpJ9A-YfsfmNkxmifgDeiTnXpZY8yfVTCJTtkgT7sjdU1lvhsMa4Z0w";
+    private final String E = "AQAB";
+
+
 
     /**
      * Generates a JWT access token for the given username and token type.
@@ -186,6 +194,33 @@ public class JwtServiceImpl implements JwtService {
         }
     }
 
+    private String extractHeader(String token){
+        String[] parts = token.split("\\.");
+        if(parts.length >= 2){
+            return new String(Base64.getDecoder().decode(parts[0]));
+        }
+        throw new IllegalArgumentException("Invalid JWT token");
+    }
+
+    private String getKidFromHeader(String headerJson) throws JSONException {
+        JSONObject jsonObject = new JSONObject(headerJson);
+        if(jsonObject.has("kid")){
+            return jsonObject.getString("kid");
+        }
+        throw new IllegalArgumentException("No 'kid' found in JWT header.");
+    }
+
+    private RSAPublicKey getPublicKeyByKid(String kid) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        String n, e;
+        if(KID_DEFAULT_1.equals(kid)){
+            return getPublicKeyFromJWK(N1, E);
+        }else if(KID_DEFAULT_2.equals(kid)){
+            return getPublicKeyFromJWK(N2, E);
+        }else {
+            throw new IllegalArgumentException("Unknown kid");
+        }
+    }
+
     private static RSAPublicKey getPublicKeyFromJWK(String n, String e) throws NoSuchAlgorithmException, InvalidKeySpecException {
         BigInteger modulus = new BigInteger(1, Base64URL.from(n).decode());
         BigInteger exponent = new BigInteger(1, Base64URL.from(e).decode());
@@ -201,7 +236,12 @@ public class JwtServiceImpl implements JwtService {
 
     public DecodedJWT verifyToken(String token) {
         try{
-            Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) getPublicKeyFromJWK(n, e), null);
+            String headerJson = extractHeader(token);
+            String kid = getKidFromHeader(headerJson);
+
+            RSAPublicKey publicKey = getPublicKeyByKid(kid);
+
+            Algorithm algorithm = Algorithm.RSA256(publicKey, null);
             JWTVerifier verifier = JWT.require(algorithm)
                     .withIssuer("https://accounts.google.com")
                     .build();
