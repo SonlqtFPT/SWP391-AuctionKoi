@@ -11,6 +11,8 @@ import {
 import Logo from "../assets/logo/PrestigeKoi_White.png";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../features/protectedRoutes/AuthContext";
+import api from "../config/axios";
+import { toast } from "react-toastify";
 
 const Header = () => {
   // State to manage the visibility of the mobile (hamburger) menu
@@ -39,17 +41,31 @@ const Header = () => {
     setAccountId,
   } = useAuth();
   // Function to handle logout: remove user-related data from localStorage
-  const handleLogout = () => {
-
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("accountData");
-    setAccountId("");
-    setAccessToken("");
-    setRefreshToken("");
-    setUserName("");
-    setRole("");
-    navigate("/");
+  const handleLogout = async () => {
+    const accessToken = localStorage.getItem("accessToken");
+    const refreshToken = localStorage.getItem("refreshToken");
+    console.log(accessToken);
+    console.log(refreshToken);
+    const data = {
+      accessToken: accessToken,
+      refreshToken: refreshToken
+    };
+    const response = await api.post(`/authenticate/logout`, data);
+    console.log(response);
+    console.log("Data: " + response.status);
+    console.log("Data: " + response.data.message);
+    if (response.status === 200) {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("accountData");
+      setAccountId("");
+      setAccessToken("");
+      setRefreshToken("");
+      setUserName("");
+      setRole("");
+      navigate("/");
+      toast.success("Logout Successfully!");
+    }
   };
 
   const getAccountLink = () => {
