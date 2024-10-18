@@ -44,17 +44,15 @@ const Header = () => {
   const handleLogout = async () => {
     const accessToken = localStorage.getItem("accessToken");
     const refreshToken = localStorage.getItem("refreshToken");
-    console.log(accessToken);
-    console.log(refreshToken);
     const data = {
       accessToken: accessToken,
       refreshToken: refreshToken
     };
     const response = await api.post(`/authenticate/logout`, data);
-    console.log(response);
-    console.log("Data: " + response.status);
     console.log("Data: " + response.data.message);
-    if (response.status === 200) {
+    const { status } = response.data;
+    const { message } = response.data;
+    if (status === 200) {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("accountData");
@@ -64,7 +62,7 @@ const Header = () => {
       setUserName("");
       setRole("");
       navigate("/");
-      toast.success("Logout Successfully!");
+      toast.success(message);
     }
   };
 

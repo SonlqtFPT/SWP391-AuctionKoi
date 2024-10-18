@@ -11,6 +11,8 @@ import Auction from "./features/auction/List-auction.jsx";
 import Lot from "./features/lot/lot.jsx";
 import Bid from "./features/bid/bid.jsx";
 import PastAuction from "./features/past-auction/past-auction.jsx";
+import ForgotPassPage from "./features/user/pages/ForgotPassPage.jsx";
+import ChangePassPage from "./features/user/pages/ChangePassPage.jsx";
 
 export default function App() {
   return (
@@ -25,6 +27,8 @@ export default function App() {
           <Route path="/lot/:auctionId" element={<Lot />} />
           <Route path="/bid/:lotId/:auctionId" element={<Bid />} />
           <Route path="/auctioned" element={<PastAuction />} />
+          <Route path="/forgotPass" element={<ForgotPassPage />} />
+          <Route path="/reset-password" element={<ChangePassPage />} />
           {/* Protected Routes */}
           <Route
             path="/admin"

@@ -116,7 +116,7 @@ function Bid() {
     <div className="flex flex-col min-h-screen">
       <Header />
       <div className="bg-hero-pattern bg-cover relative">
-        <div className="absolute bg-black bg-opacity-70 inset-0"></div>
+        <div className="absolute bg-black bg-opacity-80 inset-0"></div>
         <h1 className="relative mt-5">
           {lot && <Time remainingTime={remainingTime} auctionId={auctionId} />}
         </h1>

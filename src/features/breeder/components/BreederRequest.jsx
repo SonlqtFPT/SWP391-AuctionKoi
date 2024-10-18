@@ -202,7 +202,7 @@ const BreederRequest = () => {
 
   return (
     <div className="w-full mt-20 bg-hero-pattern relative bg-cover">
-      <div className="absolute bg-black bg-opacity-70 inset-0"></div>
+      <div className="absolute bg-black bg-opacity-80 inset-0"></div>
       {loading ? (
         <Spin size="large" />
       ) : (

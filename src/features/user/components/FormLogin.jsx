@@ -15,41 +15,58 @@ function FormLogin() {
 
   const handleLoginGoogle = async (values) => {
     const googleToken = values.credential;
+    console.log("Google token: " + googleToken);
 
-    const response = await api.post("authenticate/login-google", { token: googleToken });
+    const data = { token: googleToken };
 
-    console.log(response.data);
+    const handleResponse = async () => {
+      try {
+        const response = await api.post("authenticate/login-google", data);
+        console.log(response.data);
 
-    const accessToken = response.data.data.accessToken;
-    const refreshToken = response.data.data.refreshToken; // Corrected from resquestToken
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
+        const accessToken = response.data.data.accessToken;
+        const refreshToken = response.data.data.refreshToken;
 
-    const accountData = response.data.data.account;
-    localStorage.setItem("accountData", JSON.stringify(accountData));
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
 
-    // Immediately update AuthContext values
-    setUserName(`${accountData.firstName} ${accountData.lastName}`);
-    setRole(accountData.role);
-    setAccessToken(accessToken);
-    setRefreshToken(refreshToken);
+        const accountData = response.data.data.account;
+        localStorage.setItem("accountData", JSON.stringify(accountData));
 
-    const { role } = accountData;
+        setUserName(`${accountData.firstName} ${accountData.lastName}`);
+        setRole(accountData.role);
+        setAccessToken(accessToken);
+        setRefreshToken(refreshToken);
 
-    // Handle navigation based on role
-    if (role === "MANAGER") {
-      navigate("/admin");
-    } else if (role === "MEMBER") {
-      navigate("/member");
-    } else if (role === "BREEDER") {
-      navigate("/breeder");
-    } else if (role === "STAFF") {
-      navigate("/staff");
-    }
+        const { role } = accountData;
 
-    this.sets
+        // Navigation based on role
+        if (role === "MANAGER") {
+          navigate("/admin");
+        } else if (role === "MEMBER") {
+          navigate("/member");
+        } else if (role === "BREEDER") {
+          navigate("/breeder");
+        } else if (role === "STAFF") {
+          navigate("/staff");
+        }
 
+      } catch (error) {
+        if (error.response) {
+          // Retry logic: If the token is not valid yet, wait for a second and retry
+          setTimeout(() => {
+            handleLoginGoogle(values); // Retry login after 1 second
+          }, 1000);
+        } else {
+          toast.error("Login GG was failed!");
+          console.log(error);
+        }
+      }
+    };
+
+    handleResponse();
   };
+
 
 
   const handleLogin = async (values) => {
@@ -93,7 +110,7 @@ function FormLogin() {
 
   return (
     <div className="flex min-h-full flex-1 columns-2 justify-center px-6 py-20 lg:px-8 bg-hero-pattern mt-25 bg-cover relative">
-      <div className="absolute bg-black bg-opacity-70 inset-0"></div>
+      <div className="absolute bg-black bg-opacity-80 inset-0"></div>
       <div className="max-w-md mx-auto md:max-w-2xl shadow-xl mt-10">
         <div className="md:flex">
           <div className="md:shrink-0">
@@ -131,6 +148,7 @@ function FormLogin() {
                   <label className="block text-sm font-medium leading-6 text-white">
                     Password
                   </label>
+
                 }
                 name="password"
                 rules={[
@@ -143,22 +161,33 @@ function FormLogin() {
                 <Input.Password />
               </FormItem>
 
-              <p className="mt-10 text-center text-sm text-gray-500">
-                Not a member?{" "}
+              <label className="ml-24 text-center text-sm text-gray-500">
+                Forgot password?{" "}
                 <Link
-                  to="/register"
-                  className="font-semibold leading-6  hover:text-yellow-500 text-yellow-600"
+                  to="/forgotPass"
+                  className="font-semibold leading-6  hover:text-[#c1b178] text-[#a99a65]"
                 >
-                  Register here!
+                  Click Here!
                 </Link>
-              </p>
-              <div>
+              </label>
+
+              <div className="mt-10">
                 <button
                   className="flex w-full justify-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold leading-6 text-black shadow-sm hover:bg-red-700 focus-visible:outline-2 focus-visible:outline-offset-2"
                   type="submit"
                 >
                   Login
                 </button>
+
+                <p className="mt-2 text-center text-sm text-gray-500">
+                  Not a member?{" "}
+                  <Link
+                    to="/register"
+                    className="font-semibold leading-6  hover:text-yellow-500 text-yellow-600"
+                  >
+                    Register Here!
+                  </Link>
+                </p>
                 <br></br>
                 <div className="flex w-full justify-center px-5 py-1.5 text-sm font-semibold leading-6">
                   <GoogleLogin

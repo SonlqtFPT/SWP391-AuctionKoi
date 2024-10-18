@@ -39,7 +39,7 @@ function Auction() {
     <div className="flex flex-col min-h-screen">
       <Header />
       <div className="flex flex-col justify-center items-center h-screen bg-hero-pattern bg-cover relative">
-        <div className="absolute bg-black bg-opacity-70 inset-0"></div>
+        <div className="absolute bg-black bg-opacity-80 inset-0"></div>
         {auctionId && <Auctioning auctionId={auctionId} />}
         <div className="mt-96 absolute">
           <button
