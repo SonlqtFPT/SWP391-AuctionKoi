@@ -259,7 +259,7 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public String forgotPassowrd(ForgotPasswordDto request) {
+    public String forgotPassword(ForgotPasswordDto request) {
         // Check existed email
         Account account = accountRepository.findByEmail(request.getEmail()).orElseThrow(() -> new KoiException(ResponseCode.EMAIL_NOT_FOUND));
 
@@ -280,7 +280,7 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public String resetPassowrd(String reset_token) {
+    public String resetPassword(String reset_token) {
 
         isValidAccountByToken(reset_token);
 
@@ -288,7 +288,7 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public String changePassowrd(ResetPasswordDto request, String reset_token) {
+    public String changePassword(ResetPasswordDto request, String reset_token) {
 
         UserDetails userDetails = isValidAccountByToken(reset_token);
         Account account = findByEmail(userDetails.getUsername());

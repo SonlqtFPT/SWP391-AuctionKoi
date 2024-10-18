@@ -16,7 +16,7 @@ public class LotRegisterEntityToDtoConverter {
 
     public LotRegisterResponseDTO convertLotRegister(LotRegister lotRegister){
         if(lotRegister == null)
-            throw new KoiException(ResponseCode.FAIL);
+            throw new KoiException(ResponseCode.FOUND_NOTHING);
         LotRegisterResponseDTO response = modelMapper.map(lotRegister, LotRegisterResponseDTO.class);
         return response;
     }

@@ -28,11 +28,11 @@ public interface AccountService {
 
     AuthenticateResponse loginGoogle(GoogleTokenRequestDto googleToken);
 
-    String forgotPassowrd(ForgotPasswordDto request);
+    String forgotPassword(ForgotPasswordDto request);
 
-    String resetPassowrd(String resetToken);
+    String resetPassword(String resetToken);
 
-    String changePassowrd(ResetPasswordDto request, String reset_token);
+    String changePassword(ResetPasswordDto request, String reset_token);
 
     void updatePassword(UpdatePasswordDto request);
 

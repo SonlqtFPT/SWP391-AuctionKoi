@@ -1,5 +1,7 @@
 package swp.koi.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import okhttp3.Response;
@@ -25,12 +27,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/register-lot")
 @RequiredArgsConstructor
+@Tag(name = "lot-register", description = "Everything about your lot register")
 public class LotRegisterController {
 
     private final LotRegisterService lotRegisterService;
     private final LotRegisterEntityToDtoConverter lotRegisterEntityToDtoConverter;
     private final LotEntityToDtoConverter lotEntityToDtoConverter;
 
+    @Operation(summary = "Register for the lot")
     @PostMapping("/regis")
     public ResponseData<?> registerLot(@RequestBody LotRegisterDTO lotRegisterDTO) {
         try{
@@ -46,6 +50,7 @@ public class LotRegisterController {
         return null;
     }
 
+    @Operation(summary = "Retrieve all lot register of a lot")
     @GetMapping("/list")
     public ResponseData<List<LotRegisterResponseDTO>> listRegisterLotById(@RequestParam int lotId) {
         try{
@@ -56,12 +61,14 @@ public class LotRegisterController {
         }
     }
 
+    @Operation(summary = "Retrieve winner of a lot")
     @GetMapping("/get-winner")
     public ResponseData<?> getLotWinner(@RequestParam Integer lotId){
         LotRegisterResponseDTO response = lotRegisterEntityToDtoConverter.convertLotRegister(lotRegisterService.getLotWinner(lotId));
         return new ResponseData<>(ResponseCode.SUCCESS, response);
     }
 
+    @Operation(summary = "Check if the member is registered or not")
     @GetMapping("/is-registered/{lotId}/{memberId}")
     public ResponseData<?> isRegistered(@PathVariable Integer lotId, @PathVariable Integer memberId){
         try{

@@ -1,5 +1,7 @@
 package swp.koi.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,11 +18,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/lot")
 @RequiredArgsConstructor
+@Tag(name = "lot", description = "Everything about your lot")
 public class LotController {
 
     private final LotService lotService;
     private final LotEntityToDtoConverter lotEntityToDtoConverter;
 
+    @Operation(summary = "Retrieve all lot that member registered")
     @GetMapping("/get-lot-member")
     public ResponseData<?> getLotByMember(@RequestParam Integer memberId){
         List<LotResponseDto> response = lotEntityToDtoConverter.convertLotList(lotService.getLotByMember(memberId));

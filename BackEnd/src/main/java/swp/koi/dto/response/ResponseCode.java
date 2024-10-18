@@ -9,6 +9,7 @@ public enum ResponseCode {
     SUCCESS_GET_LIST(200, "Data retrieved successfully."),
     SUCCESS_SIGN_UP(200, "Sign up successful."),
     FAIL(000, "Fail"),
+    FOUND_NOTHING(001, "Nothing here. Try again"),
 
     // Authentication / Authorization
     SUCCESS_LOGIN(001, "Login successful."),
