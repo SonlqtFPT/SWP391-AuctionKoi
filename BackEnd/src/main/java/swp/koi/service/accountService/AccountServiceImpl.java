@@ -11,6 +11,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -118,8 +120,10 @@ public class AccountServiceImpl implements AccountService{
                     .refreshToken(refreshToken)
                     .build();
 
-        } catch (AuthenticationException e) {
+        } catch (BadCredentialsException e) {
             throw new KoiException(ResponseCode.INVALID_CREDENTIALS);
+        } catch (DisabledException e){
+            throw new KoiException(ResponseCode.ACCOUNT_DISABLED);
         }
 
         return authenticateResponse;
@@ -349,6 +353,27 @@ public class AccountServiceImpl implements AccountService{
         account.setFirstName(request.getFirstName());
         account.setLastName(request.getLastName());
         account.setPhoneNumber(request.getPhoneNumber());
+        saveAccount(account);
+    }
+
+    @Override
+    public List<Account> getAllAccount() {
+        return accountRepository.findAll();
+    }
+
+    @Override
+    public void disableAccount(Integer accountId) {
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> new KoiException(ResponseCode.ACCOUNT_NOT_FOUND));
+
+        if(account.getRole().equals(AccountRoleEnum.MANAGER)){
+            throw new KoiException(ResponseCode.DISABLE_MANAGER_FAILED);
+        }
+
+        if(account.getRole().equals(AccountRoleEnum.BREEDER)) {
+            account.getKoiBreeder().setStatus(false);
+        }
+
+        account.setStatus(false);
         saveAccount(account);
     }
 }
