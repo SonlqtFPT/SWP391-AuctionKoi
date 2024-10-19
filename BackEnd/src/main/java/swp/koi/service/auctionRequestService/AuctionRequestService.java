@@ -18,7 +18,7 @@ public interface AuctionRequestService {
 
     List<AuctionRequest> getAllStaffRequest(Integer accountId);
 
-    List<AuctionRequest> getAllBreederRequest(Integer accountId);
+    List<AuctionRequest> getAllBreederRequest(Integer breederId);
 
     void breederCancelRequest(Integer requestId);
 
@@ -39,20 +39,4 @@ public interface AuctionRequestService {
     void managerAcceptRequest(Integer requestId);
 
     AuctionRequest getRequestDetail(Integer requestId);
-
-    List<AuctionRequest> getAllPendingRequest(Integer accountId);
-
-    List<AuctionRequest> getAllInspectionPendingRequest(Integer accountId);
-
-    List<AuctionRequest> getAllInspectionPassedRequest(Integer accountId);
-
-    List<AuctionRequest> getAllInspectionFailedRequest(Integer accountId);
-
-    List<AuctionRequest> getAllNegotiatingRequest(Integer accountId);
-
-    List<AuctionRequest> getAllApprovedRequest(Integer accountId);
-
-    List<AuctionRequest> getAllRejectedRequest(Integer accountId);
-
-    List<AuctionRequest> getAllCancelledRequest(Integer accountId);
 }

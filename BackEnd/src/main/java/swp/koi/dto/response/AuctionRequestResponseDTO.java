@@ -19,10 +19,10 @@ public class AuctionRequestResponseDTO {
     Integer requestId;
     AuctionRequestStatusEnum status;
     LocalDateTime requestedAt;
-    String auctionTypeName;
-    float offerPrice;
-    KoiFishResponseDTO KoiFish;
     KoiBreederResponseDTO breeder;
+    float offerPrice;
+    String auctionTypeName;
     AccountResponseDTO staff;
+    KoiFishResponseDTO KoiFish;
 
 }

@@ -1,6 +1,5 @@
 package swp.koi.controller;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import java.io.UnsupportedEncodingException;
 @RestController
 @RequestMapping("/api/pay")
 @RequiredArgsConstructor
-@Tag(name = "vnpay", description = "Everything about your vnpay")
 public class VnpayController {
 
     private final VnpayService vnpayService;

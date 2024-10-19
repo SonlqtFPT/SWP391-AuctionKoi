@@ -1,7 +1,5 @@
 package swp.koi.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +21,6 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "auction", description = "Everything about your auction")
 public class AuctionController {
 
     private final AuctionService auctionService;
@@ -35,7 +32,6 @@ public class AuctionController {
     private final KoiBreederService koiBreederService;
     private final AccountService accountService;
 
-    @Operation(summary = "Retrieve all fish")
     @GetMapping("/manager/getFish")
     public ResponseData<?> getKoiFishFromApproveRequest(){
         List<KoiFishResponseDTO> response = koiFishEntityToDtoConverter
@@ -43,7 +39,6 @@ public class AuctionController {
         return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
     }
 
-    @Operation(summary = "Retrieve all fish that have same auction type with auction's auction type")
     @PostMapping("/manager/get-fish-auction")
     public ResponseData<List<KoiFishResponseDTO>> getKoiFishBasedOnType(@RequestBody AuctionTypeDTO auctionTypeDTO){
         List<KoiFishResponseDTO> response = koiFishEntityToDtoConverter
@@ -51,7 +46,6 @@ public class AuctionController {
         return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
     }
 
-    @Operation(summary = "Create a auction")
     @PostMapping("/manager/createAuction")
     public ResponseData<?> createAuction(@Valid @RequestBody AuctionWithLotsDTO request){
         try{
@@ -62,7 +56,6 @@ public class AuctionController {
         }
     }
 
-    @Operation(summary = "Create breeder account")
     @PostMapping("/manager/createBreeder")
     public ResponseData<KoiBreederResponseDTO> createKoiBreeder(@Valid @RequestBody KoiBreederDTO request){
         try{
@@ -73,45 +66,27 @@ public class AuctionController {
         }
     }
 
-    @Operation(summary = "Create staff account")
     @PostMapping("/manager/createStaff")
     public ResponseData<?> createStaff(@RequestBody AccountRegisterDTO staffDto){
         accountService.createAccountStaff(staffDto);
         return new ResponseData<>(ResponseCode.CREATED_SUCCESS);
     }
 
-    @Operation(summary = "Retrieve all auction")
     @GetMapping("/auction/get-all-auction")
     public ResponseData<List<AuctionResponseDTO>> getAllAuction(){
         List<AuctionResponseDTO> response = auctionEntityToDtoConverter.converAuctiontList(auctionService.getAllAuction());
         return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
     }
 
-    @Operation(summary = "Retrieve details of an auction")
     @GetMapping("/auction/get-auction/{auctionId}")
     public ResponseData<AuctionResponseDTO> getAuction(@PathVariable Integer auctionId){
         AuctionResponseDTO response = auctionEntityToDtoConverter.convertAuction(auctionService.getAuction(auctionId));
         return new ResponseData<>(ResponseCode.SUCCESS, response);
     }
 
-    @Operation(summary = "Retrieve details of a lot")
     @GetMapping("/auction/get-lot/{lotId}")
     public ResponseData<LotResponseDto> getLot(@PathVariable Integer lotId){
         return new ResponseData<>(ResponseCode.SUCCESS, auctionService.getLot(lotId));
-    }
-
-    @Operation(summary = "Retrieve auctioning")
-    @GetMapping("/auction/get-auction/auctioning")
-    public ResponseData<List<AuctionResponseDTO>> getAllOnGoingAuction(){
-        List<AuctionResponseDTO> response = auctionEntityToDtoConverter.converAuctiontList(auctionService.getAllOnGoingAuction());
-        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
-    }
-
-    @Operation(summary = "Retrieve completed auction")
-    @GetMapping("/auction/get-auction/completed")
-    public ResponseData<List<AuctionResponseDTO>> getAllCompletedAuction(){
-        List<AuctionResponseDTO> response = auctionEntityToDtoConverter.converAuctiontList(auctionService.getAllCompletedAuction());
-        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
     }
 
 }

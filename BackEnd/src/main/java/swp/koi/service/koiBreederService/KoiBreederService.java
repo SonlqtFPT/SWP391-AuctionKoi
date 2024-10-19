@@ -1,8 +1,6 @@
 package swp.koi.service.koiBreederService;
 
-import jakarta.validation.Valid;
 import swp.koi.dto.request.KoiBreederDTO;
-import swp.koi.dto.request.UpdateBreederProfileDto;
 import swp.koi.dto.response.KoiBreederResponseDTO;
 import swp.koi.model.Account;
 import swp.koi.model.AuctionRequest;
@@ -18,5 +16,4 @@ public interface KoiBreederService {
 
     KoiBreeder findByBreederId(Integer breederId);
 
-    void updateBreederProfile(@Valid UpdateBreederProfileDto request);
 }

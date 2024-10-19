@@ -57,17 +57,17 @@ public class SocketIOConfig {
         config.setHostname(socketHost);
         config.setPort(socketPort);
 
-//        config.setAuthorizationListener(auth -> {
-//            var token = auth.getHttpHeaders().get("socket-token");
-//            if (!token.isEmpty()) {
-//                var username = jwtService.extractUsername(token, TokenType.ACCESS_TOKEN);
-//                var account = userDetailsService.loadUserByUsername(username);
-//                jwtService.validateToken(token, account, TokenType.ACCESS_TOKEN);
-//                return new AuthorizationResult(true);
-//            }
-//
-//            return new AuthorizationResult(true);
-//        });
+        config.setAuthorizationListener(auth -> {
+            var token = auth.getHttpHeaders().get("socket-token");
+            if (!token.isEmpty()) {
+                var username = jwtService.extractUsername(token, TokenType.ACCESS_TOKEN);
+                var account = userDetailsService.loadUserByUsername(username);
+                jwtService.validateToken(token, account, TokenType.ACCESS_TOKEN);
+                return new AuthorizationResult(true);
+            }
+
+            return new AuthorizationResult(false);
+        });
 
         server = new SocketIOServer(config);
         server.start();

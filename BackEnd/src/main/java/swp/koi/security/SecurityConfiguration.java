@@ -40,7 +40,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers("/authenticate/**","/send/**","/daa.html","/notification/subscribe/**","/notification/send/**").permitAll()
+                        .requestMatchers("/authenticate/**").permitAll()
 //                        .requestMatchers("/api/pay/vn-pay-callback").permitAll()
 //                        .requestMatchers("/auctionRequest/addRequest").hasAuthority("ROLE_BREEDER")
 //                        .requestMatchers("/auctionRequest/getRequest").permitAll()
@@ -50,10 +50,9 @@ public class SecurityConfiguration {
 //                        .requestMatchers("/bid/list").hasAuthority("ROLE_MANAGER")
 //                        .requestMatchers("/api/v1/createBreeder").hasAuthority("ROLE_MANAGER")
 //                        .requestMatchers("/manager/**").hasAuthority("ROLE_MANAGER")
-                          .anyRequest().authenticated()
+                        .anyRequest().authenticated()
                 )
                 .formLogin(Customizer.withDefaults())
-                .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .oauth2Login(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults())
@@ -65,7 +64,7 @@ public class SecurityConfiguration {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer(){
         return websecurity -> websecurity.ignoring()
-                    .requestMatchers("/actuator/**", "/v3/**", "/webjars/**", "/swagger-ui*/*swagger-initializer.js", "/swagger-ui*/**","/api/pay/vn-pay-callback/**");
+                    .requestMatchers("/actuator/**", "/v3/**", "/webjars/**", "/swagger-ui*/*swagger-initializer.js", "/swagger-ui*/**");
     }
 
     @Bean

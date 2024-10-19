@@ -15,10 +15,4 @@ public interface LotRegisterRepository extends JpaRepository<LotRegister, Intege
     Optional<List<LotRegister>> findByLot(Lot lot);
 
     LotRegister findLotRegisterByLotAndMember(Lot lot, Member member);
-
-    LotRegister findByMember(Member member);
-
-    List<LotRegister> findAllByMember(Member member);
-
-
 }

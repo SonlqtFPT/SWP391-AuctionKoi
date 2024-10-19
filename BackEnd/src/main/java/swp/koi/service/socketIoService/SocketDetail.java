@@ -10,8 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class SocketDetail {
-    private String winnerName;
-    private float newPrice;
-    private int lotId;
-
+    private String name;
 }

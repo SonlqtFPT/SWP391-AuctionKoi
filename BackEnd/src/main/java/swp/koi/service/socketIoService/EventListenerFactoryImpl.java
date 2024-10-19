@@ -10,21 +10,21 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class EventListenerFactoryImpl implements EventListenerFactory {
+    private static String eventName;
     private final SocketIOServer socketServer;
 
     @Override
     public void createDataListener(SocketIOServer socketServer, String name) {
-        socketServer.addEventListener("Event_"+name,SocketDetail.class,event);
+        eventName = name;
+        socketServer.addEventListener("Event"+name,SocketDetail.class,event);
     }
 
     public DataListener<SocketDetail> event= new DataListener<>() {
         @Override
         public void onData(SocketIOClient socketIOClient, SocketDetail socketDetail, AckRequest ackRequest) throws Exception {
-            ackRequest.sendAckData("Connect to event successfully");
+            socketServer.getBroadcastOperations().sendEvent("Event"+eventName,socketDetail);
+            System.out.println(socketDetail.getName());
+            ackRequest.sendAckData("Data received");
         }
     };
-
-    public void sendDataToClient(SocketDetail socketDetail, String eventName) {
-        socketServer.getBroadcastOperations().sendEvent("Event_"+eventName,socketDetail);
-    }
 }

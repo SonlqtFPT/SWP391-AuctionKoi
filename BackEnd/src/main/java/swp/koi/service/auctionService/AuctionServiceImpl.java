@@ -21,9 +21,7 @@ import swp.koi.service.auctionTypeService.AuctionTypeService;
 import swp.koi.service.koiFishService.KoiFishService;
 import swp.koi.service.lotService.LotService;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,13 +46,6 @@ public class AuctionServiceImpl implements AuctionService{
             Auction auction = new Auction();
             AuctionType auctionType = auctionTypeService.findByAuctionTypeName(request.getAuctionTypeName());
 
-            if(!isValidAuctionTime(request.getStartTime(), request.getEndTime()))
-                throw new KoiException(ResponseCode.AUCTION_TIME_INVALID);
-
-            if(request.getLots().isEmpty()){
-                throw new KoiException(ResponseCode.NO_LOTS_PROVIDED);
-            }
-
             for(LotDTO lotDTO : request.getLots()){
                 KoiFish koiFish = koiFishService.findByFishId(lotDTO.getFishId());
                 if(koiFish == null || !koiFish.getStatus().equals(KoiFishStatusEnum.WAITING) ||
@@ -74,13 +65,13 @@ public class AuctionServiceImpl implements AuctionService{
             for(LotDTO lotDTO : request.getLots()){
                 Lot lot = new Lot();
                 KoiFish koiFish = koiFishService.findByFishId(lotDTO.getFishId());
-                koiFish.setStatus(KoiFishStatusEnum.AUCTIONING);
+                koiFish.setStatus(KoiFishStatusEnum.IN_AUCTION);
                 koiFishService.saveFish(koiFish);
                     lot.setAuction(auction);
                     lot.setKoiFish(koiFish);
                     lot.setDeposit((float)(koiFish.getPrice()*0.1));
                     lot.setStartingPrice(koiFish.getPrice());
-                    lot.setIncrement((float)(koiFish.getPrice()*0.1));
+                    lot.setIncrement(lotDTO.getIncrement());
                     lot.setCurrentPrice(lot.getStartingPrice());
                     lot.setStartingTime(savedAuction.getStartTime());
                     lot.setEndingTime(savedAuction.getEndTime());
@@ -98,41 +89,6 @@ public class AuctionServiceImpl implements AuctionService{
         }catch (KoiException e){
             throw e;
         }
-    }
-
-    private boolean isValidAuctionTime(LocalDateTime startTime, LocalDateTime endTime) {
-
-        if(startTime.isBefore(LocalDateTime.now()) ||
-                endTime.isBefore((LocalDateTime.now())) ||
-                startTime.isAfter(endTime) ||
-                startTime.isEqual(endTime) ||
-                isAuctionTimeOverlapping(startTime, endTime)){
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean isAuctionTimeOverlapping(LocalDateTime startTime, LocalDateTime endTime){
-
-        List<AuctionStatusEnum> statues = Arrays.asList(
-                AuctionStatusEnum.WAITING,
-                AuctionStatusEnum.AUCTIONING
-        );
-
-        List<Auction> notLaunchAuction = auctionRepository.findAllByStatusIn(statues);
-
-        for(Auction auction : notLaunchAuction){
-            if (startTime.isEqual(auction.getStartTime()) ||
-                    endTime.isEqual(auction.getEndTime()) ||
-                    (startTime.isAfter(auction.getStartTime()) && startTime.isBefore(auction.getEndTime())) ||
-                    (endTime.isAfter(auction.getStartTime()) && endTime.isBefore(auction.getEndTime())) ||
-                    (startTime.isBefore(auction.getStartTime()) && endTime.isAfter(auction.getEndTime()))) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     @Override
@@ -154,15 +110,5 @@ public class AuctionServiceImpl implements AuctionService{
     @Override
     public Auction getAuction(Integer auctionId) throws KoiException{
         return auctionRepository.findById(auctionId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_NOT_FOUND));
-    }
-
-    @Override
-    public List<Auction> getAllOnGoingAuction() {
-        return auctionRepository.findAllByStatus(AuctionStatusEnum.AUCTIONING);
-    }
-
-    @Override
-    public List<Auction> getAllCompletedAuction() {
-        return auctionRepository.findAllByStatus(AuctionStatusEnum.COMPLETED);
     }
 }

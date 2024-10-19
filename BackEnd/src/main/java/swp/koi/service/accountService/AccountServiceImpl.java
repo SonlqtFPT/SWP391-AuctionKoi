@@ -1,25 +1,31 @@
 package swp.koi.service.accountService;
 
 import ch.qos.logback.core.util.StringUtil;
-import com.auth0.jwt.interfaces.DecodedJWT;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import org.springframework.web.server.ResponseStatusException;
 import swp.koi.convert.AccountEntityToDtoConverter;
-import swp.koi.dto.request.*;
+import swp.koi.dto.request.AccountLoginDTO;
+import swp.koi.dto.request.AccountRegisterDTO;
+import swp.koi.dto.request.GoogleTokenRequestDto;
+import swp.koi.dto.request.LogoutDTO;
 import swp.koi.dto.response.AuthenticateResponse;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
@@ -27,7 +33,6 @@ import swp.koi.model.Account;
 import swp.koi.model.enums.AccountRoleEnum;
 import swp.koi.model.enums.TokenType;
 import swp.koi.repository.AccountRepository;
-import swp.koi.service.authService.GetUserInfoByUsingAuth;
 import swp.koi.service.googleApiService.GoogleApiService;
 import swp.koi.service.jwtService.JwtServiceImpl;
 import swp.koi.service.mailService.EmailContent;
@@ -35,6 +40,7 @@ import swp.koi.service.mailService.EmailService;
 import swp.koi.service.memberService.MemberServiceImpl;
 import swp.koi.service.redisService.RedisServiceImpl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,7 +60,6 @@ public class AccountServiceImpl implements AccountService{
     private final GoogleApiService googleApiService;
     private final EmailService emailService;
     private final EmailContent emailContent;
-    private final GetUserInfoByUsingAuth getUserInfoByUsingAuth;
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String clientId;
@@ -98,7 +103,7 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public Account findByEmail(String email) {
-        return accountRepository.findByEmail(email).orElseThrow(() -> new KoiException(ResponseCode.EMAIL_NOT_FOUND));
+        return accountRepository.findByEmail(email).orElseThrow(() -> new KoiException(ResponseCode.INVALID_INFORMATION));
     }
 
     @Override
@@ -127,40 +132,33 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public AuthenticateResponse loginGoogle(GoogleTokenRequestDto googleTokenDto) {
-//        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
-//                .setAudience(Collections.singleton(clientId))
-//                .build();
-//        GoogleIdToken idTokenObj;
-//        try{
-//            idTokenObj = verifier.verify(idToken);
-//        }catch (Exception e){
-//            throw new KoiException(ResponseCode.INVALID_TOKEN);
-//        }
-//        if(idTokenObj == null)
-//            throw  new KoiException(ResponseCode.INVALID_TOKEN);
-
-//        GoogleIdToken.Payload payload = idTokenObj.getPayload();
-//        String email = payload.getEmail();
-        String token = googleTokenDto.getToken();
-        DecodedJWT decodedJWT = jwtService.verifyToken(token);
-        if(decodedJWT == null)
+        String idToken = googleTokenDto.getIdToken();
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
+                .setAudience(Collections.singleton(clientId))
+                .build();
+        GoogleIdToken idTokenObj;
+        try{
+            idTokenObj = verifier.verify(idToken);
+        }catch (Exception e){
             throw new KoiException(ResponseCode.INVALID_TOKEN);
+        }
+        if(idTokenObj == null)
+            throw  new KoiException(ResponseCode.INVALID_TOKEN);
 
-        String email = decodedJWT.getClaim("email").asString();
-        String givenName = decodedJWT.getClaim("given_name").asString();
-        String familyName = decodedJWT.getClaim("family_name").asString();
+        GoogleIdToken.Payload payload = idTokenObj.getPayload();
+        String email = payload.getEmail();
 
         Account account = accountRepository.findByEmail(email).orElseGet(() -> {
             String randomPassword = generateRandomPassword();
             Account newAccount = Account.builder()
                     .email(email)
-                    .firstName(givenName)
-                    .lastName(familyName)
+                    .firstName((String) payload.get("given_name"))
+                    .lastName((String) payload.get("family_name"))
                     .password(passwordEncoder.encode(randomPassword))
                     .role(AccountRoleEnum.MEMBER)
                     .status(true)
                     .build();
-            emailService.sendEmail(email, "Your account information", emailContent.createEmailSignUpGoogle(givenName, email, randomPassword));
+            emailService.sendEmail(email, "Your account information", emailContent.createEmailSignUpGoogle((String) payload.get("given_name"), email, randomPassword));
             accountRepository.save(newAccount);
             memberService.createMember(newAccount);
             return newAccount;
@@ -256,99 +254,5 @@ public class AccountServiceImpl implements AccountService{
     public void logout(LogoutDTO logoutDTO) {
         redisService.saveData(logoutDTO.getAccessToken(),"invalid",(long) 1000*60*60*24);
         redisService.saveData(logoutDTO.getRefreshToken(), "invalid",(long) 1000*60*60*24*15);
-    }
-
-    @Override
-    public String forgotPassword(ForgotPasswordDto request) {
-        // Check existed email
-        Account account = accountRepository.findByEmail(request.getEmail()).orElseThrow(() -> new KoiException(ResponseCode.EMAIL_NOT_FOUND));
-
-        // User is active or inactivated
-        if(!account.isStatus())
-            throw new KoiException(ResponseCode.ACCOUNT_INACTIVATED);
-
-        // Generate reset token
-        String reset_token = jwtService.generateResetToken(request.getEmail(), TokenType.RESET_TOKEN);
-
-        // Send email confirm link
-
-        String confirmLink = "http://localhost:5174/reset-password?reset_token=" + reset_token;
-
-        emailService.sendEmail(request.getEmail(), "Reset Password", emailContent.createEmailResetPassword(account.getFirstName(), confirmLink));
-
-        return "Send successfully";
-    }
-
-    @Override
-    public String resetPassword(String reset_token) {
-
-        isValidAccountByToken(reset_token);
-
-        return "Reset successfully";
-    }
-
-    @Override
-    public String changePassword(ResetPasswordDto request, String reset_token) {
-
-        UserDetails userDetails = isValidAccountByToken(reset_token);
-        Account account = findByEmail(userDetails.getUsername());
-
-        if(!request.getPassword().equals(request.getConfirmPassword())){
-            throw new KoiException(ResponseCode.PASSWORD_NOT_MATCH);
-        }
-
-        account.setPassword(passwordEncoder.encode(request.getPassword()));
-        accountRepository.save(account);
-
-        return "Change successfully";
-    }
-
-    private UserDetails isValidAccountByToken(String reset_token){
-        String userName = jwtService.extractUsername(reset_token, TokenType.RESET_TOKEN);
-        System.out.println(userName);
-        var userDetails = accountDetailService.loadUserByUsername(userName);
-
-        if (!jwtService.validateToken(reset_token, userDetails, TokenType.RESET_TOKEN) ) {
-            throw new KoiException(ResponseCode.JWT_INVALID);
-        }
-        return userDetails;
-    }
-
-    @Override
-    public void updatePassword(UpdatePasswordDto request) {
-        Account account = getUserInfoByUsingAuth.getAccountFromAuth();
-
-        if(!oldPasswordIsValid(account, request.getOldPassword())){
-            throw new KoiException(ResponseCode.INVALID_OLD_PASSWORD);
-        }
-        if(!request.getNewPassword().equals(request.getConfirmNewPassword())){
-            throw new KoiException(ResponseCode.PASSWORD_NOT_MATCH);
-        }
-        if(request.getOldPassword().equals(request.getNewPassword())){
-            throw new KoiException(ResponseCode.UPDATE_SAME_PASSWORD);
-        }
-
-        account.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        accountRepository.save(account);
-
-        emailService.sendEmail(account.getEmail(), "Password changed", emailContent.createEmailChangedPassword(account.getFirstName()));
-    }
-
-    private boolean oldPasswordIsValid(Account account, String oldPassword){
-        return passwordEncoder.matches(oldPassword, account.getPassword());
-    }
-
-    @Override
-    public void saveAccount(Account account) {
-        accountRepository.save(account);
-    }
-
-    @Override
-    public void updateProfile(UpdateProfileDto request) {
-        Account account = getUserInfoByUsingAuth.getAccountFromAuth();
-        account.setFirstName(request.getFirstName());
-        account.setLastName(request.getLastName());
-        account.setPhoneNumber(request.getPhoneNumber());
-        saveAccount(account);
     }
 }
