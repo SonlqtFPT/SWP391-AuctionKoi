@@ -7,18 +7,18 @@ import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import Auctioning from "./component-auction/auctioning";
 import axios from "axios";
+import api from "../../config/axios";
 
 function Auction() {
   const [auctionId, setAuctionId] = useState();
   const navigate = useNavigate();
 
-  const get_auctioning_api =
-    "http://localhost:8080/auction/get-auction/auctioning";
+  const get_auctioning_api = "auction/get-auction/auctioning";
 
   const fetchAuctioning = async () => {
     const token = localStorage.getItem("accessToken");
     console.log("Token nè: ", token);
-    const response = await axios.get(get_auctioning_api, {
+    const response = await api.get(get_auctioning_api, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

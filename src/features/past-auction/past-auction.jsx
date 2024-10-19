@@ -5,7 +5,7 @@ import viteLogo from "/vite.svg";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import axios from "axios";
+import api from "../../config/axios";
 import Information from "./component-past-auction/information";
 import Search from "./component-past-auction/search";
 import { Button } from "antd";
@@ -14,13 +14,12 @@ function Auctioned() {
   const [auctioned, setAuctioned] = useState([]);
   const navigate = useNavigate();
 
-  const get_auctioned_api =
-    "http://localhost:8080/auction/get-auction/completed";
+  const get_auctioned_api = "auction/get-auction/completed";
 
   const fetchAuctioned = async () => {
     const token = localStorage.getItem("accessToken");
     console.log("Token nè: ", token);
-    const response = await axios.get(get_auctioned_api, {
+    const response = await api.get(get_auctioned_api, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
