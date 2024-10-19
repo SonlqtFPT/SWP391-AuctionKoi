@@ -142,7 +142,7 @@ function EnterPrice({
             onChange={(e) => setBidPrice(e.target.value.replace(/\./g, ""))}
           />
         </div>
-        {remainingTime && !registed > 0 && (
+        {!registed && remainingTime > 0 && (
           <div className="mr-[230px]">
             <button
               className="bg-blue-400 hover:bg-blue-300 rounded-2xl h-[40px] w-[150px] font-bold text-black hover:border-2 hover:border-[#bcab6f]"

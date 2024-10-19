@@ -34,7 +34,7 @@ function Information({
 
   useEffect(() => {
     handleCheckRegisted();
-  }, []);
+  }, [registed]);
 
   return (
     <div className="ml-[30px] mt-[20px] h-[200px] w-[800px] bg-gray-900 hover:bg-gray-800 rounded-2xl border-2 hover:border-4 border-[#bcab6f] outline outline-offset-2 outline-white">
