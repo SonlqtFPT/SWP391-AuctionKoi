@@ -232,7 +232,6 @@ public class LotServiceImpl implements LotService {
         Set<SubscribeRequest> subscribeRequests = (Set<SubscribeRequest>) redisServiceImpl.getSetData("Notify_"+lot.getLotId().toString());
         if(subscribeRequests != null && !subscribeRequests.isEmpty()){
             for(SubscribeRequest subscribeRequest : subscribeRequests){
-
                 String title = "Lot with id " + lot.getLotId() + " just ended!!";
                 String body = "The auction for the lot you followed has just ended. Check the final bid and see if you won!";
                 String token = subscribeRequest.getToken();

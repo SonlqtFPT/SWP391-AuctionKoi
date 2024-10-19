@@ -1,5 +1,6 @@
 package swp.koi.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -10,10 +11,19 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 public class RedisConfig {
+    @Value("${spring.data.redis.host}")
+    private String redisHost;
+
+    @Value("${spring.data.redis.port}")
+    private int redisPort;
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory("localhost", 6379); // Host and port as per Docker configuration
+
+        LettuceConnectionFactory connectionFactory = new LettuceConnectionFactory(redisHost, redisPort);
+        connectionFactory.setPassword("G33ByO0XrfCE6k8covy0xi5FkZAGGMVSxAzCaKa6zFU=");
+        connectionFactory.setUseSsl(true);
+        return connectionFactory;
     }
 
     @Bean

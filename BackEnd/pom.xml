@@ -263,7 +263,11 @@
 			<artifactId>fontbox</artifactId>
 			<version>2.0.29</version> <!-- Ensure fontbox is included for font operations -->
 		</dependency>
-
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>5.2.3</version> <!-- Check for the latest version -->
+		</dependency>
 		<!--	===========EXPORT-PDF DEPENDENCY============	-->
 
 		<dependency>
