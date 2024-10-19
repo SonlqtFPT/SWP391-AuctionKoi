@@ -12,6 +12,8 @@ import {
   AuditOutlined,
   EyeOutlined, // For viewing auctions
   PlusOutlined, // For creating auctions
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu } from "antd";
 
@@ -38,12 +40,20 @@ const items = [
   getItem("View Transaction", "7", <FileOutlined />),
   getItem("Create Breeder", "8", <PlusOutlined />),
   getItem("Create Staff", "9", <PlusOutlined />),
+  // Add a new item for the collapse/expand button
+  getItem("Toggle Menu", "toggle", <MenuFoldOutlined />),
 ];
 
 const SidebarAdmin = ({ setActiveComponent }) => {
   const [collapsed, setCollapsed] = useState(false);
 
   const handleMenuClick = (e) => {
+    // Check if the collapse/expand button was clicked
+    if (e.key === "toggle") {
+      setCollapsed(!collapsed);
+      return;
+    }
+
     // Use e.key to determine which item was clicked
     switch (e.key) {
       case "1":
@@ -72,38 +82,33 @@ const SidebarAdmin = ({ setActiveComponent }) => {
         break;
       case "9":
         setActiveComponent("Create Staff");
-        break; // Ensure to include break for the new case
+        break;
       default:
         setActiveComponent("Dashboard");
     }
   };
 
   return (
-    <Sider collapsed={collapsed} className="bg-black flex flex-col">
-      <div className="flex justify-center items-center flex-col mt-20">
-        {!collapsed && (
-          <p className="text-white mt-5 font-bold">Admin Dashboard</p>
-        )}
-      </div>
-      <div className="flex-shrink-0">
-        <Button
-          type="primary"
-          className="w-full my-5"
-          onClick={() => setCollapsed(!collapsed)}
-        >
-          {collapsed ? "Expand" : "Collapse"}
-        </Button>
+    <Sider
+      collapsed={collapsed}
+      onCollapse={setCollapsed}
+      className="bg-black flex flex-col h-screen" // Use h-screen to ensure the height remains consistent
+    >
+      <div className="flex justify-center items-center flex-col my-20">
+        {!collapsed && <p className="text-white mt-16 font-bold">Admin Dashboard</p>}
       </div>
       <Menu
         theme="dark"
         mode="inline"
         defaultSelectedKeys={["1"]}
-        items={items}
+        items={items.map(item =>
+          item.key === "toggle"
+            ? { ...item, icon: collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined /> }
+            : item
+        )}
         className="bg-[#c74743] text-white flex-grow"
         onClick={handleMenuClick}
       />
-
-      {/* Full-width button for collapse/expand */}
     </Sider>
   );
 };

@@ -201,8 +201,8 @@ const CreateAuction = () => {
   ];
 
   return (
-    <div className="bg-white min-h-screen flex flex-col items-center py-10">
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-4xl w-full">
+    <div className="bg-white  flex flex-col items-center pt-28">
+      <div className="bg-white p-8 rounded-lg shadow-lg max-w-4xl w-full border-2">
         <Steps current={current} className="mb-8" direction="horizontal">
           {steps.map((item) => (
             <Step key={item.title} title={item.title} />
@@ -375,11 +375,10 @@ const AddLots = ({ setLots, auctionTypeName, lots }) => {
                 <Button
                   type="primary"
                   onClick={() => handleAddRemoveLot(record)}
-                  className={`${
-                    lots.some((lot) => lot.fishId === record.fishId)
-                      ? "bg-red-500 hover:bg-red-600"
-                      : "bg-gold hover:bg-yellow-600"
-                  } text-white`}
+                  className={`${lots.some((lot) => lot.fishId === record.fishId)
+                    ? "bg-red-500 hover:bg-red-600"
+                    : "bg-gold hover:bg-yellow-600"
+                    } text-white`}
                 >
                   {lots.some((lot) => lot.fishId === record.fishId)
                     ? "Remove Lot"

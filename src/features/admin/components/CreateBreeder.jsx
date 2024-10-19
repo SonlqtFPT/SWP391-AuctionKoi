@@ -45,15 +45,39 @@ const CreateBreeder = () => {
           },
         }
       );
-
-      if (response.status === 200) {
-        toast.success("Breeder created successfully!"); // Show success toast
+      const { status } = response.data;
+      const { message } = response.data;
+      if (status === 8) {
+        toast.success(message);
+        setBreederName("");
+        setLocation("");
+        setEmail("");
+        setFirstName("");
+        setLastName("");
+        setPassword("");
+        setPhoneNumber("");
+      } else if (status === 3) {
+        toast.error(message);
+        setBreederName("");
+        setLocation("");
+        setEmail("");
+        setFirstName("");
+        setLastName("");
+        setPassword("");
+        setPhoneNumber("");
       }
     } catch (error) {
       toast.error(
         "Error creating breeder: " +
         (error.response?.data?.message || error.message)
-      ); // Show error toast
+      );
+      setBreederName("");
+      setLocation("");
+      setEmail("");
+      setFirstName("");
+      setLastName("");
+      setPassword("");
+      setPhoneNumber("");
     }
   };
 
@@ -79,8 +103,8 @@ const CreateBreeder = () => {
     const namePattern = /^[a-zA-Z]+$/;
     if (!namePattern.test(value)) {
       fieldName === "firstName"
-        ? setFirstNameError("Please enter a valid first name.")
-        : setLastNameError("Please enter a valid last name.");
+        ? setFirstNameError("Please enter a valid name.")
+        : setLastNameError("Please enter a valid name.");
     } else {
       fieldName === "firstName" ? setFirstNameError("") : setLastNameError("");
     }
@@ -111,42 +135,72 @@ const CreateBreeder = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-4 mt-20 ">
+    <div className="max-w-fit mx-auto mt-24 ">
       <form
         onSubmit={handleSubmit}
         className="bg-slate-200 shadow-md rounded-2xl px-8 pt-6 pb-8 mb-4"
       >
         <h2 className="text-2xl font-bold mb-4 text-center">Create New Breeder</h2>
-        <div className="mb-4">
+        <div className="mb-2">
           <label
             htmlFor="breederName"
             className="block mb-1 text-sm font-medium"
           >
             Breeder Name:
           </label>
-          <input
-            type="text"
+          <select
             id="breederName"
             value={breederName}
             onChange={(e) => setBreederName(e.target.value)}
             required
             className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          >
+            <option value="">Select a breeder</option>
+            <option value="Marushin">Marushin</option>
+            <option value="NND">NND</option>
+            <option value="Saki">Saki</option>
+            <option value="Torazo">Torazo</option>
+            <option value="Shinoda">Shinoda</option>
+            <option value="Maruhiro">Maruhiro</option>
+            <option value="Kanno">Kanno</option>
+            <option value="Izumiya">Izumiya</option>
+            <option value="Isa">Isa</option>
+            <option value="Dainichi">Dainichi</option>
+          </select>
         </div>
-        <div className="mb-4">
-          <label htmlFor="location" className="block mb-1 text-sm font-medium">
-            Location:
-          </label>
-          <input
-            type="text"
-            id="location"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            required
-            className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+        <div className='grid grid-cols-2 gap-x-1.5'>
+          <div className="mb-2">
+            <label htmlFor="location" className="block mb-1 text-sm font-medium">
+              Location:
+            </label>
+            <input
+              type="text"
+              id="location"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              required
+              className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div className="mb-2">
+            <label
+              htmlFor="phoneNumber"
+              className="block mb-1 text-sm font-medium"
+            >
+              Phone Number:
+            </label>
+            <input
+              type="tel"
+              id="phoneNumber"
+              value={phoneNumber}
+              onChange={handlePhoneChange}
+              required
+              className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {phoneError && <p className="text-red-500 text-sm mt-1">{phoneError}</p>}
+          </div>
         </div>
-        <div className="mb-4">
+        <div className="mb-2">
           <label htmlFor="email" className="block mb-1 text-sm font-medium">
             Email:
           </label>
@@ -161,37 +215,38 @@ const CreateBreeder = () => {
           {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
 
         </div>
-        <div className="mb-4">
-          <label htmlFor="firstName" className="block mb-1 text-sm font-medium">
-            First Name:
-          </label>
-          <input
-            type="text"
-            id="firstName"
-            value={firstName}
-            onChange={handleFirstNameChange}
-            required
-            className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        {firstNameError && <p className="text-red-500 text-sm mt-1">{firstNameError}</p>}
+        <div className='grid grid-cols-2 gap-x-1.5'>
+          <div className="mb-2">
+            <label htmlFor="firstName" className="block mb-1 text-sm font-medium">
+              First Name:
+            </label>
+            <input
+              type="text"
+              id="firstName"
+              value={firstName}
+              onChange={handleFirstNameChange}
+              required
+              className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {firstNameError && <p className="text-red-500 text-sm mt-1">{firstNameError}</p>}
+          </div>
 
-        <div className="mb-4">
-          <label htmlFor="lastName" className="block mb-1 text-sm font-medium">
-            Last Name:
-          </label>
-          <input
-            type="text"
-            id="lastName"
-            value={lastName}
-            onChange={handleLastNameChange}
-            required
-            className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          <div className="mb-2">
+            <label htmlFor="lastName" className="block mb-1 text-sm font-medium">
+              Last Name:
+            </label>
+            <input
+              type="text"
+              id="lastName"
+              value={lastName}
+              onChange={handleLastNameChange}
+              required
+              className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {lastNameError && <p className="text-red-500 text-sm mt-1">{lastNameError}</p>}
+          </div>
         </div>
-        {lastNameError && <p className="text-red-500 text-sm mt-1">{lastNameError}</p>}
-
-        <div className="mb-4">
+        <div className="mb-2">
           <label htmlFor="password" className="block mb-1 text-sm font-medium">
             Password:
           </label>
@@ -204,23 +259,7 @@ const CreateBreeder = () => {
             className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        <div className="mb-4">
-          <label
-            htmlFor="phoneNumber"
-            className="block mb-1 text-sm font-medium"
-          >
-            Phone Number:
-          </label>
-          <input
-            type="tel"
-            id="phoneNumber"
-            value={phoneNumber}
-            onChange={handlePhoneChange}
-            required
-            className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          {phoneError && <p className="text-red-500 text-sm mt-1">{phoneError}</p>}
-        </div>
+
         <button
           type="submit"
           className="bg-blue-500 text-white p-2 rounded w-full hover:bg-blue-600 transition duration-200"

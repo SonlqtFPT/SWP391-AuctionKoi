@@ -39,10 +39,11 @@ const CreateStaff = () => {
           },
         }
       );
-
-      if (response.status === 200) {
-        toast.success("Staff created successfully!"); // Show success toast
-      }
+      const { status } = response.data;
+      const { message } = response.data;
+      if (status === 8) {
+        toast.success(message);
+      } else toast.error("This staff have already exited!");
     } catch (error) {
       toast.error(
         "Error creating staff: " +
@@ -126,33 +127,35 @@ const CreateStaff = () => {
           {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
 
         </div>
-        <div className="mb-4">
-          <label htmlFor="firstName" className="block mb-1 text-sm font-medium">
-            First Name:
-          </label>
-          <input
-            type="text"
-            id="firstName"
-            value={firstName}
-            onChange={handleFirstNameChange}
-            required
-            className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          {firstNameError && <p className="text-red-500 text-sm mt-1">{firstNameError}</p>}
-        </div>
-        <div className="mb-4">
-          <label htmlFor="lastName" className="block mb-1 text-sm font-medium">
-            Last Name:
-          </label>
-          <input
-            type="text"
-            id="lastName"
-            value={lastName}
-            onChange={handleLastNameChange}
-            required
-            className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          {lastNameError && <p className="text-red-500 text-sm mt-1">{lastNameError}</p>}
+        <div className='grid grid-cols-2 gap-x-1.5'>
+          <div className="mb-4">
+            <label htmlFor="firstName" className="block mb-1 text-sm font-medium">
+              First Name:
+            </label>
+            <input
+              type="text"
+              id="firstName"
+              value={firstName}
+              onChange={handleFirstNameChange}
+              required
+              className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {firstNameError && <p className="text-red-500 text-sm mt-1">{firstNameError}</p>}
+          </div>
+          <div className="mb-4">
+            <label htmlFor="lastName" className="block mb-1 text-sm font-medium">
+              Last Name:
+            </label>
+            <input
+              type="text"
+              id="lastName"
+              value={lastName}
+              onChange={handleLastNameChange}
+              required
+              className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {lastNameError && <p className="text-red-500 text-sm mt-1">{lastNameError}</p>}
+          </div>
         </div>
         <div className="mb-4">
           <label htmlFor="password" className="block mb-1 text-sm font-medium">
