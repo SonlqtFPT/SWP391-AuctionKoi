@@ -53,7 +53,6 @@ const Header = () => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    console.log("Data: " + response.data);
     const { status } = response.data;
     const { message } = response.data;
     if (status === 5) {
