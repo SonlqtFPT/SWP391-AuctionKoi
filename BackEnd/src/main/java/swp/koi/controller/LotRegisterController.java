@@ -69,10 +69,10 @@ public class LotRegisterController {
     }
 
     @Operation(summary = "Check if the member is registered or not")
-    @GetMapping("/is-registered/{lotId}/{memberId}")
-    public ResponseData<?> isRegistered(@PathVariable Integer lotId, @PathVariable Integer memberId){
+    @GetMapping("/is-registered/{lotId}/{accountId}")
+    public ResponseData<?> isRegistered(@PathVariable Integer lotId, @PathVariable Integer accountId){
         try{
-            boolean isRegistered = lotRegisterService.isRegistered(lotId, memberId);
+            boolean isRegistered = lotRegisterService.isRegistered(lotId, accountId);
             if(isRegistered){
                 return new ResponseData<>(ResponseCode.MEMBER_REGISTED);
             }else {

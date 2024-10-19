@@ -18,6 +18,5 @@ public interface LotRegisterService {
 
     LotRegister getLotWinner(Integer lotId);
 
-    boolean isRegistered(Integer lotId, Integer memberId);
-
+    boolean isRegistered(Integer lotId, Integer accountId);
 }
