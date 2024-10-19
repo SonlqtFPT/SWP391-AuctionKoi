@@ -18,4 +18,17 @@ public class EmailContent {
         context.setVariable("password", password);
         return templateEngine.process("signupEmail", context);
     }
+
+    public String createEmailResetPassword(String firstName, String resetLink){
+        Context context = new Context();
+        context.setVariable("firstName", firstName);
+        context.setVariable("resetLink", resetLink);
+        return templateEngine.process("resetPassword", context);
+    }
+
+    public String createEmailChangedPassword(String firstName){
+        Context context = new Context();
+        context.setVariable("firstName", firstName);
+        return templateEngine.process("changedPassword", context);
+    }
 }
