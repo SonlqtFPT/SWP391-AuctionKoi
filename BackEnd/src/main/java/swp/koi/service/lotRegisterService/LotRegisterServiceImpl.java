@@ -10,6 +10,7 @@ import swp.koi.dto.request.LotRegisterDTO;
 import swp.koi.dto.response.LotRegisterResponseDTO;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
+import swp.koi.model.Account;
 import swp.koi.model.Lot;
 import swp.koi.model.LotRegister;
 import swp.koi.model.Member;
@@ -17,8 +18,11 @@ import swp.koi.model.enums.LotRegisterStatusEnum;
 import swp.koi.model.enums.TransactionTypeEnum;
 import swp.koi.repository.AccountRepository;
 import swp.koi.repository.LotRegisterRepository;
+import swp.koi.service.accountService.AccountService;
+import swp.koi.service.authService.GetUserInfoByUsingAuth;
 import swp.koi.service.lotService.LotService;
 import swp.koi.service.lotService.LotServiceImpl;
+import swp.koi.service.memberService.MemberService;
 import swp.koi.service.memberService.MemberServiceImpl;
 import swp.koi.service.vnPayService.VnpayService;
 
@@ -33,12 +37,14 @@ import java.util.stream.Collectors;
 public class LotRegisterServiceImpl implements LotRegisterService{
 
     private final LotRegisterRepository lotRegisterRepository;
-    private final LotService lotServiceImpl;
+    private final LotService lotService;
     private final MemberServiceImpl memberServiceImpl;
     private final ModelMapper modelMapper;
     private final VnpayService vnpayService;
     private final AccountRepository accountRepository;
-
+    private final GetUserInfoByUsingAuth getUserInfoByUsingAuth;
+    private final MemberService memberService;
+    private final AccountService accountService;
 
     /**
      * @param lotRegisDto
@@ -46,7 +52,7 @@ public class LotRegisterServiceImpl implements LotRegisterService{
      * @throws UnsupportedEncodingException
      */
     @Override
-    public String regisSlotWithLotId(LotRegisterDTO lotRegisDto) throws UnsupportedEncodingException {
+    public String regisSlotWithLotId(LotRegisterDTO lotRegisDto) throws UnsupportedEncodingException, KoiException {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
@@ -71,13 +77,13 @@ public class LotRegisterServiceImpl implements LotRegisterService{
     }
 
     private boolean lotEndedYet(int lotId) {
-        Lot lot = lotServiceImpl.findLotById(lotId);
+        Lot lot = lotService.findLotById(lotId);
         return lot.getEndingTime().isBefore(LocalDateTime.now());
     }
 
     @Override
     public List<LotRegisterResponseDTO> listLotRegistersByLotId(int lotId) throws KoiException {
-        Lot lot = lotServiceImpl.findLotById(lotId);
+        Lot lot = lotService.findLotById(lotId);
 
         List<LotRegister> lotRegisters = lotRegisterRepository.findByLot(lot).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
 
@@ -101,5 +107,31 @@ public class LotRegisterServiceImpl implements LotRegisterService{
                 .member(member)
                 .lot(lot)
                 .build();
+    }
+
+    @Override
+    public LotRegister getLotWinner(Integer lotId) {
+        Lot lot = lotService.findLotById(lotId);
+
+        List<LotRegister> lotRegisters = lotRegisterRepository.findByLot(lot).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
+
+        for(LotRegister lotRegis : lotRegisters){
+            if(lotRegis.getStatus().equals(LotRegisterStatusEnum.WON)){
+                return lotRegis;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public boolean isRegistered(Integer lotId, Integer accountId) {
+        Lot lot = lotService.findLotById(lotId);
+        Account account = accountService.findById(accountId);
+        Member member = memberServiceImpl.getMemberByAccount(account);
+
+        if(lotRegisterRepository.findLotRegisterByLotAndMember(lot, member) == null)
+            return false;
+
+        return true;
     }
 }

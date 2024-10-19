@@ -1,4 +1,4 @@
-package swp.koi.service.fireBase.fireBase;
+package swp.koi.service.fireBase;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

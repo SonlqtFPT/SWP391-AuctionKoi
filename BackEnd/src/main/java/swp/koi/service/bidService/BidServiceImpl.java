@@ -58,7 +58,7 @@ public class BidServiceImpl implements BidService {
         // Validate the bid request to ensure it's eligible for placing a bid
         validateBidRequest(bidRequestDto, member, lot);
 
-
+        
         // Create a Bid entity and update the Lot with the new bid
 
         Bid bid = createBid(bidRequestDto, member, lot);

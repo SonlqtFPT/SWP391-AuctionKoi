@@ -11,7 +11,8 @@ import swp.koi.model.*;
 import swp.koi.model.enums.*;
 import swp.koi.repository.*;
 import swp.koi.service.bidService.BidServiceImpl;
-import swp.koi.service.fireBase.fireBase.FCMService;
+import swp.koi.service.fireBase.FCMService;
+import swp.koi.service.lotRegisterService.LotRegisterService;
 import swp.koi.service.redisService.RedisServiceImpl;
 import swp.koi.service.socketIoService.EventListenerFactoryImpl;
 import swp.koi.service.socketIoService.SocketDetail;
@@ -21,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -230,13 +232,23 @@ public class LotServiceImpl implements LotService {
         Set<SubscribeRequest> subscribeRequests = (Set<SubscribeRequest>) redisServiceImpl.getSetData("Notify_"+lot.getLotId().toString());
         if(subscribeRequests != null && !subscribeRequests.isEmpty()){
             for(SubscribeRequest subscribeRequest : subscribeRequests){
-
                 String title = "Lot with id " + lot.getLotId() + " just ended!!";
                 String body = "The auction for the lot you followed has just ended. Check the final bid and see if you won!";
                 String token = subscribeRequest.getToken();
                 fcmService.sendPushNotification(title, body, token);
             }
         }
+    }
+
+    @Override
+    public List<Lot> getLotByMember(Integer memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new KoiException(ResponseCode.MEMBER_NOT_FOUND));
+
+        List<LotRegister> lotRegisters = lotRegisterRepository.findAllByMember(member);
+        List<Lot> lots = lotRegisters.stream()
+                .map(lot -> lot.getLot())
+                .collect(Collectors.toList());
+        return lots;
     }
 
 

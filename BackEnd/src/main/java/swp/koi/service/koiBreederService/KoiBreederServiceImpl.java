@@ -1,12 +1,15 @@
 package swp.koi.service.koiBreederService;
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import swp.koi.dto.request.AccountRegisterDTO;
 import swp.koi.dto.request.AuctionRequestDTO;
 import swp.koi.dto.request.KoiBreederDTO;
+import swp.koi.dto.request.UpdateBreederProfileDto;
 import swp.koi.dto.response.KoiBreederResponseDTO;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
@@ -17,23 +20,19 @@ import swp.koi.model.KoiFish;
 import swp.koi.model.enums.AccountRoleEnum;
 import swp.koi.repository.KoiBreederRepository;
 import swp.koi.service.accountService.AccountService;
+import swp.koi.service.authService.GetUserInfoByUsingAuth;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class KoiBreederServiceImpl implements KoiBreederService{
 
     private final KoiBreederRepository koiBreederRepository;
     private final AccountService accountService;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
-
-    public KoiBreederServiceImpl(KoiBreederRepository koiBreederRepository, AccountService accountService, ModelMapper modelMapper, PasswordEncoder passwordEncoder) {
-        this.koiBreederRepository = koiBreederRepository;
-        this.accountService = accountService;
-        this.modelMapper = modelMapper;
-        this.passwordEncoder = passwordEncoder;
-    }
+    private final GetUserInfoByUsingAuth getUserInfoByUsingAuth;
 
     @Override
     public KoiBreederResponseDTO createKoiBreeder(@Valid KoiBreederDTO request) throws KoiException{
@@ -73,5 +72,23 @@ public class KoiBreederServiceImpl implements KoiBreederService{
         return koiBreederRepository.findByBreederId(breederId).orElseThrow(() -> new KoiException(ResponseCode.BREEDER_NOT_FOUND));
     }
 
+    @Transactional
+    @Override
+    public void updateBreederProfile(UpdateBreederProfileDto request) {
+        Account account = getUserInfoByUsingAuth.getAccountFromAuth();
+        KoiBreeder koiBreeder = findByAccount(account);
+        if(koiBreeder == null)
+            throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
 
+        account.setFirstName(request.getFirstName());
+        account.setLastName(request.getLastName());
+        account.setPhoneNumber(request.getPhoneNumber());
+
+        accountService.saveAccount(account);
+
+        koiBreeder.setBreederName(request.getBreederName());
+        koiBreeder.setLocation(request.getLocation());
+
+        koiBreederRepository.save(koiBreeder);
+    }
 }

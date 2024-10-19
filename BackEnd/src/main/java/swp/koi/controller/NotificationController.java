@@ -1,6 +1,7 @@
 package swp.koi.controller;
 
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ import swp.koi.service.redisService.RedisServiceImpl;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/notification")
+@Tag(name = "notification", description = "Everything about your notification")
 public class NotificationController {
 
     private final RedisServiceImpl redisService;

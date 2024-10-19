@@ -9,11 +9,13 @@ public interface LotService {
     Lot findLotById(int id);
 
     void startLotBy();
-
+    
     void endLot(Lot lot);
 
     List<Lot> createLots(List<Lot> lots);
 
     @Async
     void sendNotificateToFollower(Lot lot);
+
+    List<Lot> getLotByMember(Integer memberId);
 }

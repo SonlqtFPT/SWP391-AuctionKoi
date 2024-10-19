@@ -1,4 +1,4 @@
-package swp.koi.service.fireBase.fireBase;
+package swp.koi.service.fireBase;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
