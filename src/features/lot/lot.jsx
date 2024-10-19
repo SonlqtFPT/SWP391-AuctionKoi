@@ -5,7 +5,7 @@ import Information from "./component-lot/infomation";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../config/axios";
 import { useNavigate, useParams } from "react-router-dom";
 
 function Lot() {
@@ -15,12 +15,12 @@ function Lot() {
   const [remainingTime, setRemainingTime] = useState();
   const navigate = useNavigate();
 
-  const get_lot_api = `http://localhost:8080/auction/get-auction/${auctionId}`;
+  const get_lot_api = `auction/get-auction/${auctionId}`;
 
   const fetchLots = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get(get_lot_api, {
+      const response = await api.get(get_lot_api, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -79,7 +79,9 @@ function Lot() {
       <Header />
       <div className="mt-[50px] bg-hero-pattern bg-cover relative">
         <div className="absolute bg-black bg-opacity-70 inset-0"></div>
-        <div className="relative">{lots && <Time remainingTime={remainingTime} auctionId={auctionId} />}</div>
+        <div className="relative">
+          {lots && <Time remainingTime={remainingTime} auctionId={auctionId} />}
+        </div>
         <div className="mb-10 z-20 sm:flex flex-wrap justify-center gap-36 relative">
           {lots.map((lot, index) => (
             <div key={index}>
@@ -87,12 +89,11 @@ function Lot() {
                 onClick={() => handlePageChange(lot.lotId)} // Truyền lotId vào hàm
                 className="h-[600px] w-full bg-gray-900 rounded-[50px] pb-14 my-10 border-2 border-[#bcab6f] hover:bg-gray-800 hover:border-4"
               >
-                {lots &&
+                {lots && (
                   <div className="w-full h-auto object-cover">
-                    <Picture
-                      img={lot.imageUrl}
-                    />
-                  </div>}
+                    <Picture img={lot.imageUrl} />
+                  </div>
+                )}
                 <div className="flex justify-center font-bold mt-3 ">
                   {lots && (
                     <Information

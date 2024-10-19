@@ -6,11 +6,12 @@ import Information from "./components-bid/Infomation";
 import EnterPrice from "./components-bid/EnterPrice";
 import TopBid from "./components-bid/TopBid";
 import Video from "./components-bid/Video";
-import axios from "axios";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { useParams } from "react-router-dom"; // Import useParams
 import { io } from "socket.io-client";
+import api from "../../config/axios";
+import { toast } from "react-toastify"; // Import toast
 
 function Bid() {
   const { lotId } = useParams(); // Lấy lotId từ URL
@@ -19,19 +20,50 @@ function Bid() {
   const [remainingTime, setRemainingTime] = useState(0);
   const [bidList, setBidList] = useState([]); // State for bid list
   const [connectionStatus, setConnectionStatus] = useState(""); // State to store connection status
-
+  const storedData = localStorage.getItem("accountData");
+  const accountData = JSON.parse(storedData);
+  const currentAccountId = accountData.accountId;
   const eventName = `Event_${lotId}`;
+  const [winnerAccountId, setWinnerAccountId] = useState();
+  const [hasEnded, setHasEnded] = useState(false); // Thêm biến trạng thái để theo dõi thời gian đã kết thúc
+  const [registed, setRegisted] = useState(false);
 
   // Memoize socket connection using useRef to ensure it's stable across renders
   const socketRef = useRef(null);
 
-  const get_lot_api = `http://localhost:8080/auction/get-lot/${lotId}`; // Sử dụng lotId
-  const get_bidList_api = `http://localhost:8080/bid/list?lotId=${lotId}`; // API for bid list
+  const get_lot_api = `auction/get-lot/${lotId}`; // Sử dụng lotId
+  const get_bidList_api = `bid/list?lotId=${lotId}`; // API for bid list
+  const get_winner_api = `register-lot/get-winner?lotId=${lotId}`;
+  const get_checkRegisted_api = `register-lot/is-registered/${lotId}/${currentAccountId}`;
+
+  const fetchCheckRegisted = async () => {
+    const token = localStorage.getItem("accessToken");
+
+    const response = await api.get(get_checkRegisted_api, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log("Is registed? ", response.data.message);
+    if (response.data.message == "Member already registered") setRegisted(true);
+  };
+
+  const fetchWinner = async () => {
+    const token = localStorage.getItem("accessToken");
+    const response = await api.get(get_winner_api, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log("Winner: ", response.data.data);
+    setWinnerAccountId(response.data.data.member.account.accountId);
+    console.log("Winner accountId: ", winnerAccountId);
+  };
 
   const fetchLot = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get(get_lot_api, {
+      const response = await api.get(get_lot_api, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -46,17 +78,18 @@ function Bid() {
   const fetchBidList = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get(get_bidList_api, {
+      const response = await api.get(get_bidList_api, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       const listData = response.data.data.map((bid) => ({
         bidAmount: bid.bidAmount,
-        lastName: bid.member.account.lastName,
+        firstName: bid.member.account.firstName,
       }));
       listData.sort((a, b) => b.bidAmount - a.bidAmount);
       setBidList(listData);
+      console.log("AccountId: ", currentAccountId);
     } catch (error) {
       console.error("Error fetching bid data at bid.jsx:", error);
     }
@@ -65,10 +98,13 @@ function Bid() {
   useEffect(() => {
     fetchLot();
     fetchBidList();
+    fetchWinner();
+    fetchCheckRegisted();
   }, []);
 
   useEffect(() => {
     if (lot) {
+      console.log("End time: ", lot.endingTime);
       const endingTime = new Date(lot.endingTime).getTime();
       const interval = setInterval(() => {
         const now = Date.now();
@@ -76,6 +112,21 @@ function Bid() {
         if (timeLeft <= 0) {
           clearInterval(interval);
           setRemainingTime(-1);
+          if (registed) {
+            if (!hasEnded) {
+              // Kiểm tra nếu chưa hiển thị thông báo
+              setHasEnded(true); // Đánh dấu là đã kết thúc
+              if (currentAccountId === winnerAccountId) {
+                toast("Xin chúc mừng bạn đã chiến thắng!", {
+                  autoClose: false, // Không tự động tắt
+                });
+              } else {
+                toast("Bạn đã thua, chúc bạn may mắn lần sau!", {
+                  autoClose: false, // Không tự động tắt
+                });
+              }
+            }
+          }
         } else {
           setRemainingTime(timeLeft);
         }
@@ -83,7 +134,7 @@ function Bid() {
 
       return () => clearInterval(interval);
     }
-  }, [lot]);
+  }, [lot, hasEnded, currentAccountId, winnerAccountId]); // Thêm hasEnded vào dependencies
 
   useEffect(() => {
     // Only establish the socket connection if it doesn't exist
@@ -139,6 +190,7 @@ function Bid() {
                   breeder={lot.koiFish.breederName}
                   varietyName={lot.koiFish.varietyName}
                   fishId={lot.koiFish.fishId}
+                  registed={registed}
                 />
               )}
             </div>
@@ -154,6 +206,7 @@ function Bid() {
                   remainingTime={remainingTime}
                   eventName={eventName}
                   socket={socketRef.current} // Use stable socket instance
+                  registed={registed}
                 />
               )}
             </div>

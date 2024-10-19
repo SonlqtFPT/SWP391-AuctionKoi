@@ -1,10 +1,11 @@
 /* eslint-disable react/prop-types */
 import { Input, Button } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Socket } from "socket.io-client";
+import api from "../../../config/axios";
 
 function EnterPrice({
   currentPrice,
@@ -16,18 +17,18 @@ function EnterPrice({
   fetchBidList,
   remainingTime,
   eventName,
-  socket,
+  registed,
 }) {
   const [bidPrice, setBidPrice] = useState("");
   const [registrationLink, setRegistrationLink] = useState(""); // Thêm state để lưu link đăng ký
 
-  const post_bid_api = "http://localhost:8080/bid/bidAuction"; //Bid
-  const post_regis_api = "http://localhost:8080/register-lot/regis"; //Deposit
-  const post_socket_api = `http://localhost:8080/test/send?eventName=${eventName}`;
+  const post_bid_api = "bid/bidAuction"; //Bid
+  const post_regis_api = "register-lot/regis"; //Deposit
+  const post_socket_api = `test/send?eventName=${eventName}`;
 
   const handleBidNotification = async () => {
     try {
-      await axios.post(post_socket_api, {
+      await api.post(post_socket_api, {
         winnerName: currentMemberId, // Tên người thắng
         newPrice: bidPrice.replace(/\./g, ""), // Giá mới
         lotId: lotId, // ID của lô
@@ -42,7 +43,7 @@ function EnterPrice({
       const token = localStorage.getItem("accessToken");
 
       // Move the headers object outside of the data you're sending
-      const response = await axios.post(
+      const response = await api.post(
         post_bid_api,
         {
           lotId: lotId,
@@ -55,36 +56,34 @@ function EnterPrice({
           },
         }
       );
-
-      if (response.data.message === "Member is not registered for the Lot") {
-        // If the member is not registered, make another API call to register
-        const regResponse = await axios.post(
-          post_regis_api,
-          {
-            memberId: currentMemberId,
-            lotId: lotId,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        const link = regResponse.data;
-        console.log("Link: ", link.data);
-        setRegistrationLink(link.data);
-      } else {
-        toast.success(response.data.message);
-        fetchLot();
-        fetchBidList();
-        await handleBidNotification(); // Gọi hàm thông báo sau khi đặt giá thầu
-        setRegistrationLink("");
-      }
+      toast.success(response.data.message);
+      fetchLot();
+      fetchBidList();
+      await handleBidNotification(); // Gọi hàm thông báo sau khi đặt giá thầu
+      setRegistrationLink("");
     } catch (error) {
       console.error("Error submitting bid:", error);
       console.log("Registration link: ", registrationLink);
     }
+  };
+
+  const fetchRegisLink = async () => {
+    const token = localStorage.getItem("accessToken");
+    const response = await api.post(
+      post_regis_api,
+      {
+        lotId: lotId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log("Đạ dang ki chua? ", registed);
+    const link = response.data.data;
+    console.log("Link: ", link);
+    setRegistrationLink(link);
   };
 
   // Hàm định dạng số
@@ -92,10 +91,15 @@ function EnterPrice({
     return num ? num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") : ""; // {{ edit_8 }}
   };
 
-  // Hàm xử lý khi nhấn vào link
-  const handleLinkClick = () => {
-    setRegistrationLink(""); // Đặt lại link khi nhấn vào
+  const handleDepositClick = () => {
+    if (registrationLink) {
+      window.open(registrationLink, "_blank"); // Mở link trong tab mới
+    }
   };
+
+  useEffect(() => {
+    fetchRegisLink();
+  }, []);
 
   return (
     <div
@@ -118,7 +122,7 @@ function EnterPrice({
         </div>
       </div>
       <div className="flex justify-between gap-3 mt-7">
-        {remainingTime > 0 && (
+        {registed && remainingTime > 0 && (
           <div className="ml-3 ">
             <button
               className="bg-red-600 hover:bg-red-500 rounded-2xl h-[40px] w-[100px] font-bold text-black hover:border-2 hover:border-[#bcab6f]"
@@ -128,38 +132,31 @@ function EnterPrice({
             </button>
           </div>
         )}
-        {remainingTime > 0 && ( // Thêm điều kiện để kiểm tra thời gian còn lại
-          <div>
-            <Input
-              className="rounded-3xl mr-2 h-[40px] w-[270px] text-black"
-              type="text"
-              value={formatNumber(bidPrice)} // Hiển thị giá trị đã định dạng
-              onChange={(e) => setBidPrice(e.target.value.replace(/\./g, ""))} // Lưu giá trị không có dấu phẩy
-            />
+        <div>
+          <Input
+            className={`rounded-3xl mr-2 h-[40px] w-[270px] text-black ${
+              !registed || remainingTime <= 0 ? "hidden" : ""
+            }`}
+            type="text"
+            value={formatNumber(bidPrice)}
+            onChange={(e) => setBidPrice(e.target.value.replace(/\./g, ""))}
+          />
+        </div>
+        {remainingTime && !registed > 0 && (
+          <div className="mr-[230px]">
+            <button
+              className="bg-blue-400 hover:bg-blue-300 rounded-2xl h-[40px] w-[150px] font-bold text-black hover:border-2 hover:border-[#bcab6f]"
+              onClick={handleDepositClick} // Gọi hàm khi nhấn nút
+            >
+              Deposit here!
+            </button>
           </div>
         )}
-        <div className="bg-slate-500 h-[40px] w-[550px] rounded-[50px] flex items-center justify-between pl-7 mr-3 text-black">
+        <div className="bg-slate-500 h-[40px] w-[380px] rounded-[50px] flex items-center justify-between pl-7 mr-3 text-black ">
           <h1 className="text-xl font-bold ">Increment</h1>
           <h1 className="text-xl font-bold mr-8">{formatNumber(increment)}</h1>
         </div>
       </div>
-      {registrationLink && ( // Hiển thị link đăng ký nếu có
-        <div className="mt-2 ml-5">
-          <p>
-            You have not deposited yet. Please deposit{" "}
-            <a
-              href={registrationLink}
-              target="_blank" // Mở link trong tab mới
-              rel="noopener noreferrer" // Bảo mật
-              className="text-teal-300 font-bold underline"
-              onClick={handleLinkClick} // Gọi hàm khi nhấn vào link
-            >
-              here
-            </a>
-            .
-          </p>
-        </div>
-      )}
     </div>
   );
 }

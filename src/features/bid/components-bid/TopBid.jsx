@@ -21,12 +21,13 @@ function TopBid({ list }) {
         {topBids.map((bid, index) => (
           <div
             key={index}
-            className={`h-[70px] w-[700px] m-5 rounded-[20px] flex items-center justify-between pl-7 ml-10 ${bid.bidAmount === Math.max(...topBids.map((b) => b.bidAmount))
-              ? "bg-green-500"
-              : "bg-slate-400"
-              }`}
+            className={`h-[70px] w-[700px] m-5 rounded-[20px] flex items-center justify-between pl-7 ml-10 ${
+              bid.bidAmount === Math.max(...topBids.map((b) => b.bidAmount))
+                ? "bg-green-500"
+                : "bg-slate-400"
+            }`}
           >
-            <h1 className="text-xl font-bold">{bid.lastName}</h1>
+            <h1 className="text-xl font-bold">{bid.firstName}</h1>
             <h1 className="text-xl font-bold mr-8">{bid.bidAmount}</h1>
           </div>
         ))}
