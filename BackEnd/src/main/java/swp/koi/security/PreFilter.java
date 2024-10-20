@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import swp.koi.exception.KoiException;
 import swp.koi.model.enums.TokenType;
 import swp.koi.service.accountService.AccountDetailService;
 import swp.koi.service.accountService.AccountServiceImpl;
@@ -31,7 +32,7 @@ public class PreFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
-                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException, KoiException {
 
         final String authorizationHeader = request.getHeader("Authorization");
 

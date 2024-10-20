@@ -14,4 +14,8 @@ public interface InvoiceService {
     String regeneratePaymentLinkForInvoice(int invoiceId) throws UnsupportedEncodingException;
 
     List<Invoice> getAllInvoicesForAuctionWinner();
+
+    Invoice updateInvoiceAddress(double kilometer, int invoiceId, String address);
+
+    Invoice getInvoiceForSpecificLot(int lotId);
 }

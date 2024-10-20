@@ -22,4 +22,8 @@ public class InvoiceEntityToDtoConverter {
         return response;
     }
 
+    public InvoiceResponseDto convertInvoiceDto(Invoice invoice){
+        return modelMapper.map(invoice, InvoiceResponseDto.class);
+    }
+
 }

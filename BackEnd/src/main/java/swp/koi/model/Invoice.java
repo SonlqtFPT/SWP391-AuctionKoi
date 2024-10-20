@@ -1,11 +1,14 @@
 package swp.koi.model;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import swp.koi.model.enums.InvoiceStatusEnums;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -33,6 +36,11 @@ public class Invoice {
 
     float subTotal;
 
+    @Min(value = 0, message = "distance must be > 0")
+    Double kilometers;
+
+    String address;
+
     @Enumerated(EnumType.STRING)
     InvoiceStatusEnums status;
 
@@ -41,7 +49,11 @@ public class Invoice {
     Member member;
 
     @Column(name = "paymentLink", length = 2048)
+
     String paymentLink;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    KoiFish koiFish;
 
     @OneToOne
     @JoinColumn(name = "Lot_id")

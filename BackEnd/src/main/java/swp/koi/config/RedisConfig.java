@@ -21,8 +21,8 @@ public class RedisConfig {
     public RedisConnectionFactory redisConnectionFactory() {
 
         LettuceConnectionFactory connectionFactory = new LettuceConnectionFactory(redisHost, redisPort);
-        connectionFactory.setPassword("G33ByO0XrfCE6k8covy0xi5FkZAGGMVSxAzCaKa6zFU=");
-        connectionFactory.setUseSsl(true);
+//        connectionFactory.setPassword("G33ByO0XrfCE6k8covy0xi5FkZAGGMVSxAzCaKa6zFU=");
+//        connectionFactory.setUseSsl(true);
         return connectionFactory;
     }
 

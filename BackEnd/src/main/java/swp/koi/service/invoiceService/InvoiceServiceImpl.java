@@ -6,11 +6,13 @@ import org.springframework.stereotype.Service;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
 import swp.koi.model.Invoice;
+import swp.koi.model.Lot;
 import swp.koi.model.Member;
 import swp.koi.model.enums.InvoiceStatusEnums;
 import swp.koi.model.enums.TransactionTypeEnum;
 import swp.koi.repository.InvoiceRepository;
 import swp.koi.service.authService.GetUserInfoByUsingAuth;
+import swp.koi.service.lotService.LotService;
 import swp.koi.service.vnPayService.VnpayServiceImpl;
 
 import java.io.UnsupportedEncodingException;
@@ -27,6 +29,7 @@ public class InvoiceServiceImpl implements InvoiceService{
     private final InvoiceRepository invoiceRepository;
     private final VnpayServiceImpl vnpayService;
     private final GetUserInfoByUsingAuth getUserInfoByUsingAuth;
+    private final LotService lotService;
 
     @Override
     public Invoice createInvoiceForAuctionWinner() {
@@ -77,5 +80,54 @@ public class InvoiceServiceImpl implements InvoiceService{
         Member member = getUserInfoByUsingAuth.getMemberFromAuth();
 
         return invoiceRepository.findAllByStatusAndMember(InvoiceStatusEnums.PENDING,member);
+    }
+
+    @Override
+    public Invoice updateInvoiceAddress(double kilometer, int invoiceId, String address){
+
+        Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
+
+        invoice.setAddress(address);
+        invoice.setKilometers(kilometer);
+
+        float currentPrice = invoice.getFinalAmount();
+        float newPriceWithAddress = generateShippingPriceForInvoice(kilometer);
+        float newPrice = currentPrice + newPriceWithAddress;
+
+        invoice.setFinalAmount(newPrice);
+        return invoiceRepository.save(invoice);
+    }
+
+    private float generateShippingPriceForInvoice(double kilometer) {
+        float pricePerKm = pricePerKilometer(kilometer);
+        return (float) (pricePerKm * kilometer);
+    }
+
+    private float pricePerKilometer(double kilometer) {
+        int pricePerKm = 0;
+        
+        if (kilometer >= 11 && kilometer <= 50) {
+            pricePerKm = 1500;
+        } else if (kilometer >= 51 && kilometer <= 100) {
+            pricePerKm = 1200;
+        } else if (kilometer >= 101 && kilometer <= 200) {
+            pricePerKm = 1000;
+        } else if (kilometer > 200) {
+            pricePerKm = 800;
+        } else {
+            throw new IllegalStateException("Kilometers must greater than 0"); // Invalid distance
+        }
+        
+        return pricePerKm;
+    }
+
+    @Override
+    public Invoice getInvoiceForSpecificLot(int lotId) {
+        try {
+            Lot lot = lotService.findLotById(lotId);
+            return invoiceRepository.findByLot(lot);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

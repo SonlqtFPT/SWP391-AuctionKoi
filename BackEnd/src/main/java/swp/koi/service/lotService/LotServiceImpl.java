@@ -12,7 +12,6 @@ import swp.koi.model.enums.*;
 import swp.koi.repository.*;
 import swp.koi.service.bidService.BidServiceImpl;
 import swp.koi.service.fireBase.FCMService;
-import swp.koi.service.lotRegisterService.LotRegisterService;
 import swp.koi.service.redisService.RedisServiceImpl;
 import swp.koi.service.socketIoService.EventListenerFactoryImpl;
 import swp.koi.service.socketIoService.SocketDetail;
@@ -178,7 +177,8 @@ public class LotServiceImpl implements LotService {
         }
     }
 
-    private Invoice generateInvoice(int lotId, int memberId) throws UnsupportedEncodingException {
+    @Override
+    public Invoice generateInvoice(int lotId, int memberId) throws UnsupportedEncodingException {
         Lot lot = lotRepository.findById(lotId).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new KoiException(ResponseCode.MEMBER_NOT_FOUND));
 
@@ -187,7 +187,7 @@ public class LotServiceImpl implements LotService {
                 .tax((float) (lot.getCurrentPrice() * 0.1))
                 .dueDate(LocalDateTime.now().plusWeeks(1))
                 .subTotal(lot.getCurrentPrice())
-                .paymentLink(generatePaymentLink(lot.getLotId(), member.getMemberId()))
+                .paymentLink("")
                 .lot(lot)
                 .status(InvoiceStatusEnums.PENDING)
                 .finalAmount((float) (lot.getCurrentPrice() * 1.1 - lot.getDeposit()))

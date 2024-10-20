@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import swp.koi.model.KoiFish;
 import swp.koi.model.enums.InvoiceStatusEnums;
 
 import java.time.LocalDateTime;
@@ -21,5 +22,6 @@ public class InvoiceResponseDto {
     float subTotal;
     InvoiceStatusEnums status;
     String paymentLink;
+    KoiFishInLotResponseDto koiFish;
 
 }

@@ -94,20 +94,13 @@ public class LotRegisterServiceImpl implements LotRegisterService{
 
     private boolean validateMemberRegistration(Integer lotId, Member member){
 
-        return listLotRegistersByLotId(lotId)
-                .stream()
-                .anyMatch(lr -> lr.getMember().equals(member));
+        Lot lot = lotService.findLotById(lotId);
+        List<LotRegister> lotRegisters = lotRegisterRepository.findByLot(lot).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
+
+        return lotRegisters.stream().anyMatch(lr -> lr.getMember().getMemberId().equals(member.getMemberId()));
 
     }
 
-    public LotRegister createLotRegister(Lot lot, Member member) {
-        return LotRegister.builder()
-                .deposit(lot.getDeposit())
-                .status(LotRegisterStatusEnum.WAITING)
-                .member(member)
-                .lot(lot)
-                .build();
-    }
 
     @Override
     public LotRegister getLotWinner(Integer lotId) {
@@ -129,9 +122,6 @@ public class LotRegisterServiceImpl implements LotRegisterService{
         Account account = accountService.findById(accountId);
         Member member = memberServiceImpl.getMemberByAccount(account);
 
-        if(lotRegisterRepository.findLotRegisterByLotAndMember(lot, member) == null)
-            return false;
-
-        return true;
+        return lotRegisterRepository.findLotRegisterByLotAndMember(lot, member) != null;
     }
 }
