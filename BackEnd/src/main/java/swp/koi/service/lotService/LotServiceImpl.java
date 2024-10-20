@@ -12,6 +12,7 @@ import swp.koi.model.enums.*;
 import swp.koi.repository.*;
 import swp.koi.service.bidService.BidServiceImpl;
 import swp.koi.service.fireBase.FCMService;
+import swp.koi.service.invoiceService.InvoiceService;
 import swp.koi.service.redisService.RedisServiceImpl;
 import swp.koi.service.socketIoService.EventListenerFactoryImpl;
 import swp.koi.service.socketIoService.SocketDetail;
@@ -39,6 +40,7 @@ public class LotServiceImpl implements LotService {
     private final SocketIOServer socketServer;
     private final RedisServiceImpl redisServiceImpl;
     private final FCMService fcmService;
+    private final InvoiceService invoiceService;
 
     @Override
     public Lot findLotById(int id) {
@@ -169,32 +171,11 @@ public class LotServiceImpl implements LotService {
     }
 
     private void createInvoiceForLot(Lot lot, Member winner) {
-        try {
-            Invoice invoice = generateInvoice(lot.getLotId(), winner.getMemberId());
-            invoiceRepository.save(invoice);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        Invoice invoice = invoiceService.createInvoiceForAuctionWinner(lot.getLotId(), winner.getMemberId());
+        invoiceRepository.save(invoice);
     }
 
-    @Override
-    public Invoice generateInvoice(int lotId, int memberId) throws UnsupportedEncodingException {
-        Lot lot = lotRepository.findById(lotId).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new KoiException(ResponseCode.MEMBER_NOT_FOUND));
 
-        return Invoice.builder()
-                .invoiceDate(LocalDateTime.now())
-                .tax((float) (lot.getCurrentPrice() * 0.1))
-                .dueDate(LocalDateTime.now().plusWeeks(1))
-                .subTotal(lot.getCurrentPrice())
-                .paymentLink("")
-                .lot(lot)
-                .koiFish(lot.getKoiFish())
-                .status(InvoiceStatusEnums.PENDING)
-                .finalAmount((float) (lot.getCurrentPrice() * 1.1 - lot.getDeposit()))
-                .member(member)
-                .build();
-    }
 
     private String generatePaymentLink(int lotId, int memberId) throws UnsupportedEncodingException {
         return vnpayService.generateInvoice(lotId, memberId, TransactionTypeEnum.INVOICE_PAYMENT);

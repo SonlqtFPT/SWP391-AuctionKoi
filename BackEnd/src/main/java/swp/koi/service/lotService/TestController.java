@@ -31,11 +31,11 @@ public class TestController {
         lotService.sendNotificateToFollower(lot.get());
     }
 
-    @GetMapping("/invoice")
-    public ResponseData<?> createInvoice(@RequestParam int lotId,
-                                         @RequestParam int memberId) throws UnsupportedEncodingException {
-        Invoice lotINvoice = lotService.generateInvoice(lotId, memberId);
-
-        return new ResponseData<>(ResponseCode.SUCCESS, lotINvoice);
-    }
+//    @GetMapping("/invoice")
+//    public ResponseData<?> createInvoice(@RequestParam int lotId,
+//                                         @RequestParam int memberId) throws UnsupportedEncodingException {
+//        Invoice lotINvoice = lotService.generateInvoice(lotId, memberId);
+//
+//        return new ResponseData<>(ResponseCode.SUCCESS, lotINvoice);
+//    }
 }
