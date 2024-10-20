@@ -1,16 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  Steps,
-  Button,
-  message,
-  Form,
-  DatePicker,
-  Select,
-  Table,
-  InputNumber,
-} from "antd";
+import { Steps, Button, message, Form, DatePicker, Select, Table } from "antd";
 import dayjs from "dayjs";
+import api from "../../../config/axios";
 
 const { Step } = Steps;
 const token = localStorage.getItem("accessToken");
@@ -24,6 +16,7 @@ const CreateAuction = () => {
     lots: [],
   });
   const [lots, setLots] = useState([]);
+
   const handleNext = () => {
     form
       .validateFields()
@@ -34,7 +27,7 @@ const CreateAuction = () => {
             auctionTypeName: values.auctionType,
             startTime: values.startTime
               ? dayjs(values.startTime).format("YYYY-MM-DDTHH:mm:ss")
-              : null, // Format the time without converting to UTC
+              : null,
             endTime: values.endTime
               ? dayjs(values.endTime).format("YYYY-MM-DDTHH:mm:ss")
               : null,
@@ -54,7 +47,7 @@ const CreateAuction = () => {
   const onFinish = async () => {
     if (lots.length === 0) {
       message.error("Please add at least one lot before submitting!");
-      return; // Prevent submission if there are no lots
+      return;
     }
 
     const auctionData = {
@@ -64,20 +57,15 @@ const CreateAuction = () => {
       lots: lots.map((lot) => ({
         fishId: lot.fishId,
         startingPrice: lot.startingPrice,
-        increment: lot.increment,
       })),
     };
 
     try {
-      const response = await axios.post(
-        "http://localhost:8080/manager/createAuction",
-        auctionData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Replace yourToken with the actual token
-          },
-        }
-      );
+      const response = await api.post("/manager/createAuction", auctionData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       message.success("Auction created successfully!");
       form.resetFields();
       setCurrent(0);
@@ -167,6 +155,8 @@ const CreateAuction = () => {
         <AddLots
           setLots={setLots}
           auctionTypeName={auction.auctionTypeName}
+          startTime={auction.startTime}
+          endTime={auction.endTime}
           lots={lots}
         />
       ),
@@ -190,8 +180,7 @@ const CreateAuction = () => {
           <ul className="list-disc pl-5">
             {lots.map((lot, index) => (
               <li key={index} className="mb-2">
-                Fish ID: {lot.fishId}, Starting Price: {lot.startingPrice},
-                Increment: {lot.increment}
+                Fish ID: {lot.fishId}, Starting Price: {lot.startingPrice}
               </li>
             ))}
           </ul>
@@ -256,7 +245,7 @@ const AddLots = ({ setLots, auctionTypeName, lots }) => {
           { auctionTypeName },
           {
             headers: {
-              Authorization: `Bearer ${token}`, // Replace yourToken with the actual token
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -278,7 +267,6 @@ const AddLots = ({ setLots, auctionTypeName, lots }) => {
       const newLot = {
         fishId: fish.fishId,
         startingPrice: fish.price,
-        increment: 0,
       };
       setLots((prev) => [...prev, newLot]);
       message.success("Lot added successfully!");
@@ -286,27 +274,6 @@ const AddLots = ({ setLots, auctionTypeName, lots }) => {
       setLots((prev) => prev.filter((lot) => lot.fishId !== fish.fishId));
       message.success("Lot removed successfully!");
     }
-  };
-
-  const handleIncrementChange = (fishId, value) => {
-    setLots((prev) =>
-      prev.map((lot) =>
-        lot.fishId === fishId ? { ...lot, increment: value } : lot
-      )
-    );
-  };
-
-  const handleIncrement = (fishId, operation) => {
-    setLots((prev) =>
-      prev.map((lot) => {
-        if (lot.fishId === fishId) {
-          const newIncrement =
-            operation === "increase" ? lot.increment + 1 : lot.increment - 1;
-          return { ...lot, increment: Math.max(0, newIncrement) }; // Ensure increment is not negative
-        }
-        return lot;
-      })
-    );
   };
 
   return (
@@ -330,43 +297,6 @@ const AddLots = ({ setLots, auctionTypeName, lots }) => {
               dataIndex: "price",
               key: "price",
               render: (price) => <span>{price}</span>,
-            },
-            {
-              title: "Increment",
-              key: "increment",
-              render: (text, record) => {
-                const existingLot = lots.find(
-                  (lot) => lot.fishId === record.fishId
-                );
-                return (
-                  <div className="flex items-center">
-                    <Button
-                      onClick={() => handleIncrement(record.fishId, "decrease")}
-                      disabled={!existingLot || existingLot.increment <= 0}
-                      className="bg-blue-500 hover:bg-blue-600 text-white"
-                    >
-                      -
-                    </Button>
-                    <InputNumber
-                      min={0}
-                      value={existingLot ? existingLot.increment : 0}
-                      onChange={(value) =>
-                        existingLot &&
-                        handleIncrementChange(record.fishId, value)
-                      }
-                      className="mx-2 border border-gold rounded-md"
-                      disabled={!existingLot} // Disable if not added to lot
-                    />
-                    <Button
-                      onClick={() => handleIncrement(record.fishId, "increase")}
-                      disabled={!existingLot} // Disable if not added to lot
-                      className="bg-green-500 hover:bg-green-600 text-white"
-                    >
-                      +
-                    </Button>
-                  </div>
-                );
-              },
             },
             {
               title: "Action",

@@ -12,6 +12,10 @@ import { useParams } from "react-router-dom"; // Import useParams
 import { io } from "socket.io-client";
 import api from "../../config/axios";
 import { toast } from "react-toastify"; // Import toast
+import { useNavigate } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
+import { storage } from "../../config/firebase";
+import { getDownloadURL, ref } from "firebase/storage";
 
 function Bid() {
   const { lotId } = useParams(); // Lấy lotId từ URL
@@ -30,6 +34,7 @@ function Bid() {
 
   // Memoize socket connection using useRef to ensure it's stable across renders
   const socketRef = useRef(null);
+  const navigate = useNavigate();
 
   const get_lot_api = `auction/get-lot/${lotId}`; // Sử dụng lotId
   const get_bidList_api = `bid/list?lotId=${lotId}`; // API for bid list
@@ -102,39 +107,69 @@ function Bid() {
     fetchCheckRegisted();
   }, []);
 
-  useEffect(() => {
-    if (lot) {
-      console.log("End time: ", lot.endingTime);
-      const endingTime = new Date(lot.endingTime).getTime();
-      const interval = setInterval(() => {
-        const now = Date.now();
-        const timeLeft = endingTime - now;
-        if (timeLeft <= 0) {
-          clearInterval(interval);
-          setRemainingTime(-1);
-          if (registed) {
-            if (!hasEnded) {
-              // Kiểm tra nếu chưa hiển thị thông báo
-              setHasEnded(true); // Đánh dấu là đã kết thúc
-              if (currentAccountId === winnerAccountId) {
-                toast("Xin chúc mừng bạn đã chiến thắng!", {
-                  autoClose: false, // Không tự động tắt
-                });
-              } else {
-                toast("Bạn đã thua, chúc bạn may mắn lần sau!", {
-                  autoClose: false, // Không tự động tắt
-                });
-              }
-            }
-          }
-        } else {
-          setRemainingTime(timeLeft);
-        }
-      }, 1000);
+  const handlePaymentClick = (toastId) => {
+    toast.dismiss(toastId); // Close the toast
+    navigate(`/payment/${lotId}`); // Redirect to payment page
+  };
 
-      return () => clearInterval(interval);
+  // này t code nhạc xổ số vjp dành cho người win á
+  // const playAudio = async () => {
+  //   try {
+  //     const audioRef = ref(
+  //       storage,
+  //       "https://firebasestorage.googleapis.com/v0/b/student-management-41928.appspot.com/o/y2mate.com%20-%20X%E1%BB%95%20S%E1%BB%91%20Ki%E1%BA%BFn%20Thi%E1%BA%BFt%20DXY%20Remix%20(mp3cut.net).mp3?alt=media&token=df48fa3f-8102-49a1-b632-4464ddba12a7"
+  //     ); // Firebase path to your audio file
+  //     const audioUrl = await getDownloadURL(audioRef);
+  //     const audio = new Audio(audioUrl);
+  //     audio.play(); // Play the audio
+  //   } catch (error) {
+  //     console.error("Error playing audio:", error);
+  //   }
+  // };
+
+  const customRainbowStyle = {
+    background:
+      "linear-gradient(90deg, #ff0066, #ffcc00, #33cc33, #00ccff, #6600cc)",
+    color: "#fff",
+    borderRadius: "8px",
+    padding: "10px",
+    textAlign: "center",
+  };
+
+  useEffect(() => {
+    if (lot && remainingTime <= 0) {
+      if (currentAccountId === winnerAccountId) {
+        const toastId = toast(
+          <>
+            🎉 Congrats! You have won.
+            <button
+              onClick={() => handlePaymentClick(toastId)}
+              style={{
+                color: "white",
+                textDecoration: "underline",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                marginLeft: "10px",
+              }}
+            >
+              Click here to proceed to payment.
+            </button>
+          </>,
+          {
+            autoClose: false, // Don't automatically close
+            style: customRainbowStyle, // Apply rainbow effect
+          }
+        );
+        // playAudio();
+      } else {
+        toast("You have lost. Better luck next time!", {
+          autoClose: false,
+          style: customRainbowStyle, // Apply rainbow effect for loss toast too
+        });
+      }
     }
-  }, [lot, hasEnded, currentAccountId, winnerAccountId]); // Thêm hasEnded vào dependencies
+  }, [remainingTime, winnerAccountId, currentAccountId, lotId, navigate]);
 
   useEffect(() => {
     // Only establish the socket connection if it doesn't exist

@@ -71,7 +71,7 @@ const ManageRequestStatus = ({ onGoBack }) => {
 
       if (response.status === 200) {
         toast.success("Status updated successfully");
-
+        await fetchRequest();
         closeUpdateStatusModal(); // Close modal on success
       } else {
         throw new Error("Failed to update status");
