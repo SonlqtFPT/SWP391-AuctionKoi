@@ -5,13 +5,16 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
+import swp.koi.model.Account;
 import swp.koi.model.Invoice;
 import swp.koi.model.Lot;
 import swp.koi.model.Member;
+import swp.koi.model.enums.AccountRoleEnum;
 import swp.koi.model.enums.InvoiceStatusEnums;
 import swp.koi.model.enums.TransactionTypeEnum;
 import swp.koi.repository.InvoiceRepository;
 import swp.koi.repository.LotRepository;
+import swp.koi.service.accountService.AccountService;
 import swp.koi.service.authService.GetUserInfoByUsingAuth;
 import swp.koi.service.lotService.LotService;
 import swp.koi.service.lotService.LotServiceImpl;
@@ -34,6 +37,8 @@ public class InvoiceServiceImpl implements InvoiceService{
     private final GetUserInfoByUsingAuth getUserInfoByUsingAuth;
     private final LotRepository lotRepository;
     private final MemberService memberService;
+    private final LotService lotService;
+    private final AccountService accountService;
 
     @Override
     public Invoice createInvoiceForAuctionWinner(int lotId, int memberId) {
@@ -147,5 +152,18 @@ public class InvoiceServiceImpl implements InvoiceService{
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void assignStaffDelivery(Integer invoiceId, Integer accountId) {
+        Account account = accountService.findById(accountId);
+        if(!account.getRole().equals(AccountRoleEnum.STAFF))
+            throw new KoiException(ResponseCode.STAFF_NOT_FOUND);
+
+        Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(() -> new KoiException(ResponseCode.INVOICE_NOT_FOUND));
+
+        invoice.setAccount(account);
+        invoice.setStatus(InvoiceStatusEnums.DELIVERY_IN_PROGRESS);
+        invoiceRepository.save(invoice);
     }
 }

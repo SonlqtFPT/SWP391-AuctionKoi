@@ -6,7 +6,6 @@ public enum InvoiceStatusEnums {
     OVERDUE,
     DELIVERY_IN_PROGRESS,
     DELIVERED,
-    CANCELED,
     FAILED,
     CANCELLED,
     REFUNDED

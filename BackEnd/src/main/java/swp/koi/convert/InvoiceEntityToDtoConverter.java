@@ -32,7 +32,14 @@ public class InvoiceEntityToDtoConverter {
     }
 
     public InvoiceResponseDto convertInvoiceDto(Invoice invoice){
-        return modelMapper.map(invoice, InvoiceResponseDto.class);
+        InvoiceResponseDto dto = modelMapper.map(invoice, InvoiceResponseDto.class);
+
+        dto.getKoiFish().setBreederName(invoice.getKoiFish().getAuctionRequest().getKoiBreeder().getBreederName());
+        dto.getKoiFish().setVarietyName(invoice.getKoiFish().getVariety().getVarietyName());
+        dto.getKoiFish().setImageUrl(invoice.getKoiFish().getMedia().getImageUrl());
+        dto.getKoiFish().setVideoUrl(invoice.getKoiFish().getMedia().getVideoUrl());
+
+        return dto;
     }
 
 }

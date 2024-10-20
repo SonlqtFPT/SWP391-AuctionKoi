@@ -35,6 +35,9 @@ public enum ResponseCode {
     DISABLE_MANAGER_FAILED(1009, "Manager can not be disable"),
     ACCOUNT_DISABLED(1010, "This account was disabled"),
 
+    // Staff
+    STAFF_NOT_FOUND(1100, "Staff not found"),
+
     // Member
     MEMBER_NOT_FOUND(1001, "Member not found"),
     MEMBER_REGISTED(1002, "Member already registered"),
@@ -93,6 +96,9 @@ public enum ResponseCode {
     //transaction
     TRANSACTION_EXISTED(6969, "Fuck"),
     TRANSACTION_NOT_FOUND(9700, "Transaction not found"),
+
+    // invoice
+    INVOICE_NOT_FOUND(9800, "Invoice not found")
     ;
 
 

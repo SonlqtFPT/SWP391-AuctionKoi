@@ -18,4 +18,6 @@ public interface InvoiceService {
     Invoice updateInvoiceAddress(double kilometer, int invoiceId, String address);
 
     Invoice getInvoiceForSpecificLot(int lotId);
+
+    void assignStaffDelivery(Integer invoiceId, Integer accountId);
 }
