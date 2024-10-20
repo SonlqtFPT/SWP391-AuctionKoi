@@ -137,39 +137,57 @@ function Bid() {
   };
 
   useEffect(() => {
-    if (lot && remainingTime <= 0) {
-      if (currentAccountId === winnerAccountId) {
-        const toastId = toast(
-          <>
-            🎉 Congrats! You have won.
-            <button
-              onClick={() => handlePaymentClick(toastId)}
-              style={{
-                color: "white",
-                textDecoration: "underline",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                marginLeft: "10px",
-              }}
-            >
-              Click here to proceed to payment.
-            </button>
-          </>,
-          {
-            autoClose: false, // Don't automatically close
-            style: customRainbowStyle, // Apply rainbow effect
+    if (lot) {
+      console.log("End time: ", lot.endingTime);
+      const endingTime = new Date(lot.endingTime).getTime();
+      const interval = setInterval(() => {
+        const now = Date.now();
+        const timeLeft = endingTime - now;
+        if (timeLeft <= 0) {
+          clearInterval(interval);
+          setRemainingTime(-1);
+          if (registed) {
+            if (!hasEnded) {
+              setHasEnded(true); // Mark as ended
+              if (currentAccountId === winnerAccountId) {
+                // Rainbow colors for winner toast
+                const toastId = toast(
+                  <>
+                    🎉 Congrats! You have won.
+                    <button
+                      onClick={() => handlePaymentClick(toastId)}
+                      style={{
+                        color: "white",
+                        textDecoration: "underline",
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        marginLeft: "10px",
+                      }}
+                    >
+                      Click here to proceed to payment.
+                    </button>
+                  </>,
+                  {
+                    autoClose: false, // Don't automatically close
+                    style: customRainbowStyle, // Apply your rainbow style
+                  }
+                );
+              } else {
+                toast("Bạn đã thua, chúc bạn may mắn lần sau!", {
+                  autoClose: false, // Don't auto-close
+                });
+              }
+            }
           }
-        );
-        // playAudio();
-      } else {
-        toast("You have lost. Better luck next time!", {
-          autoClose: false,
-          style: customRainbowStyle, // Apply rainbow effect for loss toast too
-        });
-      }
+        } else {
+          setRemainingTime(timeLeft);
+        }
+      }, 1000);
+
+      return () => clearInterval(interval);
     }
-  }, [remainingTime, winnerAccountId, currentAccountId, lotId, navigate]);
+  }, [lot, hasEnded, currentAccountId, winnerAccountId]);
 
   useEffect(() => {
     // Only establish the socket connection if it doesn't exist

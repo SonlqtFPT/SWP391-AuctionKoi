@@ -56,9 +56,10 @@ const CreateAuction = () => {
       endTime: auction.endTime,
       lots: lots.map((lot) => ({
         fishId: lot.fishId,
-        startingPrice: lot.startingPrice,
       })),
     };
+
+    console.log("Auction Data to Submit:", auctionData);
 
     try {
       const response = await api.post("/manager/createAuction", auctionData, {
@@ -66,13 +67,35 @@ const CreateAuction = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      message.success("Auction created successfully!");
-      form.resetFields();
-      setCurrent(0);
-      setLots([]);
+
+      // Check if response has a custom status code
+      if (response.data && response.data.status === 200) {
+        console.log("API Response:", response.data); // Log the API response
+        message.success("Auction created successfully!");
+        form.resetFields();
+        setCurrent(0);
+        setLots([]);
+      } else {
+        // Handle custom status codes here
+        if (response.data && response.data.message) {
+          message.error(response.data.message);
+        } else {
+          message.error("Unexpected response from server");
+        }
+      }
     } catch (error) {
       console.error("Failed to create auction", error);
-      message.error("Failed to create auction");
+
+      // Handle overlapping auction times or other errors
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        message.error(error.response.data.message);
+      } else {
+        message.error("Failed to create auction");
+      }
     }
   };
 
@@ -180,7 +203,7 @@ const CreateAuction = () => {
           <ul className="list-disc pl-5">
             {lots.map((lot, index) => (
               <li key={index} className="mb-2">
-                Fish ID: {lot.fishId}, Starting Price: {lot.startingPrice}
+                Fish ID: {lot.fishId}, Starting Price: {lot.startingPrice} (vnd)
               </li>
             ))}
           </ul>
@@ -249,7 +272,7 @@ const AddLots = ({ setLots, auctionTypeName, lots }) => {
             },
           }
         );
-        console.log(response);
+        console.log(response.data.data);
         setFishData(response.data.data);
       } catch (err) {
         console.error("Error fetching fish data", err);
@@ -266,7 +289,7 @@ const AddLots = ({ setLots, auctionTypeName, lots }) => {
     if (existingIndex === -1) {
       const newLot = {
         fishId: fish.fishId,
-        startingPrice: fish.price,
+        startingPrice: fish.price, // Make sure fish.price is set
       };
       setLots((prev) => [...prev, newLot]);
       message.success("Lot added successfully!");
@@ -296,7 +319,7 @@ const AddLots = ({ setLots, auctionTypeName, lots }) => {
               title: "Starting Price",
               dataIndex: "price",
               key: "price",
-              render: (price) => <span>{price}</span>,
+              render: (price) => <span>{price} (vnd)</span>,
             },
             {
               title: "Action",
