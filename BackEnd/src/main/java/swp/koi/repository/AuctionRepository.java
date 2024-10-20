@@ -6,6 +6,7 @@ import swp.koi.model.Auction;
 import swp.koi.model.Lot;
 import swp.koi.model.enums.AuctionStatusEnum;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -14,4 +15,5 @@ public interface AuctionRepository extends JpaRepository<Auction, Integer> {
 
     List<Auction> findAllByStatusIn(List<AuctionStatusEnum> statues);
 
+    List<Auction> findAllByStatusAndEndTimeLessThan(AuctionStatusEnum status, LocalDateTime endTime);
 }

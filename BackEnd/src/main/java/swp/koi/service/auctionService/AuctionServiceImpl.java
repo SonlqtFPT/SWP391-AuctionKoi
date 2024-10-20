@@ -3,6 +3,7 @@ package swp.koi.service.auctionService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cglib.core.Local;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import swp.koi.convert.LotEntityToDtoConverter;
@@ -54,6 +55,13 @@ public class AuctionServiceImpl implements AuctionService{
             auction.setEndTime(maxEndingTime);
             auctionRepository.save(auction);
         }
+
+        List<Auction> auctionsToBeEnd = auctionRepository.findAllByStatusAndEndTimeLessThan(AuctionStatusEnum.AUCTIONING, LocalDateTime.now());
+        for(Auction auction : auctionsToBeEnd){
+            auction.setStatus(AuctionStatusEnum.COMPLETED);
+            auctionRepository.save(auction);
+        }
+
     }
 
     @Override
