@@ -56,7 +56,7 @@ public class InvoiceController {
     }
 
     @Operation(summary = "Get invoice for specific lot")
-    @GetMapping("/get-invoice")
+    @GetMapping("/get-specific-invoice")
     public ResponseData<?> getInvoiceForSpecificLot(@RequestParam int lotId){
         try {
             InvoiceResponseDto response = invoiceEntityToDtoConverter.convertInvoiceDto(invoiceService.getInvoiceForSpecificLot(lotId));
@@ -66,8 +66,9 @@ public class InvoiceController {
         }
     }
 
-    @PostMapping("/manager/assign-staff/{accountId}")
-    public ResponseData<?> assignStaffDelivery(@PathVariable Integer accountId){
+    @PostMapping("/manager/assign-staff/{invoiceId}/{accountId}")
+    public ResponseData<?> assignStaffDelivery(@PathVariable Integer invoiceId, @PathVariable Integer accountId){
+        invoiceService.assignStaffDelivery(invoiceId, accountId);
         return new ResponseData<>(ResponseCode.SUCCESS);
     }
 }

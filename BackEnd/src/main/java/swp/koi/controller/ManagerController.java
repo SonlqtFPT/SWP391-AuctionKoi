@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import swp.koi.convert.AccountEntityToDtoConverter;
+import swp.koi.dto.request.AccountRegisterDTO;
 import swp.koi.dto.response.AccountFullResponseDto;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.dto.response.ResponseData;
@@ -20,6 +21,13 @@ public class ManagerController {
 
     private final AccountEntityToDtoConverter accountEntityToDtoConverter;
     private final AccountService accountService;
+
+    @Operation(summary = "Create manager account")
+    @PostMapping("/manager/create-manager-account")
+    public ResponseData<?> createManagerAccount(AccountRegisterDTO request){
+        accountService.createManagerAccountByRequest(request);
+        return new ResponseData<>(ResponseCode.SUCCESS_SIGN_UP);
+    }
 
     @Operation(summary = "Retrieve all account")
     @GetMapping("/manager/get-all-account")
