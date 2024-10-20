@@ -11,7 +11,6 @@ import {
 } from "antd";
 import { SearchOutlined, ReloadOutlined } from "@ant-design/icons";
 import RequestDetails from "../components/RequestDetails";
-import AddBreederRequest from "../components/AddBreederRequest"; // Import the AddBreederRequest component
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
 import { useAuth } from "../../protectedRoutes/AuthContext";
@@ -23,7 +22,6 @@ const BreederRequest = () => {
   const [requests, setRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [addingRequest, setAddingRequest] = useState(false); // State for adding request
   const [viewingDetails, setViewingDetails] = useState(false); // New state for viewing request details
   const [filteredRequests, setFilteredRequests] = useState([]);
   const [search, setSearch] = useState("");
@@ -48,10 +46,8 @@ const BreederRequest = () => {
         },
       });
 
-      // Log the raw response data
       console.log("Fetched requests data:", response.data.data);
 
-      // Map to include full details needed
       const requestData = response.data.data.map((item) => ({
         requestId: item.requestId,
         status: item.status,
@@ -73,12 +69,10 @@ const BreederRequest = () => {
         staff: item.staff,
       }));
 
-      // Sort the requestData in descending order by requestedAt
       requestData.sort(
         (a, b) => new Date(b.requestedAt) - new Date(a.requestedAt)
       );
 
-      // Log the processed requestData
       console.log("Processed request data:", requestData);
 
       setRequests(requestData);
@@ -90,7 +84,6 @@ const BreederRequest = () => {
       setLoading(false);
     }
   };
-
   // Format auction type names for display
   const formatAuctionType = (auctionTypeName) => {
     switch (auctionTypeName) {
@@ -115,7 +108,6 @@ const BreederRequest = () => {
 
   // New function to handle going back to the request list
   const handleBackToRequests = () => {
-    setAddingRequest(false); // Set addingRequest to false to show the requests
     setViewingDetails(false); // Reset viewing details state
     fetchRequests(); // Optionally refetch requests to refresh the list
   };
@@ -201,49 +193,13 @@ const BreederRequest = () => {
   };
 
   return (
-    <div className="w-full mt-20 bg-hero-pattern relative bg-cover">
-      <div className="absolute bg-black bg-opacity-80 inset-0"></div>
+    <div>
       {loading ? (
         <Spin size="large" />
       ) : (
         <div className="relative">
-          <div className="flex flex-col justify-center text-center">
-            <h1 className="text-2xl lg:text-3xl font-bold text-[#bcab6f] my-5">
-              Breeder Requests
-            </h1>
-            {/* Button to add a new breeder request */}
-            <div className="flex items-center justify-center space-x-4">
-              {/* Left Image */}
-              <span>
-                <img
-                  src="\src\assets\Divider\diamondLeft.png"
-                  alt="Left Divider"
-                  className="w-auto transform scale-x-[-1]"
-                />
-              </span>
-
-              {/* Button in the middle */}
-              <Button
-                type="primary"
-                onClick={() => setAddingRequest(true)}
-                className="font-bold text-2xl bg-amber-500 hover:bg-amber-400 rounded-full px-16 py-5 lg:py-7 text-black my-3"
-              >
-                Add Breeder Request
-              </Button>
-
-              {/* Right Image */}
-              <span>
-                <img
-                  src="\src\assets\Divider\diamondRight.png"
-                  alt="Right Divider"
-                  className="w-auto"
-                />
-              </span>
-            </div>
-          </div>
-
-          {/* Conditionally render search bar only when not adding request or viewing details */}
-          {!addingRequest && !viewingDetails && (
+          {/* Conditionally render search bar only when not viewing details */}
+          {!viewingDetails && (
             <Space className="mx-5 mt-5">
               <Select
                 value={searchField}
@@ -299,9 +255,7 @@ const BreederRequest = () => {
             </Space>
           )}
 
-          {addingRequest ? (
-            <AddBreederRequest onBack={handleBackToRequests} /> // Render AddBreederRequest
-          ) : viewingDetails ? (
+          {viewingDetails ? (
             <div>
               <RequestDetails
                 request={selectedRequest}
@@ -336,49 +290,54 @@ const BreederRequest = () => {
                       "text-gray-200 text-left px-4 py-2 font-semibold",
                   },
                   {
-                    title: <span className="text-black">Created At</span>,
-                    dataIndex: "requestedAt",
-                    key: "requestedAt",
+                    title: <span className="text-black">Auction Type</span>,
+                    dataIndex: "auctionTypeNameBreeder",
+                    key: "auctionTypeNameBreeder",
                     render: (text) => (
-                      <span className="text-gray-500">
-                        {new Date(text).toLocaleString()}
-                      </span>
+                      <span className="text-yellow-500">{text}</span>
                     ),
-                    sorter: (a, b) =>
-                      new Date(a.requestedAt) - new Date(b.requestedAt),
-                    className: "text-left px-4 py-2 font-semibold",
+                    className:
+                      "text-gray-200 text-left px-4 py-2 font-semibold",
                   },
                   {
                     title: <span className="text-black">Status</span>,
                     dataIndex: "status",
                     key: "status",
-                    render: (text) => (
-                      <Tag
-                        color={getStatusColor(text)}
-                        className="text-sm px-2 py-1"
-                      >
-                        {formatStatus(text)}
+                    sorter: (a, b) =>
+                      a.status.localeCompare(b.status, undefined, {
+                        sensitivity: "base",
+                      }),
+                    render: (status) => (
+                      <Tag color={getStatusColor(status)}>
+                        {formatStatus(status)}
                       </Tag>
                     ),
-                    sorter: (a, b) => a.status.localeCompare(b.status),
-                    className: "text-left px-4 py-2 font-semibold",
+                    className:
+                      "text-gray-400 text-left px-4 py-2 font-semibold",
                   },
                   {
-                    title: <span className="text-black">Action</span>,
-                    key: "action",
-                    render: (text, record) => (
-                      <button
-                        onClick={() => handleViewDetails(record)}
-                        className="bg-red-600 text-white rounded-lg px-4 py-2 hover:bg-red-500"
-                      >
+                    title: <span className="text-black">Created At</span>,
+                    dataIndex: "requestedAt",
+                    key: "requestedAt",
+                    sorter: (a, b) =>
+                      new Date(a.requestedAt) - new Date(b.requestedAt),
+                    className:
+                      "text-gray-400 text-left px-4 py-2 font-semibold",
+                  },
+                  {
+                    title: "Actions",
+                    key: "actions",
+                    render: (record) => (
+                      <Button onClick={() => handleViewDetails(record)}>
                         View Details
-                      </button>
+                      </Button>
                     ),
-                    className: "text-left px-4 py-2 font-semibold",
                   },
                 ]}
                 rowKey="requestId"
-                className="min-w-full border-collapse"
+                pagination={{
+                  pageSize: 10,
+                }}
               />
             </div>
           )}

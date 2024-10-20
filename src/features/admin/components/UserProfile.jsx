@@ -16,6 +16,7 @@ const UserProfile = () => {
   const [editedData, setEditedData] = useState(accountData);
 
   const token = localStorage.getItem("accessToken");
+  const [isLoading, setIsLoading] = useState(false); // Manage loading state
 
   // Handle input changes
   const handleInputChange = (field, value) => {
@@ -29,6 +30,7 @@ const UserProfile = () => {
   };
 
   const handleSave = async () => {
+    setIsLoading(true); // Start loading
     try {
       const response = await api.post('authenticate/update-profile', data, {
         headers: {
@@ -55,6 +57,8 @@ const UserProfile = () => {
       }
     } catch (error) {
       toast.error("An error occurred. Please try again later.");
+    } finally {
+      setIsLoading(false); // End loading
     }
   };
 
@@ -126,8 +130,9 @@ const UserProfile = () => {
           <Button
             type="primary"
             onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
+            disabled={isLoading} // Disable button during loading
           >
-            {isEditing ? "Save" : "Edit"}
+            {isLoading ? "Saving..." : isEditing ? "Save" : "Edit"}
           </Button>
         </div>
       </Card>

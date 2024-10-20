@@ -13,6 +13,8 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../features/protectedRoutes/AuthContext";
 import api from "../config/axios";
 import { toast } from "react-toastify";
+import AddRequestButton from "./AddRequestButton";
+
 
 const Header = () => {
   // State to manage the visibility of the mobile (hamburger) menu
@@ -31,6 +33,7 @@ const Header = () => {
   const toggleUserDropdown = () => {
     setIsUserDropdownOpen(!isUserDropdownOpen);
   };
+
   const {
     userName,
     role,
@@ -40,13 +43,14 @@ const Header = () => {
     setRefreshToken,
     setAccountId,
   } = useAuth();
+
   // Function to handle logout: remove user-related data from localStorage
   const handleLogout = async () => {
     const accessToken = localStorage.getItem("accessToken");
     const refreshToken = localStorage.getItem("refreshToken");
     const data = {
       accessToken: accessToken,
-      refreshToken: refreshToken
+      refreshToken: refreshToken,
     };
     const response = await api.post(`/authenticate/logout`, data, {
       headers: {
@@ -74,9 +78,11 @@ const Header = () => {
       case "MANAGER":
         return "/admin";
       case "BREEDER":
-        return "/breeder";
+        return "/breeder/profile";
       case "MEMBER":
         return "/member";
+      case "STAFF":
+        return "/staff";
       default:
         return "/";
     }
@@ -174,7 +180,6 @@ const Header = () => {
               )}
             </div>
           ) : (
-            // If the user is not logged in, show Login and Register links
             <div className="hidden lg:flex items-center space-x-2">
               <NavLink
                 to="/login"
@@ -212,7 +217,6 @@ const Header = () => {
         </button>
       </nav>
 
-
       {/* Hamburger menu dropdown for mobile screens */}
       <div
         className={`bg-[#171817] text-white ${isOpen ? "block" : "hidden"} lg:hidden`}
@@ -226,7 +230,6 @@ const Header = () => {
                   ? "flex items-center justify-center space-x-2 bg-red-600 min-w-max rounded-full text-black px-4 py-2"
                   : "flex items-center justify-center space-x-2 px-4 py-2 hover:bg-red-500 hover:text-black rounded-full"
               }
-              onClick={() => setIsOpen(false)} // Close menu after clicking
             >
               <FaHome className="h-5 w-5" />
               <span>Home</span>
@@ -240,7 +243,6 @@ const Header = () => {
                   ? "flex items-center justify-center space-x-2 bg-red-600 min-w-max rounded-full text-black px-4 py-2"
                   : "flex items-center justify-center space-x-2 px-4 py-2 hover:bg-red-500 hover:text-black rounded-full"
               }
-              onClick={() => setIsOpen(false)} // Close menu after clicking
             >
               <FaGavel className="h-5 w-5" />
               <span>Auction</span>
@@ -254,73 +256,20 @@ const Header = () => {
                   ? "flex items-center justify-center space-x-2 bg-red-600 min-w-max rounded-full text-black px-4 py-2"
                   : "flex items-center justify-center space-x-2 px-4 py-2 hover:bg-red-500 hover:text-black rounded-full"
               }
-              onClick={() => setIsOpen(false)} // Close menu after clicking
             >
               <FaInfoCircle className="h-5 w-5" />
               <span>About Us</span>
             </NavLink>
           </li>
-          {/* Conditional rendering of the user-specific options */}
-          {userName ? (
-            <>
-              <li className="flex items-center justify-center">
-                <Link
-                  to={getAccountLink()} // Dynamically generated link based on role
-                  className="hover:bg-red-500 flex items-center justify-center space-x-2 rounded-full px-4 py-2 hover:text-black"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <FaUserCircle className="h-5 w-5" />
-                  <span>Account</span>
-                </Link>
-              </li>
-              <li className="flex items-center justify-center">
-                <button
-                  onClick={() => {
-                    handleLogout(); // Call logout and close the menu
-                    setIsOpen(false);
-                  }}
-                  className="hover:bg-red-500 flex items-center justify-center space-x-2 rounded-full px-4 py-2 hover:text-black"
-                >
-                  <FaSignInAlt className="h-5 w-5" />
-                  <span>Log Out</span>
-                </button>
-              </li>
-            </>
-          ) : (
-            <>
-              <li className="flex items-center justify-center">
-                <NavLink
-                  to="/login"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "bg-red-600 flex items-center justify-center space-x-2 rounded-full px-4 py-2 text-black"
-                      : "hover:bg-red-500 flex items-center justify-center space-x-2 rounded-full px-4 py-2 hover:text-black"
-                  }
-                  onClick={() => setIsOpen(false)} // Close menu after clicking
-                >
-                  <FaSignInAlt className="h-5 w-5" />
-                  <span>Login</span>
-                </NavLink>
-              </li>
-              <li className="flex items-center justify-center">
-                <NavLink
-                  to="/register"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "bg-amber-600 flex items-center justify-center space-x-2 rounded-full px-4 py-2 text-black"
-                      : "hover:bg-amber-500 flex items-center justify-center space-x-2 rounded-full px-4 py-2 hover:text-black"
-                  }
-                  onClick={() => setIsOpen(false)} // Close menu after clicking
-                >
-                  <FaUserPlus className="h-5 w-5" />
-                  <span>Register</span>
-                </NavLink>
-              </li>
-            </>
-          )}
         </ul>
       </div>
 
+      {/* Place Order Button for Breeders */}
+      {role === "BREEDER" && (
+        <div className="fixed bottom-5 right-5 z-50">
+          <AddRequestButton />
+        </div>
+      )}
     </>
   );
 };

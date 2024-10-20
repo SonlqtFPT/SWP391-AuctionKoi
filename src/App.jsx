@@ -5,7 +5,6 @@ import { AuthProvider } from "./features/protectedRoutes/AuthContext.jsx";
 import ProtectedRoute from "./features/protectedRoutes/ProtectedRoute.jsx";
 import LoginPage from "./features/user/pages/Login.jsx";
 import RegisterPage from "./features/user/pages/Register.jsx";
-import BreederPage from "./features/breeder/index.jsx";
 import StaffPage from "./features/staff/pages/index.jsx";
 import Auction from "./features/auction/List-auction.jsx";
 import Lot from "./features/lot/lot.jsx";
@@ -13,6 +12,10 @@ import Bid from "./features/bid/bid.jsx";
 import PastAuction from "./features/past-auction/past-auction.jsx";
 import ForgotPassPage from "./features/user/pages/ForgotPassPage.jsx";
 import ChangePassPage from "./features/user/pages/ChangePassPage.jsx";
+import AddRequestPage from "./features/breeder/pages/AddRequestPage.jsx";
+import BreederProfilePage from "./features/breeder/pages/BreederProfilePage.jsx";
+import BreederProfileDetails from "./features/breeder/components/BreederProfileDetails.jsx";
+import BreederRequest from "./features/breeder/components/BreederRequest.jsx";
 
 export default function App() {
   return (
@@ -48,15 +51,55 @@ export default function App() {
             }
           />{" "}
           {/* Member Page */}
+
           <Route
-            path="/breeder"
+            path="/breeder/add-request"
             element={
               <ProtectedRoute allowedRoles={["BREEDER"]}>
-                <BreederPage />
+                <AddRequestPage />
               </ProtectedRoute>
             }
-          />{" "}
+          />
+
+          <Route
+            path="/breeder/profile"
+            element={
+              <ProtectedRoute allowedRoles={["BREEDER"]}>
+                <BreederProfilePage />
+              </ProtectedRoute>
+            }
+          >
+
+            <Route
+              index
+              element={
+                <ProtectedRoute allowedRoles={["BREEDER"]}>
+                  <BreederRequest />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="details" // Nested path, becomes /breeder/profile/details
+              element={
+                <ProtectedRoute allowedRoles={["BREEDER"]}>
+                  <BreederProfileDetails />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="view-request"
+              element={
+                <ProtectedRoute allowedRoles={["BREEDER"]}>
+                  <BreederRequest />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
           {/* Breeder Page */}
+
+
           <Route
             path="/staff"
             element={

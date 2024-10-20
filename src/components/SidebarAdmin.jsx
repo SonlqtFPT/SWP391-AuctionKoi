@@ -92,7 +92,7 @@ const SidebarAdmin = ({ setActiveComponent }) => {
     <Sider
       collapsed={collapsed}
       onCollapse={setCollapsed}
-      className="bg-black flex flex-col h-screen" // Use h-screen to ensure the height remains consistent
+      className="bg-black flex flex-col" // Use h-screen to ensure the height remains consistent
     >
       <div className="flex justify-center items-center flex-col my-20">
         {!collapsed && <p className="text-white mt-16 font-bold">Admin Dashboard</p>}

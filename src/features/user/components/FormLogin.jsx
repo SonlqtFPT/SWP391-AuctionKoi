@@ -46,9 +46,9 @@ function FormLogin() {
         if (role === "MANAGER") {
           navigate("/admin");
         } else if (role === "MEMBER") {
-          navigate("/member");
+          navigate("/");
         } else if (role === "BREEDER") {
-          navigate("/breeder");
+          navigate("/");
         } else if (role === "STAFF") {
           navigate("/staff");
         }
@@ -91,7 +91,7 @@ function FormLogin() {
         setRefreshToken(refreshToken);
 
         const { role } = accountData;
-        navigate(role === "MANAGER" ? "/admin" : role === "MEMBER" ? "/member" : role === "BREEDER" ? "/breeder" : "/staff");
+        navigate(role === "MANAGER" ? "/admin" : role === "MEMBER" ? "/" : role === "BREEDER" ? "/" : "/staff");
       } else if (status == 2) {
         toast.error(message);
       }

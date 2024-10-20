@@ -31,12 +31,12 @@ function MainPage() {
 
             {userName ? (
                 // Call to Action Section
-                <section className="relative bg-section-pattern bg-cover text-center flex flex-col lg:flex-row items-center justify-center py-6">
+                <section className="relative bg-section-pattern bg-cover text-center flex flex-col lg:flex-row items-center justify-center py-6 z-0">
                     {/* Dark overlay (placed under the content) */}
-                    <div className='absolute bg-black bg-opacity-70 inset-0 z-0'></div>
+                    <div className='absolute bg-black bg-opacity-70 inset-0 z-10'></div>
 
                     {/* Visible heading */}
-                    <h4 className="relative text-3xl font-extrabold text-[#bcab6f] py-6 z-10">
+                    <h4 className="relative text-3xl font-extrabold text-[#bcab6f] py-6 z-20">
                         Thank You For Trusting Us!
                     </h4>
 
@@ -47,7 +47,7 @@ function MainPage() {
                 </section>
             ) : (
                 // Call to Action Section
-                <section className="relative bg-section-pattern bg-cover text-center flex flex-col lg:flex-row items-center justify-center py-6">
+                <section className="relative bg-section-pattern bg-cover text-center flex flex-col lg:flex-row items-center justify-center py-6 z-0">
                     {/* Dark overlay (placed under the content) */}
                     <div className='absolute bg-black bg-opacity-70 inset-0 z-0'></div>
 

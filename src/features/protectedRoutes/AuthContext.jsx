@@ -11,6 +11,7 @@ export function AuthProvider({ children }) {
     const [refreshToken, setRefreshToken] = useState('');
     const [role, setRole] = useState('');
     const [accountId, setAccountId] = useState('');
+    const [breederName, setBreederName] = useState('');
 
     useEffect(() => {
         // Get the account data from localStorage
@@ -20,6 +21,7 @@ export function AuthProvider({ children }) {
             setUserName(`${accountData.firstName} ${accountData.lastName}`);
             setRole(accountData.role);
             setAccountId(accountData.accountId);
+            setBreederName(accountData.breederName);
         }
         // Get tokens from localStorage
         setAccessToken(localStorage.getItem('accessToken'));
@@ -34,11 +36,13 @@ export function AuthProvider({ children }) {
                 refreshToken,
                 role,
                 accountId,
+                breederName,
                 setAccountId,
                 setUserName,
                 setAccessToken,
                 setRefreshToken,
                 setRole,
+                setBreederName
             }}
         >
             {children}

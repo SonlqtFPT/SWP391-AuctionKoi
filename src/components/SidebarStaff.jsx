@@ -11,7 +11,9 @@ import {
   CarOutlined,
   AuditOutlined,
   EyeOutlined, // For viewing auctions
-  PlusOutlined, // For creating auctions
+  PlusOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined, // For creating auctions
 } from "@ant-design/icons";
 import { Button, Layout, Menu } from "antd";
 
@@ -31,6 +33,7 @@ const items = [
   getItem("Profile", "2", <UserOutlined />),
   getItem("Manage Request", "3", <FormOutlined />),
   getItem("Manage Transport", "4", <CarOutlined />),
+  getItem("Toggle Menu", "toggle", <MenuFoldOutlined />),
 ];
 
 const SidebarStaff = ({ setActiveComponent }) => {
@@ -38,6 +41,10 @@ const SidebarStaff = ({ setActiveComponent }) => {
 
   const handleMenuClick = (e) => {
     // Use e.key to determine which item was clicked
+    if (e.key === "toggle") {
+      setCollapsed(!collapsed);
+      return;
+    }
     switch (e.key) {
       case "1":
         setActiveComponent("Dashboard");
@@ -57,26 +64,22 @@ const SidebarStaff = ({ setActiveComponent }) => {
   };
 
   return (
-    <Sider collapsed={collapsed} className="bg-black flex flex-col">
+    <Sider collapsed={collapsed} onCollapse={setCollapsed} className="bg-black flex flex-col">
       <div className="flex justify-center items-center flex-col mt-20">
         {!collapsed && (
-          <p className="text-white mt-5 font-bold">Staff Dashboard</p>
+          <p className="text-white mt-5 font-bold my-10">Staff Dashboard</p>
         )}
       </div>
-      <div className="flex-shrink-0">
-        <Button
-          type="primary"
-          className="w-full my-5"
-          onClick={() => setCollapsed(!collapsed)}
-        >
-          {collapsed ? "Expand" : "Collapse"}
-        </Button>
-      </div>
+
       <Menu
         theme="dark"
         mode="inline"
         defaultSelectedKeys={["1"]}
-        items={items}
+        items={items.map(item =>
+          item.key === "toggle"
+            ? { ...item, icon: collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined /> }
+            : item
+        )}
         className="bg-[#c74743] text-white flex-grow "
         onClick={handleMenuClick}
       />
