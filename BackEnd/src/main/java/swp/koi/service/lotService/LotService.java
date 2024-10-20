@@ -17,7 +17,6 @@ public interface LotService {
 
     List<Lot> createLots(List<Lot> lots);
 
-    Invoice generateInvoice(int lotId, int memberId) throws UnsupportedEncodingException;
 
     @Async
     void sendNotificateToFollower(Lot lot);

@@ -285,8 +285,8 @@ public class BidServiceImpl implements BidService {
         lot.setCurrentMemberId(member.getMemberId());
         Duration timeDifference = Duration.between(LocalDateTime.now(), lot.getEndingTime());
         //if ending time is less than 15 mins -> add another 10 mins to ending time
-        if (timeDifference.toMinutes() <= 15) {
-            lot.setEndingTime(lot.getEndingTime().plusMinutes(10));
+        if (timeDifference.toMinutes() <= 1) {
+            lot.setEndingTime(lot.getEndingTime().plusMinutes(1));
         }
         return lot;
     }

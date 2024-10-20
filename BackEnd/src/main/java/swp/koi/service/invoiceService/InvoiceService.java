@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface InvoiceService {
 
-    Invoice createInvoiceForAuctionWinner();
+    Invoice createInvoiceForAuctionWinner(int lotId, int memberId);
 
     void updateStatusOfInvoice();
 

@@ -11,8 +11,11 @@ import swp.koi.model.Member;
 import swp.koi.model.enums.InvoiceStatusEnums;
 import swp.koi.model.enums.TransactionTypeEnum;
 import swp.koi.repository.InvoiceRepository;
+import swp.koi.repository.LotRepository;
 import swp.koi.service.authService.GetUserInfoByUsingAuth;
 import swp.koi.service.lotService.LotService;
+import swp.koi.service.lotService.LotServiceImpl;
+import swp.koi.service.memberService.MemberService;
 import swp.koi.service.vnPayService.VnpayServiceImpl;
 
 import java.io.UnsupportedEncodingException;
@@ -29,11 +32,26 @@ public class InvoiceServiceImpl implements InvoiceService{
     private final InvoiceRepository invoiceRepository;
     private final VnpayServiceImpl vnpayService;
     private final GetUserInfoByUsingAuth getUserInfoByUsingAuth;
-    private final LotService lotService;
+    private final LotRepository lotRepository;
+    private final MemberService memberService;
 
     @Override
-    public Invoice createInvoiceForAuctionWinner() {
-        return null;
+    public Invoice createInvoiceForAuctionWinner(int lotId, int memberId) {
+        Lot lot = lotRepository.findById(lotId).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
+        Member member = memberService.getMemberById(memberId);
+
+        return Invoice.builder()
+                .invoiceDate(LocalDateTime.now())
+                .tax((float) (lot.getCurrentPrice() * 0.1))
+                .dueDate(LocalDateTime.now().plusWeeks(1))
+                .subTotal(lot.getCurrentPrice())
+                .paymentLink("")
+                .lot(lot)
+                .koiFish(lot.getKoiFish())
+                .status(InvoiceStatusEnums.PENDING)
+                .finalAmount((float) (lot.getCurrentPrice() * 1.1 - lot.getDeposit()))
+                .member(member)
+                .build();
     }
 
     @Override
@@ -124,7 +142,7 @@ public class InvoiceServiceImpl implements InvoiceService{
     @Override
     public Invoice getInvoiceForSpecificLot(int lotId) {
         try {
-            Lot lot = lotService.findLotById(lotId);
+            Lot lot = lotRepository.findById(lotId).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
             return invoiceRepository.findByLot(lot);
         } catch (Exception e) {
             throw new RuntimeException(e);
