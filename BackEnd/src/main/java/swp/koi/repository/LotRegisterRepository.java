@@ -21,4 +21,5 @@ public interface LotRegisterRepository extends JpaRepository<LotRegister, Intege
     List<LotRegister> findAllByMember(Member member);
 
 
+
 }
