@@ -21,5 +21,6 @@ public class InvoiceResponseDto {
     float subTotal;
     InvoiceStatusEnums status;
     String paymentLink;
+    KoiFishInLotResponseDto koiFish;
 
 }

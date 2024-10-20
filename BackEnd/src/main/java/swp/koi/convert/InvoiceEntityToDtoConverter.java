@@ -17,7 +17,16 @@ public class InvoiceEntityToDtoConverter {
 
     public List<InvoiceResponseDto> convertInvoiceList(List<Invoice> invoiceList){
         List<InvoiceResponseDto> response = invoiceList.stream()
-                .map(invoice -> modelMapper.map(invoice, InvoiceResponseDto.class))
+                .map(invoice -> {
+                    InvoiceResponseDto dto = modelMapper.map(invoice, InvoiceResponseDto.class);
+
+                    dto.getKoiFish().setBreederName(invoice.getKoiFish().getAuctionRequest().getKoiBreeder().getBreederName());
+                    dto.getKoiFish().setVarietyName(invoice.getKoiFish().getVariety().getVarietyName());
+                    dto.getKoiFish().setImageUrl(invoice.getKoiFish().getMedia().getImageUrl());
+                    dto.getKoiFish().setVideoUrl(invoice.getKoiFish().getMedia().getVideoUrl());
+
+                    return dto;
+                })
                 .collect(Collectors.toList());
         return response;
     }

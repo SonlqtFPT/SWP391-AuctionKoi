@@ -51,4 +51,11 @@ public class Invoice {
     @JoinColumn(name = "transaction_id")
     Transaction transaction;
 
+    @ManyToOne
+    @JoinColumn(name = "fishId")
+    KoiFish koiFish;
+
+    @ManyToOne
+    @JoinColumn(name = "accountId")
+    Account account;
 }

@@ -2,10 +2,7 @@ package swp.koi.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import swp.koi.convert.InvoiceEntityToDtoConverter;
 import swp.koi.dto.response.InvoiceResponseDto;
 import swp.koi.dto.response.ResponseCode;
@@ -43,5 +40,10 @@ public class InvoiceController {
         } catch (KoiException e) {
             throw new KoiException(ResponseCode.MEMBER_NOT_FOUND);
         }
+    }
+
+    @PostMapping("/manager/assign-staff/{accountId}")
+    public ResponseData<?> assignStaffDelivery(@PathVariable Integer accountId){
+        return new ResponseData<>(ResponseCode.SUCCESS);
     }
 }
