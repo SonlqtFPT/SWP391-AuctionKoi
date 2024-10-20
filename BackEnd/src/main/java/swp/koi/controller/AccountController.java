@@ -6,7 +6,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import swp.koi.convert.AccountEntityToDtoConverter;
 import swp.koi.dto.request.*;
+import swp.koi.dto.response.AccountFullResponseDto;
 import swp.koi.dto.response.AuthenticateResponse;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.dto.response.ResponseData;
@@ -17,6 +19,7 @@ import swp.koi.service.koiBreederService.KoiBreederService;
 import javax.security.auth.login.AccountNotFoundException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/authenticate")
@@ -129,5 +132,4 @@ public class AccountController {
         accountService.updateProfile(request);
         return new ResponseData<>(ResponseCode.UPDATE_PROFILE_SUCCESS);
     }
-
 }

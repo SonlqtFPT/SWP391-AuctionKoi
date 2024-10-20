@@ -189,6 +189,7 @@ public class LotServiceImpl implements LotService {
                 .subTotal(lot.getCurrentPrice())
                 .paymentLink("")
                 .lot(lot)
+                .koiFish(lot.getKoiFish())
                 .status(InvoiceStatusEnums.PENDING)
                 .finalAmount((float) (lot.getCurrentPrice() * 1.1 - lot.getDeposit()))
                 .member(member)

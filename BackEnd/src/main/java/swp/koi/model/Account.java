@@ -52,6 +52,8 @@ public class Account {
     @OneToMany(mappedBy = "account")
     List<AuctionRequest> auctionRequest;
 
+    @OneToMany(mappedBy = "account")
+    List<Invoice> invoices;
 
     public Account() {
     }

@@ -24,7 +24,6 @@ public class InvoiceController {
     private final InvoiceService invoiceService;
     private final InvoiceEntityToDtoConverter invoiceEntityToDtoConverter;
 
-    @Operation(summary = "Regenerate payment link incase old payment link is expired")
     @GetMapping("/regenerate-payment-link")
     public ResponseData<String> regeneratePaymentLinkForInvoice(@RequestParam("invoice-id") int invoiceId) throws UnsupportedEncodingException {
         try {
@@ -34,7 +33,6 @@ public class InvoiceController {
         }
     }
 
-    @Operation(summary = "Get list of invoices that to be pay for user")
     @GetMapping("/get-invoices")
     public ResponseData<List<InvoiceResponseDto>> getAllInvoicesOfMember() {
         try {
@@ -66,5 +64,10 @@ public class InvoiceController {
         } catch (KoiException e) {
             throw new KoiException(e.getResponseCode());
         }
+    }
+
+    @PostMapping("/manager/assign-staff/{accountId}")
+    public ResponseData<?> assignStaffDelivery(@PathVariable Integer accountId){
+        return new ResponseData<>(ResponseCode.SUCCESS);
     }
 }

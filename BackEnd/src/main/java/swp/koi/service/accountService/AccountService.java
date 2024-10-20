@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import swp.koi.dto.request.*;
+import swp.koi.dto.response.AccountFullResponseDto;
 import swp.koi.dto.response.AuthenticateResponse;
 import swp.koi.model.Account;
 
@@ -39,4 +40,8 @@ public interface AccountService {
     void saveAccount(Account account);
 
     void updateProfile(@Valid UpdateProfileDto request);
+
+    List<Account> getAllAccount();
+
+    void disableAccount(Integer accountId);
 }

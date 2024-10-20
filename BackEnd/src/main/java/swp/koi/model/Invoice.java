@@ -52,9 +52,6 @@ public class Invoice {
 
     String paymentLink;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    KoiFish koiFish;
-
     @OneToOne
     @JoinColumn(name = "Lot_id")
     Lot lot;
@@ -63,4 +60,11 @@ public class Invoice {
     @JoinColumn(name = "transaction_id")
     Transaction transaction;
 
+    @ManyToOne
+    @JoinColumn(name = "fishId")
+    KoiFish koiFish;
+
+    @ManyToOne
+    @JoinColumn(name = "accountId")
+    Account account;
 }

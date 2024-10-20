@@ -91,4 +91,12 @@ public class KoiBreederServiceImpl implements KoiBreederService{
 
         koiBreederRepository.save(koiBreeder);
     }
+
+    @Override
+    public KoiBreeder getBreederInfo() {
+        Account account = getUserInfoByUsingAuth.getAccountFromAuth();
+        if(!account.getRole().equals(AccountRoleEnum.BREEDER))
+            throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
+        return account.getKoiBreeder();
+    }
 }

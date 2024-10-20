@@ -31,6 +31,9 @@ public enum ResponseCode {
     UPDATE_SAME_PASSWORD(1005, "Your new password is the same as old password"),
     UPDATE_BREEDER_PROFILE_SUCCESS(1006, "Update breeder profile successfully"),
     UPDATE_PROFILE_SUCCESS(1007, "Update profile successfully"),
+    DISABLE_SUCCESS(1008, "Disable successfully"),
+    DISABLE_MANAGER_FAILED(1009, "Manager can not be disable"),
+    ACCOUNT_DISABLED(1010, "This account was disabled"),
 
     // Member
     MEMBER_NOT_FOUND(1001, "Member not found"),

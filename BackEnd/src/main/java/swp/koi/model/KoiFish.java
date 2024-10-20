@@ -52,6 +52,9 @@ public class KoiFish {
     @OneToMany(mappedBy = "koiFish")
     List<Lot> lot;
 
+    @OneToMany(mappedBy = "koiFish")
+    List<Invoice> invoices;
+
     @ManyToOne
     @JoinColumn(name = "auctionTypeId")
     AuctionType auctionType;
