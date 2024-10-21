@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.jose4j.http.Get;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import swp.koi.dto.response.InvoiceResponseDto;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
 import swp.koi.model.Account;
@@ -25,6 +26,7 @@ import swp.koi.service.vnPayService.VnpayServiceImpl;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -172,5 +174,31 @@ public class InvoiceServiceImpl implements InvoiceService{
         invoice.setAccount(account);
         invoice.setStatus(InvoiceStatusEnums.DELIVERY_IN_PROGRESS);
         invoiceRepository.save(invoice);
+    }
+
+    @Override
+    public List<Invoice> getAllDeliveringInvoices() {
+        Account account = getUserInfoByUsingAuth.getAccountFromAuth();
+        if(!account.getRole().equals(AccountRoleEnum.STAFF))
+            throw  new KoiException(ResponseCode.STAFF_NOT_FOUND);
+
+        return invoiceRepository.findAllByAccountAndStatus(account, InvoiceStatusEnums.DELIVERY_IN_PROGRESS);
+    }
+
+    @Override
+    public void updateInvoiceStatus(Integer invoiceId, InvoiceStatusEnums status) {
+        Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(() -> new KoiException(ResponseCode.INVOICE_NOT_FOUND));
+
+        List<InvoiceStatusEnums> statues = Arrays.asList(
+          InvoiceStatusEnums.DELIVERED,
+          InvoiceStatusEnums.FAILED,
+          InvoiceStatusEnums.CANCELLED
+        );
+
+        if(statues.contains(status)){
+            invoice.setStatus(status);
+            invoiceRepository.save(invoice);
+        }else
+            throw new KoiException(ResponseCode.FAIL);
     }
 }

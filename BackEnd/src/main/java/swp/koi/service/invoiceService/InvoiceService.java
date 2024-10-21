@@ -1,6 +1,8 @@
 package swp.koi.service.invoiceService;
 
+import swp.koi.dto.response.InvoiceResponseDto;
 import swp.koi.model.Invoice;
+import swp.koi.model.enums.InvoiceStatusEnums;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -20,4 +22,8 @@ public interface InvoiceService {
     Invoice getInvoiceForSpecificLot(int lotId);
 
     void assignStaffDelivery(Integer invoiceId, Integer accountId);
+
+    List<Invoice> getAllDeliveringInvoices();
+
+    void updateInvoiceStatus(Integer invoiceId, InvoiceStatusEnums status);
 }

@@ -10,6 +10,7 @@ import swp.koi.dto.response.ResponseCode;
 import swp.koi.dto.response.ResponseData;
 import swp.koi.exception.KoiException;
 import swp.koi.model.Invoice;
+import swp.koi.model.enums.InvoiceStatusEnums;
 import swp.koi.service.invoiceService.InvoiceService;
 
 import java.io.UnsupportedEncodingException;
@@ -72,6 +73,20 @@ public class InvoiceController {
     @PostMapping("/manager/assign-staff/{invoiceId}/{accountId}")
     public ResponseData<?> assignStaffDelivery(@PathVariable Integer invoiceId, @PathVariable Integer accountId){
         invoiceService.assignStaffDelivery(invoiceId, accountId);
+        return new ResponseData<>(ResponseCode.SUCCESS);
+    }
+
+    @Operation(summary = "Retrieve all delivering invoice")
+    @GetMapping("/staff/get-all-delivering")
+    public ResponseData<List<InvoiceResponseDto>> getAllDeliveringInvoices(){
+        List<InvoiceResponseDto> response = invoiceEntityToDtoConverter.convertInvoiceList(invoiceService.getAllDeliveringInvoices());
+        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+    }
+
+    @Operation(summary = "Update invoice status")
+    @PatchMapping("/staff/update-status/{invoiceId}")
+    public ResponseData<?> updateInvoiceStatus(@PathVariable Integer invoiceId, @RequestParam InvoiceStatusEnums status){
+        invoiceService.updateInvoiceStatus(invoiceId, status);
         return new ResponseData<>(ResponseCode.SUCCESS);
     }
 }

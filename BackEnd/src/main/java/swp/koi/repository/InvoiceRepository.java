@@ -2,6 +2,7 @@ package swp.koi.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import swp.koi.model.Account;
 import swp.koi.model.Invoice;
 import swp.koi.model.Lot;
 import swp.koi.model.Member;
@@ -18,4 +19,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
     List<Invoice> findAllByDueDateLessThanAndStatus(LocalDateTime dateTime, InvoiceStatusEnums status);
 
     List<Invoice> findAllByStatusAndMember(InvoiceStatusEnums status, Member member);
+
+    List<Invoice> findAllByAccountAndStatus(Account account, InvoiceStatusEnums status);
 }
