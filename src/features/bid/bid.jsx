@@ -105,7 +105,7 @@ function Bid() {
     fetchBidList();
     fetchWinner();
     fetchCheckRegisted();
-  }, []);
+  }, [winnerAccountId]);
 
   const handlePaymentClick = (toastId) => {
     toast.dismiss(toastId); // Close the toast
@@ -189,6 +189,7 @@ function Bid() {
     }
   }, [lot, hasEnded, currentAccountId, winnerAccountId]);
 
+  //Này của socket
   useEffect(() => {
     // Only establish the socket connection if it doesn't exist
     if (!socketRef.current) {
