@@ -37,7 +37,6 @@ public class InvoiceServiceImpl implements InvoiceService{
     private final GetUserInfoByUsingAuth getUserInfoByUsingAuth;
     private final LotRepository lotRepository;
     private final MemberService memberService;
-    private final LotService lotService;
     private final AccountService accountService;
 
     @Override
