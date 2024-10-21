@@ -189,6 +189,8 @@ public class BidServiceImpl implements BidService {
         }
 
         if (LocalDateTime.now().isAfter(lot.getEndingTime()) || LocalDateTime.now().isBefore(lot.getStartingTime())) {
+            System.out.println(LocalDateTime.now());
+            System.out.println(lot.getEndingTime());
             throw new KoiException(ResponseCode.BID_TIME_PASSED);
         }
 
@@ -284,8 +286,8 @@ public class BidServiceImpl implements BidService {
         lot.setCurrentPrice(newPrice);
         lot.setCurrentMemberId(member.getMemberId());
         Duration timeDifference = Duration.between(LocalDateTime.now(), lot.getEndingTime());
-        //if ending time is less than 15 mins -> add another 10 mins to ending time
-        if (timeDifference.toMinutes() <= 1) {
+        //if ending time is less than 1 mins -> add another 1 mins to ending time
+        if (timeDifference.toSeconds() <= 60) {
             lot.setEndingTime(lot.getEndingTime().plusMinutes(1));
         }
         return lot;

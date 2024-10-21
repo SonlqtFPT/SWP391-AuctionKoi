@@ -15,7 +15,7 @@ public interface InvoiceService {
 
     List<Invoice> getAllInvoicesForAuctionWinner();
 
-    Invoice updateInvoiceAddress(double kilometer, int invoiceId, String address);
+    Invoice updateInvoiceAddress(double kilometer, int invoiceId, String address) throws UnsupportedEncodingException;
 
     Invoice getInvoiceForSpecificLot(int lotId);
 

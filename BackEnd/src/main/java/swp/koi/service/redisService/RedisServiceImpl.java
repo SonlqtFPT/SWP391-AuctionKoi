@@ -3,6 +3,9 @@ package swp.koi.service.redisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import swp.koi.model.Member;
+import swp.koi.model.SubscribeRequest;
+import swp.koi.service.authService.GetUserInfoByUsingAuth;
 
 import java.util.List;
 import java.util.Set;
@@ -13,6 +16,9 @@ import java.util.concurrent.TimeUnit;
 public class RedisServiceImpl implements RedisService {
 
     private final RedisTemplate<String, Object> redisTemplate;
+    private final GetUserInfoByUsingAuth getUserInfoByUsingAuth;
+
+
 
     @Override
     public void saveData(String key, Object value, Long expireTime) {
@@ -55,4 +61,15 @@ public class RedisServiceImpl implements RedisService {
         return Boolean.TRUE.equals(redisTemplate.hasKey(key));
     }
 
+
+    @Override
+    public boolean isUserFollowedThisLot(int lotId){
+        Member member = getUserInfoByUsingAuth.getMemberFromAuth();
+
+        Set<SubscribeRequest> subscribeRequests = (Set<SubscribeRequest>) getSetData("Notify_"+lotId);
+        if(subscribeRequests != null && !subscribeRequests.isEmpty()) {
+           return subscribeRequests.stream().anyMatch(request -> request.getMemberId().equals(member.getMemberId()));
+        }
+        return false;
+    }
 }

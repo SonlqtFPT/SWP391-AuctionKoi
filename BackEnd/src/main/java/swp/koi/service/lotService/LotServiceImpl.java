@@ -18,7 +18,6 @@ import swp.koi.service.socketIoService.EventListenerFactoryImpl;
 import swp.koi.service.socketIoService.SocketDetail;
 import swp.koi.service.vnPayService.VnpayServiceImpl;
 
-import java.io.UnsupportedEncodingException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -138,7 +137,26 @@ public class LotServiceImpl implements LotService {
         updateLotRegisterStatus(lot, winningMember);
         markOtherBidsAsLost(lot, winningMember);
 
+        sendNotificateToFollower(lot);
+        sendNotificationToBidder(lot, winningBid);
+
         createInvoiceForLot(lot, winningMember);
+    }
+
+    @Async
+    protected void sendNotificationToBidder(Lot lot, Bid winningBid) {
+        Set<SubscribeRequest> subscribeRequests = (Set<SubscribeRequest>) redisServiceImpl.getSetData("Notify_"+lot.getLotId().toString());
+
+        if(subscribeRequests.isEmpty()) {
+            return;
+        }
+
+        subscribeRequests.stream()
+                .filter(request -> !request.getMemberId().equals(winningBid.getMember().getMemberId()))
+                .forEach( lr -> {
+                    String msgBody = "You have lost at lot " + lot.getLotId() + " of auction " + lot.getAuction().getAuctionId();
+                    fcmService.sendPushNotification("Bidding result of PrestigeKoi", msgBody, lr.getToken());
+                });
     }
 
     private void updateKoiFishStatus(KoiFish koiFish, KoiFishStatusEnum status) {
@@ -176,9 +194,7 @@ public class LotServiceImpl implements LotService {
 
 
 
-    private String generatePaymentLink(int lotId, int memberId) throws UnsupportedEncodingException {
-        return vnpayService.generateInvoice(lotId, memberId, TransactionTypeEnum.INVOICE_PAYMENT);
-    }
+
 
     private Bid chooseLotWinner(Lot lot, List<Bid> bidList) {
         return switch (lot.getAuction().getAuctionType().getAuctionTypeName()) {

@@ -4,10 +4,7 @@ package swp.koi.controller;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import swp.koi.dto.request.SubscribeRequestDTO;
 import swp.koi.model.Member;
 import swp.koi.model.SubscribeRequest;
@@ -39,6 +36,15 @@ public class NotificationController {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @GetMapping("/user-subcribed-yet")
+    public ResponseEntity<?> isUserSubscribed(@RequestParam int lotId){
+        boolean userRegistered = redisService.isUserFollowedThisLot(lotId);
+        if (userRegistered) {
+            return ResponseEntity.ok("User subscribed");
+        }
+        return ResponseEntity.badRequest().body("User not subscribed");
     }
 
 }

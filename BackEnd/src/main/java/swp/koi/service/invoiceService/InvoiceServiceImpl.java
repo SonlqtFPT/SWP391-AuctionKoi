@@ -1,6 +1,7 @@
 package swp.koi.service.invoiceService;
 
 import lombok.RequiredArgsConstructor;
+import org.jose4j.http.Get;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import swp.koi.dto.response.ResponseCode;
@@ -38,6 +39,7 @@ public class InvoiceServiceImpl implements InvoiceService{
     private final LotRepository lotRepository;
     private final MemberService memberService;
     private final AccountService accountService;
+
 
     @Override
     public Invoice createInvoiceForAuctionWinner(int lotId, int memberId) {
@@ -105,19 +107,25 @@ public class InvoiceServiceImpl implements InvoiceService{
     }
 
     @Override
-    public Invoice updateInvoiceAddress(double kilometer, int invoiceId, String address){
+    public Invoice updateInvoiceAddress(double kilometer, int invoiceId, String address) throws UnsupportedEncodingException {
+        Member member = getUserInfoByUsingAuth.getMemberFromAuth();
 
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
 
         invoice.setAddress(address);
         invoice.setKilometers(kilometer);
-
         float currentPrice = invoice.getFinalAmount();
         float newPriceWithAddress = generateShippingPriceForInvoice(kilometer);
         float newPrice = currentPrice + newPriceWithAddress;
+        String paymentLink = generatePaymentLink(invoice.getLot().getLotId(), member.getMemberId());
+        invoice.setPaymentLink(paymentLink);
 
         invoice.setFinalAmount(newPrice);
         return invoiceRepository.save(invoice);
+    }
+
+    private String generatePaymentLink(int lotId, int memberId) throws UnsupportedEncodingException {
+        return vnpayService.generateInvoice(lotId, memberId, TransactionTypeEnum.INVOICE_PAYMENT);
     }
 
     private float generateShippingPriceForInvoice(double kilometer) {

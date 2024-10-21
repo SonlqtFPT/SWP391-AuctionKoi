@@ -55,6 +55,7 @@ public class LotRegisterController {
     public ResponseData<List<LotRegisterResponseDTO>> listRegisterLotById(@RequestParam int lotId) {
         try{
             List<LotRegisterResponseDTO> lotRegisterList = lotRegisterService.listLotRegistersByLotId(lotId);
+
             return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, lotRegisterList);
         }catch (KoiException e){
             return new ResponseData<>(e.getResponseCode());

@@ -1,4 +1,4 @@
-package swp.koi.service.fireBase;
+package swp.koi.config;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
@@ -16,7 +16,7 @@ public class FirebaseInitializer {
     @Bean
     public FirebaseApp firebaseApp() throws IOException, FileNotFoundException {
         FileInputStream serviceAccount =
-                new FileInputStream("src/main/resources/firebasenew.json");
+                new FileInputStream(".env");
 
         FirebaseOptions options = new FirebaseOptions.Builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))

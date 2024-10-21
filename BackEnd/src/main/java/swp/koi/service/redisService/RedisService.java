@@ -16,4 +16,6 @@ public interface RedisService {
     void deleteData(String key);
 
     boolean existData(String key);
+
+    boolean isUserFollowedThisLot(int lotId);
 }

@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class SubscribeRequest {
-    private int memberId;
+    private Integer memberId;
     private String token;
 }
