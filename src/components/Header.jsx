@@ -219,7 +219,8 @@ const Header = () => {
 
       {/* Hamburger menu dropdown for mobile screens */}
       <div
-        className={`bg-[#171817] text-white ${isOpen ? "block" : "hidden"} lg:hidden`}
+        className={`bg-[#171817] text-white ${isOpen ? "block" : "hidden"
+          } lg:hidden`}
       >
         <ul className="flex flex-col space-y-2 px-5 py-4 mt-20 text-center">
           <li className="flex items-center justify-center">

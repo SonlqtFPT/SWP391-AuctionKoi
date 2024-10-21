@@ -22,6 +22,7 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
 
   useEffect(() => {
     if (request) {
+      fetchRequest();
       console.log("Request Object:", request);
       setOfferPrice(request.price);
       setOfferAuctionType(request.auctionTypeName);
@@ -102,7 +103,7 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
         message: "Success",
         description: "Offer submitted successfully!",
       });
-      fetchRequest();
+      await fetchRequest();
     } catch (error) {
       console.error("Error submitting negotiation offer:", error);
       notification.error({
@@ -139,7 +140,7 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
         message: "Success",
         description: "Staff assigned successfully!",
       });
-      fetchRequest();
+      await fetchRequest();
       setIsModalVisible(false);
     } catch (error) {
       console.error("Error assigning staff:", error);

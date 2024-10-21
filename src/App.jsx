@@ -10,6 +10,7 @@ import Auction from "./features/auction/List-auction.jsx";
 import Lot from "./features/lot/lot.jsx";
 import Bid from "./features/bid/bid.jsx";
 import PastAuction from "./features/past-auction/past-auction.jsx";
+import Payment from "./payment/Payment.jsx";
 import ForgotPassPage from "./features/user/pages/ForgotPassPage.jsx";
 import ChangePassPage from "./features/user/pages/ChangePassPage.jsx";
 import AddRequestPage from "./features/breeder/pages/AddRequestPage.jsx";
@@ -29,6 +30,7 @@ export default function App() {
           <Route path="/auction" element={<Auction />} />
           <Route path="/lot/:auctionId" element={<Lot />} />
           <Route path="/bid/:lotId/:auctionId" element={<Bid />} />
+          <Route path="/payment/:lotId" element={<Payment />} />
           <Route path="/auctioned" element={<PastAuction />} />
           <Route path="/forgotPass" element={<ForgotPassPage />} />
           <Route path="/reset-password" element={<ChangePassPage />} />
