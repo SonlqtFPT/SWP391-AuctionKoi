@@ -31,6 +31,7 @@ function Bid() {
   const [winnerAccountId, setWinnerAccountId] = useState();
   const [hasEnded, setHasEnded] = useState(false); // Thêm biến trạng thái để theo dõi thời gian đã kết thúc
   const [registed, setRegisted] = useState(false);
+  const [highestBidderAccountId, setHighestBidderAccountId] = useState(null); // Biến lưu accountId của người có bidAmount cao nhất
 
   // Memoize socket connection using useRef to ensure it's stable across renders
   const socketRef = useRef(null);
@@ -91,9 +92,13 @@ function Bid() {
       const listData = response.data.data.map((bid) => ({
         bidAmount: bid.bidAmount,
         firstName: bid.member.account.firstName,
+        accountId: bid.member.account.accountId, // Lưu accountId
       }));
       listData.sort((a, b) => b.bidAmount - a.bidAmount);
       setBidList(listData);
+      if (listData.length > 0) {
+        setHighestBidderAccountId(listData[0].accountId); // Lưu accountId của người có bidAmount cao nhất
+      }
       console.log("AccountId: ", currentAccountId);
     } catch (error) {
       console.error("Error fetching bid data at bid.jsx:", error);
@@ -149,7 +154,7 @@ function Bid() {
           if (registed) {
             if (!hasEnded) {
               setHasEnded(true); // Mark as ended
-              if (currentAccountId === winnerAccountId) {
+              if (currentAccountId === highestBidderAccountId) {
                 // Rainbow colors for winner toast
                 const toastId = toast(
                   <>
@@ -174,7 +179,7 @@ function Bid() {
                   }
                 );
               } else {
-                toast("Bạn đã thua, chúc bạn may mắn lần sau!", {
+                toast("Huhu, you lose, better luck next time.", {
                   autoClose: false, // Don't auto-close
                 });
               }
