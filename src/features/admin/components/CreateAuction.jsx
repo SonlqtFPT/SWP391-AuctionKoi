@@ -310,6 +310,12 @@ const AddLots = ({ setLots, auctionTypeName, lots }) => {
           pagination={false}
           columns={[
             {
+              title: "FishID",
+              dataIndex: "fishId",
+              key: "fishId",
+              render: (fishId) => <span>{fishId}</span>,
+            },
+            {
               title: "Variety",
               dataIndex: "variety",
               key: "variety",
@@ -328,10 +334,11 @@ const AddLots = ({ setLots, auctionTypeName, lots }) => {
                 <Button
                   type="primary"
                   onClick={() => handleAddRemoveLot(record)}
-                  className={`${lots.some((lot) => lot.fishId === record.fishId)
-                    ? "bg-red-500 hover:bg-red-600"
-                    : "bg-gold hover:bg-yellow-600"
-                    } text-white`}
+                  className={`${
+                    lots.some((lot) => lot.fishId === record.fishId)
+                      ? "bg-red-500 hover:bg-red-600"
+                      : "bg-gold hover:bg-yellow-600"
+                  } text-white`}
                 >
                   {lots.some((lot) => lot.fishId === record.fishId)
                     ? "Remove Lot"
