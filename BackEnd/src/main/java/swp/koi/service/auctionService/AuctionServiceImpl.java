@@ -3,11 +3,12 @@ package swp.koi.service.auctionService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cglib.core.Local;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import swp.koi.convert.LotEntityToDtoConverter;
 import swp.koi.dto.request.AuctionWithLotsDTO;
 import swp.koi.dto.request.LotDTO;
-import swp.koi.dto.request.UpdateStatusDTO;
 import swp.koi.dto.response.*;
 import swp.koi.exception.KoiException;
 import swp.koi.model.*;
@@ -15,7 +16,6 @@ import swp.koi.model.enums.AuctionStatusEnum;
 import swp.koi.model.enums.KoiFishStatusEnum;
 import swp.koi.model.enums.LotStatusEnum;
 import swp.koi.repository.AuctionRepository;
-import swp.koi.repository.LotRepository;
 import swp.koi.service.auctionRequestService.AuctionRequestService;
 import swp.koi.service.auctionTypeService.AuctionTypeService;
 import swp.koi.service.koiFishService.KoiFishService;
@@ -25,9 +25,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.antlr.v4.runtime.tree.xpath.XPath.findAll;
 
 @Service
 @Transactional
@@ -41,6 +38,31 @@ public class AuctionServiceImpl implements AuctionService{
     private final ModelMapper modelMapper;
     private final AuctionRequestService auctionRequestService;
     private final LotEntityToDtoConverter lotEntityToDtoConverter;
+
+    @Override
+    @Scheduled(fixedDelay = 1000 * 60)
+    public void updateAuctionStatusAndEndTime(){
+        List<Auction> auctions = auctionRepository.findAllByStatus(AuctionStatusEnum.AUCTIONING);
+        if(auctions.isEmpty()){
+            return;
+        }
+        for(Auction auction : auctions){
+            List<Lot> lots = auction.getLots();
+            LocalDateTime maxEndingTime = lots.stream()
+                    .map(Lot::getEndingTime)
+                    .max(LocalDateTime::compareTo)
+                    .orElse(null);
+            auction.setEndTime(maxEndingTime);
+            auctionRepository.save(auction);
+        }
+
+        List<Auction> auctionsToBeEnd = auctionRepository.findAllByStatusAndEndTimeLessThan(AuctionStatusEnum.AUCTIONING, LocalDateTime.now());
+        for(Auction auction : auctionsToBeEnd){
+            auction.setStatus(AuctionStatusEnum.COMPLETED);
+            auctionRepository.save(auction);
+        }
+
+    }
 
     @Override
     public AuctionResponseDTO createAuctionWithLots(AuctionWithLotsDTO request) throws KoiException{
@@ -99,6 +121,8 @@ public class AuctionServiceImpl implements AuctionService{
             throw e;
         }
     }
+
+
 
     private boolean isValidAuctionTime(LocalDateTime startTime, LocalDateTime endTime) {
 

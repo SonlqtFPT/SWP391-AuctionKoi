@@ -62,6 +62,7 @@ public class LotServiceImpl implements LotService {
 
         List<Lot> descendingLots = lotRepository.findAllByStatusAndAuctionAuctionTypeAuctionTypeName(LotStatusEnum.AUCTIONING, AuctionTypeNameEnum.DESCENDING_BID);
         descendingLots.forEach(this::decreasePrice);
+
     }
 
 
@@ -119,7 +120,6 @@ public class LotServiceImpl implements LotService {
 
     private void setLotToPassed(Lot lot) {
         updateKoiFishStatus(lot.getKoiFish(), KoiFishStatusEnum.WAITING);
-        updateAuctionStatus(lot.getAuction(), AuctionStatusEnum.COMPLETED);
         lot.setStatus(LotStatusEnum.PASSED);
         lotRepository.save(lot);
     }
@@ -129,7 +129,6 @@ public class LotServiceImpl implements LotService {
         Member winningMember = winningBid.getMember();
 
         updateKoiFishStatus(lot.getKoiFish(), KoiFishStatusEnum.SOLD);
-        updateAuctionStatus(lot.getAuction(), AuctionStatusEnum.COMPLETED);
 
         lot.setCurrentPrice(winningBid.getBidAmount());
         lot.setCurrentMemberId(winningMember.getMemberId());
