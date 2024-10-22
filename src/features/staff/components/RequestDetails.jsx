@@ -56,7 +56,8 @@ const RequestDetails = ({
             <strong>Request ID:</strong> {selectedRequest.requestId}
           </p>
           <p>
-            <strong>Request Status:</strong> {formatStatus(selectedRequest.status)}
+            <strong>Request Status:</strong>{" "}
+            {formatStatus(selectedRequest.status)}
           </p>
           {selectedRequest.breeder && (
             <>
@@ -64,7 +65,8 @@ const RequestDetails = ({
                 <strong>Breeder ID:</strong> {selectedRequest.breeder.breederId}
               </p>
               <p>
-                <strong>Breeder Name:</strong> {selectedRequest.breeder.breederName}
+                <strong>Breeder Name:</strong>{" "}
+                {selectedRequest.breeder.breederName}
               </p>
               <p>
                 <strong>Location:</strong> {selectedRequest.breeder.location}
@@ -90,18 +92,21 @@ const RequestDetails = ({
                 <strong>Size:</strong> {selectedRequest.koiFish.size} cm
               </p>
               <p>
-                <strong>Price:</strong> {selectedRequest.koiFish.price} $
+                <strong>Price:</strong> {selectedRequest.koiFish.price} (vnd)
               </p>
               <p>
-                <strong>Auction Type:</strong> {selectedRequest.koiFish.auctionTypeName}
+                <strong>Auction Type:</strong>{" "}
+                {selectedRequest.koiFish.auctionTypeName}
               </p>
               {selectedRequest.koiFish.variety && (
                 <>
                   <p>
-                    <strong>Variety ID:</strong> {selectedRequest.koiFish.variety.varietyId}
+                    <strong>Variety ID:</strong>{" "}
+                    {selectedRequest.koiFish.variety.varietyId}
                   </p>
                   <p>
-                    <strong>Variety Name:</strong> {selectedRequest.koiFish.variety.varietyName}
+                    <strong>Variety Name:</strong>{" "}
+                    {selectedRequest.koiFish.variety.varietyName}
                   </p>
                 </>
               )}
@@ -118,13 +123,15 @@ const RequestDetails = ({
                 <strong>Staff ID:</strong> {selectedRequest.staff.accountId}
               </p>
               <p>
-                <strong>Name:</strong> {selectedRequest.staff.firstName} {selectedRequest.staff.lastName}
+                <strong>Name:</strong> {selectedRequest.staff.firstName}{" "}
+                {selectedRequest.staff.lastName}
               </p>
               <p>
                 <strong>Email:</strong> {selectedRequest.staff.email}
               </p>
               <p>
-                <strong>Phone Number:</strong> {selectedRequest.staff.phoneNumber}
+                <strong>Phone Number:</strong>{" "}
+                {selectedRequest.staff.phoneNumber}
               </p>
               <p>
                 <strong>Role:</strong> {selectedRequest.staff.role}
@@ -146,7 +153,8 @@ const RequestDetails = ({
                 cancelText="Cancel"
               >
                 <p>
-                  Assign a staff member to request ID: {selectedRequest.requestId}
+                  Assign a staff member to request ID:{" "}
+                  {selectedRequest.requestId}
                 </p>
                 <Select
                   placeholder="Select staff"
@@ -154,8 +162,12 @@ const RequestDetails = ({
                   onChange={(value) => setSelectedStaff(value)}
                 >
                   {staffList.map((staff) => (
-                    <Select.Option key={staff.accountId} value={staff.accountId}>
-                      {staff.firstName} | {staff.lastName} | AccountID: {staff.accountId}
+                    <Select.Option
+                      key={staff.accountId}
+                      value={staff.accountId}
+                    >
+                      {staff.firstName} | {staff.lastName} | AccountID:{" "}
+                      {staff.accountId}
                     </Select.Option>
                   ))}
                 </Select>
@@ -165,7 +177,10 @@ const RequestDetails = ({
 
           {selectedRequest.status === "INSPECTION_IN_PROGRESS" && (
             <>
-              <Button type="primary" onClick={() => showUpdateStatusModal(selectedRequest)}>
+              <Button
+                type="primary"
+                onClick={() => showUpdateStatusModal(selectedRequest)}
+              >
                 Update Status
               </Button>
               <Modal
@@ -176,15 +191,21 @@ const RequestDetails = ({
                 okText="Update"
                 cancelText="Cancel"
               >
-                <p>Update the status for request ID: {updatingRequest?.requestId}</p>
+                <p>
+                  Update the status for request ID: {updatingRequest?.requestId}
+                </p>
                 <Select
                   placeholder="Select status"
                   style={{ width: "100%" }}
                   onChange={(value) => setSelectedStatus(value)}
                   value={selectedStatus}
                 >
-                  <Select.Option value="INSPECTION_PASSED">Inspection Passed</Select.Option>
-                  <Select.Option value="INSPECTION_FAILED">Inspection Failed</Select.Option>
+                  <Select.Option value="INSPECTION_PASSED">
+                    Inspection Passed
+                  </Select.Option>
+                  <Select.Option value="INSPECTION_FAILED">
+                    Inspection Failed
+                  </Select.Option>
                 </Select>
               </Modal>
             </>
@@ -199,7 +220,6 @@ const RequestDetails = ({
             <h3>Image: </h3>
             <Image
               width={500}
-
               src={selectedRequest.koiFish.media.imageUrl}
               alt="Auction Request"
               className="mt-4"
@@ -210,7 +230,10 @@ const RequestDetails = ({
               <>
                 <h4>Video: </h4>
                 <video width="150" controls className="mt-2">
-                  <source src={selectedRequest.koiFish.media.videoUrl} type="video/mp4" />
+                  <source
+                    src={selectedRequest.koiFish.media.videoUrl}
+                    type="video/mp4"
+                  />
                   Your browser does not support the video tag.
                 </video>
               </>

@@ -153,7 +153,6 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
 
   return (
     <div>
-
       <Button onClick={onBack} type="default" className="my-6">
         Back
       </Button>
@@ -238,7 +237,7 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
                   {new Date(request.requestedAt).toLocaleString()}
                 </p>
                 <p style={{ margin: "0 0 4px" }}>
-                  <strong>Price:</strong> ${request.price}
+                  <strong>Price:</strong> (vnd){request.price}
                 </p>
                 <p style={{ margin: "0 0 4px" }}>
                   <strong>Auction Type:</strong> {request.auctionTypeName}
@@ -290,50 +289,50 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
 
             {(request.status === "INSPECTION_PASSED" ||
               request.status === "PENDING_MANAGER_OFFER") && (
-                <>
-                  <h3>
-                    <strong>Negotiate</strong>
-                  </h3>
-                  {request.status === "PENDING_MANAGER_OFFER" && (
-                    <p>Waiting for Manager Approve</p>
-                  )}
-                  <Input
-                    type="number"
-                    placeholder="Offer Price"
-                    value={offerPrice || ""}
-                    onChange={(e) =>
-                      setOfferPrice(
-                        e.target.value ? Number(e.target.value) : null
-                      )
-                    }
-                    style={{ width: "200px", marginBottom: "16px" }}
-                  />
-                  <Select
-                    placeholder="Select Auction Type"
-                    value={offerAuctionType || undefined}
-                    onChange={setOfferAuctionType}
-                    style={{ width: "200px", marginBottom: "16px" }}
-                  >
-                    <Select.Option value="ASCENDING_BID">
-                      Ascending Bid
-                    </Select.Option>
-                    <Select.Option value="DESCENDING_BID">
-                      Descending Bid
-                    </Select.Option>
-                    <Select.Option value="SEALED_BID">Sealed Bid</Select.Option>
-                    <Select.Option value="FIXED_PRICE_SALE">
-                      Fixed Price Sale
-                    </Select.Option>
-                  </Select>
-                  <Button
-                    onClick={handleNegotiate}
-                    type="primary"
-                    className="bg-red-500 hover:bg-red-700 text-white"
-                  >
-                    Submit Offer
-                  </Button>
-                </>
-              )}
+              <>
+                <h3>
+                  <strong>Negotiate</strong>
+                </h3>
+                {request.status === "PENDING_MANAGER_OFFER" && (
+                  <p>Waiting for Manager Approve</p>
+                )}
+                <Input
+                  type="number"
+                  placeholder="Offer Price"
+                  value={offerPrice || ""}
+                  onChange={(e) =>
+                    setOfferPrice(
+                      e.target.value ? Number(e.target.value) : null
+                    )
+                  }
+                  style={{ width: "200px", marginBottom: "16px" }}
+                />
+                <Select
+                  placeholder="Select Auction Type"
+                  value={offerAuctionType || undefined}
+                  onChange={setOfferAuctionType}
+                  style={{ width: "200px", marginBottom: "16px" }}
+                >
+                  <Select.Option value="ASCENDING_BID">
+                    Ascending Bid
+                  </Select.Option>
+                  <Select.Option value="DESCENDING_BID">
+                    Descending Bid
+                  </Select.Option>
+                  <Select.Option value="SEALED_BID">Sealed Bid</Select.Option>
+                  <Select.Option value="FIXED_PRICE_SALE">
+                    Fixed Price Sale
+                  </Select.Option>
+                </Select>
+                <Button
+                  onClick={handleNegotiate}
+                  type="primary"
+                  className="bg-red-500 hover:bg-red-700 text-white"
+                >
+                  Submit Offer
+                </Button>
+              </>
+            )}
 
             {request.status === "PENDING_BREEDER_OFFER" && (
               <p>Waiting for Breeder Approve</p>
@@ -379,8 +378,7 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
           </Card>
         </Col>
       </Row>
-
-    </div >
+    </div>
   );
 };
 

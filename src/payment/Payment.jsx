@@ -181,7 +181,8 @@ const Payment = () => {
                   {invoice.koiFish.size}
                 </p>
                 <p>
-                  <span className="font-semibold">Price:</span>{" "}
+                  <span className="font-semibold">Price:</span>
+                  {"vnd"}
                   {invoice.koiFish.price}
                 </p>
                 <p>
