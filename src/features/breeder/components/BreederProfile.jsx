@@ -69,48 +69,9 @@ function BreederProfile() {
                                 : "flex items-center space-x-2 px-4 py-2 hover:bg-yellow-500 hover:text-black rounded-full"
                         }
                     >
-                        REQUEST LIST
+                        VIEW REQUEST
                     </NavLink>
-                    <NavLink
-                        to="/breeder/profile/bids"
-                        className={({ isActive }) =>
-                            isActive
-                                ? "flex items-center space-x-2 bg-yellow-500 text-black rounded-full px-4 py-2"
-                                : "flex items-center space-x-2 px-4 py-2 hover:bg-yellow-500 hover:text-black rounded-full"
-                        }
-                    >
-                        BIDS
-                    </NavLink>
-                    <NavLink
-                        to="/breeder/profile/achievements"
-                        className={({ isActive }) =>
-                            isActive
-                                ? "flex items-center space-x-2 bg-yellow-500 text-black rounded-full px-4 py-2"
-                                : "flex items-center space-x-2 px-4 py-2 hover:bg-yellow-500 hover:text-black rounded-full"
-                        }
-                    >
-                        ACHIEVEMENTS
-                    </NavLink>
-                    <NavLink
-                        to="/breeder/profile/transactions"
-                        className={({ isActive }) =>
-                            isActive
-                                ? "flex items-center space-x-2 bg-yellow-500 text-black rounded-full px-4 py-2"
-                                : "flex items-center space-x-2 px-4 py-2 hover:bg-yellow-500 hover:text-black rounded-full"
-                        }
-                    >
-                        TRANSACTIONS
-                    </NavLink>
-                    <NavLink
-                        to="/breeder/profile/reputation"
-                        className={({ isActive }) =>
-                            isActive
-                                ? "flex items-center space-x-2 bg-yellow-500 text-black rounded-full px-4 py-2"
-                                : "flex items-center space-x-2 px-4 py-2 hover:bg-yellow-500 hover:text-black rounded-full"
-                        }
-                    >
-                        REPUTATION
-                    </NavLink>
+
                 </div>
             </section>
 

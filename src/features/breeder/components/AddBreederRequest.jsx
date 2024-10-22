@@ -3,8 +3,9 @@ import { Form, InputNumber, Select, Upload, Button, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import api from "../../../config/axios"; // Assuming Axios instance is set up properly
 import uploadFile from "../../../utils/file"; // Firebase file upload utility
+import { useNavigate } from "react-router-dom";
 
-const AddBreederRequest = ({ onBack }) => {
+const AddBreederRequest = () => {
   const [form] = Form.useForm();
   const [imageList, setImageList] = useState([]);
   const [videoList, setVideoList] = useState([]);
@@ -13,6 +14,7 @@ const AddBreederRequest = ({ onBack }) => {
   const accountData = storedData ? JSON.parse(storedData) : {};
   const accountId = accountData.accountId || null;
   const [varietyList, setVarietyList] = useState([]);
+  const navigate = useNavigate();
 
   const get_variety_api = "variety/get-all-variety";
 
@@ -76,6 +78,7 @@ const AddBreederRequest = ({ onBack }) => {
 
       console.log("API response:", response);
       message.success("Breeder request submitted successfully!");
+      navigate("/breeder/profile/view-request");
     } catch (error) {
       const errorMessage =
         error.response?.data?.message ||
@@ -139,8 +142,8 @@ const AddBreederRequest = ({ onBack }) => {
               className="w-auto transform scale-x-[-1]"
             />
           </span>
-          <h1 className="text-center text-[#bcab6f] font-bold my-6 text-3xl">
-            REQUEST
+          <h1 className="text-center text-[#bcab6f] font-bold my-6 text-2xl">
+            ADD NEW BREEDER REQUEST
           </h1>
           <span>
             <img
