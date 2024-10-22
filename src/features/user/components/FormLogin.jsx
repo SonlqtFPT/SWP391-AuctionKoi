@@ -12,7 +12,7 @@ import { GoogleLogin } from "@react-oauth/google";
 function FormLogin() {
   const [loading, setLoading] = useState(false); // State to manage loading
   const navigate = useNavigate();
-  const { setUserName, setRole, setAccessToken, setRefreshToken } = useAuth();
+  const { setUserName, setRole, setAccessToken, setRefreshToken, setBreederName, setLocation } = useAuth();
 
   const handleLoginGoogle = async (values) => {
     setLoading(true);
@@ -73,16 +73,19 @@ function FormLogin() {
   const handleLogin = async (values) => {
     setLoading(true); // Start loading
     try {
+
       const response = await api.post("authenticate/login", values);
       const { message } = response.data;
       const { status } = response.data;
-      if (status == 1) {
+
+      if (status === 1) {
         const accessToken = response.data.data.accessToken;
         const refreshToken = response.data.data.refreshToken;
+        const accountData = response.data.data.account;
+
+        // Save tokens to localStorage
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
-
-        const accountData = response.data.data.account;
         localStorage.setItem("accountData", JSON.stringify(accountData));
 
         setUserName(`${accountData.firstName} ${accountData.lastName}`);
@@ -91,8 +94,48 @@ function FormLogin() {
         setRefreshToken(refreshToken);
 
         const { role } = accountData;
-        navigate(role === "MANAGER" ? "/admin" : role === "MEMBER" ? "/" : role === "BREEDER" ? "/" : "/staff");
-      } else if (status == 2) {
+
+        // If the role is BREEDER, fetch breeder information and store it in localStorage
+        if (role === "BREEDER" && accessToken) {
+          const fetchBreederInfo = async () => {
+            try {
+              const breederResponse = await api.get("/breeder/get-breeder-information", {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+              });
+
+              const { data } = breederResponse.data;
+              setBreederName(data.breederName);
+              setLocation(data.location);
+
+              // Update localStorage with new breeder information
+              const updatedAccountData = {
+                ...accountData,
+                breederName: data.breederName,
+                location: data.location,
+              };
+
+              localStorage.setItem("accountData", JSON.stringify(updatedAccountData));
+
+            } catch (error) {
+              console.error("Error fetching breeder information:", error);
+              toast.error("Error fetching breeder information");
+            }
+          };
+
+          await fetchBreederInfo(); // Fetch the breeder information
+        }
+
+        // Navigate based on user role
+        navigate(
+          role === "MANAGER"
+            ? "/admin"
+            : role === "MEMBER" || role === "BREEDER"
+              ? "/"
+              : "/staff"
+        );
+      } else if (status === 2) {
         toast.error(message);
       }
     } catch (error) {
@@ -102,6 +145,7 @@ function FormLogin() {
       setLoading(false); // End loading
     }
   };
+
 
   return (
     <div className="flex min-h-full flex-1 columns-2 justify-center px-6 py-20 lg:px-8 bg-hero-pattern mt-25 bg-cover relative">

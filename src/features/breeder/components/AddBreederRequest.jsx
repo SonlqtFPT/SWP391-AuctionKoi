@@ -3,7 +3,7 @@ import { Form, InputNumber, Select, Upload, Button, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import api from "../../../config/axios"; // Assuming Axios instance is set up properly
 import uploadFile from "../../../utils/file"; // Firebase file upload utility
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const AddBreederRequest = () => {
   const [form] = Form.useForm();
@@ -316,15 +316,18 @@ const AddBreederRequest = () => {
             </Form.Item>
           </div>
 
-          <div className="mt-6">
+          <div className="mt-6 px-10">
             <Button
               type="primary"
               htmlType="submit"
               loading={loading}
-              className="w-full rounded-2xl bg-[#bcab6f] px-3 py-3 text-sm font-extrabold leading-6 text-black shadow-sm hover:bg-[#a9995d] focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="w-full rounded-2xl bg-[#bcab6f] py-6 text-sm font-extrabold leading-6 text-black shadow-sm hover:bg-[#a9995d] focus-visible:outline-2 focus-visible:outline-offset-2"
             >
               Submit Request
             </Button>
+            <p className="mt-2 text-center text-sm text-gray-500">
+              Change your mind? <Link to="/breeder/profile/view-request" className="font-semibold leading-6 hover:text-yellow-500 text-yellow-600">Return to View Request!</Link>
+            </p>
           </div>
         </Form>
       </div>

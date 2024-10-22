@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { createContext, useState, useEffect, useContext } from 'react';
-import api from '../../config/axios'; // Make sure this path is correct
+import api from '../../config/axios';
 
 // Create the context
 const AuthContext = createContext(null);
@@ -28,13 +28,10 @@ export function AuthProvider({ children }) {
             setAccountId(accountData.accountId);
             setBreederName(accountData.breederName);
         }
-
-        // Get tokens from localStorage
         const accessTokenFromStorage = localStorage.getItem('accessToken');
         const refreshTokenFromStorage = localStorage.getItem('refreshToken');
         setAccessToken(accessTokenFromStorage);
         setRefreshToken(refreshTokenFromStorage);
-
         // If the user is a breeder, fetch additional breeder info
         if (accountData.role === "BREEDER" && accessTokenFromStorage) {
             const fetchBreederInfo = async () => {
@@ -44,25 +41,21 @@ export function AuthProvider({ children }) {
                             Authorization: `Bearer ${accessTokenFromStorage}`,
                         },
                     });
-
                     const { data } = response.data;
                     setBreederName(data.breederName);
                     setLocation(data.location);
-
                     // Update localStorage with new breeder information
                     const updatedAccountData = {
                         ...accountData,
                         breederName: data.breederName,
                         location: data.location,
                     };
-
                     localStorage.setItem("accountData", JSON.stringify(updatedAccountData));
                     setAccountData(updatedAccountData);
                 } catch (error) {
                     console.error("Error fetching breeder information:", error);
                 }
             };
-
             fetchBreederInfo();
         }
     }, [accessToken, accountData.role]);

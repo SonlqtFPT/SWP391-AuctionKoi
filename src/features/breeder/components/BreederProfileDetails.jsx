@@ -106,6 +106,8 @@ const BreederProfileDetails = () => {
                                         { required: true, message: "Phone number is required" },
                                         { len: 10, message: "Phone number must be exactly 10 digits" }
                                     ]}
+                                    initialValue={editedData.phoneNumber}
+                                    className="mt-4"
                                 >
                                     <Input
                                         value={editedData.phoneNumber}
@@ -125,6 +127,8 @@ const BreederProfileDetails = () => {
                                         { required: true, message: "First name is required" },
                                         { pattern: /^[A-Za-z]+$/, message: "First name must contain only letters" }
                                     ]}
+                                    initialValue={editedData.firstName}
+                                    className="mt-4"
                                 >
                                     <Input
                                         value={editedData.firstName}
@@ -144,6 +148,8 @@ const BreederProfileDetails = () => {
                                         { required: true, message: "Last name is required" },
                                         { pattern: /^[A-Za-z]+$/, message: "Last name must contain only letters" }
                                     ]}
+                                    initialValue={editedData.lastName}
+                                    className="mt-4"
                                 >
                                     <Input
                                         value={editedData.lastName}
