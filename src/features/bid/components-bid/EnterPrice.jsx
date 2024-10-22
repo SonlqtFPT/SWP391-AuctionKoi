@@ -56,7 +56,11 @@ function EnterPrice({
           },
         }
       );
-      toast.success(response.data.message);
+      if (response.data.message == "Bid placed successfully") {
+        toast.success(response.data.message);
+      } else {
+        toast.warn(response.data.message);
+      }
       fetchLot();
       fetchBidList();
       await handleBidNotification(); // Gọi hàm thông báo sau khi đặt giá thầu
