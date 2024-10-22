@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form, InputNumber, Select, Upload, Button, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import api from "../../../config/axios"; // Assuming Axios instance is set up properly
@@ -9,15 +9,37 @@ const AddBreederRequest = ({ onBack }) => {
   const [imageList, setImageList] = useState([]);
   const [videoList, setVideoList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const storedData = localStorage.getItem('accountData');
+  const storedData = localStorage.getItem("accountData");
   const accountData = storedData ? JSON.parse(storedData) : {};
   const accountId = accountData.accountId || null;
+  const [varietyList, setVarietyList] = useState([]);
+
+  const get_variety_api = "variety/get-all-variety";
+
+  useEffect(() => {
+    fetchVariety();
+  }, []);
 
   // Check if accountId exists
   if (!accountId) {
     message.error("Account information is missing.");
     return null; // Prevent component rendering if account data is not available
   }
+
+  const fetchVariety = async () => {
+    const token = localStorage.getItem("accessToken");
+    console.log(token);
+    const response = await api.get(get_variety_api, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log(
+      "Variety list: ",
+      response.data.data.map((variety) => variety.varietyName)
+    );
+    setVarietyList(response.data.data.map((variety) => variety.varietyName));
+  };
 
   // Handles the form submission
   const handleSubmitFish = async (values) => {
@@ -56,7 +78,8 @@ const AddBreederRequest = ({ onBack }) => {
       message.success("Breeder request submitted successfully!");
     } catch (error) {
       const errorMessage =
-        error.response?.data?.message || "Failed to submit breeder request. Please try again.";
+        error.response?.data?.message ||
+        "Failed to submit breeder request. Please try again.";
       message.error(errorMessage);
       console.error("Error in submitting request:", error);
     } finally {
@@ -67,7 +90,9 @@ const AddBreederRequest = ({ onBack }) => {
   const handleImageChange = async ({ fileList }) => {
     try {
       if (fileList.length) {
-        const uploadFileObj = fileList[fileList.length - 1].originFileObj || fileList[fileList.length - 1];
+        const uploadFileObj =
+          fileList[fileList.length - 1].originFileObj ||
+          fileList[fileList.length - 1];
         const imageUrl = await uploadFile(uploadFileObj);
 
         setImageList([{ ...fileList[fileList.length - 1], url: imageUrl }]);
@@ -85,7 +110,9 @@ const AddBreederRequest = ({ onBack }) => {
   const handleVideoChange = async ({ fileList }) => {
     try {
       if (fileList.length) {
-        const uploadFileObj = fileList[fileList.length - 1].originFileObj || fileList[fileList.length - 1];
+        const uploadFileObj =
+          fileList[fileList.length - 1].originFileObj ||
+          fileList[fileList.length - 1];
         const videoUrl = await uploadFile(uploadFileObj);
 
         setVideoList([{ ...fileList[fileList.length - 1], url: videoUrl }]);
@@ -127,19 +154,31 @@ const AddBreederRequest = ({ onBack }) => {
         <Form onFinish={handleSubmitFish} form={form} layout="vertical">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 px-2">
             <Form.Item
-              label={<label className="block text-sm font-medium leading-6 text-white">Variety Name</label>}
+              label={
+                <label className="block text-sm font-medium leading-6 text-white">
+                  Variety Name
+                </label>
+              }
               name="varietyName"
-              rules={[{ required: true, message: "Please choose variety name" }]}
+              rules={[
+                { required: true, message: "Please choose variety name" },
+              ]}
             >
               <Select>
-                <Select.Option value="Kohaku">Kohaku</Select.Option>
-                <Select.Option value="Sanke">Sanke</Select.Option>
-                <Select.Option value="Showa">Showa</Select.Option>
+                {varietyList.map((varietyName, index) => (
+                  <Select.Option key={index} value={varietyName}>
+                    {varietyName}
+                  </Select.Option>
+                ))}
               </Select>
             </Form.Item>
 
             <Form.Item
-              label={<label className="block text-sm font-medium leading-6 text-white">Age</label>}
+              label={
+                <label className="block text-sm font-medium leading-6 text-white">
+                  Age
+                </label>
+              }
               name="age"
               rules={[{ required: true, message: "Please enter age of fish" }]}
             >
@@ -147,9 +186,15 @@ const AddBreederRequest = ({ onBack }) => {
             </Form.Item>
 
             <Form.Item
-              label={<label className="block text-sm font-medium leading-6 text-white">Gender</label>}
+              label={
+                <label className="block text-sm font-medium leading-6 text-white">
+                  Gender
+                </label>
+              }
               name="gender"
-              rules={[{ required: true, message: "Please choose gender of fish" }]}
+              rules={[
+                { required: true, message: "Please choose gender of fish" },
+              ]}
             >
               <Select>
                 <Select.Option value="MALE">Male</Select.Option>
@@ -159,7 +204,11 @@ const AddBreederRequest = ({ onBack }) => {
             </Form.Item>
 
             <Form.Item
-              label={<label className="block text-sm font-medium leading-6 text-white">Size (cm)</label>}
+              label={
+                <label className="block text-sm font-medium leading-6 text-white">
+                  Size (cm)
+                </label>
+              }
               name="size"
               rules={[{ required: true, message: "Please enter size of fish" }]}
             >
@@ -167,28 +216,50 @@ const AddBreederRequest = ({ onBack }) => {
             </Form.Item>
 
             <Form.Item
-              label={<label className="block text-sm font-medium leading-6 text-white">Price ($)</label>}
+              label={
+                <label className="block text-sm font-medium leading-6 text-white">
+                  Price ($)
+                </label>
+              }
               name="price"
-              rules={[{ required: true, message: "Please enter price of fish" }]}
+              rules={[
+                { required: true, message: "Please enter price of fish" },
+              ]}
             >
               <InputNumber style={{ width: "100%" }} />
             </Form.Item>
 
             <Form.Item
-              label={<label className="block text-sm font-medium leading-6 text-white">Auction Type</label>}
+              label={
+                <label className="block text-sm font-medium leading-6 text-white">
+                  Auction Type
+                </label>
+              }
               name="auctionTypeName"
-              rules={[{ required: true, message: "Please select auction type" }]}
+              rules={[
+                { required: true, message: "Please select auction type" },
+              ]}
             >
               <Select>
-                <Select.Option value="FIXED_PRICE_SALE">Fixed Price Sale</Select.Option>
+                <Select.Option value="FIXED_PRICE_SALE">
+                  Fixed Price Sale
+                </Select.Option>
                 <Select.Option value="SEALED_BID">Sealed Bid</Select.Option>
-                <Select.Option value="ASCENDING_BID">Ascending Bid</Select.Option>
-                <Select.Option value="DESCENDING_BID">Descending Bid</Select.Option>
+                <Select.Option value="ASCENDING_BID">
+                  Ascending Bid
+                </Select.Option>
+                <Select.Option value="DESCENDING_BID">
+                  Descending Bid
+                </Select.Option>
               </Select>
             </Form.Item>
 
             <Form.Item
-              label={<label className="block text-sm font-medium leading-6 text-white">Image</label>}
+              label={
+                <label className="block text-sm font-medium leading-6 text-white">
+                  Image
+                </label>
+              }
               name="imageUrl"
               rules={[
                 {
@@ -213,7 +284,11 @@ const AddBreederRequest = ({ onBack }) => {
             </Form.Item>
 
             <Form.Item
-              label={<label className="block text-sm font-medium leading-6 text-white">Video</label>}
+              label={
+                <label className="block text-sm font-medium leading-6 text-white">
+                  Video
+                </label>
+              }
               name="videoUrl"
               rules={[
                 {
