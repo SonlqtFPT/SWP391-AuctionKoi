@@ -8,7 +8,7 @@ import TopBid from "./components-bid/TopBid";
 import Video from "./components-bid/Video";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import { useParams } from "react-router-dom"; // Import useParams
+import { Await, useParams } from "react-router-dom"; // Import useParams
 import { io } from "socket.io-client";
 import api from "../../config/axios";
 import { toast } from "react-toastify"; // Import toast
@@ -32,6 +32,7 @@ function Bid() {
   const [hasEnded, setHasEnded] = useState(false); // Thêm biến trạng thái để theo dõi thời gian đã kết thúc
   const [registed, setRegisted] = useState(false);
   const [highestBidderAccountId, setHighestBidderAccountId] = useState(null); // Biến lưu accountId của người có bidAmount cao nhất
+  const [followed, setFollowed] = useState(false);
 
   // Memoize socket connection using useRef to ensure it's stable across renders
   const socketRef = useRef(null);
@@ -41,6 +42,7 @@ function Bid() {
   const get_bidList_api = `bid/list?lotId=${lotId}`; // API for bid list
   const get_winner_api = `register-lot/get-winner?lotId=${lotId}`;
   const get_checkRegisted_api = `register-lot/is-registered/${lotId}/${currentAccountId}`;
+  const get_checkFollow_api = `notification/user-subcribed-yet?lotId=${lotId}`;
 
   const fetchCheckRegisted = async () => {
     const token = localStorage.getItem("accessToken");
@@ -52,6 +54,17 @@ function Bid() {
     });
     console.log("Is registed? ", response.data.message);
     if (response.data.message == "Member already registered") setRegisted(true);
+  };
+
+  const fetchCheckFollow = async () => {
+    const token = localStorage.getItem("accessToken");
+    const response = await api.get(get_checkFollow_api, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log("Check follow: ", response.data);
+    if (response.status == 200) setFollowed(true);
   };
 
   const fetchWinner = async () => {
@@ -110,7 +123,8 @@ function Bid() {
     fetchBidList();
     fetchWinner();
     fetchCheckRegisted();
-  }, [winnerAccountId]);
+    fetchCheckFollow();
+  }, [lotId]);
 
   const handlePaymentClick = (toastId) => {
     toast.dismiss(toastId); // Close the toast
@@ -228,12 +242,18 @@ function Bid() {
       <div className="bg-hero-pattern bg-cover relative">
         <div className="absolute bg-black bg-opacity-80 inset-0"></div>
         <h1 className="relative mt-5">
-          {lot && <Time remainingTime={remainingTime} auctionId={auctionId} />}
+          {lot && <Time remainingTime={remainingTime} lotId={lotId} />}
         </h1>
         <div className="flex flex-row justify-center relative mb-10">
           <div className="mt-16">
             <div className="max-w-full">
-              {lot && <Picture img={lot.koiFish.imageUrl} />}
+              {lot && (
+                <Picture
+                  img={lot.koiFish.imageUrl}
+                  lotId={lotId}
+                  followed={followed}
+                />
+              )}
             </div>
             <div className="mt-4 lg:mt-[30px]">
               {lot && <Video vid={lot.koiFish.videoUrl} />}

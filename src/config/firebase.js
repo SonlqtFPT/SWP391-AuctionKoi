@@ -12,16 +12,19 @@ import { GoogleAuthProvider } from "firebase/auth";
 
 const googleProvider = new GoogleAuthProvider();
 const firebaseConfig = {
-    apiKey: "AIzaSyBlGL4qCxdt1O9ZFVTt52pscyY4nqI4gHA",
-    authDomain: "student-management-41928.firebaseapp.com",
-    projectId: "student-management-41928",
-    storageBucket: "student-management-41928.appspot.com",
-    messagingSenderId: "253865371368",
-    appId: "1:253865371368:web:fb4826f10aac328fe2cb5d",
-    measurementId: "G-T7MKB6N6TF",
+    apiKey: "AIzaSyAGrmgZPIZeO4yD1ng6RSyRu0GgapNB-YE",
+    authDomain: "swptest-7f1bb.firebaseapp.com",
+    databaseURL: "https://swptest-7f1bb-default-rtdb.firebaseio.com",
+    projectId: "swptest-7f1bb",
+    storageBucket: "swptest-7f1bb.appspot.com",
+    messagingSenderId: "312264882389",
+    appId: "1:312264882389:web:cff6e4f72e3eb201518a5c",
+    measurementId: "G-5DFMCPBY4W",
 };
 
+const VAPID_KEY =
+  "BD0-JWIbZUQTgjrvMX73egd8tqDXECe_GGG_xDsrqbCwber3dpU3KsJW9Q0xAoj4OAd7H5UU-lQ-SYbIQifVA_c";
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
-export { storage, googleProvider };
+export { storage, googleProvider, app, VAPID_KEY };

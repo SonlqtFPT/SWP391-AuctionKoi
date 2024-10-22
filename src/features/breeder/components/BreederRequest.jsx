@@ -240,18 +240,6 @@ const BreederRequest = () => {
               <Button onClick={resetSearch} icon={<ReloadOutlined />}>
                 Reset
               </Button>
-
-              {/* List all status */}
-              <Button>All</Button>
-
-              {/* List cancel status */}
-              <Button>Cancel</Button>
-
-              {/* List Inspection_in_progress status */}
-              <Button>Inspection_in_progress</Button>
-
-              {/* List Approved */}
-              <Button>Approved</Button>
             </Space>
           )}
 
