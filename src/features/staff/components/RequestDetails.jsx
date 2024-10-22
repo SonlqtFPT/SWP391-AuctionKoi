@@ -30,208 +30,195 @@ const RequestDetails = ({
       case "INSPECTION_IN_PROGRESS":
         return "In Progress";
       default:
-        return status.charAt(0) + status.slice(1).toLowerCase(); // Capitalizes the first letter for other statuses
+        return status.charAt(0) + status.slice(1).toLowerCase();
     }
   };
 
   const handleAssign = async () => {
     if (selectedStaff) {
-      await onAssign(selectedRequest, selectedStaff); // Pass selected request and staff ID to onAssign
-      setIsModalVisible(false); // Close the modal after assignment
-      setSelectedStaff(null); // Clear selected staff
-      fetchRequest(); // Refresh the auction requests
+      await onAssign(selectedRequest, selectedStaff);
+      setIsModalVisible(false);
+      setSelectedStaff(null);
+      fetchRequest();
     } else {
       alert("Please select a staff member.");
     }
   };
 
   return (
-    <div>
-      <h2>Auction Request Details</h2>
-
-      {/* Request Info */}
-      <p>
-        <strong>Request ID:</strong> {selectedRequest.requestId}
-      </p>
-      <p>
-        <strong>Request Status:</strong> {formatStatus(selectedRequest.status)}
-      </p>
-
-      {/* Breeder Info */}
-      {selectedRequest.breeder && (
-        <>
+    <div className="space-y-8 mt-4">
+      {/* First Section: Request Info, Breeder Info, Fish Info, Staff Info */}
+      <div className="grid grid-cols-3 gap-4">
+        {/* Request Info & Breeder Info */}
+        <div className="space-y-4 bg-slate-300 rounded-2xl p-4">
+          <h2 className="text-xl font-bold">Auction Request Details</h2>
           <p>
-            <strong>Breeder ID:</strong> {selectedRequest.breeder.breederId}
+            <strong>Request ID:</strong> {selectedRequest.requestId}
           </p>
           <p>
-            <strong>Breeder Name:</strong> {selectedRequest.breeder.breederName}
+            <strong>Request Status:</strong> {formatStatus(selectedRequest.status)}
           </p>
-          <p>
-            <strong>Location:</strong> {selectedRequest.breeder.location}
-          </p>
-        </>
-      )}
-
-      {/* Fish Info */}
-      {selectedRequest.koiFish && (
-        <>
-          <p>
-            <strong>Fish ID:</strong> {selectedRequest.koiFish.fishId}
-          </p>
-          <p>
-            <strong>Gender:</strong> {selectedRequest.koiFish.gender}
-          </p>
-          <p>
-            <strong>Age:</strong> {selectedRequest.koiFish.age} years old
-          </p>
-          <p>
-            <strong>Size:</strong> {selectedRequest.koiFish.size} cm
-          </p>
-          <p>
-            <strong>Price:</strong> {selectedRequest.koiFish.price} $
-          </p>
-          <p>
-            <strong>Auction Type:</strong>{" "}
-            {selectedRequest.koiFish.auctionTypeName}
-          </p>
-
-          {/* Variety Info */}
-          {selectedRequest.koiFish.variety && (
+          {selectedRequest.breeder && (
             <>
               <p>
-                <strong>Variety ID:</strong>{" "}
-                {selectedRequest.koiFish.variety.varietyId}
+                <strong>Breeder ID:</strong> {selectedRequest.breeder.breederId}
               </p>
               <p>
-                <strong>Variety Name:</strong>{" "}
-                {selectedRequest.koiFish.variety.varietyName}
+                <strong>Breeder Name:</strong> {selectedRequest.breeder.breederName}
+              </p>
+              <p>
+                <strong>Location:</strong> {selectedRequest.breeder.location}
               </p>
             </>
           )}
+        </div>
 
-          {/* Media Info */}
-          {selectedRequest.koiFish.media && (
+        {/* Variety Info & Fish Info */}
+        <div className="space-y-4 bg-slate-300 rounded-2xl p-4">
+          {selectedRequest.koiFish && (
             <>
-              <Image
-                width={200}
-                src={selectedRequest.koiFish.media.imageUrl}
-                alt="Auction Request"
-                style={{ marginTop: 16 }}
-              />
-              {selectedRequest.koiFish.media.videoUrl ? (
-                <div style={{ marginTop: 16 }}>
-                  <strong>Video:</strong>
-                  <video width="300" controls>
-                    <source
-                      src={selectedRequest.koiFish.media.videoUrl}
-                      type="video/mp4"
-                    />
-                    Your browser does not support the video tag.
-                  </video>
-                </div>
-              ) : (
-                <p>No video available for this auction request.</p>
+              <p>
+                <strong>Fish ID:</strong> {selectedRequest.koiFish.fishId}
+              </p>
+              <p>
+                <strong>Gender:</strong> {selectedRequest.koiFish.gender}
+              </p>
+              <p>
+                <strong>Age:</strong> {selectedRequest.koiFish.age} years old
+              </p>
+              <p>
+                <strong>Size:</strong> {selectedRequest.koiFish.size} cm
+              </p>
+              <p>
+                <strong>Price:</strong> {selectedRequest.koiFish.price} $
+              </p>
+              <p>
+                <strong>Auction Type:</strong> {selectedRequest.koiFish.auctionTypeName}
+              </p>
+              {selectedRequest.koiFish.variety && (
+                <>
+                  <p>
+                    <strong>Variety ID:</strong> {selectedRequest.koiFish.variety.varietyId}
+                  </p>
+                  <p>
+                    <strong>Variety Name:</strong> {selectedRequest.koiFish.variety.varietyName}
+                  </p>
+                </>
               )}
             </>
           )}
-        </>
-      )}
+        </div>
 
-      {/* Staff Info */}
-      {selectedRequest.staff && (
-        <>
-          <h3>Assigned Staff</h3>
-          <p>
-            <strong>Staff ID:</strong> {selectedRequest.staff.accountId}
-          </p>
-          <p>
-            <strong>Name:</strong> {selectedRequest.staff.firstName}{" "}
-            {selectedRequest.staff.lastName}
-          </p>
-          <p>
-            <strong>Email:</strong> {selectedRequest.staff.email}
-          </p>
-          <p>
-            <strong>Phone Number:</strong> {selectedRequest.staff.phoneNumber}
-          </p>
-          <p>
-            <strong>Role:</strong> {selectedRequest.staff.role}
-          </p>
-        </>
-      )}
+        {/* Staff Info & Buttons */}
+        <div className="space-y-4 bg-slate-300 rounded-2xl p-4">
+          {selectedRequest.staff && (
+            <>
+              <h3 className="text-lg font-semibold">Assigned Staff</h3>
+              <p>
+                <strong>Staff ID:</strong> {selectedRequest.staff.accountId}
+              </p>
+              <p>
+                <strong>Name:</strong> {selectedRequest.staff.firstName} {selectedRequest.staff.lastName}
+              </p>
+              <p>
+                <strong>Email:</strong> {selectedRequest.staff.email}
+              </p>
+              <p>
+                <strong>Phone Number:</strong> {selectedRequest.staff.phoneNumber}
+              </p>
+              <p>
+                <strong>Role:</strong> {selectedRequest.staff.role}
+              </p>
+            </>
+          )}
 
-      {/* Only show Assign button if status is PENDING */}
-      {selectedRequest.status === "PENDING" && (
-        <>
-          <Button type="primary" onClick={() => setIsModalVisible(true)}>
-            Assign Staff
-          </Button>
+          {selectedRequest.status === "PENDING" && (
+            <>
+              <Button type="primary" onClick={() => setIsModalVisible(true)}>
+                Assign Staff
+              </Button>
+              <Modal
+                visible={isModalVisible}
+                title="Assign Staff"
+                onCancel={() => setIsModalVisible(false)}
+                onOk={handleAssign}
+                okText="Assign"
+                cancelText="Cancel"
+              >
+                <p>
+                  Assign a staff member to request ID: {selectedRequest.requestId}
+                </p>
+                <Select
+                  placeholder="Select staff"
+                  style={{ width: "100%" }}
+                  onChange={(value) => setSelectedStaff(value)}
+                >
+                  {staffList.map((staff) => (
+                    <Select.Option key={staff.accountId} value={staff.accountId}>
+                      {staff.firstName} | {staff.lastName} | AccountID: {staff.accountId}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Modal>
+            </>
+          )}
 
-          {/* Assign Staff Modal */}
-          <Modal
-            visible={isModalVisible}
-            title="Assign Staff"
-            onCancel={() => setIsModalVisible(false)}
-            onOk={handleAssign}
-            okText="Assign"
-            cancelText="Cancel"
-          >
-            <p>
-              Assign a staff member to request ID: {selectedRequest.requestId}
-            </p>
-            <Select
-              placeholder="Select staff"
-              style={{ width: "100%" }}
-              onChange={(value) => setSelectedStaff(value)}
-            >
-              {staffList.map((staff) => (
-                <Select.Option key={staff.accountId} value={staff.accountId}>
-                  {staff.firstName} | {staff.lastName} | AccountID:{" "}
-                  {staff.accountId}
-                </Select.Option>
-              ))}
-            </Select>
-          </Modal>
-        </>
-      )}
+          {selectedRequest.status === "INSPECTION_IN_PROGRESS" && (
+            <>
+              <Button type="primary" onClick={() => showUpdateStatusModal(selectedRequest)}>
+                Update Status
+              </Button>
+              <Modal
+                visible={!!updatingRequest}
+                title="Update Request Status"
+                onCancel={closeUpdateStatusModal}
+                onOk={onUpdateStatus}
+                okText="Update"
+                cancelText="Cancel"
+              >
+                <p>Update the status for request ID: {updatingRequest?.requestId}</p>
+                <Select
+                  placeholder="Select status"
+                  style={{ width: "100%" }}
+                  onChange={(value) => setSelectedStatus(value)}
+                  value={selectedStatus}
+                >
+                  <Select.Option value="INSPECTION_PASSED">Inspection Passed</Select.Option>
+                  <Select.Option value="INSPECTION_FAILED">Inspection Failed</Select.Option>
+                </Select>
+              </Modal>
+            </>
+          )}
+        </div>
+      </div>
 
-      {/* Only show "Update Status" button if status is INSPECTION_IN_PROGRESS */}
-      {selectedRequest.status === "INSPECTION_IN_PROGRESS" && (
-        <>
-          <Button
-            type="primary"
-            onClick={() => showUpdateStatusModal(selectedRequest)}
-          >
-            Update Status
-          </Button>
+      {/* Second Section: Media Info */}
+      {selectedRequest.koiFish && selectedRequest.koiFish.media && (
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <h3>Image: </h3>
+            <Image
+              width={500}
 
-          {/* Update Status Modal */}
-          <Modal
-            visible={!!updatingRequest}
-            title="Update Request Status"
-            onCancel={closeUpdateStatusModal}
-            onOk={onUpdateStatus} // No need to pass parameters; handled internally
-            okText="Update"
-            cancelText="Cancel"
-          >
-            <p>
-              Update the status for request ID: {updatingRequest?.requestId}
-            </p>
-            <Select
-              placeholder="Select status"
-              style={{ width: "100%" }}
-              onChange={(value) => setSelectedStatus(value)}
-              value={selectedStatus}
-            >
-              <Select.Option value="INSPECTION_PASSED">
-                Inspection Passed
-              </Select.Option>
-              <Select.Option value="INSPECTION_FAILED">
-                Inspection Failed
-              </Select.Option>
-            </Select>
-          </Modal>
-        </>
+              src={selectedRequest.koiFish.media.imageUrl}
+              alt="Auction Request"
+              className="mt-4"
+            />
+          </div>
+          <div className="mt-4">
+            {selectedRequest.koiFish.media.videoUrl ? (
+              <>
+                <h4>Video: </h4>
+                <video width="150" controls className="mt-2">
+                  <source src={selectedRequest.koiFish.media.videoUrl} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              </>
+            ) : (
+              <p>No video available for this auction request.</p>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

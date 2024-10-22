@@ -16,16 +16,16 @@ const StaffPage = () => {
       case "Manage Request":
         return <ManageRequestStatus />
       default:
-        return <div>Welcome to the Staff Dashboard!</div>; // Default content
+        return <div className="mt-28">Welcome to the Staff Dashboard!</div>; // Default content
     }
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen min-w-max">
       <Header />
-      <div className="flex flex-grow">
+      <div className="flex flex-grow w-full">
         <SidebarStaff setActiveComponent={setActiveComponent} />
-        <div className="flex-grow p-4">
+        <div className="flex-grow p-4 w-full">
           {renderComponent()} {/* Render the appropriate component */}
         </div>
       </div>

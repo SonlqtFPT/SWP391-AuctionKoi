@@ -37,10 +37,10 @@ const Footer = () => {
           </div>
         </nav>
         <p className="mt-8 text-base leading-6 text-center text-white-400">
-          Prestige KoiAuction - Vietnam's Number 1 Premier Koi Auction House
+          PrestigeKoi Auction - Vietnam's Number 1 Premier Koi Auction House
         </p>
         <p className="mt-8 text-base leading-6 text-center text-white-400">
-          © 2024 Prestige KoiAuction, Inc. All rights reserved.
+          © 2024 PrestigeKoi Auction, Inc. All rights reserved.
         </p>
       </div>
     </section>

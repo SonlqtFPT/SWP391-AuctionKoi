@@ -37,11 +37,14 @@ const Header = () => {
   const {
     userName,
     role,
+    setAccountId,
     setUserName,
-    setRole,
     setAccessToken,
     setRefreshToken,
-    setAccountId,
+    setRole,
+    setBreederName,
+    setLocation
+
   } = useAuth();
 
   // Function to handle logout: remove user-related data from localStorage
@@ -67,6 +70,8 @@ const Header = () => {
       setAccessToken("");
       setRefreshToken("");
       setUserName("");
+      setBreederName("");
+      setLocation("");
       setRole("");
       navigate("/");
       toast.success(message);
