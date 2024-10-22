@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import axios from "axios"; // Import axios for making API requests
-import { toast, ToastContainer } from "react-toastify"; // Import toast and ToastContainer
-import "react-toastify/dist/ReactToastify.css"; // Import the toast styles
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const CreateBreeder = () => {
   const [breederName, setBreederName] = useState("");
@@ -17,10 +17,13 @@ const CreateBreeder = () => {
   const [firstNameError, setFirstNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
 
+  const [isLoading, setIsLoading] = useState(false); // Add loading state
+
   const accessToken = localStorage.getItem("accessToken"); // Get the access token
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Start loading
 
     const requestBody = {
       breederName,
@@ -49,6 +52,7 @@ const CreateBreeder = () => {
       const { message } = response.data;
       if (status === 8) {
         toast.success(message);
+        // Clear form fields
         setBreederName("");
         setLocation("");
         setEmail("");
@@ -58,6 +62,7 @@ const CreateBreeder = () => {
         setPhoneNumber("");
       } else if (status === 3) {
         toast.error(message);
+        // Clear form fields
         setBreederName("");
         setLocation("");
         setEmail("");
@@ -71,6 +76,7 @@ const CreateBreeder = () => {
         "Error creating breeder: " +
         (error.response?.data?.message || error.message)
       );
+      // Clear form fields
       setBreederName("");
       setLocation("");
       setEmail("");
@@ -78,6 +84,8 @@ const CreateBreeder = () => {
       setLastName("");
       setPassword("");
       setPhoneNumber("");
+    } finally {
+      setIsLoading(false); // End loading
     }
   };
 
@@ -263,8 +271,9 @@ const CreateBreeder = () => {
         <button
           type="submit"
           className="bg-blue-500 text-white p-2 rounded w-full hover:bg-blue-600 transition duration-200"
+          disabled={isLoading} // Disable button during loading
         >
-          Create Breeder
+          {isLoading ? "Loading..." : "Create Breeder"} {/* Toggle button text */}
         </button>
       </form>
       <ToastContainer /> {/* Toast container for notifications */}

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import axios from "axios"; // Import axios for making API requests
-import { toast, ToastContainer } from "react-toastify"; // Import toast and ToastContainer
-import "react-toastify/dist/ReactToastify.css"; // Import the toast styles
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // 
 
 const CreateStaff = () => {
   const [email, setEmail] = useState("");
@@ -15,10 +15,13 @@ const CreateStaff = () => {
   const [firstNameError, setFirstNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
 
+  const [loading, setLoading] = useState(false); // Add loading state
+
   const accessToken = localStorage.getItem("accessToken"); // Get the access token
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Start loading
 
     const requestBody = {
       email,
@@ -43,12 +46,23 @@ const CreateStaff = () => {
       const { message } = response.data;
       if (status === 8) {
         toast.success(message);
-      } else toast.error("This staff have already exited!");
+
+        // Clear form fields after successful submission
+        setEmail("");
+        setFirstName("");
+        setLastName("");
+        setPassword("");
+        setPhoneNumber("");
+      } else {
+        toast.error("This staff already exists!");
+      }
     } catch (error) {
       toast.error(
         "Error creating staff: " +
         (error.response?.data?.message || error.message)
       ); // Show error toast
+    } finally {
+      setLoading(false); // Stop loading after submission
     }
   };
 
@@ -190,8 +204,9 @@ const CreateStaff = () => {
         <button
           type="submit"
           className="bg-blue-500 text-white p-2 rounded w-full hover:bg-blue-600 transition duration-200"
+          disabled={loading} // Disable button when loading
         >
-          Create Staff
+          {loading ? "Loading..." : "Create Staff"}
         </button>
       </form>
       <ToastContainer /> {/* Toast container for notifications */}

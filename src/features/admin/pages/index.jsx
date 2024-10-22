@@ -33,7 +33,7 @@ const AdminPage = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen min-w-max">
       <Header />
       <div className="flex flex-grow">
         <SidebarAdmin setActiveComponent={setActiveComponent} />

@@ -153,10 +153,14 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
 
   return (
     <div>
-      <h2>Request Details</h2>
-      <Row gutter={16}>
+
+      <Button onClick={onBack} type="default" className="my-6">
+        Back
+      </Button>
+      <h2 className="font-bold text-2xl">Request Details</h2>
+      <Row gutter={16} className="my-2 bg-slate-100">
         {/* Left Side: All Information Section */}
-        <Col span={16}>
+        <Col span={16} className="pt-2">
           <Card title={<strong>All Information</strong>} className="mb-4">
             <Row gutter={8}>
               {/* Breeder Info Column */}
@@ -286,50 +290,50 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
 
             {(request.status === "INSPECTION_PASSED" ||
               request.status === "PENDING_MANAGER_OFFER") && (
-              <>
-                <h3>
-                  <strong>Negotiate</strong>
-                </h3>
-                {request.status === "PENDING_MANAGER_OFFER" && (
-                  <p>Waiting for Manager Approve</p>
-                )}
-                <Input
-                  type="number"
-                  placeholder="Offer Price"
-                  value={offerPrice || ""}
-                  onChange={(e) =>
-                    setOfferPrice(
-                      e.target.value ? Number(e.target.value) : null
-                    )
-                  }
-                  style={{ width: "200px", marginBottom: "16px" }}
-                />
-                <Select
-                  placeholder="Select Auction Type"
-                  value={offerAuctionType || undefined}
-                  onChange={setOfferAuctionType}
-                  style={{ width: "200px", marginBottom: "16px" }}
-                >
-                  <Select.Option value="ASCENDING_BID">
-                    Ascending Bid
-                  </Select.Option>
-                  <Select.Option value="DESCENDING_BID">
-                    Descending Bid
-                  </Select.Option>
-                  <Select.Option value="SEALED_BID">Sealed Bid</Select.Option>
-                  <Select.Option value="FIXED_PRICE_SALE">
-                    Fixed Price Sale
-                  </Select.Option>
-                </Select>
-                <Button
-                  onClick={handleNegotiate}
-                  type="primary"
-                  className="bg-red-500 hover:bg-red-700 text-white"
-                >
-                  Submit Offer
-                </Button>
-              </>
-            )}
+                <>
+                  <h3>
+                    <strong>Negotiate</strong>
+                  </h3>
+                  {request.status === "PENDING_MANAGER_OFFER" && (
+                    <p>Waiting for Manager Approve</p>
+                  )}
+                  <Input
+                    type="number"
+                    placeholder="Offer Price"
+                    value={offerPrice || ""}
+                    onChange={(e) =>
+                      setOfferPrice(
+                        e.target.value ? Number(e.target.value) : null
+                      )
+                    }
+                    style={{ width: "200px", marginBottom: "16px" }}
+                  />
+                  <Select
+                    placeholder="Select Auction Type"
+                    value={offerAuctionType || undefined}
+                    onChange={setOfferAuctionType}
+                    style={{ width: "200px", marginBottom: "16px" }}
+                  >
+                    <Select.Option value="ASCENDING_BID">
+                      Ascending Bid
+                    </Select.Option>
+                    <Select.Option value="DESCENDING_BID">
+                      Descending Bid
+                    </Select.Option>
+                    <Select.Option value="SEALED_BID">Sealed Bid</Select.Option>
+                    <Select.Option value="FIXED_PRICE_SALE">
+                      Fixed Price Sale
+                    </Select.Option>
+                  </Select>
+                  <Button
+                    onClick={handleNegotiate}
+                    type="primary"
+                    className="bg-red-500 hover:bg-red-700 text-white"
+                  >
+                    Submit Offer
+                  </Button>
+                </>
+              )}
 
             {request.status === "PENDING_BREEDER_OFFER" && (
               <p>Waiting for Breeder Approve</p>
@@ -338,42 +342,45 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
         </Col>
 
         {/* Right Side: Media Section */}
-        <Col span={8}>
+        <Col span={8} className="pt-2">
           <Card title={<strong>Media</strong>} className="mb-4">
-            {/* Video Preview */}
-            {request.videoUrl ? (
-              <div style={{ marginTop: 16 }}>
-                <strong>Video:</strong>
-                <video width="300" controls>
-                  <source src={request.videoUrl} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
+            <div className="grid grid-cols-2">
+              {/* Video Preview */}
+              <div>
+                {request.videoUrl ? (
+                  <div style={{ marginTop: 16 }}>
+                    <strong>Video:</strong>
+                    <video width="150" controls>
+                      <source src={request.videoUrl} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                ) : (
+                  <p>No video available for this auction request.</p>
+                )}
               </div>
-            ) : (
-              <p>No video available for this auction request.</p>
-            )}
 
-            {/* Image Display */}
-            <h4>
-              <strong>Image:</strong>
-            </h4>
-            {request.image ? (
-              <Image
-                src={request.image}
-                alt="Koi Fish"
-                style={{ width: 200 }}
-              />
-            ) : (
-              <p>No image available for this auction request.</p>
-            )}
+              {/* Image Display */}
+              <div className="mt-3">
+                <h4>
+                  <strong>Image:</strong>
+                </h4>
+                {request.image ? (
+                  <Image
+                    src={request.image}
+                    alt="Koi Fish"
+                    style={{ width: 200 }}
+                  />
+                ) : (
+                  <p>No image available for this auction request.</p>
+                )}
+              </div>
+            </div>
           </Card>
         </Col>
       </Row>
 
-      <Button onClick={onBack} type="default" className="mt-4">
-        Back
-      </Button>
-    </div>
+    </div >
   );
 };
 
