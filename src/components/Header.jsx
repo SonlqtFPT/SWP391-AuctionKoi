@@ -231,6 +231,7 @@ const Header = () => {
                   ? "flex items-center justify-center space-x-2 bg-red-600 min-w-max rounded-full text-black px-4 py-2"
                   : "flex items-center justify-center space-x-2 px-4 py-2 hover:bg-red-500 hover:text-black rounded-full"
               }
+              onClick={() => setIsOpen(false)} // Close menu after clicking
             >
               <FaHome className="h-5 w-5" />
               <span>Home</span>
@@ -244,6 +245,7 @@ const Header = () => {
                   ? "flex items-center justify-center space-x-2 bg-red-600 min-w-max rounded-full text-black px-4 py-2"
                   : "flex items-center justify-center space-x-2 px-4 py-2 hover:bg-red-500 hover:text-black rounded-full"
               }
+              onClick={() => setIsOpen(false)} // Close menu after clicking
             >
               <FaGavel className="h-5 w-5" />
               <span>Auction</span>
@@ -257,11 +259,70 @@ const Header = () => {
                   ? "flex items-center justify-center space-x-2 bg-red-600 min-w-max rounded-full text-black px-4 py-2"
                   : "flex items-center justify-center space-x-2 px-4 py-2 hover:bg-red-500 hover:text-black rounded-full"
               }
+              onClick={() => setIsOpen(false)} // Close menu after clicking
             >
               <FaInfoCircle className="h-5 w-5" />
               <span>About Us</span>
             </NavLink>
           </li>
+          {/* Conditional rendering of the user-specific options */}
+          {userName ? (
+            <>
+              <li className="flex items-center justify-center">
+                <Link
+                  to={getAccountLink()} // Dynamically generated link based on role
+                  className="hover:bg-red-500 flex items-center justify-center space-x-2 rounded-full px-4 py-2 hover:text-black"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <FaUserCircle className="h-5 w-5" />
+                  <span>Account</span>
+                </Link>
+              </li>
+              <li className="flex items-center justify-center">
+                <button
+                  onClick={() => {
+                    handleLogout(); // Call logout and close the menu
+                    setIsOpen(false);
+                  }}
+                  className="hover:bg-red-500 flex items-center justify-center space-x-2 rounded-full px-4 py-2 hover:text-black"
+                >
+                  <FaSignInAlt className="h-5 w-5" />
+                  <span>Log Out</span>
+                </button>
+              </li>
+            </>
+          ) : (
+            <>
+              <li className="flex items-center justify-center">
+                <NavLink
+                  to="/login"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "bg-red-600 flex items-center justify-center space-x-2 rounded-full px-4 py-2 text-black"
+                      : "hover:bg-red-500 flex items-center justify-center space-x-2 rounded-full px-4 py-2 hover:text-black"
+                  }
+                  onClick={() => setIsOpen(false)} // Close menu after clicking
+                >
+                  <FaSignInAlt className="h-5 w-5" />
+                  <span>Login</span>
+                </NavLink>
+              </li>
+              <li className="flex items-center justify-center">
+                <NavLink
+                  to="/register"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "bg-amber-600 flex items-center justify-center space-x-2 rounded-full px-4 py-2 text-black"
+                      : "hover:bg-amber-500 flex items-center justify-center space-x-2 rounded-full px-4 py-2 hover:text-black"
+                  }
+                  onClick={() => setIsOpen(false)} // Close menu after clicking
+                >
+                  <FaUserPlus className="h-5 w-5" />
+                  <span>Register</span>
+                </NavLink>
+              </li>
+            </>
+          )}
         </ul>
       </div>
 

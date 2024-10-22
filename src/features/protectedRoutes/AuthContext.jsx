@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { createContext, useState, useEffect, useContext } from 'react';
+import api from '../../config/axios'; // Make sure this path is correct
 
 // Create the context
 const AuthContext = createContext(null);
@@ -12,6 +13,10 @@ export function AuthProvider({ children }) {
     const [role, setRole] = useState('');
     const [accountId, setAccountId] = useState('');
     const [breederName, setBreederName] = useState('');
+    const [location, setLocation] = useState('');
+    const [accountData, setAccountData] = useState(
+        JSON.parse(localStorage.getItem('accountData')) || {}
+    );
 
     useEffect(() => {
         // Get the account data from localStorage
@@ -23,10 +28,44 @@ export function AuthProvider({ children }) {
             setAccountId(accountData.accountId);
             setBreederName(accountData.breederName);
         }
+
         // Get tokens from localStorage
-        setAccessToken(localStorage.getItem('accessToken'));
-        setRefreshToken(localStorage.getItem('refreshToken'));
-    }, []);
+        const accessTokenFromStorage = localStorage.getItem('accessToken');
+        const refreshTokenFromStorage = localStorage.getItem('refreshToken');
+        setAccessToken(accessTokenFromStorage);
+        setRefreshToken(refreshTokenFromStorage);
+
+        // If the user is a breeder, fetch additional breeder info
+        if (accountData.role === "BREEDER" && accessTokenFromStorage) {
+            const fetchBreederInfo = async () => {
+                try {
+                    const response = await api.get("/breeder/get-breeder-information", {
+                        headers: {
+                            Authorization: `Bearer ${accessTokenFromStorage}`,
+                        },
+                    });
+
+                    const { data } = response.data;
+                    setBreederName(data.breederName);
+                    setLocation(data.location);
+
+                    // Update localStorage with new breeder information
+                    const updatedAccountData = {
+                        ...accountData,
+                        breederName: data.breederName,
+                        location: data.location,
+                    };
+
+                    localStorage.setItem("accountData", JSON.stringify(updatedAccountData));
+                    setAccountData(updatedAccountData);
+                } catch (error) {
+                    console.error("Error fetching breeder information:", error);
+                }
+            };
+
+            fetchBreederInfo();
+        }
+    }, [accessToken, accountData.role]);
 
     return (
         <AuthContext.Provider
@@ -37,12 +76,14 @@ export function AuthProvider({ children }) {
                 role,
                 accountId,
                 breederName,
+                location,
                 setAccountId,
                 setUserName,
                 setAccessToken,
                 setRefreshToken,
                 setRole,
-                setBreederName
+                setBreederName,
+                setLocation
             }}
         >
             {children}

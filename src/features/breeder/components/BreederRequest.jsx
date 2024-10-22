@@ -251,7 +251,7 @@ const BreederRequest = () => {
               />
             </div>
           ) : (
-            <div className="overflow-x-auto bg-amber-500 shadow-md rounded-lg my-5 mx-5">
+            <div className="overflow-x-auto bg-amber-500 shadow-md rounded-lg my-5 mx-5 bg-cover">
               <Table
                 dataSource={filteredRequests}
                 columns={[
