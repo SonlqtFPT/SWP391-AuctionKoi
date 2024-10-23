@@ -75,11 +75,16 @@ const Payment = () => {
       });
 
       if (response.status === 200) {
+        // Update the invoice state with new data
+        setInvoice({
+          ...response.data.data,
+          address, // Add the updated address
+          kilometer, // Add the updated kilometer
+        });
         notification.success({
           message: "Success",
           description: "Invoice updated successfully!",
         });
-        setInvoice({ ...invoice, address, kilometer }); // Update invoice in state
       } else {
         throw new Error("Failed to update invoice");
       }
@@ -121,7 +126,7 @@ const Payment = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <div className="container mx-auto px-4 py-8">
+      <div className="flex-grow container mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold text-center mb-8">
           Payment for Lot: {lotId}
         </h1>
@@ -159,7 +164,7 @@ const Payment = () => {
             <p>
               <span className="font-semibold">Status:</span> {invoice.status}
             </p>
-            {invoice.paymentLink ? ( // Conditionally render the payment link
+            {invoice.paymentLink && invoice.status !== "PAID" ? ( // Conditionally render the payment link if not PAID
               <p>
                 <span className="font-semibold">Payment Link:</span>{" "}
                 <a
@@ -173,53 +178,73 @@ const Payment = () => {
               </p>
             ) : (
               <p>
-                <span className="font-semibold">Payment Link:</span> Please
-                update shipping details
+                <span className="font-semibold">Payment Link:</span>{" "}
+                {invoice.status === "PAID"
+                  ? "Payment completed."
+                  : "Please update shipping details."}
               </p>
             )}
+            <p>
+              <span className="font-semibold">Shipping Address:</span>{" "}
+              {invoice.address || "Not provided"}
+            </p>
+            <p>
+              <span className="font-semibold">Estimated Distance:</span>{" "}
+              {invoice.kilometer} km
+            </p>
           </Card>
 
           {/* Update Form for Kilometer */}
-          <Card
-            title="Update Shipping Details"
-            style={{ width: 300 }}
-            className="shadow-lg flex flex-col"
-          >
-            <div className="flex flex-col mb-4">
-              <label className="font-semibold">Address:</label>
-              <Input value={address} placeholder="Selected address" disabled />
-            </div>
-            <div className="flex flex-col mb-4">
-              <label className="font-semibold">Kilometer (Distance):</label>
-              <Input
-                value={kilometer.toFixed(2)} // Display kilometer value
-                placeholder="Distance in km"
-                type="number"
-                disabled
-              />
-            </div>
-            <Button
-              type="primary"
-              loading={updating}
-              onClick={handleUpdateInvoice}
-              className="mt-4"
+          {invoice.status !== "PAID" && ( // Conditionally render update form only if status is not PAID
+            <Card
+              title="Update Shipping Details"
+              style={{ width: 300 }}
+              className="shadow-lg flex flex-col"
             >
-              Update Invoice
-            </Button>
-          </Card>
+              <div className="flex flex-col mb-4">
+                <label className="font-semibold">Address:</label>
+                <Input
+                  value={address}
+                  placeholder="Selected address"
+                  onChange={(e) => setAddress(e.target.value)}
+                />
+              </div>
+              <div className="flex flex-col mb-4">
+                <label className="font-semibold">Kilometer (Distance):</label>
+                <Input
+                  value={kilometer.toFixed(2)} // Display kilometer value
+                  placeholder="Distance in km"
+                  type="number"
+                  disabled
+                />
+              </div>
+              <Button
+                type="primary"
+                loading={updating}
+                onClick={handleUpdateInvoice}
+                className="mt-4"
+              >
+                Update Invoice
+              </Button>
+            </Card>
+          )}
         </div>
 
         {/* Render Map Component with SearchLocation */}
-        <h2 className="text-xl font-semibold text-center mt-8 mb-4">
-          Select End Point
-        </h2>
-        <MapComponent
-          startPoint={startPoint}
-          endPoint={endPoint}
-          setEndPoint={setEndPoint}
-          setDistance={setDistance} // Update distance in the MapComponent
-          setAddress={setAddress}
-        />
+        {invoice.status !== "PAID" && ( // Conditionally render MapComponent only if status is not PAID
+          <>
+            <h2 className="text-xl font-semibold text-center mt-8 mb-4">
+              Select End Point
+            </h2>
+            <MapComponent
+              startPoint={startPoint}
+              endPoint={endPoint}
+              setEndPoint={setEndPoint}
+              setDistance={setDistance} // Update distance in the MapComponent
+              setAddress={setAddress}
+            />
+          </>
+        )}
       </div>
       <Footer />
     </div>
