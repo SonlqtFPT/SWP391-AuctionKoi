@@ -1,69 +1,76 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom"; // Import useParams to get route params
-import api from "../config/axios"; // Import your configured Axios instance
-import Header from "../components/Header"; // Import your Header component
-import Footer from "../components/Footer"; // Import your Footer component
-import { Card, Input, Button, notification } from "antd"; // Import Ant Design components
+import { useParams } from "react-router-dom";
+import api from "../config/axios";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import { Card, Input, Button, notification } from "antd";
+import MapComponent from "./MapComponent";
 
 const Payment = () => {
-  const { lotId } = useParams(); // Get the lotId from the route
-  const [invoice, setInvoice] = useState(null); // State to hold invoice data
-  const [loading, setLoading] = useState(true); // State to track loading status
-  const [error, setError] = useState(null); // State to track errors
-  const [address, setAddress] = useState(""); // State to track the address input
-  const [kilometer, setKilometer] = useState(""); // State to track the kilometer input
-  const [updating, setUpdating] = useState(false); // State to track update process
+  const { lotId } = useParams();
+  const [invoice, setInvoice] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [kilometer, setKilometer] = useState(0); // Initialize as 0
+  const [updating, setUpdating] = useState(false);
+  const [address, setAddress] = useState(""); // State for the address
+  const [startPoint, setStartPoint] = useState({ lat: 10.8412, lng: 106.8098 });
+  const [endPoint, setEndPoint] = useState(null);
+  const [distance, setDistance] = useState(0);
 
   useEffect(() => {
-    // Function to fetch invoice data
     const fetchInvoice = async () => {
       try {
-        const accessToken = localStorage.getItem("accessToken"); // Retrieve access token from local storage
+        const accessToken = localStorage.getItem("accessToken");
         const response = await api.get(`/invoice/get-specific-invoice`, {
-          params: { lotId }, // Pass the lotId as a query parameter
+          params: { lotId },
           headers: {
-            Authorization: `Bearer ${accessToken}`, // Add Bearer token to headers
+            Authorization: `Bearer ${accessToken}`,
           },
         });
 
-        // Check if the response is okay
         if (response.status === 200) {
-          setInvoice(response.data.data); // Set the invoice data in state
+          setInvoice(response.data.data);
         } else {
           throw new Error("Failed to fetch invoice");
         }
       } catch (error) {
         console.error("Error fetching invoice:", error);
-        setError(error); // Set error in state
+        setError(error);
       } finally {
-        setLoading(false); // Set loading to false after fetching
+        setLoading(false);
       }
     };
 
-    fetchInvoice(); // Call the fetch function
-  }, [lotId]); // Dependency array includes lotId
+    fetchInvoice();
+  }, [lotId]);
 
-  // Function to handle invoice update
+  // Update kilometer state whenever distance changes
+  useEffect(() => {
+    setKilometer(distance); // Set kilometer to the current distance in km
+  }, [distance]);
+
   const handleUpdateInvoice = async () => {
-    if (!address || !kilometer) {
+    if (!address || kilometer <= 0) {
+      // Ensure kilometer is positive
       notification.error({
         message: "Error",
-        description: "Please fill in both the address and distance fields.",
+        description: "Please fill in both the address and a valid distance.",
       });
       return;
     }
 
     try {
-      setUpdating(true); // Set updating state to true
-      const accessToken = localStorage.getItem("accessToken"); // Retrieve access token from local storage
+      setUpdating(true);
+      const accessToken = localStorage.getItem("accessToken");
       const response = await api.patch(`/invoice/update-invoice`, null, {
         params: {
-          invoiceId: invoice.invoiceId, // Pass the invoiceId
-          address, // Pass the updated address
-          kilometer, // Pass the updated kilometer (distance)
+          invoiceId: invoice.invoiceId,
+          address,
+          kilometer,
         },
         headers: {
-          Authorization: `Bearer ${accessToken}`, // Add Bearer token to headers
+          Authorization: `Bearer ${accessToken}`,
         },
       });
 
@@ -72,7 +79,7 @@ const Payment = () => {
           message: "Success",
           description: "Invoice updated successfully!",
         });
-        setInvoice({ ...invoice, address, kilometer }); // Update the local invoice state with new values
+        setInvoice({ ...invoice, address, kilometer }); // Update invoice in state
       } else {
         throw new Error("Failed to update invoice");
       }
@@ -83,75 +90,47 @@ const Payment = () => {
       });
       console.error("Error updating invoice:", error);
     } finally {
-      setUpdating(false); // Set updating state to false
+      setUpdating(false);
     }
   };
 
-  // Render loading state
   if (loading) {
     return (
       <div className="flex flex-col min-h-screen">
-        <Header /> {/* Include the header component */}
+        <Header />
         <div className="flex-grow flex items-center justify-center">
           <div>Loading...</div>
         </div>
-        <Footer /> {/* Include the footer component */}
+        <Footer />
       </div>
     );
   }
 
-  // Render error state
   if (error) {
     return (
       <div className="flex flex-col min-h-screen">
-        <Header /> {/* Include the header component */}
+        <Header />
         <div className="flex-grow flex items-center justify-center">
           <div>Error fetching invoice: {error.message}</div>
         </div>
-        <Footer /> {/* Include the footer component */}
+        <Footer />
       </div>
     );
   }
 
-  // Styles for the invoice and waiting message
-  const styles = {
-    container: {
-      padding: "20px",
-      maxWidth: "800px",
-      margin: "auto",
-      border: "1px solid #ddd",
-      borderRadius: "8px",
-      boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-      backgroundColor: "#fff",
-      marginTop: "20px",
-    },
-    title: {
-      textAlign: "center",
-      color: "#333",
-      marginBottom: "20px",
-    },
-    formGroup: {
-      display: "flex",
-      flexDirection: "column",
-      marginBottom: "10px",
-    },
-  };
-
-  // Render invoice details and update form if available
   return (
     <div className="flex flex-col min-h-screen">
-      <Header /> {/* Include the header component */}
+      <Header />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold text-center mb-8">
           Payment for Lot: {lotId}
         </h1>
 
         <div className="flex justify-center space-x-4">
-          {/* Invoice Card */}
           <Card
             title="Invoice Details"
-            style={{ width: 300 }} // Width of the card
-            className="shadow-lg" // Tailwind shadow
+            style={{ width: 300 }}
+            className="shadow-lg"
           >
             <p>
               <span className="font-semibold">Invoice ID:</span>{" "}
@@ -180,40 +159,43 @@ const Payment = () => {
             <p>
               <span className="font-semibold">Status:</span> {invoice.status}
             </p>
-            <p>
-              <span className="font-semibold">Payment Link:</span>{" "}
-              <a
-                href={invoice.paymentLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 underline hover:text-blue-700"
-              >
-                Click here to pay
-              </a>
-            </p>
+            {invoice.paymentLink ? ( // Conditionally render the payment link
+              <p>
+                <span className="font-semibold">Payment Link:</span>{" "}
+                <a
+                  href={invoice.paymentLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 underline hover:text-blue-700"
+                >
+                  Click here to pay
+                </a>
+              </p>
+            ) : (
+              <p>
+                <span className="font-semibold">Payment Link:</span> Please
+                update shipping details
+              </p>
+            )}
           </Card>
 
-          {/* Update Form for Address and Kilometer */}
+          {/* Update Form for Kilometer */}
           <Card
             title="Update Shipping Details"
-            style={{ width: 300 }} // Width of the card
-            className="shadow-lg flex flex-col" // Use flex column for vertical stacking
+            style={{ width: 300 }}
+            className="shadow-lg flex flex-col"
           >
-            <div style={styles.formGroup}>
+            <div className="flex flex-col mb-4">
               <label className="font-semibold">Address:</label>
-              <Input
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder="Enter new address"
-              />
+              <Input value={address} placeholder="Selected address" disabled />
             </div>
-            <div style={styles.formGroup}>
+            <div className="flex flex-col mb-4">
               <label className="font-semibold">Kilometer (Distance):</label>
               <Input
-                value={kilometer}
-                onChange={(e) => setKilometer(e.target.value)}
-                placeholder="Enter distance"
+                value={kilometer.toFixed(2)} // Display kilometer value
+                placeholder="Distance in km"
                 type="number"
+                disabled
               />
             </div>
             <Button
@@ -226,8 +208,20 @@ const Payment = () => {
             </Button>
           </Card>
         </div>
+
+        {/* Render Map Component with SearchLocation */}
+        <h2 className="text-xl font-semibold text-center mt-8 mb-4">
+          Select End Point
+        </h2>
+        <MapComponent
+          startPoint={startPoint}
+          endPoint={endPoint}
+          setEndPoint={setEndPoint}
+          setDistance={setDistance} // Update distance in the MapComponent
+          setAddress={setAddress}
+        />
       </div>
-      <Footer /> {/* Include the footer component */}
+      <Footer />
     </div>
   );
 };
