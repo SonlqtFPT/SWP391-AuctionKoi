@@ -42,15 +42,31 @@ const Payment = () => {
 
   // Render loading state
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex flex-col min-h-screen">
+        <Header /> {/* Include the header component */}
+        <div className="flex-grow flex items-center justify-center">
+          <div>Loading...</div>
+        </div>
+        <Footer /> {/* Include the footer component */}
+      </div>
+    );
   }
 
   // Render error state
   if (error) {
-    return <div>Error fetching invoice: {error.message}</div>;
+    return (
+      <div className="flex flex-col min-h-screen">
+        <Header /> {/* Include the header component */}
+        <div className="flex-grow flex items-center justify-center">
+          <div>Error fetching invoice: {error.message}</div>
+        </div>
+        <Footer /> {/* Include the footer component */}
+      </div>
+    );
   }
 
-  // Styles for the invoice
+  // Styles for the invoice and waiting message
   const styles = {
     container: {
       padding: "20px",
@@ -94,11 +110,29 @@ const Payment = () => {
     linkHover: {
       textDecoration: "underline",
     },
-    // Add padding-top to accommodate the header height
+    waitingMessage: {
+      textAlign: "center",
+      fontSize: "2rem",
+      color: "#555",
+      marginTop: "50px",
+    },
     content: {
       paddingTop: "70px", // Adjust this value based on your header height
     },
   };
+
+  // Render waiting message if no invoice data
+  if (!invoice) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <Header /> {/* Include the header component */}
+        <div className="flex-grow flex items-center justify-center">
+          <div style={styles.waitingMessage}>Waiting for Process</div>
+        </div>
+        <Footer /> {/* Include the footer component */}
+      </div>
+    );
+  }
 
   // Render invoice details if available
   return (
@@ -109,140 +143,138 @@ const Payment = () => {
           Payment for Lot: {lotId}
         </h1>
 
-        {invoice && (
-          <div className="flex justify-center space-x-4">
-            {" "}
-            {/* Space between cards */}
-            {/* Invoice Card */}
+        <div className="flex justify-center space-x-4">
+          {" "}
+          {/* Space between cards */}
+          {/* Invoice Card */}
+          <Card
+            title="Invoice Details"
+            style={{ width: 300 }} // Width of the card
+            className="shadow-lg" // Tailwind shadow
+          >
+            <p>
+              <span className="font-semibold">Invoice ID:</span>{" "}
+              {invoice.invoiceId}
+            </p>
+            <p>
+              <span className="font-semibold">Final Amount:</span>{" "}
+              {invoice.finalAmount}
+            </p>
+            <p>
+              <span className="font-semibold">Invoice Date:</span>{" "}
+              {new Date(invoice.invoiceDate).toLocaleString()}
+            </p>
+            <p>
+              <span className="font-semibold">Tax:</span> {invoice.tax}
+            </p>
+            <p>
+              <span className="font-semibold">Due Date:</span>{" "}
+              {new Date(invoice.dueDate).toLocaleString()}
+            </p>
+            <p>
+              <span className="font-semibold">Subtotal:</span>{" "}
+              {invoice.subTotal}
+            </p>
+            <p>
+              <span className="font-semibold">Status:</span> {invoice.status}
+            </p>
+            <p>
+              <span className="font-semibold">Payment Link:</span>{" "}
+              <a
+                href={invoice.paymentLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 underline hover:text-blue-700"
+              >
+                Click here to pay
+              </a>
+            </p>
+          </Card>
+          {/* Koi Fish Card */}
+          {invoice.koiFish && (
             <Card
-              title="Invoice Details"
-              style={{ width: 300 }} // Width of the card
-              className="shadow-lg" // Tailwind shadow
+              title="Koi Fish Details"
+              style={{ width: 300 }} // Set the card width
+              className="shadow-lg flex flex-col" // Use flex column for vertical stacking
             >
               <p>
-                <span className="font-semibold">Invoice ID:</span>{" "}
-                {invoice.invoiceId}
+                <span className="font-semibold">Fish ID:</span>{" "}
+                {invoice.koiFish.fishId}
               </p>
               <p>
-                <span className="font-semibold">Final Amount:</span>{" "}
-                {invoice.finalAmount}
+                <span className="font-semibold">Gender:</span>{" "}
+                {invoice.koiFish.gender}
               </p>
               <p>
-                <span className="font-semibold">Invoice Date:</span>{" "}
-                {new Date(invoice.invoiceDate).toLocaleString()}
+                <span className="font-semibold">Age:</span>{" "}
+                {invoice.koiFish.age}
               </p>
               <p>
-                <span className="font-semibold">Tax:</span> {invoice.tax}
+                <span className="font-semibold">Size:</span>{" "}
+                {invoice.koiFish.size}
               </p>
               <p>
-                <span className="font-semibold">Due Date:</span>{" "}
-                {new Date(invoice.dueDate).toLocaleString()}
+                <span className="font-semibold">Price:</span>
+                {"vnd"}
+                {invoice.koiFish.price}
               </p>
               <p>
-                <span className="font-semibold">Subtotal:</span>{" "}
-                {invoice.subTotal}
+                <span className="font-semibold">Variety Name:</span>{" "}
+                {invoice.koiFish.varietyName}
               </p>
               <p>
-                <span className="font-semibold">Status:</span> {invoice.status}
+                <span className="font-semibold">Breeder Name:</span>{" "}
+                {invoice.koiFish.breederName}
               </p>
-              <p>
-                <span className="font-semibold">Payment Link:</span>{" "}
-                <a
-                  href={invoice.paymentLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 underline hover:text-blue-700"
-                >
-                  Click here to pay
-                </a>
-              </p>
-            </Card>
-            {/* Koi Fish Card */}
-            {invoice.koiFish && (
-              <Card
-                title="Koi Fish Details"
-                style={{ width: 300 }} // Set the card width
-                className="shadow-lg flex flex-col" // Use flex column for vertical stacking
-              >
-                <p>
-                  <span className="font-semibold">Fish ID:</span>{" "}
-                  {invoice.koiFish.fishId}
-                </p>
-                <p>
-                  <span className="font-semibold">Gender:</span>{" "}
-                  {invoice.koiFish.gender}
-                </p>
-                <p>
-                  <span className="font-semibold">Age:</span>{" "}
-                  {invoice.koiFish.age}
-                </p>
-                <p>
-                  <span className="font-semibold">Size:</span>{" "}
-                  {invoice.koiFish.size}
-                </p>
-                <p>
-                  <span className="font-semibold">Price:</span>
-                  {"vnd"}
-                  {invoice.koiFish.price}
-                </p>
-                <p>
-                  <span className="font-semibold">Variety Name:</span>{" "}
-                  {invoice.koiFish.varietyName}
-                </p>
-                <p>
-                  <span className="font-semibold">Breeder Name:</span>{" "}
-                  {invoice.koiFish.breederName}
-                </p>
 
-                <div className="flex space-x-4 mt-4">
-                  {/* Space between image and video */}
-                  {invoice.koiFish.imageUrl && (
-                    <div className="flex-1 flex flex-col items-center">
-                      <strong>Image:</strong>
-                      <br />
-                      <img
-                        src={invoice.koiFish.imageUrl}
-                        alt="Koi Fish"
-                        className="max-w-full h-auto object-cover" // Maintain aspect ratio
-                        style={{ maxHeight: "200px", width: "auto" }} // Set a max height
-                      />
-                    </div>
-                  )}
-                  {invoice.koiFish.videoUrl && (
-                    <div className="flex-1 flex flex-col items-center">
-                      <strong>Video:</strong>
-                      <br />
-                      <div
+              <div className="flex space-x-4 mt-4">
+                {/* Space between image and video */}
+                {invoice.koiFish.imageUrl && (
+                  <div className="flex-1 flex flex-col items-center">
+                    <strong>Image:</strong>
+                    <br />
+                    <img
+                      src={invoice.koiFish.imageUrl}
+                      alt="Koi Fish"
+                      className="max-w-full h-auto object-cover" // Maintain aspect ratio
+                      style={{ maxHeight: "200px", width: "auto" }} // Set a max height
+                    />
+                  </div>
+                )}
+                {invoice.koiFish.videoUrl && (
+                  <div className="flex-1 flex flex-col items-center">
+                    <strong>Video:</strong>
+                    <br />
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        maxHeight: "200px",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <video
+                        controls
+                        className="w-full h-full object-cover" // Full width, full height
                         style={{
+                          height: "100%",
                           width: "100%",
-                          height: "auto",
-                          maxHeight: "200px",
-                          overflow: "hidden",
-                        }}
+                          objectFit: "cover",
+                        }} // Use cover to fill the container
                       >
-                        <video
-                          controls
-                          className="w-full h-full object-cover" // Full width, full height
-                          style={{
-                            height: "100%",
-                            width: "100%",
-                            objectFit: "cover",
-                          }} // Use cover to fill the container
-                        >
-                          <source
-                            src={invoice.koiFish.videoUrl}
-                            type="video/mp4"
-                          />
-                          Your browser does not support the video tag.
-                        </video>
-                      </div>
+                        <source
+                          src={invoice.koiFish.videoUrl}
+                          type="video/mp4"
+                        />
+                        Your browser does not support the video tag.
+                      </video>
                     </div>
-                  )}
-                </div>
-              </Card>
-            )}
-          </div>
-        )}
+                  </div>
+                )}
+              </div>
+            </Card>
+          )}
+        </div>
       </div>
       <Footer /> {/* Include the footer component */}
     </div>
