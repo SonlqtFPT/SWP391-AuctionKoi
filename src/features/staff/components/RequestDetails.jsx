@@ -217,9 +217,9 @@ const RequestDetails = ({
       {selectedRequest.koiFish && selectedRequest.koiFish.media && (
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <h3>Image: </h3>
+            <h3 className="font-bold">Image: </h3>
             <Image
-              width={500}
+              width={100}
               src={selectedRequest.koiFish.media.imageUrl}
               alt="Auction Request"
               className="mt-4"
@@ -228,7 +228,7 @@ const RequestDetails = ({
           <div className="mt-4">
             {selectedRequest.koiFish.media.videoUrl ? (
               <>
-                <h4>Video: </h4>
+                <h4 className="font-bold">Video: </h4>
                 <video width="150" controls className="mt-2">
                   <source
                     src={selectedRequest.koiFish.media.videoUrl}

@@ -130,7 +130,7 @@ const ManageRequestStatus = ({ onGoBack }) => {
       title: "Image",
       dataIndex: "mediaUrl",
       key: "mediaUrl",
-      render: (image) => <img src={image} alt="" width={200} />,
+      render: (image) => <img src={image} alt="koi fish picture" width={100} />,
     },
     {
       title: "Status",

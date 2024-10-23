@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { Button, Card, Select, Input, notification } from "antd";
 import api from "../../../config/axios";
+import { useNavigate } from "react-router-dom";
 
 const RequestDetails = ({ request, onBack, fetchRequest }) => {
   const [offerPrice, setOfferPrice] = useState(null);
   const [offerAuctionType, setOfferAuctionType] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (request) {
@@ -123,6 +125,7 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
         message: "Success",
         description: "Offer accepted successfully!",
       });
+      navigate("/breeder/profile/view-request");
     } catch (error) {
       console.error("Error accepting offer:", error);
       notification.error({
@@ -140,6 +143,7 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
         description: "Request cancelled successfully!",
       });
       fetchRequest();
+      navigate("/breeder/profile/view-request");
     } catch (error) {
       console.error("Error cancelling request:", error);
       notification.error({
