@@ -22,13 +22,25 @@ const RequestDetails = ({
   const formatStatus = (status) => {
     switch (status) {
       case "INSPECTION_PASSED":
-        return "Pass";
+        return "Confirming";
       case "INSPECTION_FAILED":
-        return "Fail";
-      case "PENDING":
-        return "Pending";
+        return "Canceled";
       case "INSPECTION_IN_PROGRESS":
-        return "In Progress";
+        return "Assigned";
+      case "PENDING":
+        return "Requesting";
+      case "PENDING_NEGOTIATION":
+        return "Negotiating";
+      case "PENDING_MANAGER_OFFER":
+        return "Confirming";
+      case "PENDING_BREEDER_OFFER":
+        return "Negotiating";
+      case "COMPLETED":
+        return "Completed";
+      case "CANCELLED":
+        return "Cancelled";
+      case "APPROVED":
+        return "Registered";
       default:
         return status.charAt(0) + status.slice(1).toLowerCase();
     }

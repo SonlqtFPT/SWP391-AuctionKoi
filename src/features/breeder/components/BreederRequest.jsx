@@ -152,16 +152,26 @@ const BreederRequest = () => {
 
   const formatStatus = (status) => {
     switch (status) {
-      case "APPROVE":
-        return "Approved";
+      case "INSPECTION_PASSED":
+        return "Confirming";
+      case "INSPECTION_FAILED":
+        return "Canceled";
+      case "INSPECTION_IN_PROGRESS":
+        return "Assigned";
       case "PENDING":
-        return "Pending";
+        return "Requesting";
+      case "PENDING_NEGOTIATION":
+        return "Negotiating";
       case "PENDING_MANAGER_OFFER":
-        return "Waiting For Manager Approve";
+        return "Confirming";
       case "PENDING_BREEDER_OFFER":
-        return "Waiting For Breeder Approve";
+        return "Negotiating";
+      case "COMPLETED":
+        return "Completed";
       case "CANCELLED":
         return "Cancelled";
+      case "APPROVED":
+        return "Registered";
       default:
         return status.charAt(0) + status.slice(1).toLowerCase();
     }
@@ -282,7 +292,9 @@ const BreederRequest = () => {
                     dataIndex: "auctionTypeNameBreeder",
                     key: "auctionTypeNameBreeder",
                     render: (text) => (
-                      <span className="text-yellow-500">{text}</span>
+                      <span className="text-yellow-500">
+                        {formatAuctionType(text)}
+                      </span>
                     ),
                     className:
                       "text-gray-200 text-left px-4 py-2 font-semibold",

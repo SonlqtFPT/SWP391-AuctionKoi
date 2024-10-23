@@ -15,7 +15,9 @@ function Auction() {
 
   const fetchAuctioning = async () => {
     const token = localStorage.getItem("accessToken");
-    console.log("Token nè: ", token);
+    const rtoken = localStorage.getItem("refreshToken");
+    console.log("Access Token nè: ", token);
+    console.log("Refresh token nè: ", rtoken);
     const response = await api.get(get_auctioning_api, {
       headers: {
         Authorization: `Bearer ${token}`,
