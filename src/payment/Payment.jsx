@@ -49,9 +49,9 @@ const Payment = () => {
   // Update states whenever distance changes
   useEffect(() => {
     // Calculate price per km and estimated shipping fee whenever distance changes
-    const newPricePerKm = calculatePricePerKm(distance);
+    const newPricePerKm = calculatePricePerKm(Math.ceil(distance));
     setPricePerKm(newPricePerKm);
-    calculateEstimatedShippingFee(distance, newPricePerKm);
+    calculateEstimatedShippingFee(Math.ceil(distance), newPricePerKm);
     console.log(`Distance: ${distance}`); // Log distance
   }, [distance]);
 
@@ -73,7 +73,8 @@ const Payment = () => {
 
   // Function to calculate estimated shipping fee using floored distance
   const calculateEstimatedShippingFee = (dist, price) => {
-    const flooredDistance = Math.floor(dist); // Round down to the nearest whole number
+    const flooredDistance = Math.ceil(dist); // Round up to the nearest whole number
+    console.log(flooredDistance);
     const fee = flooredDistance * price; // Estimated fee based on floored distance and price per km
     setEstimatedShippingFee(fee); // Update state with the estimated shipping fee
   };
