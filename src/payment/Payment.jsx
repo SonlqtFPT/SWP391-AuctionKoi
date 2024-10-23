@@ -11,13 +11,13 @@ const Payment = () => {
   const [invoice, setInvoice] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [kilometer, setKilometer] = useState(0); // Initialize as 0
+  const [distance, setDistance] = useState(0); // Single state for distance
   const [updating, setUpdating] = useState(false);
   const [address, setAddress] = useState(""); // State for the address
   const [startPoint, setStartPoint] = useState({ lat: 10.8412, lng: 106.8098 });
   const [endPoint, setEndPoint] = useState(null);
-  const [distance, setDistance] = useState(0);
   const [pricePerKm, setPricePerKm] = useState(0); // State for price per kilometer
+  const [estimatedShippingFee, setEstimatedShippingFee] = useState(0); // State for estimated shipping fee
 
   useEffect(() => {
     const fetchInvoice = async () => {
@@ -46,30 +46,41 @@ const Payment = () => {
     fetchInvoice();
   }, [lotId]);
 
-  // Update kilometer state whenever distance changes
+  // Update states whenever distance changes
   useEffect(() => {
-    setKilometer(distance); // Set kilometer to the current distance in km
-    calculatePricePerKm(distance); // Calculate price per km whenever distance changes
+    // Calculate price per km and estimated shipping fee whenever distance changes
+    const newPricePerKm = calculatePricePerKm(distance);
+    setPricePerKm(newPricePerKm);
+    calculateEstimatedShippingFee(distance, newPricePerKm);
+    console.log(`Distance: ${distance}`); // Log distance
   }, [distance]);
 
   // Function to calculate price per kilometer
-  const calculatePricePerKm = (kilometer) => {
-    if (kilometer >= 0 && kilometer <= 10) {
-      setPricePerKm(0);
-    } else if (kilometer >= 11 && kilometer <= 50) {
-      setPricePerKm(1500);
-    } else if (kilometer >= 51 && kilometer <= 100) {
-      setPricePerKm(1200);
-    } else if (kilometer >= 101 && kilometer <= 200) {
-      setPricePerKm(1000);
-    } else if (kilometer > 200) {
-      setPricePerKm(800);
+  const calculatePricePerKm = (km) => {
+    if (km >= 0 && km <= 10) {
+      return 0;
+    } else if (km >= 11 && km <= 50) {
+      return 1500;
+    } else if (km >= 51 && km <= 100) {
+      return 1200;
+    } else if (km >= 101 && km <= 200) {
+      return 1000;
+    } else if (km > 200) {
+      return 800;
     }
+    return 0; // Default case
+  };
+
+  // Function to calculate estimated shipping fee using floored distance
+  const calculateEstimatedShippingFee = (dist, price) => {
+    const flooredDistance = Math.floor(dist); // Round down to the nearest whole number
+    const fee = flooredDistance * price; // Estimated fee based on floored distance and price per km
+    setEstimatedShippingFee(fee); // Update state with the estimated shipping fee
   };
 
   const handleUpdateInvoice = async () => {
-    if (!address || kilometer <= 0) {
-      // Ensure kilometer is positive
+    if (!address || distance <= 0) {
+      // Ensure distance is positive
       notification.error({
         message: "Error",
         description: "Please fill in both the address and a valid distance.",
@@ -84,7 +95,7 @@ const Payment = () => {
         params: {
           invoiceId: invoice.invoiceId,
           address,
-          kilometer,
+          kilometer: distance, // Send the distance as kilometer
         },
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -96,7 +107,7 @@ const Payment = () => {
         setInvoice({
           ...response.data.data,
           address, // Add the updated address
-          kilometer, // Add the updated kilometer
+          kilometer: distance, // Add the updated kilometer
         });
         notification.success({
           message: "Success",
@@ -211,7 +222,7 @@ const Payment = () => {
             </p>
           </Card>
 
-          {/* Update Form for Kilometer */}
+          {/* Update Form for Distance */}
           {invoice.status !== "PAID" && ( // Conditionally render update form only if status is not PAID
             <Card
               title="Update Shipping Details"
@@ -227,9 +238,9 @@ const Payment = () => {
                 />
               </div>
               <div className="flex flex-col mb-4">
-                <label className="font-semibold">Kilometer (Distance):</label>
+                <label className="font-semibold">Distance:</label>
                 <Input
-                  value={kilometer.toFixed(2)} // Display kilometer value
+                  value={distance.toFixed(2)} // Display distance value
                   placeholder="Distance in km"
                   type="number"
                   disabled
@@ -246,13 +257,12 @@ const Payment = () => {
             </Card>
           )}
 
-          {/* Pricing Table */}
+          {/* Pricing Table Card */}
           <Card
             title="Pricing Table"
             style={{ width: 300 }}
             className="shadow-lg"
           >
-            <h3 className="font-semibold">Distance (km)</h3>
             <ul>
               <li>0 - 10 km: Free</li>
               <li>11 - 50 km: 1500 VND/km</li>
@@ -263,6 +273,10 @@ const Payment = () => {
             <div>
               <span className="font-semibold">Price per km:</span> {pricePerKm}{" "}
               VND
+            </div>
+            <div>
+              <span className="font-semibold">Estimated Shipping Fee:</span>{" "}
+              {estimatedShippingFee} VND
             </div>
           </Card>
         </div>
