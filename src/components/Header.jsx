@@ -23,6 +23,7 @@ const Header = () => {
   const navigate = useNavigate();
   // State to manage the visibility of the user dropdown when logged in
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Toggle function to show or hide the hamburger menu on mobile screens
   const toggleDropdown = () => {
@@ -49,32 +50,40 @@ const Header = () => {
 
   // Function to handle logout: remove user-related data from localStorage
   const handleLogout = async () => {
+    setLoading(true);
     const accessToken = localStorage.getItem("accessToken");
     const refreshToken = localStorage.getItem("refreshToken");
     const data = {
       accessToken: accessToken,
       refreshToken: refreshToken,
     };
-    const response = await api.post(`/authenticate/logout`, data, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    const { status } = response.data;
-    const { message } = response.data;
-    if (status === 5) {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      localStorage.removeItem("accountData");
-      setAccountId("");
-      setAccessToken("");
-      setRefreshToken("");
-      setUserName("");
-      setBreederName("");
-      setLocation("");
-      setRole("");
-      navigate("/");
-      toast.success(message);
+    try {
+      const response = await api.post(`/authenticate/logout`, data, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const { status } = response.data;
+      const { message } = response.data;
+      if (status === 5) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("accountData");
+        setAccountId("");
+        setAccessToken("");
+        setRefreshToken("");
+        setUserName("");
+        setBreederName("");
+        setLocation("");
+        setRole("");
+        navigate("/");
+        toast.success(message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Error! Cannot log out!");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -178,8 +187,9 @@ const Header = () => {
                   <button
                     className="block px-4 py-2 text-center text-white hover:bg-red-500 w-full hover:rounded-lg"
                     onClick={handleLogout}
+                    disabled={loading}
                   >
-                    Log Out
+                    {loading ? "Loading..." : "Log Out"}
                   </button>
                 </div>
               )}
@@ -290,9 +300,10 @@ const Header = () => {
                     setIsOpen(false);
                   }}
                   className="hover:bg-red-500 flex items-center justify-center space-x-2 rounded-full px-4 py-2 hover:text-black"
+                  disabled={loading}
                 >
                   <FaSignInAlt className="h-5 w-5" />
-                  <span>Log Out</span>
+                  <span>{loading ? "Loading..." : "Log Out"}</span>
                 </button>
               </li>
             </>
