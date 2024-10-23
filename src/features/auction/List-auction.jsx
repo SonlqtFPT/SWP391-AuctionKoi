@@ -34,7 +34,7 @@ function Auction() {
     navigate("/auctioned");
   };
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen min-w-max">
       <Header />
       <div className="flex flex-col justify-center items-center h-screen bg-hero-pattern bg-cover relative">
         <div className="absolute bg-black bg-opacity-80 inset-0"></div>

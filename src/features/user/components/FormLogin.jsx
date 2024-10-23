@@ -17,7 +17,6 @@ function FormLogin() {
   const handleLoginGoogle = async (values) => {
     setLoading(true);
     const googleToken = values.credential;
-    console.log("Google token: " + googleToken);
 
     const data = { token: googleToken };
 
