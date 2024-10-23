@@ -17,6 +17,7 @@ const Payment = () => {
   const [startPoint, setStartPoint] = useState({ lat: 10.8412, lng: 106.8098 });
   const [endPoint, setEndPoint] = useState(null);
   const [distance, setDistance] = useState(0);
+  const [pricePerKm, setPricePerKm] = useState(0); // State for price per kilometer
 
   useEffect(() => {
     const fetchInvoice = async () => {
@@ -48,7 +49,23 @@ const Payment = () => {
   // Update kilometer state whenever distance changes
   useEffect(() => {
     setKilometer(distance); // Set kilometer to the current distance in km
+    calculatePricePerKm(distance); // Calculate price per km whenever distance changes
   }, [distance]);
+
+  // Function to calculate price per kilometer
+  const calculatePricePerKm = (kilometer) => {
+    if (kilometer >= 0 && kilometer <= 10) {
+      setPricePerKm(0);
+    } else if (kilometer >= 11 && kilometer <= 50) {
+      setPricePerKm(1500);
+    } else if (kilometer >= 51 && kilometer <= 100) {
+      setPricePerKm(1200);
+    } else if (kilometer >= 101 && kilometer <= 200) {
+      setPricePerKm(1000);
+    } else if (kilometer > 200) {
+      setPricePerKm(800);
+    }
+  };
 
   const handleUpdateInvoice = async () => {
     if (!address || kilometer <= 0) {
@@ -228,6 +245,26 @@ const Payment = () => {
               </Button>
             </Card>
           )}
+
+          {/* Pricing Table */}
+          <Card
+            title="Pricing Table"
+            style={{ width: 300 }}
+            className="shadow-lg"
+          >
+            <h3 className="font-semibold">Distance (km)</h3>
+            <ul>
+              <li>0 - 10 km: Free</li>
+              <li>11 - 50 km: 1500 VND/km</li>
+              <li>51 - 100 km: 1200 VND/km</li>
+              <li>101 - 200 km: 1000 VND/km</li>
+              <li>200+ km: 800 VND/km</li>
+            </ul>
+            <div>
+              <span className="font-semibold">Price per km:</span> {pricePerKm}{" "}
+              VND
+            </div>
+          </Card>
         </div>
 
         {/* Render Map Component with SearchLocation */}
