@@ -39,7 +39,7 @@ const RequestDetails = ({
         return "Completed";
       case "CANCELLED":
         return "Cancelled";
-      case "APPROVED":
+      case "APPROVE":
         return "Registered";
       default:
         return status.charAt(0) + status.slice(1).toLowerCase();

@@ -234,7 +234,7 @@ const ManageRequest = () => {
         return "Completed";
       case "CANCELLED":
         return "Cancelled";
-      case "APPROVED":
+      case "APPROVE":
         return "Registered";
       default:
         return status.charAt(0) + status.slice(1).toLowerCase();
@@ -255,13 +255,15 @@ const ManageRequest = () => {
       case "PENDING_NEGOTIATION":
         return "purple";
       case "PENDING_MANAGER_OFFER":
-        return "gold"; // Color for manager approval status
+        return "gold";
       case "PENDING_BREEDER_OFFER":
-        return "lime"; // Color for breeder approval status
+        return "lime";
       case "COMPLETED":
         return "geekblue";
       case "CANCELLED":
         return "volcano";
+      case "APPROVE":
+        return "green";
       default:
         return "default";
     }

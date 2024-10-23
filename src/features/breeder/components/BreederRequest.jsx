@@ -170,7 +170,7 @@ const BreederRequest = () => {
         return "Completed";
       case "CANCELLED":
         return "Cancelled";
-      case "APPROVED":
+      case "APPROVE":
         return "Registered";
       default:
         return status.charAt(0) + status.slice(1).toLowerCase();
@@ -178,25 +178,27 @@ const BreederRequest = () => {
   };
 
   const getStatusColor = (status) => {
-    switch (status.toUpperCase()) {
-      case "PENDING":
-        return "blue";
-      case "INSPECTION_IN_PROGRESS":
-        return "orange";
+    switch (status) {
       case "INSPECTION_PASSED":
         return "green";
       case "INSPECTION_FAILED":
         return "red";
+      case "INSPECTION_IN_PROGRESS":
+        return "orange";
+      case "PENDING":
+        return "blue";
+      case "PENDING_NEGOTIATION":
+        return "purple";
       case "PENDING_MANAGER_OFFER":
         return "gold";
       case "PENDING_BREEDER_OFFER":
         return "lime";
-      case "APPROVE":
-        return "cyan";
-      case "REJECT":
-        return "magenta";
+      case "COMPLETED":
+        return "geekblue";
       case "CANCELLED":
         return "volcano";
+      case "APPROVE":
+        return "green";
       default:
         return "default";
     }
