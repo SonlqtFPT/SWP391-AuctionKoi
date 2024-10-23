@@ -7,6 +7,7 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
   const [offerPrice, setOfferPrice] = useState(null);
   const [offerAuctionType, setOfferAuctionType] = useState(null);
   const navigate = useNavigate();
+  const token = localStorage.getItem("accessToken");
 
   useEffect(() => {
     if (request) {
@@ -96,14 +97,26 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
       return;
     }
 
+    console.log("Chạy nè", request.requestId);
+
+    console.log("Chạy nè", offerPrice);
+
+    console.log("Chạy nè", offerAuctionType);
     try {
-      await api.post(
+      const response = await api.post(
         `/breeder/request/negotiation/send-negotiation/${request.requestId}`,
         {
           price: offerPrice,
           auctionTypeName: offerAuctionType,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
+
+      console.log("Chạy nè");
       notification.success({
         message: "Success",
         description: "Offer submitted successfully!",

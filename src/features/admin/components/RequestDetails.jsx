@@ -86,6 +86,7 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
   };
 
   const handleNegotiate = async () => {
+    // Kiểm tra giá trị offerPrice trước khi gửi
     if (!offerAuctionType || offerPrice === null) {
       notification.error({
         message: "Error",
@@ -99,7 +100,7 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
       await api.post(
         `/manager/request/negotiation/${request.requestId}`,
         {
-          offerPrice,
+          offerPrice, // Sử dụng giá trị offerPrice hiện tại
           auctionTypeName: offerAuctionType,
         },
         {
@@ -112,7 +113,7 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
         message: "Success",
         description: "Offer submitted successfully!",
       });
-      fetchRequest();
+      fetchRequest;
     } catch (error) {
       console.error("Error submitting negotiation offer:", error);
       notification.error({
@@ -149,7 +150,7 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
         message: "Success",
         description: "Staff assigned successfully!",
       });
-      fetchRequest();
+      fetchRequest;
       setIsModalVisible(false);
     } catch (error) {
       console.error("Error assigning staff:", error);
@@ -303,7 +304,11 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
                   <strong>Negotiate</strong>
                 </h3>
                 {request.status === "PENDING_MANAGER_OFFER" && (
-                  <p>Waiting for Manager Approve</p>
+                  <>
+                    <p>Waiting for Manager Approve</p>
+                    <p>Breeder's price offer: {offerPrice} vnđ</p>
+                    <p>Breeder's auction type offer: {offerAuctionType}</p>
+                  </>
                 )}
                 <Input
                   type="number"

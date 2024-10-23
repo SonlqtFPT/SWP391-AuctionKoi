@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Follow from "../../../components/Follow";
 
-function Picture({ img, lotId, followed }) {
+function Picture({ img, lotId, followed, fetchCheckFollow }) {
   const [picture, setPicture] = useState("");
 
   useEffect(() => {
@@ -18,7 +18,11 @@ function Picture({ img, lotId, followed }) {
         alt="Koi Fish"
       />
       <div className="absolute top-2 right-2">
-        <Follow lotId={lotId} followed={followed} />
+        <Follow
+          lotId={lotId}
+          followed={followed}
+          fetchCheckFollow={fetchCheckFollow}
+        />
       </div>
     </div>
   );

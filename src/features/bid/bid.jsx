@@ -33,6 +33,7 @@ function Bid() {
   const [registed, setRegisted] = useState(false);
   const [highestBidderAccountId, setHighestBidderAccountId] = useState(null); // Biến lưu accountId của người có bidAmount cao nhất
   const [followed, setFollowed] = useState(false);
+  const [win, setWin] = useState(false);
 
   // Memoize socket connection using useRef to ensure it's stable across renders
   const socketRef = useRef(null);
@@ -168,7 +169,10 @@ function Bid() {
           if (registed) {
             if (!hasEnded) {
               setHasEnded(true); // Mark as ended
-              if (currentAccountId === highestBidderAccountId) {
+              console.log("Winner là: ", highestBidderAccountId);
+              if (currentAccountId == highestBidderAccountId) {
+                console.log("Winner là: ", highestBidderAccountId);
+                setWin(true); // Đặt win là true
                 // Rainbow colors for winner toast
                 const toastId = toast(
                   <>
@@ -198,6 +202,9 @@ function Bid() {
                 });
               }
             }
+          } else {
+            // Nếu lot đã kết thúc và chưa đăng ký
+            setWin(false); // Đặt win là false
           }
         } else {
           setRemainingTime(timeLeft);
@@ -206,7 +213,7 @@ function Bid() {
 
       return () => clearInterval(interval);
     }
-  }, [lot, hasEnded, currentAccountId, winnerAccountId]);
+  }, [lot, hasEnded, currentAccountId, highestBidderAccountId]);
 
   //Này của socket
   useEffect(() => {
@@ -245,7 +252,6 @@ function Bid() {
           {lot && <Time remainingTime={remainingTime} lotId={lotId} />}
         </h1>
         <div className="flex flex-col lg:flex-row justify-center relative mb-10">
-
           <div className="mx-7 mt-11 lg:mx-0">
             <div>
               {lot && (
@@ -257,6 +263,7 @@ function Bid() {
                   varietyName={lot.koiFish.varietyName}
                   fishId={lot.koiFish.fishId}
                   registed={registed}
+                  win={win}
                 />
               )}
             </div>
@@ -287,6 +294,7 @@ function Bid() {
                   img={lot.koiFish.imageUrl}
                   lotId={lotId}
                   followed={followed}
+                  fetchCheckFollow={fetchCheckFollow}
                 />
               )}
             </div>
@@ -294,7 +302,6 @@ function Bid() {
               {lot && <Video vid={lot.koiFish.videoUrl} />}
             </div>
           </div>
-
         </div>
       </div>
       <Footer />

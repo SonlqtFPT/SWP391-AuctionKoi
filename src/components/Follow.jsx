@@ -13,7 +13,7 @@ import api from "../config/axios";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const Follow = ({ lotId, followed }) => {
+const Follow = ({ lotId, followed, fetchCheckFollow }) => {
   const messaging = getMessaging(app);
 
   const [notificationPermission, setNotificationPermission] = useState(
@@ -44,6 +44,7 @@ const Follow = ({ lotId, followed }) => {
       );
       if (response.status === 200) {
         toast.success("Added to favorites"); // Hiển thị thông báo thành công
+        fetchCheckFollow();
       }
     } catch (error) {
       console.error("Error handleSendFCM at Follow.jsx:", error);
@@ -114,25 +115,12 @@ const Follow = ({ lotId, followed }) => {
   };
 
   useEffect(() => {
-    const currentURL = window.location.href;
-    if (currentURL === "http://localhost:5173/") {
-      console.log("hi");
-    }
-
-    const handleVisibilityChange = async () => {
-      if (
-        document.visibilityState === "visible" &&
-        Notification.permission === "granted"
-      ) {
-        const newToken = await getTokenAndSend();
-        if (newToken) {
-          setCurrentToken(newToken);
-          localStorage.setItem("fcmToken", newToken);
-        }
-      }
+    const initializeMessaging = async () => {
+      await initializeFirebaseMessaging();
     };
 
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    // Chỉ gọi initializeMessaging một lần
+    initializeMessaging();
 
     // Set up foreground message handler
     const unsubscribe = onMessage(messaging, (payload) => {
@@ -148,25 +136,19 @@ const Follow = ({ lotId, followed }) => {
     });
 
     return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-      unsubscribe();
+      unsubscribe(); // Hủy bỏ listener khi component unmount
     };
-  }, []);
+  }, []); // Chỉ chạy một lần khi component mount
 
   return (
     <Button
       onClick={() => {
-        initializeFirebaseMessaging();
         handleSendFCM();
       }}
       variant="primary"
       disabled={notificationPermission === "denied"}
     >
-      {followed ? (
-        <FaHeart className="text-red-500" /> // Nếu followed là true
-      ) : (
-        <FaHeart /> // Nếu followed là false
-      )}
+      {followed ? <FaHeart className="text-red-500" /> : <FaHeart />}
     </Button>
   );
 };
