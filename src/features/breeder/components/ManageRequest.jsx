@@ -217,23 +217,25 @@ const ManageRequest = () => {
   const formatStatus = (status) => {
     switch (status) {
       case "INSPECTION_PASSED":
-        return "Pass";
+        return "Confirming";
       case "INSPECTION_FAILED":
-        return "Fail";
+        return "Canceled";
       case "INSPECTION_IN_PROGRESS":
-        return "Checking";
+        return "Assigned";
       case "PENDING":
-        return "Pending";
+        return "Requesting";
       case "PENDING_NEGOTIATION":
         return "Negotiating";
       case "PENDING_MANAGER_OFFER":
-        return "Waiting For Manager Approve"; // New status
+        return "Confirming";
       case "PENDING_BREEDER_OFFER":
-        return "Waiting For Breeder Approve"; // New status
+        return "Negotiating";
       case "COMPLETED":
         return "Completed";
       case "CANCELLED":
         return "Cancelled";
+      case "APPROVED":
+        return "Registered";
       default:
         return status.charAt(0) + status.slice(1).toLowerCase();
     }

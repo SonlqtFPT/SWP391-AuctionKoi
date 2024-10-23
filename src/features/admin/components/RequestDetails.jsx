@@ -32,21 +32,30 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
   if (!request) return <p>No request selected.</p>;
 
   const formatStatus = (status) => {
-    const statusMap = {
-      INSPECTION_PASSED: "Passed",
-      INSPECTION_FAILED: "Failed",
-      INSPECTION_IN_PROGRESS: "Checking",
-      PENDING: "Pending",
-      PENDING_NEGOTIATION: "Negotiating",
-      PENDING_MANAGER_OFFER: "Waiting for Manager Approve", // Custom status for manager offer
-      PENDING_BREEDER_OFFER: "Waiting for Breeder Approve", // Custom status for breeder offer
-      COMPLETED: "Completed",
-      CANCELLED: "Cancelled",
-      APPROVE: "Approved", // Added new status for APPROVE
-    };
-    return (
-      statusMap[status] || status.charAt(0) + status.slice(1).toLowerCase()
-    );
+    switch (status) {
+      case "INSPECTION_PASSED":
+        return "Confirming";
+      case "INSPECTION_FAILED":
+        return "Canceled";
+      case "INSPECTION_IN_PROGRESS":
+        return "Assigned";
+      case "PENDING":
+        return "Requesting";
+      case "PENDING_NEGOTIATION":
+        return "Negotiating";
+      case "PENDING_MANAGER_OFFER":
+        return "Confirming"; // New status
+      case "PENDING_BREEDER_OFFER":
+        return "Negotiating"; // New status
+      case "COMPLETED":
+        return "Completed";
+      case "CANCELLED":
+        return "Cancelled";
+      case "APPROVED":
+        return "Registered";
+      default:
+        return status.charAt(0) + status.slice(1).toLowerCase();
+    }
   };
 
   const getStatusColor = (status) => {
@@ -237,7 +246,7 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
                   {new Date(request.requestedAt).toLocaleString()}
                 </p>
                 <p style={{ margin: "0 0 4px" }}>
-                  <strong>Price:</strong> (vnd){request.price}
+                  <strong>Price:</strong> {request.price} (vnd)
                 </p>
                 <p style={{ margin: "0 0 4px" }}>
                   <strong>Auction Type:</strong> {request.auctionTypeName}

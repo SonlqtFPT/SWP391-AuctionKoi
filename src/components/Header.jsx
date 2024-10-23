@@ -15,7 +15,6 @@ import api from "../config/axios";
 import { toast } from "react-toastify";
 import AddRequestButton from "./AddRequestButton";
 
-
 const Header = () => {
   // State to manage the visibility of the mobile (hamburger) menu
   const [isOpen, setIsOpen] = useState(false);
@@ -44,8 +43,7 @@ const Header = () => {
     setRefreshToken,
     setRole,
     setBreederName,
-    setLocation
-
+    setLocation,
   } = useAuth();
 
   // Function to handle logout: remove user-related data from localStorage
@@ -234,8 +232,9 @@ const Header = () => {
 
       {/* Hamburger menu dropdown for mobile screens */}
       <div
-        className={`bg-[#171817] text-white ${isOpen ? "block" : "hidden"
-          } lg:hidden`}
+        className={`bg-[#171817] text-white ${
+          isOpen ? "block" : "hidden"
+        } lg:hidden`}
       >
         <ul className="flex flex-col space-y-2 px-5 py-4 mt-20 text-center">
           <li className="flex items-center justify-center">

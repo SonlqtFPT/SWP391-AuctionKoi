@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { Card, Descriptions, Typography, Divider, Button, Input, message, Form } from "antd";
+import {
+  Card,
+  Descriptions,
+  Typography,
+  Divider,
+  Button,
+  Input,
+  message,
+  Form,
+} from "antd";
 import { useAuth } from "../../protectedRoutes/AuthContext";
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
@@ -32,7 +41,7 @@ const UserProfile = () => {
   const handleSave = async () => {
     setIsLoading(true); // Start loading
     try {
-      const response = await api.post('authenticate/update-profile', data, {
+      const response = await api.post("authenticate/update-profile", data, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -87,23 +96,30 @@ const UserProfile = () => {
             labelStyle={{ fontWeight: "bold" }}
             contentStyle={{ padding: "8px 16px" }}
           >
-            <Descriptions.Item label="Name">{userName}</Descriptions.Item> {/* Display updated userName */}
+            <Descriptions.Item label="Name">{userName}</Descriptions.Item>
             <Descriptions.Item label="Role">{role}</Descriptions.Item>
-            <Descriptions.Item label="Email">{accountData.email}</Descriptions.Item>
+            <Descriptions.Item label="Email">
+              {accountData.email}
+            </Descriptions.Item>
             <Descriptions.Item label="Phone Number">
               {isEditing ? (
                 <Form.Item
                   name="phoneNumber"
                   rules={[
                     { required: true, message: "Phone number is required" },
-                    { len: 10, message: "Phone number must be exactly 10 digits" }
+                    {
+                      len: 10,
+                      message: "Phone number must be exactly 10 digits",
+                    },
                   ]}
                   initialValue={editedData.phoneNumber}
                   className="mt-4"
                 >
                   <Input
                     value={editedData.phoneNumber}
-                    onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("phoneNumber", e.target.value)
+                    }
                   />
                 </Form.Item>
               ) : (
@@ -116,15 +132,19 @@ const UserProfile = () => {
                   name="firstName"
                   rules={[
                     { required: true, message: "First name is required" },
-                    { pattern: /^[A-Za-z]+$/, message: "First name must contain only letters" }
+                    {
+                      pattern: /^[A-Za-z]+$/,
+                      message: "First name must contain only letters",
+                    },
                   ]}
                   initialValue={editedData.firstName}
                   className="mt-4"
-
                 >
                   <Input
                     value={editedData.firstName}
-                    onChange={(e) => handleInputChange("firstName", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("firstName", e.target.value)
+                    }
                   />
                 </Form.Item>
               ) : (
@@ -137,15 +157,19 @@ const UserProfile = () => {
                   name="lastName"
                   rules={[
                     { required: true, message: "Last name is required" },
-                    { pattern: /^[A-Za-z]+$/, message: "Last name must contain only letters" }
+                    {
+                      pattern: /^[A-Za-z]+$/,
+                      message: "Last name must contain only letters",
+                    },
                   ]}
                   initialValue={editedData.lastName}
                   className="mt-4"
-
                 >
                   <Input
                     value={editedData.lastName}
-                    onChange={(e) => handleInputChange("lastName", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("lastName", e.target.value)
+                    }
                   />
                 </Form.Item>
               ) : (
@@ -157,7 +181,10 @@ const UserProfile = () => {
         <Divider />
         <div className="flex justify-end">
           {isEditing && (
-            <Button style={{ marginRight: 10 }} onClick={() => setIsEditing(false)}>
+            <Button
+              style={{ marginRight: 10 }}
+              onClick={() => setIsEditing(false)}
+            >
               Cancel
             </Button>
           )}
