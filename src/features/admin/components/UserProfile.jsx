@@ -87,7 +87,7 @@ const UserProfile = () => {
             labelStyle={{ fontWeight: "bold" }}
             contentStyle={{ padding: "8px 16px" }}
           >
-            <Descriptions.Item label="Name">{userName}</Descriptions.Item> {/* Display updated userName */}
+            <Descriptions.Item label="Name">{userName}</Descriptions.Item>
             <Descriptions.Item label="Role">{role}</Descriptions.Item>
             <Descriptions.Item label="Email">{accountData.email}</Descriptions.Item>
             <Descriptions.Item label="Phone Number">

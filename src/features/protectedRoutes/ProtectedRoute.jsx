@@ -4,15 +4,15 @@ import { Navigate } from 'react-router-dom';
 const ProtectedRoute = ({ allowedRoles, children }) => {
     const accessToken = localStorage.getItem('accessToken');
     const storedData = localStorage.getItem('accountData');
-    const accountData = JSON.parse(storedData);  // Convert back to an object
-    console.log("NAME: " + accountData.role);
-    // Check if user is logged in and has a valid role
-    if (!accessToken || !allowedRoles.includes(accountData.role)) {
+    const accountData = storedData ? JSON.parse(storedData) : null; // Check if accountData exists
+
+    // If accountData is null or role isn't in allowedRoles, redirect to home page
+    if (!accessToken || !accountData || !allowedRoles.includes(accountData.role)) {
         console.log("Redirecting to home page");
         return <Navigate to="/" replace />;
     }
 
-    // Render the child components if the user has the right role
+    // Render the child components if the user has the right role and accessToken
     return children;
 };
 

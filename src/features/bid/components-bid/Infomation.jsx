@@ -37,37 +37,43 @@ function Information({
   }, [registed]);
 
   return (
-    <div className="ml-[30px] mt-[20px] h-[200px] w-[800px] bg-gray-900 hover:bg-gray-800 rounded-2xl border-2 hover:border-4 border-[#bcab6f] outline outline-offset-2 outline-white">
-      <div className="flex items-center">
-        <h1 className="font-bold text-3xl pt-3 pl-3 text-[#bcab6f]">
-          {varietyName + "#" + fishId}
+    <div className="mt-5 p-5 bg-gray-900 hover:bg-gray-800 rounded-2xl border-2 hover:border-4 border-[#bcab6f] outline outline-offset-2 outline-white w-full">
+      {/* Header Section */}
+      <div className="flex items-center justify-between">
+        <h1 className="font-bold text-2xl sm:text-3xl text-[#bcab6f]">
+          {varietyName + " #" + fishId}
         </h1>
-        <div className="h-[40px] w-[200px] bg-[#C0392B] ml-[430px] rounded-3xl flex justify-center items-center mt-3 mr-2 text-ellipsis overflow-hidden whitespace-nowrap">
-          <h1 className="font-bold text-white ">{checkRegisted}</h1>
+        <div className="bg-[#C0392B] px-4 py-2 rounded-3xl flex justify-center items-center text-ellipsis overflow-hidden whitespace-nowrap">
+          <h1 className="font-bold text-white">{checkRegisted}</h1>
         </div>
       </div>
-      <div className="flex items-center justify-between gap-3 mt-7">
-        <div className="bg-slate-500 h-[40px] w-[550px] rounded-[50px] flex items-center justify-between pl-7 ml-3 ">
-          <div className="text-xl font-bold">Gender</div>
-          <div className="text-xl font-bold mr-8">{formatGender(gender)}</div>
+
+      {/* Gender and Size Section */}
+      <div className="flex flex-col sm:flex-row  items-center justify-between gap-3 mt-5 ">
+        <div className="bg-slate-500 h-[40px] rounded-full flex items-center justify-between pl-5 pr-8 w-full ">
+          <div className="text-lg sm:text-xl font-bold">Gender:</div>
+          <div className="text-lg sm:text-xl font-bold">{formatGender(gender)}</div>
         </div>
-        <div className="bg-slate-500 h-[40px] w-[550px] rounded-[50px] flex items-center justify-between pl-7 mr-3">
-          <h1 className="text-xl font-bold">Size</h1>
-          <h1 className="text-xl font-bold mr-8">{size} cm</h1>
+        <div className="bg-slate-500 h-[40px] rounded-full flex items-center justify-between pl-5 pr-8 w-full ">
+          <h1 className="text-lg sm:text-xl font-bold">Size:</h1>
+          <h1 className="text-lg sm:text-xl font-bold">{size} cm</h1>
         </div>
       </div>
-      <div className="flex items-center justify-between gap-3">
-        <div className="bg-slate-500 h-[40px] w-[550px] mt-5 rounded-[50px] flex items-center justify-between pl-7 ml-3">
-          <h1 className="text-xl font-bold">Breeder</h1>
-          <h1 className="text-xl font-bold mr-8">{breeder}</h1>
+
+      {/* Breeder and Age Section */}
+      <div className="flex flex-col sm:flex-row  items-center gap-3 mt-5 justify-between">
+        <div className="bg-slate-500 h-[40px] rounded-full flex items-center justify-between pl-5 pr-8 w-full ">
+          <h1 className="text-lg sm:text-xl font-bold">Breeder:</h1>
+          <h1 className="text-lg sm:text-xl font-bold">{breeder}</h1>
         </div>
-        <div className="bg-slate-500 h-[40px] w-[550px] mt-5 rounded-[50px] flex items-center justify-between pl-7 mr-3">
-          <h1 className="text-xl font-bold">Age</h1>
-          <h1 className="text-xl font-bold mr-8">{age} year</h1>
+        <div className="bg-slate-500 h-[40px] rounded-full flex items-center justify-between pl-5 pr-8 w-full ">
+          <h1 className="text-lg sm:text-xl font-bold">Age:</h1>
+          <h1 className="text-lg sm:text-xl font-bold">{age} year</h1>
         </div>
       </div>
     </div>
   );
+
 }
 
 export default Information;

@@ -239,27 +239,14 @@ function Bid() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <div className="bg-hero-pattern bg-cover relative">
+      <div className="bg-hero-pattern bg-cover relative ">
         <div className="absolute bg-black bg-opacity-80 inset-0"></div>
-        <h1 className="relative mt-5">
+        <h1 className="flex justify-center relative mt-5 lg:justify-normal mr-8 lg:mr-0">
           {lot && <Time remainingTime={remainingTime} lotId={lotId} />}
         </h1>
-        <div className="flex flex-row justify-center relative mb-10">
-          <div className="mt-16">
-            <div className="max-w-full">
-              {lot && (
-                <Picture
-                  img={lot.koiFish.imageUrl}
-                  lotId={lotId}
-                  followed={followed}
-                />
-              )}
-            </div>
-            <div className="mt-4 lg:mt-[30px]">
-              {lot && <Video vid={lot.koiFish.videoUrl} />}
-            </div>
-          </div>
-          <div className="mr-0 lg:mr-[190px] mt-10 ">
+        <div className="flex flex-col lg:flex-row justify-center relative mb-10">
+
+          <div className="mx-7 mt-11 lg:mx-0">
             <div>
               {lot && (
                 <Information
@@ -293,6 +280,21 @@ function Bid() {
               {lot && <TopBid list={bidList} />}
             </div>
           </div>
+          <div className="mt-10 mx-7 lg:mt-16">
+            <div className="">
+              {lot && (
+                <Picture
+                  img={lot.koiFish.imageUrl}
+                  lotId={lotId}
+                  followed={followed}
+                />
+              )}
+            </div>
+            <div className="mt-4 pl-9 lg:mt-[30px] lg:mx-0 lg:pl-0">
+              {lot && <Video vid={lot.koiFish.videoUrl} />}
+            </div>
+          </div>
+
         </div>
       </div>
       <Footer />

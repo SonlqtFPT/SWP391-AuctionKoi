@@ -9,11 +9,11 @@ function Picture({ img, lotId, followed }) {
     setPicture(img);
   }, [img]);
   return (
-    <div className="ml-[200px] border-2 border-[#bcab6f] rounded-2xl outline outline-offset-2 outline-white relative">
+    <div className="border-2 border-[#bcab6f] rounded-2xl outline outline-offset-2 outline-white relative">
       <img
         src={picture}
-        width={900}
-        height={970}
+        height={200}
+        width={300}
         className="rounded-2xl"
         alt="Koi Fish"
       />

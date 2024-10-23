@@ -9,14 +9,14 @@ function Video({ vid }) {
   }, [vid]);
   return (
     <>
-      <div className="ml-[200px]">
+      <div className="">
         <video
           controls
           src={video}
           type="video.mp4"
           className="rounded-2xl"
-          height="300px"
-          width="665px"
+          height="200px"
+          width="300px"
         ></video>
       </div>
     </>

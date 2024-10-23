@@ -107,62 +107,73 @@ function EnterPrice({
 
   return (
     <div
-      className={`ml-[30px] mt-[20px] rounded-2xl border-2 hover:border-4 border-[#bcab6f] outline outline-offset-2 outline-white ${
-        registrationLink ? "h-[170px]" : "h-[150px]"
-      } w-[800px] text-white shadow-md bg-gray-900 hover:bg-gray-800`}
+      className={`p-5 my-5 rounded-2xl border-2 hover:border-4 border-[#bcab6f] outline outline-offset-2 outline-white text-white shadow-md bg-gray-900 hover:bg-gray-800`}
     >
-      <div className="flex items-center justify-between gap-3 text-black">
-        <div className="bg-slate-500 h-[40px] w-[550px] rounded-[50px] flex items-center justify-between pl-7 ml-3 mt-5 ">
-          <h1 className="text-xl font-bold">Highest price</h1>
-          <h1 className="text-xl font-extrabold mr-8 text-[#af882b]">
+      {/* Price Section */}
+      <div className="flex flex-col sm:flex-row items-center gap-3  text-black">
+        <div className="bg-slate-500 h-[40px] rounded-full flex items-center justify-between pl-5 pr-8 w-full py-6">
+          <h1 className="text-xl font-bold w-auto lg:w-48">Highest Price</h1>
+          <h1 className="text-xl font-extrabold  text-[#af882b]">
             {formatNumber(currentPrice)}
           </h1>
         </div>
-        <div className="bg-slate-500 h-[40px] w-[550px] rounded-[50px] flex items-center justify-between pl-7 mr-3 mt-5">
-          <h1 className="text-xl font-bold">Started Price</h1>
-          <h1 className="text-xl font-bold mr-8">
+        <div className="bg-slate-500 h-[40px] rounded-full flex items-center justify-between pl-5 pr-8 w-full py-6">
+          <h1 className="text-xl font-bold w-auto lg:w-48">Starting Price</h1>
+          <h1 className="text-xl font-bold">
             {formatNumber(startingPrice)}
           </h1>
         </div>
       </div>
-      <div className="flex justify-between gap-3 mt-7">
+
+      {/* Bid Section */}
+      <div className="flex flex-col sm:flex-row items-center gap-3 mt-7">
+
+        {/* Bid Input */}
         {registed && remainingTime > 0 && (
-          <div className="ml-3 ">
+          <div className="w-full ">
+            <Input
+              className="rounded-3xl h-[40px] w-full text-black"
+              type="text"
+              value={formatNumber(bidPrice)}
+              onChange={(e) => setBidPrice(e.target.value.replace(/\./g, ""))}
+            />
+          </div>
+        )}
+
+        {registed && remainingTime > 0 && (
+          <div className="w-full lg:w-36 ">
             <button
-              className="bg-red-600 hover:bg-red-500 rounded-2xl h-[40px] w-[100px] font-bold text-black hover:border-2 hover:border-[#bcab6f]"
+              className="bg-red-600 hover:bg-red-500 rounded-2xl h-[40px] w-full lg:w-24 px-5 font-bold text-black hover:border-2 hover:border-[#bcab6f]"
               onClick={handleBid}
             >
               Bid
             </button>
           </div>
         )}
-        <div>
-          <Input
-            className={`rounded-3xl mr-2 h-[40px] w-[270px] text-black ${
-              !registed || remainingTime <= 0 ? "hidden" : ""
-            }`}
-            type="text"
-            value={formatNumber(bidPrice)}
-            onChange={(e) => setBidPrice(e.target.value.replace(/\./g, ""))}
-          />
-        </div>
+
+        {/* Deposit Button */}
         {!registed && remainingTime > 0 && (
-          <div className="mr-[230px]">
+          <div className=" w-full ">
             <button
-              className="bg-blue-400 hover:bg-blue-300 rounded-2xl h-[40px] w-[150px] font-bold text-black hover:border-2 hover:border-[#bcab6f]"
-              onClick={handleDepositClick} // Gọi hàm khi nhấn nút
+              className="bg-blue-400 hover:bg-blue-300 rounded-2xl h-[40px] w-full px-5 font-bold text-black hover:border-2 hover:border-[#bcab6f]"
+              onClick={handleDepositClick}
             >
               Deposit here!
             </button>
           </div>
         )}
-        <div className="bg-slate-500 h-[40px] w-[380px] rounded-[50px] flex items-center justify-between pl-7 mr-3 text-black ">
-          <h1 className="text-xl font-bold ">Increment</h1>
-          <h1 className="text-xl font-bold mr-8">{formatNumber(increment)}</h1>
+
+        {/* Increment Section */}
+        <div className="bg-slate-500 h-[40px] rounded-full flex items-center justify-between pl-5 pr-8 w-full py-6 text-black">
+          <h1 className="text-xl font-bold">Increment</h1>
+          <h1 className="text-xl font-bold">
+            {formatNumber(increment)}
+          </h1>
         </div>
       </div>
     </div>
   );
+
 }
 
 export default EnterPrice;
