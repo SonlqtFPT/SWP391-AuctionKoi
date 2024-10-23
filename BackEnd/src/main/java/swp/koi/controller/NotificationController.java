@@ -47,4 +47,15 @@ public class NotificationController {
         return ResponseEntity.badRequest().body("User not subscribed");
     }
 
+    @GetMapping("/unfollow-lot")
+    public ResponseEntity<?> removeUserFromNotify(@RequestParam int lotId,
+                                                  @RequestParam String token){
+        Member member = authService.getMemberFromAuth();
+        SubscribeRequest subInfo = SubscribeRequest.builder()
+                .token(token)
+                .memberId(member.getMemberId())
+                .build();
+        redisService.unfollowLot(lotId, subInfo);
+        return ResponseEntity.ok().body("Successfully unfollowed lot for user");
+    }
 }

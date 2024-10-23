@@ -16,12 +16,14 @@ import swp.koi.service.authService.GetUserInfoByUsingAuth;
 import swp.koi.service.mailService.EmailService;
 import swp.koi.service.mailService.EmailServiceImpl;
 import swp.koi.service.memberService.MemberServiceImpl;
+import swp.koi.service.redisService.RedisService;
 import swp.koi.service.redisService.RedisServiceImpl;
 import swp.koi.service.socketIoService.EventListenerFactoryImpl;
 import swp.koi.service.socketIoService.SocketDetail;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -29,6 +31,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class BidServiceImpl implements BidService {
+
+    private final static String PREFIX_OF_BID = "Bid_history_";
 
     // Injecting the necessary repositories and services via constructor injection
     private final BidRepository bidRepository;
@@ -41,6 +45,7 @@ public class BidServiceImpl implements BidService {
     private final GetUserInfoByUsingAuth getUserInfoByUsingAuth;
     private final EmailService emailService;
     private final MemberRepository memberRepository;
+    private final RedisService redisService;
 
     @Override
     public void bid(BidRequestDto bidRequestDto) throws KoiException {
@@ -63,6 +68,8 @@ public class BidServiceImpl implements BidService {
 
         Bid bid = createBid(bidRequestDto, member, lot);
         bidRepository.save(bid);
+
+
         //tech-debt here just check if auto-bid exist and handle exception based on the case
         if(checkIfAutoBidderExistAndHaveHigherPrice(lot, bidRequestDto.getPrice())){
 
@@ -100,8 +107,11 @@ public class BidServiceImpl implements BidService {
 
         updateDataOnClient(lot.getLotId(),bidRequestDto.getPrice(),account.getFirstName());
 
+
         lotRepository.save(lot);
     }
+
+
 
     /**
      * Updates data on the client side with the latest bid information.

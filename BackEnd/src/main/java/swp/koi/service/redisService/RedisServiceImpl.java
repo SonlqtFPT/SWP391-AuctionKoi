@@ -42,6 +42,7 @@ public class RedisServiceImpl implements RedisService {
         return redisTemplate.opsForValue().get(key);
     }
 
+    @Override
     public List<?> getListData(String key) {
         return redisTemplate.opsForList().range(key, 0, -1);
     }
@@ -57,10 +58,19 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
+    public void deleteDataFromSet(String key, Object object){
+        redisTemplate.opsForSet().remove(key, object);
+    }
+
+    @Override
     public boolean existData(String key) {
         return Boolean.TRUE.equals(redisTemplate.hasKey(key));
     }
 
+    @Override
+    public void saveListData(String key, List<?> list) {
+        redisTemplate.opsForList().rightPushAll(key, list);
+    }
 
     @Override
     public boolean isUserFollowedThisLot(int lotId){
@@ -71,5 +81,15 @@ public class RedisServiceImpl implements RedisService {
            return subscribeRequests.stream().anyMatch(request -> request.getMemberId().equals(member.getMemberId()));
         }
         return false;
+    }
+
+    @Override
+    public void unfollowLot(int lotId, SubscribeRequest token){
+
+        Set<SubscribeRequest> subscribeRequests = (Set<SubscribeRequest>) getSetData("Notify_"+lotId);
+        if(subscribeRequests != null && !subscribeRequests.isEmpty()) {
+
+            deleteDataFromSet("Notify_"+lotId, token);
+        }
     }
 }
