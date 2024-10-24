@@ -84,7 +84,7 @@ const MapComponent = ({
   };
 
   return (
-    <div>
+    <div className="relative z-10">
       {/* Search Component for End Point */}
       <SearchLocation
         setEndPoint={setEndPoint}
