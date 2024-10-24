@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Button, Table, Spin, Tag, Input, Select, DatePicker } from "antd";
+import {
+  Button,
+  Table,
+  Spin,
+  Tag,
+  Input,
+  Select,
+  DatePicker,
+  Modal,
+} from "antd";
 import { toast } from "react-toastify";
-import { FaFish, FaIdCard, FaFlag, FaClock } from "react-icons/fa";
+import { FaFish, FaIdCard, FaFlag, FaClock, FaUserPlus } from "react-icons/fa";
 import api from "../../../config/axios";
 
 const { Search } = Input;
@@ -11,9 +20,13 @@ const { RangePicker } = DatePicker;
 const ManageTransport = () => {
   const [invoices, setInvoices] = useState([]);
   const [filteredInvoices, setFilteredInvoices] = useState([]);
+  const [staffList, setStaffList] = useState([]); // Staff list for assigning
   const [loading, setLoading] = useState(true);
   const [searchField, setSearchField] = useState("invoiceId"); // Default search field
   const [dateRange, setDateRange] = useState([null, null]); // Date range for filtering
+  const [selectedInvoice, setSelectedInvoice] = useState(null); // For modal
+  const [assigningStaff, setAssigningStaff] = useState(false); // For modal loading
+  const [selectedStaffId, setSelectedStaffId] = useState(null); // State for selected staff ID
 
   // Fetch invoices from the new API endpoint
   const fetchInvoices = async () => {
@@ -49,8 +62,25 @@ const ManageTransport = () => {
     }
   };
 
+  // Fetch staff members for assigning
+  const fetchStaff = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await api.get("/manager/request/assign-staff/getStaff", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response.data.data);
+      setStaffList(response.data.data);
+    } catch (error) {
+      toast.error("Failed to fetch staff list");
+    }
+  };
+
   useEffect(() => {
     fetchInvoices();
+    fetchStaff(); // Fetch staff for assigning
   }, []);
 
   // Handle search
@@ -84,6 +114,40 @@ const ManageTransport = () => {
     } else {
       setFilteredInvoices(invoices); // Reset to all if no date is selected
     }
+  };
+
+  // Assign staff to an invoice
+  const handleAssignStaff = async (invoiceId, accountId) => {
+    setAssigningStaff(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      await api.post(
+        `/invoice/manager/assign-staff/${invoiceId}/${accountId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      toast.success("Staff assigned successfully");
+      setSelectedInvoice(null); // Close modal after assigning
+      fetchInvoices(); // Refresh invoice list
+    } catch (error) {
+      toast.error("Failed to assign staff");
+    } finally {
+      setAssigningStaff(false);
+    }
+  };
+
+  // Open modal to assign staff
+  const openAssignStaffModal = (invoice) => {
+    setSelectedInvoice(invoice);
+  };
+
+  // Close the modal
+  const closeAssignStaffModal = () => {
+    setSelectedInvoice(null);
   };
 
   // Table columns
@@ -151,6 +215,19 @@ const ManageTransport = () => {
       sorter: (a, b) => a.status.localeCompare(b.status),
       sortDirections: ["ascend", "descend"],
     },
+    {
+      title: (
+        <span className="flex items-center">
+          <FaUserPlus className="mr-2" /> Action
+        </span>
+      ),
+      key: "action",
+      render: (text, record) => (
+        <Button type="link" onClick={() => openAssignStaffModal(record)}>
+          Assign Staff
+        </Button>
+      ),
+    },
   ];
 
   // Format the status
@@ -188,49 +265,68 @@ const ManageTransport = () => {
   };
 
   return (
-    <div className="mt-20">
-      {loading ? (
-        <Spin size="large" />
-      ) : (
-        <>
-          <h1 className="text-left font-bold text-2xl my-5">
-            Transport Invoice Manager
-          </h1>
-          <div className="flex items-center mb-4">
-            <Select
-              defaultValue="invoiceId"
-              style={{ width: 150, marginRight: 10 }}
-              onChange={(value) => setSearchField(value)}
-            >
-              <Option value="invoiceId">Invoice ID</Option>
-              <Option value="fishId">Fish ID</Option>
-              <Option value="breederName">Breeder Name</Option>
-              <Option value="status">Status</Option>
-              <Option value="invoiceDate">Invoice Date</Option>
-            </Select>
+    <>
+      <h1 className="text-2xl font-bold">Manage Transport Invoices</h1>
 
-            {searchField === "invoiceDate" ? (
-              <RangePicker
-                onChange={handleDateChange}
-                style={{ marginRight: 10 }}
-              />
-            ) : (
-              <Search
-                placeholder="Search..."
-                allowClear
-                onSearch={handleSearch}
-                style={{ width: 300 }}
-              />
-            )}
-          </div>
-          <Table
-            columns={columns}
-            dataSource={filteredInvoices}
-            rowKey="invoiceId"
+      <div className="flex justify-between items-center my-4">
+        <div>
+          <Search
+            placeholder={`Search by ${searchField}`}
+            enterButton
+            onSearch={handleSearch}
+            style={{ width: 300 }}
           />
-        </>
+          <Select
+            defaultValue={searchField}
+            onChange={(value) => setSearchField(value)}
+            className="ml-2"
+          >
+            <Option value="invoiceId">Invoice ID</Option>
+            <Option value="fishId">Fish ID</Option>
+            <Option value="breederName">Breeder Name</Option>
+            <Option value="invoiceDate">Invoice Date</Option>
+          </Select>
+        </div>
+        <RangePicker onChange={handleDateChange} />
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center items-center h-full">
+          <Spin size="large" />
+        </div>
+      ) : (
+        <Table
+          columns={columns}
+          dataSource={filteredInvoices}
+          rowKey="invoiceId"
+        />
       )}
-    </div>
+
+      {/* Assign Staff Modal */}
+      {selectedInvoice && (
+        <Modal
+          title="Assign Staff"
+          visible={!!selectedInvoice}
+          onCancel={closeAssignStaffModal}
+          onOk={() =>
+            handleAssignStaff(selectedInvoice.invoiceId, selectedStaffId)
+          } // Define selectedStaffId when selected
+          confirmLoading={assigningStaff}
+        >
+          <Select
+            placeholder="Select Staff"
+            style={{ width: "100%" }}
+            onChange={(value) => setSelectedStaffId(value)}
+          >
+            {staffList.map((staff) => (
+              <Option key={staff.accountId} value={staff.accountId}>
+                ID: {staff.accountId} - {staff.firstName} {staff.lastName}
+              </Option>
+            ))}
+          </Select>
+        </Modal>
+      )}
+    </>
   );
 };
 
