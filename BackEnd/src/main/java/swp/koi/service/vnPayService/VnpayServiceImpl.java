@@ -38,6 +38,7 @@ public class VnpayServiceImpl implements VnpayService {
         Lot lot = lotRepository.findById(registerLot)
                 .orElseThrow(() -> new NoSuchElementException("Lot with such id not found"));
 
+        Invoice invoice = invoiceRepository.findByLot(lot);
 
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
@@ -47,7 +48,7 @@ public class VnpayServiceImpl implements VnpayService {
         if(transactionTypeEnum.equals(TransactionTypeEnum.DEPOSIT)){
             amount = (long) lot.getDeposit()*100;
         } else {
-            amount = (long) lot.getCurrentPrice()*100;
+            amount = (long) invoice.getFinalAmount()*100;
         }
 
         String bankCode = "NCB";

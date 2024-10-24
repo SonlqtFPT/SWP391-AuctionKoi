@@ -54,6 +54,7 @@ public class InvoiceServiceImpl implements InvoiceService{
                 .koiFish(lot.getKoiFish())
                 .status(InvoiceStatusEnums.PENDING)
                 .finalAmount((float) (lot.getCurrentPrice() * 1.1 - lot.getDeposit()))
+                .priceWithoutShipFee((float) (lot.getCurrentPrice() * 1.1 - lot.getDeposit()))
                 .member(member)
                 .account(member.getAccount())
                 .build();
@@ -108,17 +109,20 @@ public class InvoiceServiceImpl implements InvoiceService{
     @Override
     public Invoice updateInvoiceAddress(double kilometer, int invoiceId, String address) throws UnsupportedEncodingException {
         Member member = getUserInfoByUsingAuth.getMemberFromAuth();
-
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
 
         invoice.setAddress(address);
         invoice.setKilometers(kilometer);
-        float currentPrice = invoice.getFinalAmount();
+
+        float currentPrice = invoice.getPriceWithoutShipFee();
         float newPriceWithAddress = generateShippingPriceForInvoice(kilometer);
         float newPrice = currentPrice + newPriceWithAddress;
+
+
+        invoice.setFinalAmount(newPrice);
+        invoiceRepository.save(invoice);
         String paymentLink = generatePaymentLink(invoice.getLot().getLotId(), member.getMemberId());
         invoice.setPaymentLink(paymentLink);
-        invoice.setFinalAmount(newPrice);
         return invoiceRepository.save(invoice);
     }
 

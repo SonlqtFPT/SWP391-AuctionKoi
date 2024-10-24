@@ -41,6 +41,9 @@ public class Invoice {
 
     String address;
 
+
+    Float priceWithoutShipFee;
+
     @Enumerated(EnumType.STRING)
     InvoiceStatusEnums status;
 
