@@ -10,18 +10,19 @@ function Information({
   fishId,
   registed,
   win,
+  hasEnded, // New prop to check if the auction has ended
 }) {
   const [checkRegisted, setCheckRegisted] = useState("");
 
   const handleCheckRegisted = () => {
-    console.log("trong info check deposit: ", registed);
+    console.log("Checking registration: ", registed);
     console.log("Win?: ", win);
 
-    // Kiểm tra trạng thái đăng ký và thắng thua
+    // Check registration status and win/lose status based on auction end
     if (registed) {
-      setCheckRegisted(win ? "Won" : "Lost"); // Nếu đã đăng ký, hiển thị "Won" hoặc "Lost"
+      setCheckRegisted(hasEnded ? (win ? "Won" : "Lost") : "Deposited");
     } else {
-      setCheckRegisted("Unpaid deposit"); // Nếu chưa đăng ký, hiển thị "Unpaid deposit"
+      setCheckRegisted("Not yet deposit");
     }
   };
 
@@ -33,12 +34,14 @@ function Information({
         return "Female";
       case "UNKNOWN":
         return "Unknown";
+      default:
+        return "Unknown";
     }
   };
 
   useEffect(() => {
     handleCheckRegisted();
-  }, [registed, win]); // Theo dõi cả registed và win
+  }, [registed, win, hasEnded]); // Track registration status, win, and auction end status
 
   return (
     <div className="mt-5 p-5 bg-gray-900 hover:bg-gray-800 rounded-2xl border-2 hover:border-4 border-[#bcab6f] outline outline-offset-2 outline-white w-full">
@@ -49,9 +52,11 @@ function Information({
         </h1>
         <div
           className={
-            win
+            win && hasEnded
               ? "bg-green-500 px-4 py-2 rounded-3xl flex justify-center items-center text-ellipsis overflow-hidden whitespace-nowrap"
-              : "bg-[#C0392B] px-4 py-2 rounded-3xl flex justify-center items-center text-ellipsis overflow-hidden whitespace-nowrap"
+              : !registed
+              ? "bg-[#C0392B] px-4 py-2 rounded-3xl flex justify-center items-center text-ellipsis overflow-hidden whitespace-nowrap"
+              : "bg-gray-700 px-4 py-2 rounded-3xl flex justify-center items-center text-ellipsis overflow-hidden whitespace-nowrap" // Show "Deposited" style
           }
         >
           <h1 className="font-bold text-white">{checkRegisted}</h1>

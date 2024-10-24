@@ -264,6 +264,7 @@ function Bid() {
                   fishId={lot.koiFish.fishId}
                   registed={registed}
                   win={win}
+                  hasEnded={hasEnded}
                 />
               )}
             </div>

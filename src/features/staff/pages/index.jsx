@@ -4,6 +4,7 @@ import StaffProfile from "../components/StaffProfile.jsx";
 import { useState } from "react";
 import SidebarStaff from "../../../components/SidebarStaff.jsx";
 import ManageRequestStatus from "../components/ManageRequestStatus.jsx";
+import ManageTransport from "../components/ManageTransport.jsx";
 
 const StaffPage = () => {
   const [activeComponent, setActiveComponent] = useState("Dashboard");
@@ -14,7 +15,9 @@ const StaffPage = () => {
       case "Profile":
         return <StaffProfile />;
       case "Manage Request":
-        return <ManageRequestStatus />
+        return <ManageRequestStatus />;
+      case "Manage Transport":
+        return <ManageTransport />;
       default:
         return <div className="mt-28">Welcome to the Staff Dashboard!</div>; // Default content
     }

@@ -10,7 +10,7 @@ import {
   Modal,
 } from "antd";
 import { toast } from "react-toastify";
-import { FaFish, FaIdCard, FaFlag, FaClock, FaUserPlus } from "react-icons/fa";
+import { FaFish, FaIdCard, FaFlag, FaClock } from "react-icons/fa";
 import api from "../../../config/axios";
 
 const { Search } = Input;
@@ -20,15 +20,11 @@ const { RangePicker } = DatePicker;
 const ManageTransport = () => {
   const [invoices, setInvoices] = useState([]);
   const [filteredInvoices, setFilteredInvoices] = useState([]);
-  const [staffList, setStaffList] = useState([]); // Staff list for assigning
   const [loading, setLoading] = useState(true);
   const [searchField, setSearchField] = useState("invoiceId"); // Default search field
   const [dateRange, setDateRange] = useState([null, null]); // Date range for filtering
-  const [selectedInvoice, setSelectedInvoice] = useState(null); // For modal
-  const [assigningStaff, setAssigningStaff] = useState(false); // For modal loading
-  const [selectedStaffId, setSelectedStaffId] = useState(null); // State for selected staff ID
 
-  // Fetch invoices from the new API endpoint
+  // Fetch delivering invoices from the new API endpoint
   const fetchInvoices = async () => {
     setLoading(true);
     try {
@@ -56,31 +52,14 @@ const ManageTransport = () => {
       setInvoices(formattedInvoices);
       setFilteredInvoices(formattedInvoices); // Set filtered invoices initially
     } catch (error) {
-      toast.error("Failed to fetch transport invoices");
+      toast.error("Failed to fetch delivering invoices");
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch staff members for assigning
-  const fetchStaff = async () => {
-    try {
-      const token = localStorage.getItem("accessToken");
-      const response = await api.get("/manager/request/assign-staff/getStaff", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log(response.data.data);
-      setStaffList(response.data.data);
-    } catch (error) {
-      toast.error("Failed to fetch staff list");
-    }
-  };
-
   useEffect(() => {
     fetchInvoices();
-    fetchStaff(); // Fetch staff for assigning
   }, []);
 
   // Handle search
@@ -116,38 +95,27 @@ const ManageTransport = () => {
     }
   };
 
-  // Assign staff to an invoice
-  const handleAssignStaff = async (invoiceId, accountId) => {
-    setAssigningStaff(true);
+  // Handle status update
+  const handleStatusUpdate = async (invoiceId, newStatus) => {
     try {
       const token = localStorage.getItem("accessToken");
-      await api.post(
-        `/invoice/manager/assign-staff/${invoiceId}/${accountId}`,
+      await api.patch(
+        `/invoice/staff/update-status/${invoiceId}`,
         {},
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          params: {
+            status: newStatus,
+          },
         }
       );
-      toast.success("Staff assigned successfully");
-      setSelectedInvoice(null); // Close modal after assigning
-      fetchInvoices(); // Refresh invoice list
+      toast.success(`Invoice status updated to ${newStatus}`);
+      fetchInvoices(); // Refresh the invoice list after the status update
     } catch (error) {
-      toast.error("Failed to assign staff");
-    } finally {
-      setAssigningStaff(false);
+      toast.error("Failed to update invoice status");
     }
-  };
-
-  // Open modal to assign staff
-  const openAssignStaffModal = (invoice) => {
-    setSelectedInvoice(invoice);
-  };
-
-  // Close the modal
-  const closeAssignStaffModal = () => {
-    setSelectedInvoice(null);
   };
 
   // Table columns
@@ -216,18 +184,21 @@ const ManageTransport = () => {
       sortDirections: ["ascend", "descend"],
     },
     {
-      title: (
-        <span className="flex items-center">
-          <FaUserPlus className="mr-2" /> Action
-        </span>
-      ),
+      title: "Action",
       key: "action",
-      render: (text, record) =>
-        record.status === "PAID" ? (
-          <Button type="link" onClick={() => openAssignStaffModal(record)}>
-            Assign Staff
-          </Button>
-        ) : null, // Hide the button if status is not "PAID"
+      render: (text, record) => {
+        return record.status === "DELIVERY_IN_PROGRESS" ? (
+          <Select
+            placeholder="Update Status"
+            onChange={(value) => handleStatusUpdate(record.invoiceId, value)}
+            style={{ width: 180 }}
+          >
+            <Option value="DELIVERED">Delivered</Option>
+            <Option value="FAILED">Failed</Option>
+            <Option value="CANCELLED">Cancelled</Option>
+          </Select>
+        ) : null; // Only show action if the status is "DELIVERY_IN_PROGRESS"
+      },
     },
   ];
 
@@ -242,6 +213,12 @@ const ManageTransport = () => {
         return "Overdue";
       case "DELIVERY_IN_PROGRESS":
         return "Delivering";
+      case "DELIVERED":
+        return "Delivered";
+      case "FAILED":
+        return "Failed";
+      case "CANCELLED":
+        return "Cancelled";
       default:
         return status.charAt(0) + status.slice(1).toLowerCase();
     }
@@ -256,6 +233,14 @@ const ManageTransport = () => {
         return "green";
       case "OVERDUE":
         return "red";
+      case "DELIVERY_IN_PROGRESS":
+        return "orange";
+      case "DELIVERED":
+        return "green";
+      case "FAILED":
+        return "red";
+      case "CANCELLED":
+        return "gray";
       default:
         return "default";
     }
@@ -303,31 +288,6 @@ const ManageTransport = () => {
           dataSource={filteredInvoices}
           rowKey="invoiceId"
         />
-      )}
-
-      {/* Assign Staff Modal */}
-      {selectedInvoice && (
-        <Modal
-          title="Assign Staff"
-          visible={!!selectedInvoice}
-          onCancel={closeAssignStaffModal}
-          onOk={() =>
-            handleAssignStaff(selectedInvoice.invoiceId, selectedStaffId)
-          } // Define selectedStaffId when selected
-          confirmLoading={assigningStaff}
-        >
-          <Select
-            placeholder="Select Staff"
-            style={{ width: "100%" }}
-            onChange={(value) => setSelectedStaffId(value)}
-          >
-            {staffList.map((staff) => (
-              <Option key={staff.accountId} value={staff.accountId}>
-                ID: {staff.accountId} - {staff.firstName} {staff.lastName}
-              </Option>
-            ))}
-          </Select>
-        </Modal>
       )}
     </>
   );
