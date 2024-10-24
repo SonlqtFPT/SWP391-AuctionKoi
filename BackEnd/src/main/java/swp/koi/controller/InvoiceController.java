@@ -89,4 +89,12 @@ public class InvoiceController {
         invoiceService.updateInvoiceStatus(invoiceId, status);
         return new ResponseData<>(ResponseCode.SUCCESS);
     }
+
+    @Operation(summary = "Get all invoices")
+    @GetMapping("/staff/list-invoices")
+    public ResponseData<?> getListOfInvoices(){
+        List<InvoiceResponseDto> response = invoiceEntityToDtoConverter.convertInvoiceList(invoiceService.listOfInvoices());
+        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+
+    }
 }

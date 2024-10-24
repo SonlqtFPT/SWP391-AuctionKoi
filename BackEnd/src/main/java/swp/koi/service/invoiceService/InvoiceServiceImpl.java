@@ -1,10 +1,8 @@
 package swp.koi.service.invoiceService;
 
 import lombok.RequiredArgsConstructor;
-import org.jose4j.http.Get;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import swp.koi.dto.response.InvoiceResponseDto;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
 import swp.koi.model.Account;
@@ -18,8 +16,6 @@ import swp.koi.repository.InvoiceRepository;
 import swp.koi.repository.LotRepository;
 import swp.koi.service.accountService.AccountService;
 import swp.koi.service.authService.GetUserInfoByUsingAuth;
-import swp.koi.service.lotService.LotService;
-import swp.koi.service.lotService.LotServiceImpl;
 import swp.koi.service.memberService.MemberService;
 import swp.koi.service.vnPayService.VnpayServiceImpl;
 
@@ -59,6 +55,7 @@ public class InvoiceServiceImpl implements InvoiceService{
                 .status(InvoiceStatusEnums.PENDING)
                 .finalAmount((float) (lot.getCurrentPrice() * 1.1 - lot.getDeposit()))
                 .member(member)
+                .account(member.getAccount())
                 .build();
     }
 
@@ -121,7 +118,6 @@ public class InvoiceServiceImpl implements InvoiceService{
         float newPrice = currentPrice + newPriceWithAddress;
         String paymentLink = generatePaymentLink(invoice.getLot().getLotId(), member.getMemberId());
         invoice.setPaymentLink(paymentLink);
-
         invoice.setFinalAmount(newPrice);
         return invoiceRepository.save(invoice);
     }
@@ -147,7 +143,7 @@ public class InvoiceServiceImpl implements InvoiceService{
         } else if (kilometer > 200) {
             pricePerKm = 800;
         } else {
-            throw new IllegalStateException("Kilometers must greater than 0"); // Invalid distance
+           return 0; // Invalid distance
         }
         
         return pricePerKm;
@@ -183,6 +179,11 @@ public class InvoiceServiceImpl implements InvoiceService{
             throw  new KoiException(ResponseCode.STAFF_NOT_FOUND);
 
         return invoiceRepository.findAllByAccountAndStatus(account, InvoiceStatusEnums.DELIVERY_IN_PROGRESS);
+    }
+
+    @Override
+    public List<Invoice> listOfInvoices(){
+        return invoiceRepository.findAll();
     }
 
     @Override

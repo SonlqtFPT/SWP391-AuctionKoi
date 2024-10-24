@@ -25,5 +25,7 @@ public interface InvoiceService {
 
     List<Invoice> getAllDeliveringInvoices();
 
+    List<Invoice> listOfInvoices();
+
     void updateInvoiceStatus(Integer invoiceId, InvoiceStatusEnums status);
 }

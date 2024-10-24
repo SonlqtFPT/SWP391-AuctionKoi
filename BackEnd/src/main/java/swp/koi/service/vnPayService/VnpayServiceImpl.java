@@ -38,6 +38,7 @@ public class VnpayServiceImpl implements VnpayService {
         Lot lot = lotRepository.findById(registerLot)
                 .orElseThrow(() -> new NoSuchElementException("Lot with such id not found"));
 
+
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";

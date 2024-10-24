@@ -192,10 +192,6 @@ public class LotServiceImpl implements LotService {
         invoiceRepository.save(invoice);
     }
 
-
-
-
-
     private Bid chooseLotWinner(Lot lot, List<Bid> bidList) {
         return switch (lot.getAuction().getAuctionType().getAuctionTypeName()) {
             case FIXED_PRICE_SALE -> getFixedPriceWinner(bidList);
