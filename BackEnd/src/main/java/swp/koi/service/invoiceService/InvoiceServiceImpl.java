@@ -183,7 +183,13 @@ public class InvoiceServiceImpl implements InvoiceService{
 
     @Override
     public List<Invoice> listOfInvoices(){
-        return invoiceRepository.findAll();
+        List<InvoiceStatusEnums> statues = Arrays.asList(
+                InvoiceStatusEnums.DELIVERY_IN_PROGRESS,
+                InvoiceStatusEnums.DELIVERED,
+                InvoiceStatusEnums.CANCELLED,
+                InvoiceStatusEnums.FAILED
+        );
+        return invoiceRepository.findAllByStatusIn(statues);
     }
 
     @Override

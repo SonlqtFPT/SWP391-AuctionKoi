@@ -21,4 +21,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
     List<Invoice> findAllByStatusAndMember(InvoiceStatusEnums status, Member member);
 
     List<Invoice> findAllByAccountAndStatus(Account account, InvoiceStatusEnums status);
+
+    List<Invoice> findAllByStatusIn(List<InvoiceStatusEnums> statues);
 }
