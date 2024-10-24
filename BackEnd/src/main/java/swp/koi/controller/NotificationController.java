@@ -4,10 +4,7 @@ package swp.koi.controller;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import swp.koi.dto.request.SubscribeRequestDTO;
 import swp.koi.model.Member;
 import swp.koi.model.SubscribeRequest;
@@ -41,4 +38,24 @@ public class NotificationController {
         }
     }
 
+    @GetMapping("/user-subcribed-yet")
+    public ResponseEntity<?> isUserSubscribed(@RequestParam int lotId){
+        boolean userRegistered = redisService.isUserFollowedThisLot(lotId);
+        if (userRegistered) {
+            return ResponseEntity.ok("User subscribed");
+        }
+        return ResponseEntity.badRequest().body("User not subscribed");
+    }
+
+    @GetMapping("/unfollow-lot")
+    public ResponseEntity<?> removeUserFromNotify(@RequestParam int lotId,
+                                                  @RequestParam String token){
+        Member member = authService.getMemberFromAuth();
+        SubscribeRequest subInfo = SubscribeRequest.builder()
+                .token(token)
+                .memberId(member.getMemberId())
+                .build();
+        redisService.unfollowLot(lotId, subInfo);
+        return ResponseEntity.ok().body("Successfully unfollowed lot for user");
+    }
 }

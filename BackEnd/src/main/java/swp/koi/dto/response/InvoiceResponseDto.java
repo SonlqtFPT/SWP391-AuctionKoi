@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import swp.koi.convert.AccountEntityToDtoConverter;
 import swp.koi.model.KoiFish;
 import swp.koi.model.enums.InvoiceStatusEnums;
 
@@ -23,5 +24,5 @@ public class InvoiceResponseDto {
     InvoiceStatusEnums status;
     String paymentLink;
     KoiFishInLotResponseDto koiFish;
-
+    AccountEntityToDtoConverter account;
 }

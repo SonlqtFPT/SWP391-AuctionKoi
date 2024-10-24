@@ -1,5 +1,8 @@
 package swp.koi.service.redisService;
 
+import swp.koi.model.SubscribeRequest;
+
+import java.util.List;
 import java.util.Set;
 
 public interface RedisService {
@@ -11,9 +14,19 @@ public interface RedisService {
 
     Object getData(String key);
 
+    List<?> getListData(String key);
+
     Set<?> getSetData(String key);
 
     void deleteData(String key);
 
+    void deleteDataFromSet(String key, Object object);
+
     boolean existData(String key);
+
+    void saveListData(String key, List<?> list);
+
+    boolean isUserFollowedThisLot(int lotId);
+
+    void unfollowLot(int lotId, SubscribeRequest token);
 }

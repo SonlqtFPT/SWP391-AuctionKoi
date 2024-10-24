@@ -46,13 +46,16 @@ public class InvoiceController {
 
     @Operation(summary = "Update invoice with shipping address and distance")
     @PatchMapping("/update-invoice")
-    public ResponseData<Invoice> updateInvoice(@RequestParam double kilometer,
+    public ResponseData<?> updateInvoice(@RequestParam double kilometer,
                                                @RequestParam int invoiceId,
                                                @RequestParam String address) {
         try {
-            return new ResponseData<>(ResponseCode.SUCCESS,invoiceService.updateInvoiceAddress(kilometer, invoiceId, address));
+            InvoiceResponseDto response = invoiceEntityToDtoConverter.convertInvoiceDto(invoiceService.updateInvoiceAddress(kilometer, invoiceId, address));
+            return new ResponseData<>(ResponseCode.SUCCESS,response);
         } catch (KoiException e) {
             throw new KoiException(ResponseCode.LOT_NOT_FOUND);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -85,5 +88,13 @@ public class InvoiceController {
     public ResponseData<?> updateInvoiceStatus(@PathVariable Integer invoiceId, @RequestParam InvoiceStatusEnums status){
         invoiceService.updateInvoiceStatus(invoiceId, status);
         return new ResponseData<>(ResponseCode.SUCCESS);
+    }
+
+    @Operation(summary = "Get all invoices")
+    @GetMapping("/staff/list-invoices")
+    public ResponseData<?> getListOfInvoices(){
+        List<InvoiceResponseDto> response = invoiceEntityToDtoConverter.convertInvoiceList(invoiceService.listOfInvoices());
+        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+
     }
 }
