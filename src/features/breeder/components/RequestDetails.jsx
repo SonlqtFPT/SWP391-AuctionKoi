@@ -211,7 +211,7 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
               </div>
 
               {/* Koi Info */}
-              <div className="bg-gray-900 hover:bg-gray-800 rounded-2xl my-4 border-2 border-[#bcab6f] py-4 pl-10 outline outline-offset-4 mx-2">
+              <div className="bg-gray-900 hover:bg-gray-800 rounded-2xl my-4 border-2 border-[#bcab6f] py-4 pl-6 outline outline-offset-4 mx-2">
                 <div className="grid grid-cols-2">
                   <p>
                     <strong>Fish ID:</strong> {request.fishId}
@@ -257,98 +257,119 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
                   Request Info
                 </h6>
               </div>
+
             </div>
+            {(request.status === "PENDING") && (
+              <div className="mt-4 ml-4 py-2 mx-0 items-center">
+                <h9 className="font-mono text-[#bcab6f]">
+                  If you have any issue, please update your request or cancel it.
+                </h9>
+                <button
+                  type="primary"
+                  onClick={handleAccept}
+                  className="bg-amber-600 font-bold rounded-lg px-4 py-2 hover:bg-amber-500 mx-4"
+                >
+                  Accept Offer
+                </button>
+                <button
+                  type="default"
+                  onClick={handleCancel}
+                  className="bg-red-600 rounded-lg px-4 py-2 hover:bg-red-500"
+                >
+                  Cancel Offer
+                </button>
+              </div>)}
           </div>
 
           {/* Negotiation Section */}
           {/* Only render the negotiation card when the status is PENDING_MANAGER_OFFER or PENDING_BREEDER_OFFER */}
           {(request.status === "PENDING_MANAGER_OFFER" ||
             request.status === "PENDING_BREEDER_OFFER") && (
-            <Card className="bg-gray-900 hover:bg-gray-800 rounded-2xl  my-4 border-2 border-[#bcab6f] py-4 pl-10 outline outline-offset-4 outline-white mx-60">
-              <h7 className="font-extrabold text-2xl text-[#bcab6f]">
-                Negotiation
-              </h7>
+              <Card className="bg-gray-900 hover:bg-gray-800 rounded-2xl  my-4 border-2 border-[#bcab6f] py-4 pl-10 outline outline-offset-4 outline-white mx-60">
+                <h7 className="font-extrabold text-2xl text-[#bcab6f]">
+                  Negotiation
+                </h7>
 
-              {request.status === "PENDING_BREEDER_OFFER" && (
-                <>
-                  {/* Display Manager's Offer */}
-                  <div style={{ marginBottom: "16px" }}>
-                    <h8 className="text-white font-semibold underline underline-offset-1">
-                      Manager's Offer
-                    </h8>
-                    <p className="text-white font-semibold">
-                      <strong>Offer Price:</strong> ${request.offerPriceManager}
-                    </p>
-                    <p className="text-white font-semibold">
-                      <strong>Auction Type:</strong>{" "}
-                      {formatAuctionType(request.auctionTypeNameManager)}
-                    </p>
-                  </div>
+                {request.status === "PENDING_BREEDER_OFFER" && (
+                  <>
+                    {/* Display Manager's Offer */}
+                    <div style={{ marginBottom: "16px" }}>
+                      <h8 className="text-white font-semibold underline underline-offset-1">
+                        Manager's Offer
+                      </h8>
+                      <p className="text-white font-semibold">
+                        <strong>Offer Price:</strong> ${request.offerPriceManager}
+                      </p>
+                      <p className="text-white font-semibold">
+                        <strong>Auction Type:</strong>{" "}
+                        {formatAuctionType(request.auctionTypeNameManager)}
+                      </p>
+                    </div>
 
-                  {/* Negotiation Form */}
-                  <Input
-                    type="number"
-                    placeholder="Your Offer Price"
-                    value={offerPrice || ""}
-                    onChange={(e) =>
-                      setOfferPrice(
-                        e.target.value ? Number(e.target.value) : null
-                      )
-                    }
-                    className="text-white w-48 mb-4 mr-4 px-3 py-2 border-2 border-gray-300 rounded bg-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-transparent"
-                    style={{ backgroundColor: "transparent" }}
-                  />
-                  <Select
-                    placeholder="Select Auction Type"
-                    value={offerAuctionType || undefined}
-                    onChange={setOfferAuctionType}
-                    style={{
-                      width: "200px",
-                      marginBottom: "16px",
-                      height: "38px",
-                    }}
-                    className="pr-5"
-                  >
-                    <Select.Option value="ASCENDING_BID">
-                      Ascending Bid
-                    </Select.Option>
-                    <Select.Option value="DESCENDING_BID">
-                      Descending Bid
-                    </Select.Option>
-                    <Select.Option value="SEALED_BID">Sealed Bid</Select.Option>
-                    <Select.Option value="DIRECT_SALE">
-                      Direct Sale
-                    </Select.Option>
-                  </Select>
-                  <Button type="primary" onClick={handleNegotiate}>
-                    Submit Offer
-                  </Button>
-
-                  {/* Actions for Breeder Offer */}
-                  <div className="mt-4">
-                    <h9 className="font-mono text-[#bcab6f]">
-                      Note! Clicking Accept Offer only if you have confirmed
-                      your deal with us.
-                    </h9>
-                    <button
-                      type="primary"
-                      onClick={handleAccept}
-                      className="bg-red-600 font-bold rounded-lg px-4 py-2 hover:bg-red-500 mx-4"
+                    {/* Negotiation Form */}
+                    <Input
+                      type="number"
+                      placeholder="Your Offer Price"
+                      value={offerPrice || ""}
+                      onChange={(e) =>
+                        setOfferPrice(
+                          e.target.value ? Number(e.target.value) : null
+                        )
+                      }
+                      className="text-white w-48 mb-4 mr-4 px-3 py-2 border-2 border-gray-300 rounded bg-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-transparent"
+                      style={{ backgroundColor: "transparent" }}
+                    />
+                    <Select
+                      placeholder="Select Auction Type"
+                      value={offerAuctionType || undefined}
+                      onChange={setOfferAuctionType}
+                      style={{
+                        width: "200px",
+                        marginBottom: "16px",
+                        height: "38px",
+                      }}
+                      className="pr-5"
                     >
-                      Accept Offer
-                    </button>
-                    <button
-                      type="default"
-                      onClick={handleCancel}
-                      className="bg-slate-400 rounded-lg px-4 py-2 hover:bg-slate-300"
-                    >
-                      Cancel Offer
-                    </button>
-                  </div>
-                </>
-              )}
-            </Card>
-          )}
+                      <Select.Option value="ASCENDING_BID">
+                        Ascending Bid
+                      </Select.Option>
+                      <Select.Option value="DESCENDING_BID">
+                        Descending Bid
+                      </Select.Option>
+                      <Select.Option value="SEALED_BID">Sealed Bid</Select.Option>
+                      <Select.Option value="DIRECT_SALE">
+                        Direct Sale
+                      </Select.Option>
+                    </Select>
+                    <Button type="primary" onClick={handleNegotiate}>
+                      Submit Offer
+                    </Button>
+
+                    {/* Actions for Breeder Offer */}
+                    <div className="mt-4">
+                      <h9 className="font-mono text-[#bcab6f]">
+                        Note! Clicking Accept Offer only if you have confirmed
+                        your deal with us.
+                      </h9>
+                      <button
+                        type="primary"
+                        onClick={handleAccept}
+                        className="bg-red-600 font-bold rounded-lg px-4 py-2 hover:bg-red-500 mx-4"
+                      >
+                        Accept Offer
+                      </button>
+                      <button
+                        type="default"
+                        onClick={handleCancel}
+                        className="bg-slate-400 rounded-lg px-4 py-2 hover:bg-slate-300"
+                      >
+                        Cancel Offer
+                      </button>
+                    </div>
+                  </>
+                )}
+              </Card>
+            )}
         </div>
 
         {/* Media Section */}
