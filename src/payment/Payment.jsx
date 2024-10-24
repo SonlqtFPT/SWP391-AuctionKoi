@@ -32,6 +32,7 @@ const Payment = () => {
 
         if (response.status === 200) {
           setInvoice(response.data.data);
+          console.log(response.data.data);
         } else {
           throw new Error("Failed to fetch invoice");
         }
@@ -158,7 +159,6 @@ const Payment = () => {
       <div className="flex min-h-full flex-1 columns-2 justify-center px-6 py-20 lg:px-8 bg-hero-pattern mt-25 bg-cover relative">
         <div className="absolute bg-black bg-opacity-80 inset-0"></div>
         <div className="flex-grow container mx-auto px-4 py-8">
-
           <div className="flex items-center justify-center space-x-4 relative my-7">
             <span>
               <img
@@ -238,7 +238,7 @@ const Payment = () => {
               </p>
               <p>
                 <span className="font-semibold">Estimated Distance:</span>{" "}
-                {invoice.kilometer} km
+                {invoice.kilometers.toFixed(2)} km
               </p>
             </Card>
 
@@ -292,8 +292,8 @@ const Payment = () => {
                 <li>200+ km: 800 VND/km</li>
               </ul>
               <div>
-                <span className="font-semibold">Price per km:</span> {pricePerKm}{" "}
-                VND
+                <span className="font-semibold">Price per km:</span>{" "}
+                {pricePerKm} VND
               </div>
               <div>
                 <span className="font-semibold">Estimated Shipping Fee:</span>{" "}

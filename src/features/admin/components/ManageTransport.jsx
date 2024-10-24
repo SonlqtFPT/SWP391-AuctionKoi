@@ -29,11 +29,12 @@ const ManageTransport = () => {
   const [selectedStaffId, setSelectedStaffId] = useState(null); // State for selected staff ID
 
   // Fetch invoices from the new API endpoint
+  // Fetch invoices from the new API endpoint
   const fetchInvoices = async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await api.get("/invoice/staff/list-invoices", {
+      const response = await api.get("/invoice/get-invoices", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -52,6 +53,7 @@ const ManageTransport = () => {
         age: item.koiFish.age,
         size: item.koiFish.size,
         varietyName: item.koiFish.varietyName,
+        accountId: item.member.account.accountId, // Add this line
       }));
       setInvoices(formattedInvoices);
       setFilteredInvoices(formattedInvoices); // Set filtered invoices initially
@@ -151,6 +153,7 @@ const ManageTransport = () => {
   };
 
   // Table columns
+  // Table columns
   const columns = [
     {
       title: (
@@ -172,6 +175,17 @@ const ManageTransport = () => {
       dataIndex: "fishId",
       key: "fishId",
       sorter: (a, b) => a.fishId - b.fishId,
+      sortDirections: ["ascend", "descend"],
+    },
+    {
+      title: (
+        <span className="flex items-center">
+          <FaUserPlus className="mr-2" /> Member ID
+        </span>
+      ),
+      dataIndex: "accountId",
+      key: "accountId",
+      sorter: (a, b) => a.accountId - b.accountId,
       sortDirections: ["ascend", "descend"],
     },
     {
