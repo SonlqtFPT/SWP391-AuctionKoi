@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 public class InvoiceEntityToDtoConverter {
 
     private final ModelMapper modelMapper;
+    private final MemberEntityToDtoConverter memberEntityToDtoConverter;
 
     public List<InvoiceResponseDto> convertInvoiceList(List<Invoice> invoiceList){
         List<InvoiceResponseDto> response = invoiceList.stream()
@@ -24,7 +25,7 @@ public class InvoiceEntityToDtoConverter {
                     dto.getKoiFish().setVarietyName(invoice.getKoiFish().getVariety().getVarietyName());
                     dto.getKoiFish().setImageUrl(invoice.getKoiFish().getMedia().getImageUrl());
                     dto.getKoiFish().setVideoUrl(invoice.getKoiFish().getMedia().getVideoUrl());
-
+                    dto.setMember(memberEntityToDtoConverter.convertMember(invoice.getMember()));
                     return dto;
                 })
                 .collect(Collectors.toList());

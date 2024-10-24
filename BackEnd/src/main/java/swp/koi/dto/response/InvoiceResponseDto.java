@@ -24,5 +24,5 @@ public class InvoiceResponseDto {
     InvoiceStatusEnums status;
     String paymentLink;
     KoiFishInLotResponseDto koiFish;
-    AccountEntityToDtoConverter account;
+    MemberResponseDTO member;
 }
