@@ -146,7 +146,6 @@ const Follow = ({ lotId, followed, fetchCheckFollow }) => {
         handleSendFCM();
       }}
       variant="primary"
-      disabled={notificationPermission === "denied"}
     >
       {followed ? <FaHeart className="text-red-500" /> : <FaHeart />}
     </Button>

@@ -217,7 +217,7 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
                     <strong>Fish ID:</strong> {request.fishId}
                   </p>
                   <p>
-                    <strong>Size:</strong> {request.size}
+                    <strong>Size:</strong> {request.size} cm
                   </p>
                   <p>
                     <strong>Age:</strong> {request.age}
@@ -247,7 +247,7 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
                   {new Date(request.requestedAt).toLocaleString()}
                 </p>
                 <p>
-                  <strong>Price:</strong> ${request.price}
+                  <strong>Price:</strong> {request.price} vnđ
                 </p>
                 <p>
                   <strong>Auction Type:</strong>{" "}
