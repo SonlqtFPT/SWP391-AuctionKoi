@@ -24,6 +24,7 @@ const MapComponent = ({
   setAddress,
 }) => {
   const [route, setRoute] = useState([]);
+  const [address, setAddressState] = useState(""); // Local state to store address
 
   // Fetch route whenever start or end points change
   useEffect(() => {
@@ -69,10 +70,27 @@ const MapComponent = ({
     }
   }, [startPoint, endPoint, setDistance]);
 
+  // Reverse geocoding function to get address from coordinates
+  const reverseGeocode = async (lat, lng) => {
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+      );
+      return response.data.display_name; // Return the formatted address
+    } catch (error) {
+      console.error("Error in reverse geocoding:", error);
+      return null;
+    }
+  };
+
   return (
     <div>
       {/* Search Component for End Point */}
-      <SearchLocation setEndPoint={setEndPoint} setAddress={setAddress} />
+      <SearchLocation
+        setEndPoint={setEndPoint}
+        setAddress={setAddress}
+        address={address} // Pass the local address state here
+      />
 
       {/* Map */}
       <MapContainer
@@ -95,9 +113,19 @@ const MapComponent = ({
             icon={redIcon}
             draggable={true}
             eventHandlers={{
-              dragend: (event) => {
+              dragend: async (event) => {
                 const newLatLng = event.target.getLatLng();
                 setEndPoint({ lat: newLatLng.lat, lng: newLatLng.lng });
+
+                // Perform reverse geocoding to get the new address
+                const newAddress = await reverseGeocode(
+                  newLatLng.lat,
+                  newLatLng.lng
+                );
+                if (newAddress) {
+                  setAddressState(newAddress); // Update local state for SearchLocation
+                  setAddress(newAddress); // Update the address in parent component (shipping details)
+                }
               },
             }}
           />

@@ -1,9 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./SearchLocation.css"; // Import custom styles for dropdown
 
-const SearchLocation = ({ setEndPoint, setAddress }) => {
-  const [query, setQuery] = useState("");
+const SearchLocation = ({ setEndPoint, setAddress, address }) => {
+  const [query, setQuery] = useState(""); // Initialize query
+
+  // Listen for changes in the address prop and update the query
+  useEffect(() => {
+    if (address) {
+      setQuery(address); // Update search bar value when the address prop changes
+    }
+  }, [address]);
+
   const [suggestions, setSuggestions] = useState([]);
 
   // Search Location function using Nominatim

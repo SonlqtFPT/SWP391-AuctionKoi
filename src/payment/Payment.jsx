@@ -236,6 +236,7 @@ const Payment = () => {
                   value={address}
                   placeholder="Selected address"
                   onChange={(e) => setAddress(e.target.value)}
+                  disabled
                 />
               </div>
               <div className="flex flex-col mb-4">

@@ -7,6 +7,7 @@ import CreateAuction from "../components/CreateAuction.jsx";
 import CreateBreeder from "../components/CreateBreeder.jsx";
 import CreateStaff from "../components/CreateStaff.jsx";
 import UserProfile from "../components/UserProfile.jsx";
+import ManageTransport from "../components/ManageTransport.jsx";
 import { useState } from "react";
 
 const AdminPage = () => {
@@ -27,6 +28,8 @@ const AdminPage = () => {
         return <CreateStaff />;
       case "Profile":
         return <UserProfile />;
+      case "Manage Transport":
+        return <ManageTransport />;
       default:
         return <div>Welcome to the Admin Dashboard!</div>; // Default content
     }
