@@ -64,7 +64,11 @@ const SidebarStaff = ({ setActiveComponent }) => {
   };
 
   return (
-    <Sider collapsed={collapsed} onCollapse={setCollapsed} className="bg-black flex flex-col">
+    <Sider
+      collapsed={collapsed}
+      onCollapse={setCollapsed}
+      className="bg-black flex flex-col"
+    >
       <div className="flex justify-center items-center flex-col mt-20">
         {!collapsed && (
           <p className="text-white mt-5 font-bold my-10">Staff Dashboard</p>
@@ -75,9 +79,12 @@ const SidebarStaff = ({ setActiveComponent }) => {
         theme="dark"
         mode="inline"
         defaultSelectedKeys={["1"]}
-        items={items.map(item =>
+        items={items.map((item) =>
           item.key === "toggle"
-            ? { ...item, icon: collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined /> }
+            ? {
+                ...item,
+                icon: collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />,
+              }
             : item
         )}
         className="bg-[#c74743] text-white flex-grow "
