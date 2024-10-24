@@ -96,7 +96,7 @@ public class AuctionServiceImpl implements AuctionService{
             for(LotDTO lotDTO : request.getLots()){
                 Lot lot = new Lot();
                 KoiFish koiFish = koiFishService.findByFishId(lotDTO.getFishId());
-                koiFish.setStatus(KoiFishStatusEnum.AUCTIONING);
+                koiFish.setStatus(KoiFishStatusEnum.IN_AUCTION);
                 koiFishService.saveFish(koiFish);
                     lot.setAuction(auction);
                     lot.setKoiFish(koiFish);

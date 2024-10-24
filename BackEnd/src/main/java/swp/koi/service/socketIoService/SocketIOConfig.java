@@ -30,7 +30,7 @@ public class SocketIOConfig {
     private final UserDetailsService userDetailsService;
 
     // I have set the configuration values in application.yaml file
-    @Value("localhost")
+    @Value("0.0.0.0")
     private String socketHost;
 
     @Value("8081")
