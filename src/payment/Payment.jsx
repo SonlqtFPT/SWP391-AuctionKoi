@@ -32,6 +32,7 @@ const Payment = () => {
 
         if (response.status === 200) {
           setInvoice(response.data.data);
+          console.log(response.data.data);
         } else {
           throw new Error("Failed to fetch invoice");
         }
@@ -219,7 +220,7 @@ const Payment = () => {
             </p>
             <p>
               <span className="font-semibold">Estimated Distance:</span>{" "}
-              {invoice.kilometer} km
+              {invoice.kilometers.toFixed(2)} km
             </p>
           </Card>
 

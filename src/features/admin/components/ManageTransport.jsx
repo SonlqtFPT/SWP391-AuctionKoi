@@ -33,7 +33,7 @@ const ManageTransport = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await api.get("/invoice/staff/list-invoices", {
+      const response = await api.get("/invoice/get-invoices", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
