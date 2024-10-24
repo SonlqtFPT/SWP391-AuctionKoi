@@ -49,6 +49,8 @@ public class AuctionRequest {
     @JoinColumn(name = "breederId")
     KoiBreeder koiBreeder;
 
+    Float auctionFinalPrice;
+
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fishId")
     KoiFish koiFish;

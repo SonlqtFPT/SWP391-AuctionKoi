@@ -7,6 +7,7 @@ import swp.koi.config.VnpayConfig;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
 import swp.koi.model.*;
+import swp.koi.model.enums.AuctionRequestStatusEnum;
 import swp.koi.model.enums.InvoiceStatusEnums;
 import swp.koi.model.enums.LotRegisterStatusEnum;
 import swp.koi.model.enums.TransactionTypeEnum;
@@ -30,6 +31,7 @@ public class VnpayServiceImpl implements VnpayService {
     private final TransactionServiceImpl transactionService;
     private final TransactionRepository transactionRepository;
     private final InvoiceRepository invoiceRepository;
+    private final AuctionRequestRepository auctionRequestRepository;
 
     //generate invoice that's it!!!
     @Override
@@ -175,7 +177,7 @@ public class VnpayServiceImpl implements VnpayService {
     //if the response is correct then assign member to slot
     // TECH_DEBT!!!!!!!!!!!!
     @Override
-    public void regisMemberToLot(HttpServletRequest request) throws UnsupportedEncodingException {
+    public void handlePayment(HttpServletRequest request) throws UnsupportedEncodingException {
         String orderInfo = request.getParameter("vnp_OrderInfo");
 
         if (orderInfo != null && !orderInfo.isEmpty()) {
@@ -218,15 +220,23 @@ public class VnpayServiceImpl implements VnpayService {
                         .build();
 
                 lotRegisterRepository.save(lotRegister);
-                Transaction transaction = transactionService.createTransactionForLotDeposit(lot.getLotId(), member.getMemberId());
+                transactionService.createTransactionForLotDeposit(lot.getLotId(), member.getMemberId());
             } else {
                 Transaction transaction = transactionService.createTransactionForInvoicePayment(lot.getLotId(), member.getMemberId());
                 Invoice invoice = invoiceRepository.findByLot(lot);
                 invoice.setTransaction(transaction);
                 invoice.setStatus(InvoiceStatusEnums.PAID);
                 invoiceRepository.save(invoice);
+                processPaymentForBreeder(invoice);
             }
 
         }
+    }
+
+    private void processPaymentForBreeder(Invoice invoice) {
+        AuctionRequest auctionRequest = invoice.getLot().getKoiFish().getAuctionRequest();
+        auctionRequest.setStatus(AuctionRequestStatusEnum.WAITING_FOR_PAYMENT);
+        auctionRequest.setAuctionFinalPrice(invoice.getLot().getCurrentPrice());
+        auctionRequestRepository.save(auctionRequest);
     }
 }
