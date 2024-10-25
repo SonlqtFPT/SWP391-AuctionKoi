@@ -262,6 +262,7 @@ const AddLots = ({ setLots, auctionTypeName, lots }) => {
 
   useEffect(() => {
     const fetchFishData = async () => {
+      const token = localStorage.getItem("accessToken");
       try {
         const response = await axios.post(
           "http://localhost:8080/manager/get-fish-auction",
@@ -272,8 +273,9 @@ const AddLots = ({ setLots, auctionTypeName, lots }) => {
             },
           }
         );
+        console.log(response);
         console.log(response.data.data);
-        setFishData(response.data.data);
+        setFishData(response.data.data || []);
       } catch (err) {
         console.error("Error fetching fish data", err);
       }
