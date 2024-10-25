@@ -7,17 +7,19 @@ import lombok.experimental.FieldDefaults;
 import swp.koi.model.Lot;
 import swp.koi.model.enums.TransactionTypeEnum;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TransactionResponseDto {
 
     Integer transactionId;
+    LocalDateTime createAt;
     TransactionTypeEnum transactionType;
     float amount;
     String paymentStatus;
-    LotResponseDto lot;
-    AccountResponseDTO member;
-    KoiBreederResponseDTO breeder;
-
+//    LotResponseDto lot;
+    Integer lotId;
+    MemberResponseDTO member;
 }
