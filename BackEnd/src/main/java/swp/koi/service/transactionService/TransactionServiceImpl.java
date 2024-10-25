@@ -15,6 +15,7 @@ import swp.koi.repository.MemberRepository;
 import swp.koi.repository.TransactionRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -57,7 +58,6 @@ public class TransactionServiceImpl implements TransactionService {
     private Transaction buildTransactionForDeposit(Lot lot, Member member) {
         return Transaction.builder()
                 .transactionType(TransactionTypeEnum.DEPOSIT)
-                .transactionDate(LocalDateTime.now())
                 .amount(lot.getDeposit())
                 .member(member)
                 .paymentStatus("SUCCESS")
@@ -68,7 +68,6 @@ public class TransactionServiceImpl implements TransactionService {
     private Transaction buildTransactionForInvoicePayment(Lot lot, Member member, Invoice invoice) {
         return Transaction.builder()
                 .transactionType(TransactionTypeEnum.INVOICE_PAYMENT)
-                .transactionDate(LocalDateTime.now())
                 .amount(calculateInvoiceAmount(lot))
                 .member(member)
                 .paymentStatus("SUCCESS")
@@ -79,5 +78,10 @@ public class TransactionServiceImpl implements TransactionService {
 
     private float calculateInvoiceAmount(Lot lot) {
         return (float) (lot.getCurrentPrice() * 1.1 - lot.getDeposit());
+    }
+
+    @Override
+    public List<Transaction> getAllTransaction() {
+        return transactionRepository.findAll();
     }
 }

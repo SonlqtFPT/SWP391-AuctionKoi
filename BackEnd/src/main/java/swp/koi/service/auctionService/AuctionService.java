@@ -26,4 +26,6 @@ public interface AuctionService {
     List<Auction> getAllOnGoingAuction();
 
     List<Auction> getAllCompletedAuction();
+
+    List<Auction> getAllWaitingAuction();
 }

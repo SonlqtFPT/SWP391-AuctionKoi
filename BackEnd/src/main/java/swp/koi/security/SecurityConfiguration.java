@@ -40,7 +40,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers("/authenticate/**","/send/**","/daa.html","/notification/subscribe/**","/notification/send/**").permitAll()
+                        .requestMatchers("/authenticate/**","/send/**","/daa.html","/notification/subscribe/**","/notification/send/**", "/auction/get-auction/completed", "/auction/get-auction/waiting", "/auction/get-auction/auctioning").permitAll()
 //                        .requestMatchers("/api/pay/vn-pay-callback").permitAll()
 //                        .requestMatchers("/auctionRequest/addRequest").hasAuthority("ROLE_BREEDER")
 //                        .requestMatchers("/auctionRequest/getRequest").permitAll()

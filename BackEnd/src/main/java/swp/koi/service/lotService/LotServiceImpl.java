@@ -10,6 +10,7 @@ import swp.koi.exception.KoiException;
 import swp.koi.model.*;
 import swp.koi.model.enums.*;
 import swp.koi.repository.*;
+import swp.koi.service.accountService.AccountService;
 import swp.koi.service.bidService.BidServiceImpl;
 import swp.koi.service.fireBase.FCMService;
 import swp.koi.service.invoiceService.InvoiceService;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LotServiceImpl implements LotService {
 
+    private final AccountService accountService;
     private final LotRepository lotRepository;
     private final BidServiceImpl bidService;
     private final LotRegisterRepository lotRegisterRepository;
@@ -247,8 +249,9 @@ public class LotServiceImpl implements LotService {
     }
 
     @Override
-    public List<Lot> getLotByMember(Integer memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new KoiException(ResponseCode.MEMBER_NOT_FOUND));
+    public List<Lot> getLotByMember(Integer accountId) {
+        Account account = accountService.findById(accountId);
+        Member member = memberRepository.findByAccount(account);
 
         List<LotRegister> lotRegisters = lotRegisterRepository.findAllByMember(member);
         List<Lot> lots = lotRegisters.stream()

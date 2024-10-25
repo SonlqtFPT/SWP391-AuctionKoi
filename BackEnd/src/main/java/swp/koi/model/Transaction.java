@@ -25,7 +25,14 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private TransactionTypeEnum transactionType;
 
-    private LocalDateTime transactionDate;
+
+    @Column(name = "createAt", updatable = false)
+    private LocalDateTime createAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createAt = LocalDateTime.now();
+    }
 
     @Column(nullable = false)
     private float amount;
