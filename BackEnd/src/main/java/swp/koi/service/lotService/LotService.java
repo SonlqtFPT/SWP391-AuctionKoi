@@ -21,5 +21,5 @@ public interface LotService {
     @Async
     void sendNotificateToFollower(Lot lot);
 
-    List<Lot> getLotByMember(Integer memberId);
+    List<Lot> getLotByMember(Integer accountId);
 }

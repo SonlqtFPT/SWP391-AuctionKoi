@@ -26,8 +26,8 @@ public class LotController {
 
     @Operation(summary = "Retrieve all lot that member registered")
     @GetMapping("/get-lot-member")
-    public ResponseData<?> getLotByMember(@RequestParam Integer memberId){
-        List<LotResponseDto> response = lotEntityToDtoConverter.convertLotList(lotService.getLotByMember(memberId));
+    public ResponseData<?> getLotByMember(@RequestParam Integer accountId){
+        List<LotResponseDto> response = lotEntityToDtoConverter.convertLotList(lotService.getLotByMember(accountId));
         return new ResponseData<>(ResponseCode.SUCCESS, response);
     }
 
