@@ -54,9 +54,7 @@ const CreateAuction = () => {
       auctionTypeName: auction.auctionTypeName,
       startTime: auction.startTime,
       endTime: auction.endTime,
-      lots: lots.map((lot) => ({
-        fishId: lot.fishId,
-      })),
+      lots: lots.map((lot) => ({ fishId: lot.fishId })),
     };
 
     console.log("Auction Data to Submit:", auctionData);
