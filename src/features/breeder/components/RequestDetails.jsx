@@ -117,10 +117,13 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
       );
 
       console.log("Chạy nè");
+      console.log(response);
       notification.success({
         message: "Success",
         description: "Offer submitted successfully!",
       });
+      fetchRequest;
+      onBack();
     } catch (error) {
       console.error("Error submitting negotiation offer:", error);
       notification.error({
@@ -147,7 +150,8 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
         message: "Success",
         description: "Offer accepted successfully!",
       });
-      navigate("/breeder/profile/view-request");
+      fetchRequest;
+      onBack();
     } catch (error) {
       console.error("Error accepting offer:", error);
       notification.error({
@@ -178,7 +182,8 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
         description: "Request cancelled successfully!",
       });
       console.log(response);
-      navigate("/breeder/profile/view-request");
+      fetchRequest;
+      onBack();
     } catch (error) {
       console.error("Error cancelling request:", error);
       notification.error({
@@ -277,13 +282,6 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
                   If you have any issue, please update your request or cancel
                   it.
                 </h9>
-                <button
-                  type="primary"
-                  onClick={handleAccept}
-                  className="bg-amber-600 font-bold rounded-lg px-4 py-2 hover:bg-amber-500 mx-4"
-                >
-                  Accept Offer
-                </button>
                 <button
                   type="default"
                   onClick={handleCancel}
