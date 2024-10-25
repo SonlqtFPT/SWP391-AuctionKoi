@@ -228,6 +228,10 @@ public class VnpayServiceImpl implements VnpayService {
                 invoice.setStatus(InvoiceStatusEnums.PAID);
                 invoiceRepository.save(invoice);
                 processPaymentForBreeder(invoice);
+
+                LotRegister lotRegister = invoice.getLotRegister();
+                lotRegister.setStatus(LotRegisterStatusEnum.PAID);
+                lotRegisterRepository.save(lotRegister);
             }
 
         }

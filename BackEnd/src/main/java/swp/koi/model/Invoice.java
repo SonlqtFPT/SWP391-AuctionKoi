@@ -39,6 +39,7 @@ public class Invoice {
     @Min(value = 0, message = "distance must be > 0")
     Double kilometers;
 
+    @Column(columnDefinition = "nvarchar(max)")
     String address;
 
 
@@ -70,4 +71,8 @@ public class Invoice {
     @ManyToOne
     @JoinColumn(name = "accountId")
     Account account;
+
+    @OneToOne
+    @JoinColumn(name = "LRID")
+    LotRegister lotRegister;
 }

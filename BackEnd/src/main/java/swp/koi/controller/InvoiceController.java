@@ -70,6 +70,17 @@ public class InvoiceController {
         }
     }
 
+    @Operation(summary = "List all invoices for manager")
+    @GetMapping("/manager/invoice-list")
+    public ResponseData<?> listAllInvoicesForManager(){
+        try {
+            List<InvoiceResponseDto> response = invoiceEntityToDtoConverter.convertInvoiceList(invoiceService.listAllInvoicesForManager());
+            return new ResponseData<>(ResponseCode.SUCCESS,response);
+        } catch (KoiException e) {
+            throw new KoiException(e.getResponseCode());
+        }
+    }
+
     @PostMapping("/manager/assign-staff/{invoiceId}/{accountId}")
     public ResponseData<?> assignStaffDelivery(@PathVariable Integer invoiceId, @PathVariable Integer accountId){
         invoiceService.assignStaffDelivery(invoiceId, accountId);
@@ -97,4 +108,5 @@ public class InvoiceController {
         return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
 
     }
+
 }

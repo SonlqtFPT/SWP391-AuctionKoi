@@ -25,4 +25,7 @@ public class InvoiceResponseDto {
     String paymentLink;
     KoiFishInLotResponseDto koiFish;
     MemberResponseDTO member;
+    Double kilometers;
+    String address;
+
 }

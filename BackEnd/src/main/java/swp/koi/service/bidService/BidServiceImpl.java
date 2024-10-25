@@ -14,7 +14,6 @@ import swp.koi.model.enums.LotRegisterStatusEnum;
 import swp.koi.repository.*;
 import swp.koi.service.authService.GetUserInfoByUsingAuth;
 import swp.koi.service.mailService.EmailService;
-import swp.koi.service.mailService.EmailServiceImpl;
 import swp.koi.service.memberService.MemberServiceImpl;
 import swp.koi.service.redisService.RedisService;
 import swp.koi.service.redisService.RedisServiceImpl;
@@ -23,7 +22,6 @@ import swp.koi.service.socketIoService.SocketDetail;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -189,7 +187,7 @@ public class BidServiceImpl implements BidService {
     // Validates the bid request, ensuring the member is registered and that the bid price is valid
     private void validateBidRequest(BidRequestDto bidRequestDto, Member member, Lot lot) throws KoiException {
         // Check if the member is registered for the lot and update their status if needed
-        boolean isRegistered = lotRegisterRepository.findByLot(lot)
+        boolean isRegistered = lotRegisterRepository.findAllByLot(lot)
                 .orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND))
                 .stream()
                 .anyMatch(lr -> lr.getMember().equals(member) && updateLotRegisterStatus(lr)); // Update status to "BIDDING"
@@ -205,6 +203,11 @@ public class BidServiceImpl implements BidService {
         }
 
         AuctionTypeNameEnum auctionType = lot.getAuction().getAuctionType().getAuctionTypeName();
+
+        List<Bid> bidList = bidRepository.getBidByLot(lot).orElse(null);
+        if(bidList == null || bidList.isEmpty()) {
+            return;
+        }
 
         switch (auctionType) {
             case ASCENDING_BID: {
@@ -246,7 +249,7 @@ public class BidServiceImpl implements BidService {
      */
     private void isMemberRegistered(Member member,Lot lot) throws KoiException {
 
-        boolean isRegistered = lotRegisterRepository.findByLot(lot)
+        boolean isRegistered = lotRegisterRepository.findAllByLot(lot)
                 .orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND))
                 .stream()
                 .anyMatch(lr -> lr.getMember().equals(member));

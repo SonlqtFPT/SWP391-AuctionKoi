@@ -49,7 +49,7 @@ public class LotServiceImpl implements LotService {
 
     @Override
     @Async
-    @Scheduled(fixedRate = 1000 * 60) // Run every 60 seconds
+    @Scheduled(fixedRate = 1000 * 20) // Run every 20 seconds
     public void startLotBy() {
         LocalDateTime now = LocalDateTime.now();
 
@@ -120,7 +120,21 @@ public class LotServiceImpl implements LotService {
     private void setLotToPassed(Lot lot) {
         updateKoiFishStatus(lot.getKoiFish(), KoiFishStatusEnum.WAITING);
         lot.setStatus(LotStatusEnum.PASSED);
+        updateStatusForAllLotRegister(lot);
         lotRepository.save(lot);
+    }
+
+    private void updateStatusForAllLotRegister(Lot lot) {
+
+        List<LotRegister> lotRegisters = lotRegisterRepository.findAllByLot(lot).orElse(null);
+
+        if (lotRegisters != null && !lotRegisters.isEmpty()) {
+            lotRegisters.stream().forEach(lotRegister -> {
+                lotRegister.setStatus(LotRegisterStatusEnum.LOSE);
+                lotRegisterRepository.save(lotRegister);
+            });
+        }
+
     }
 
     private void concludeLot(Lot lot, List<Bid> bidList) {
@@ -150,7 +164,6 @@ public class LotServiceImpl implements LotService {
         if(subscribeRequests.isEmpty()) {
             return;
         }
-
         subscribeRequests.stream()
                 .filter(request -> !request.getMemberId().equals(winningBid.getMember().getMemberId()))
                 .forEach( lr -> {
@@ -177,7 +190,7 @@ public class LotServiceImpl implements LotService {
     }
 
     private void markOtherBidsAsLost(Lot lot, Member winner) {
-        lotRegisterRepository.findByLot(lot).ifPresent(lotRegisters -> {
+        lotRegisterRepository.findAllByLot(lot).ifPresent(lotRegisters -> {
             lotRegisters.stream()
                     .filter(lr -> !lr.getMember().getMemberId().equals(winner.getMemberId()))
                     .forEach(lr -> {
