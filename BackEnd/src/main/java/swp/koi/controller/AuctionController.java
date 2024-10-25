@@ -114,4 +114,11 @@ public class AuctionController {
         return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
     }
 
+    @Operation(summary = "Retrieve waiting auction")
+    @GetMapping("/auction/get-auction/waiting")
+    public ResponseData<List<AuctionResponseDTO>> getAllWaitingAuction(){
+        List<AuctionResponseDTO> response = auctionEntityToDtoConverter.converAuctiontList(auctionService.getAllWaitingAuction());
+        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+    }
+
 }

@@ -191,4 +191,9 @@ public class AuctionServiceImpl implements AuctionService{
     public List<Auction> getAllCompletedAuction() {
         return auctionRepository.findAllByStatus(AuctionStatusEnum.COMPLETED);
     }
+
+    @Override
+    public List<Auction> getAllWaitingAuction() {
+        return auctionRepository.findAllByStatus(AuctionStatusEnum.WAITING);
+    }
 }
