@@ -1,24 +1,20 @@
-/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
-
-import viteLogo from "/vite.svg";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import api from "../../config/axios";
 import Information from "./component-past-auction/information";
-import Search from "./component-past-auction/search";
-import { Button } from "antd";
 
 function Auctioned() {
   const [auctioned, setAuctioned] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [visibleItems, setVisibleItems] = useState([]);
   const navigate = useNavigate();
 
   const get_auctioned_api = "auction/get-auction/completed";
 
   const fetchAuctioned = async () => {
     const token = localStorage.getItem("accessToken");
-    console.log("Token nè: ", token);
     const response = await api.get(get_auctioned_api, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -35,6 +31,16 @@ function Auctioned() {
       })),
     }));
     setAuctioned(auction);
+    setIsLoading(false);
+    staggerItems(auction.length);
+  };
+
+  const staggerItems = (count) => {
+    for (let i = 0; i < count; i++) {
+      setTimeout(() => {
+        setVisibleItems((prev) => [...prev, i]);
+      }, i * 150);
+    }
   };
 
   useEffect(() => {
@@ -44,34 +50,64 @@ function Auctioned() {
   const handleLotPage = (id) => {
     navigate(`/lot/${id}`);
   };
+
+  // Floating animation styles
+  const floatInStyle = {
+    opacity: 0,
+    transform: "translateY(20px)",
+    animation: "float-in 0.5s forwards",
+  };
+
+  const styleSheet = document.styleSheets[0]; // Get the first stylesheet
+  const keyframes = `
+    @keyframes float-in {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  `;
+  styleSheet.insertRule(keyframes, styleSheet.cssRules.length); // Insert keyframes into stylesheet
+
   return (
     <div className="bg-black flex flex-col min-h-screen">
       <Header />
-      <h1 className="text-[#bcab6f] mt-[100px] ml-10 text-3xl font-bold">
-        Past Auction
-      </h1>
-      <div>
-        <Search />
-      </div>
-      <div className="flex flex-wrap justify-start gap-16 ml-[100px]">
-        {auctioned.map((auction, index) => (
-          <div key={index}>
-            <button
-              onClick={() => handleLotPage(auction.auctionId)}
-              className="ml-10 mt-5 mb-10 h-[200px] w-[400px] bg-slate-600"
-            >
-              {auctioned && (
-                <Information
-                  auctionId={auction.auctionId}
-                  lots={auction.lots}
-                  startTime={auction.startTime}
-                  endTime={auction.endTime}
-                />
-              )}
-            </button>
-          </div>
-        ))}
-      </div>
+      <main className="flex-grow flex flex-col">
+        <h1 className="text-[#bcab6f] mt-[100px] ml-10 text-3xl font-bold">
+          Past Auction
+        </h1>
+        <div className="flex flex-wrap justify-start gap-8 ml-[100px]">
+          {isLoading ? (
+            <div className="flex-grow flex items-center justify-center">
+              <p className="text-white text-xl">Loading...</p>
+            </div>
+          ) : auctioned.length > 0 ? (
+            auctioned.map(
+              (auction, index) =>
+                visibleItems.includes(index) && (
+                  <div key={index} className="flex-shrink-0 w-[30%]">
+                    <button
+                      onClick={() => handleLotPage(auction.auctionId)}
+                      className="mt-5 mb-10 h-[200px] w-full bg-slate-600"
+                      style={floatInStyle} // Apply floating animation styles
+                    >
+                      <Information
+                        auctionId={auction.auctionId}
+                        lots={auction.lots}
+                        startTime={auction.startTime}
+                        endTime={auction.endTime}
+                      />
+                    </button>
+                  </div>
+                )
+            )
+          ) : (
+            <div className="flex-grow flex items-center justify-center">
+              <p className="text-white text-xl">No past auctions available.</p>
+            </div>
+          )}
+        </div>
+      </main>
       <Footer />
     </div>
   );
