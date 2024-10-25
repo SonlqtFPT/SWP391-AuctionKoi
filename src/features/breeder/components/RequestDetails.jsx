@@ -159,12 +159,25 @@ const RequestDetails = ({ request, onBack, fetchRequest }) => {
 
   const handleCancel = async () => {
     try {
-      await api.post(`/manager/request/cancel/${request.requestId}`);
+      // Retrieve the access token from localStorage
+      const accessToken = localStorage.getItem("accessToken");
+
+      // Make the API request with the access token in the headers
+      const response = await api.post(
+        `/manager/request/cancel/${request.requestId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Include access token
+          },
+        }
+      );
+
       notification.success({
         message: "Success",
         description: "Request cancelled successfully!",
       });
-      fetchRequest();
+      console.log(response);
       navigate("/breeder/profile/view-request");
     } catch (error) {
       console.error("Error cancelling request:", error);

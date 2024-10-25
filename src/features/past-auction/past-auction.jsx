@@ -58,7 +58,7 @@ function Auctioned() {
     animation: "float-in 0.5s forwards",
   };
 
-  const styleSheet = document.styleSheets[0]; // Get the first stylesheet
+  const styleSheet = document.styleSheets[0];
   const keyframes = `
     @keyframes float-in {
       to {
@@ -67,13 +67,13 @@ function Auctioned() {
       }
     }
   `;
-  styleSheet.insertRule(keyframes, styleSheet.cssRules.length); // Insert keyframes into stylesheet
+  styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
 
   return (
     <div className="bg-black flex flex-col min-h-screen">
       <Header />
       <main className="flex-grow flex flex-col">
-        <h1 className="text-[#bcab6f] mt-[100px] ml-10 text-3xl font-bold">
+        <h1 className="text-[#e7c449] mt-[100px] ml-[calc(5vw+20px)] text-3xl font-bold">
           Past Auction
         </h1>
         <div className="flex flex-wrap justify-start gap-8 ml-[100px]">
@@ -88,8 +88,8 @@ function Auctioned() {
                   <div key={index} className="flex-shrink-0 w-[30%]">
                     <button
                       onClick={() => handleLotPage(auction.auctionId)}
-                      className="mt-5 mb-10 h-[200px] w-full bg-slate-600"
-                      style={floatInStyle} // Apply floating animation styles
+                      className="mt-5 mb-10 h-[200px] w-full bg-slate-600 hover:bg-opacity-60 transition-colors duration-300" // Hover effect added here
+                      style={floatInStyle}
                     >
                       <Information
                         auctionId={auction.auctionId}

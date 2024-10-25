@@ -10,7 +10,6 @@ import { sendTokenToServer } from "../services/notificationService";
 import { FaHeart } from "react-icons/fa";
 import { Button } from "antd";
 import api from "../config/axios";
-import axios from "axios";
 import { toast } from "react-toastify";
 
 const Follow = ({ lotId, followed, fetchCheckFollow }) => {

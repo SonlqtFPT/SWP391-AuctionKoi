@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Steps, Button, message, Form, DatePicker, Select, Table } from "antd";
 import dayjs from "dayjs";
 import api from "../../../config/axios";
@@ -262,8 +261,8 @@ const AddLots = ({ setLots, auctionTypeName, lots }) => {
     const fetchFishData = async () => {
       const token = localStorage.getItem("accessToken");
       try {
-        const response = await axios.post(
-          "http://localhost:8080/manager/get-fish-auction",
+        const response = await api.post(
+          "/manager/get-fish-auction",
           { auctionTypeName },
           {
             headers: {

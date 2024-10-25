@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import { Input, Button } from "antd";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Socket } from "socket.io-client";
@@ -119,15 +118,12 @@ function EnterPrice({
         </div>
         <div className="bg-slate-500 h-[40px] rounded-full flex items-center justify-between pl-5 pr-8 w-full py-6">
           <h1 className="text-xl font-bold w-auto lg:w-48">Starting Price</h1>
-          <h1 className="text-xl font-bold">
-            {formatNumber(startingPrice)}
-          </h1>
+          <h1 className="text-xl font-bold">{formatNumber(startingPrice)}</h1>
         </div>
       </div>
 
       {/* Bid Section */}
       <div className="flex flex-col sm:flex-row items-center gap-3 mt-7">
-
         {/* Bid Input */}
         {registed && remainingTime > 0 && (
           <div className="w-full ">
@@ -166,14 +162,11 @@ function EnterPrice({
         {/* Increment Section */}
         <div className="bg-slate-500 h-[40px] rounded-full flex items-center justify-between pl-5 pr-8 w-full py-6 text-black">
           <h1 className="text-xl font-bold">Increment</h1>
-          <h1 className="text-xl font-bold">
-            {formatNumber(increment)}
-          </h1>
+          <h1 className="text-xl font-bold">{formatNumber(increment)}</h1>
         </div>
       </div>
     </div>
   );
-
 }
 
 export default EnterPrice;

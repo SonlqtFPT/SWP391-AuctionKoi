@@ -22,7 +22,7 @@ function Information({ auctionId, lots, startTime, endTime, className }) {
     <div className={className}>
       {" "}
       {/* Add the animation class here */}
-      <h1 className="text-[#bcab6f] text-3xl font-bold pt-5 pr-[200px]">
+      <h1 className="text-[#e7c449] text-3xl font-bold pt-5 pr-[200px]">
         Auction#{auctionId}
       </h1>
       <div className="flex items-start ml-5">
