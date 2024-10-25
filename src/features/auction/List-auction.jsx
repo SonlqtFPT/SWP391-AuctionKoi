@@ -51,7 +51,8 @@ function Auction() {
             </div>
           </div>
         )}
-        <div className="mt-96 absolute">
+        {/* Adjusted button styling for placement at the bottom */}
+        <div className="absolute bottom-10">
           <button
             onClick={handlePastAuction}
             className="bg-yellow-400 rounded-3xl h-[60px] w-[220px] flex justify-center items-center hover:bg-yellow-500 transition-colors duration-300 shadow-lg transform hover:scale-105"

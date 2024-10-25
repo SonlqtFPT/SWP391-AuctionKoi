@@ -40,7 +40,7 @@ function Information({
           </svg>
         </div>
         <h1 className="">{breederName}</h1>
-        <div className="ml-[80px]">
+        <div className="ml-[6px]">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
