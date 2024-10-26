@@ -38,6 +38,9 @@ public class LotRegister {
     @JoinColumn(name = "lotId")
     Lot lot;
 
+    @OneToOne(mappedBy = "lotRegister")
+    Invoice invoice;
+
     public LotRegister() {
     }
 

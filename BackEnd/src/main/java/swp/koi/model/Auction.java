@@ -2,6 +2,7 @@ package swp.koi.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.google.type.DateTime;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,7 +19,12 @@ import java.util.List;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "Auction")
+@Table(name = "Auction", indexes = {
+        @Index(name = "idx_auction_start_time", columnList = "startTime"),
+        @Index(name = "idx_auction_end_time", columnList = "endTime"),
+        @Index(name = "idx_auction_auction_type_id", columnList = "auctionTypeId"),
+        @Index(name = "idx_auction_status", columnList = "status")
+})
 @AllArgsConstructor
 public class Auction {
 
@@ -27,19 +33,20 @@ public class Auction {
     Integer auctionId;
 
     @Column(nullable = false)
-    java.time.LocalDateTime startTime;
+    LocalDateTime startTime;
 
     @Column(nullable = false)
-    java.time.LocalDateTime endTime;
+    LocalDateTime endTime;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     AuctionStatusEnum status;
 
-    @OneToMany(mappedBy = "auction")
+    @OneToMany(mappedBy = "auction", fetch = FetchType.LAZY)
+            @JsonManagedReference
     List<Lot> lots;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "auctionTypeId")
     AuctionType auctionType;
 

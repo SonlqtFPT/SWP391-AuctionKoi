@@ -5,14 +5,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
-import swp.koi.model.Account;
-import swp.koi.model.Invoice;
-import swp.koi.model.Lot;
-import swp.koi.model.Member;
+import swp.koi.model.*;
 import swp.koi.model.enums.AccountRoleEnum;
 import swp.koi.model.enums.InvoiceStatusEnums;
+import swp.koi.model.enums.LotRegisterStatusEnum;
 import swp.koi.model.enums.TransactionTypeEnum;
 import swp.koi.repository.InvoiceRepository;
+import swp.koi.repository.LotRegisterRepository;
 import swp.koi.repository.LotRepository;
 import swp.koi.service.accountService.AccountService;
 import swp.koi.service.authService.GetUserInfoByUsingAuth;
@@ -37,12 +36,14 @@ public class InvoiceServiceImpl implements InvoiceService{
     private final LotRepository lotRepository;
     private final MemberService memberService;
     private final AccountService accountService;
+    private final LotRegisterRepository lotRegisterRepository;
 
 
     @Override
     public Invoice createInvoiceForAuctionWinner(int lotId, int memberId) {
         Lot lot = lotRepository.findById(lotId).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
         Member member = memberService.getMemberById(memberId);
+        LotRegister lotRegister = lotRegisterRepository.findByLotAndStatus(lot, LotRegisterStatusEnum.WON);
 
         return Invoice.builder()
                 .invoiceDate(LocalDateTime.now())
@@ -57,6 +58,7 @@ public class InvoiceServiceImpl implements InvoiceService{
                 .priceWithoutShipFee((float) (lot.getCurrentPrice() * 1.1 - lot.getDeposit()))
                 .member(member)
                 .account(member.getAccount())
+                .lotRegister(lotRegister)
                 .build();
     }
 
@@ -103,7 +105,7 @@ public class InvoiceServiceImpl implements InvoiceService{
 
         Member member = getUserInfoByUsingAuth.getMemberFromAuth();
 
-        return invoiceRepository.findAllByStatusAndMember(InvoiceStatusEnums.PENDING,member);
+        return invoiceRepository.findAllByMember(member);
     }
 
     @Override
@@ -174,6 +176,9 @@ public class InvoiceServiceImpl implements InvoiceService{
         invoice.setAccount(account);
         invoice.setStatus(InvoiceStatusEnums.DELIVERY_IN_PROGRESS);
         invoiceRepository.save(invoice);
+
+        LotRegister lotRegister = invoice.getLotRegister();
+        lotRegister.setStatus(LotRegisterStatusEnum.DELIVERY_IN_PROGRESS);
     }
 
     @Override
@@ -206,10 +211,20 @@ public class InvoiceServiceImpl implements InvoiceService{
           InvoiceStatusEnums.CANCELLED
         );
 
+        if(status.equals(InvoiceStatusEnums.DELIVERED)){
+            LotRegister lotRegister = invoice.getLotRegister();
+            lotRegisterRepository.save(lotRegister);
+        }
+
         if(statues.contains(status)){
             invoice.setStatus(status);
             invoiceRepository.save(invoice);
         }else
             throw new KoiException(ResponseCode.FAIL);
+    }
+
+    @Override
+    public List<Invoice> listAllInvoicesForManager(){
+        return invoiceRepository.findAll();
     }
 }

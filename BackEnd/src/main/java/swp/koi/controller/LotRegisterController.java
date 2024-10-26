@@ -81,11 +81,11 @@ public class LotRegisterController {
         }
     }
 
-    @GetMapping("/manager/get-all-transport")
-    public ResponseData<?> getAllTransport(){
-        List<InvoiceResponseDto> response =
-        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
-    }
+//    @GetMapping("/manager/get-all-transport")
+//    public ResponseData<?> getAllTransport(){
+//        List<InvoiceResponseDto> response =
+//        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+//    }
 }
 
 

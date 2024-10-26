@@ -49,7 +49,7 @@ public class KoiFish {
     @JoinColumn(name = "varietyId", nullable = false)
     Variety variety;
 
-    @OneToMany(mappedBy = "koiFish")
+    @OneToMany(mappedBy = "koiFish",fetch = FetchType.LAZY)
     List<Lot> lot;
 
     @OneToMany(mappedBy = "koiFish")
@@ -58,9 +58,6 @@ public class KoiFish {
     @ManyToOne
     @JoinColumn(name = "auctionTypeId")
     AuctionType auctionType;
-
-    @OneToMany(mappedBy = "koiFish")
-    List<Invoice> invoice;
 
     @ManyToOne
     @JoinColumn(name = "accountId")

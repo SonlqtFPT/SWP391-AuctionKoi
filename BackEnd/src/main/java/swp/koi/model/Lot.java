@@ -17,7 +17,13 @@ import java.util.List;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "Lot")
+@Table(name = "Lot", indexes = {
+        @Index(name = "idx_lot_auction_id", columnList = "auctionId"),
+        @Index(name = "idx_lot_starting_time", columnList = "startingTime"),
+        @Index(name = "idx_lot_ending_time", columnList = "endingTime"),
+        @Index(name = "idx_lot_status", columnList = "status"),
+        @Index(name = "idx_lot_current_member_id", columnList = "currentMemberId")
+})
 @AllArgsConstructor
 public class Lot {
 
@@ -52,17 +58,18 @@ public class Lot {
     @ManyToOne
     KoiFish koiFish;
 
-    @OneToMany(mappedBy = "lot")
+    @OneToMany(mappedBy = "lot", fetch = FetchType.LAZY)
     List<LotRegister> lotRegisters;
 
     @OneToMany(mappedBy = "lot",fetch = FetchType.LAZY)
     List<Bid> bids;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auctionId")
+    @JsonBackReference
     Auction auction;
 
-    @OneToMany(mappedBy = "lot")
+    @OneToMany(mappedBy = "lot", fetch = FetchType.LAZY)
     List<Transaction> transactions;
 
     @OneToOne(mappedBy = "lot")

@@ -16,7 +16,13 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "Invoice")
+@Table(name = "Invoice", indexes = {
+        @Index(name = "idx_invoice_member_id", columnList = "member_id"),
+        @Index(name = "idx_invoice_invoiceDate", columnList = "invoiceDate"),
+        @Index(name = "idx_invoice_status", columnList = "status"),
+        @Index(name = "idx_invoice_fishId", columnList = "fishId"),
+        // Add other indexes as needed
+})
 @Builder
 public class Invoice {
 
@@ -39,6 +45,7 @@ public class Invoice {
     @Min(value = 0, message = "distance must be > 0")
     Double kilometers;
 
+    @Column(columnDefinition = "nvarchar(max)")
     String address;
 
 
@@ -70,4 +77,8 @@ public class Invoice {
     @ManyToOne
     @JoinColumn(name = "accountId")
     Account account;
+
+    @OneToOne
+    @JoinColumn(name = "LRID")
+    LotRegister lotRegister;
 }

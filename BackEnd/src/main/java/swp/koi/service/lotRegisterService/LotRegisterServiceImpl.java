@@ -21,7 +21,6 @@ import swp.koi.repository.LotRegisterRepository;
 import swp.koi.service.accountService.AccountService;
 import swp.koi.service.authService.GetUserInfoByUsingAuth;
 import swp.koi.service.lotService.LotService;
-import swp.koi.service.lotService.LotServiceImpl;
 import swp.koi.service.memberService.MemberService;
 import swp.koi.service.memberService.MemberServiceImpl;
 import swp.koi.service.vnPayService.VnpayService;
@@ -85,7 +84,7 @@ public class LotRegisterServiceImpl implements LotRegisterService{
     public List<LotRegisterResponseDTO> listLotRegistersByLotId(int lotId) throws KoiException {
         Lot lot = lotService.findLotById(lotId);
 
-        List<LotRegister> lotRegisters = lotRegisterRepository.findByLot(lot).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
+        List<LotRegister> lotRegisters = lotRegisterRepository.findAllByLot(lot).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
 
         return lotRegisters
                 .stream()
@@ -95,7 +94,7 @@ public class LotRegisterServiceImpl implements LotRegisterService{
     private boolean validateMemberRegistration(Integer lotId, Member member){
 
         Lot lot = lotService.findLotById(lotId);
-        List<LotRegister> lotRegisters = lotRegisterRepository.findByLot(lot).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
+        List<LotRegister> lotRegisters = lotRegisterRepository.findAllByLot(lot).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
 
         return lotRegisters.stream().anyMatch(lr -> lr.getMember().getMemberId().equals(member.getMemberId()));
 
@@ -106,7 +105,7 @@ public class LotRegisterServiceImpl implements LotRegisterService{
     public LotRegister getLotWinner(Integer lotId) {
         Lot lot = lotService.findLotById(lotId);
 
-        List<LotRegister> lotRegisters = lotRegisterRepository.findByLot(lot).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
+        List<LotRegister> lotRegisters = lotRegisterRepository.findAllByLot(lot).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
 
         for(LotRegister lotRegis : lotRegisters){
             if(lotRegis.getStatus().equals(LotRegisterStatusEnum.WON)){
@@ -123,5 +122,10 @@ public class LotRegisterServiceImpl implements LotRegisterService{
         Member member = memberServiceImpl.getMemberByAccount(account);
 
         return lotRegisterRepository.findLotRegisterByLotAndMember(lot, member) != null;
+    }
+
+    @Override
+    public List<LotRegister> findAllLotRegisWithStatus(LotRegisterStatusEnum status){
+        return lotRegisterRepository.findAllByStatus(status);
     }
 }

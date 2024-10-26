@@ -2,10 +2,7 @@ package swp.koi.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import swp.koi.model.Account;
-import swp.koi.model.Invoice;
-import swp.koi.model.Lot;
-import swp.koi.model.Member;
+import swp.koi.model.*;
 import swp.koi.model.enums.InvoiceStatusEnums;
 
 import java.time.LocalDateTime;
@@ -23,4 +20,8 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
     List<Invoice> findAllByAccountAndStatus(Account account, InvoiceStatusEnums status);
 
     List<Invoice> findAllByStatusIn(List<InvoiceStatusEnums> statues);
+
+    List<Invoice> findAllByMember(Member member);
+
+    List<Invoice> findAllByLotRegisterIn(List<LotRegister> lotRegisters);
 }
