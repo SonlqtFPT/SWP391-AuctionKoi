@@ -35,6 +35,10 @@ function Auction() {
     navigate("/auctioned");
   };
 
+  const handleUpcommingAuction = () => {
+    navigate("/upcomming");
+  };
+
   return (
     <div className="flex flex-col min-h-screen min-w-max">
       <Header />
@@ -52,12 +56,21 @@ function Auction() {
           </div>
         )}
         {/* Adjusted button styling for placement at the bottom */}
-        <div className="absolute bottom-10">
+        <div className="absolute bottom-10 flex justify-center items-center gap-5">
           <button
             onClick={handlePastAuction}
-            className="bg-yellow-400 rounded-3xl h-[60px] w-[220px] flex justify-center items-center hover:bg-yellow-500 transition-colors duration-300 shadow-lg transform hover:scale-105"
+            className="bg-yellow-400 rounded-3xl h-[60px] w-[250px] flex justify-center items-center hover:bg-yellow-500 transition-colors duration-300 shadow-lg transform hover:scale-105"
           >
             <h1 className="text-black font-bold text-lg">View Past Auctions</h1>
+          </button>
+
+          <button
+            onClick={handleUpcommingAuction}
+            className="bg-yellow-400 rounded-3xl h-[60px] w-[250px] flex justify-center items-center hover:bg-yellow-500 transition-colors duration-300 shadow-lg transform hover:scale-105"
+          >
+            <h1 className="text-black font-bold text-lg">
+              View Upcomming Auctions
+            </h1>
           </button>
         </div>
       </div>

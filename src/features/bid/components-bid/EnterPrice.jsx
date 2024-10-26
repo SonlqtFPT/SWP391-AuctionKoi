@@ -148,7 +148,7 @@ function EnterPrice({
         )}
 
         {/* Deposit Button */}
-        {!registed && remainingTime > 0 && (
+        {!registed && (remainingTime > 0 || remainingTime == -2) && (
           <div className=" w-full ">
             <button
               className="bg-blue-400 hover:bg-blue-300 rounded-2xl h-[40px] w-full px-5 font-bold text-black hover:border-2 hover:border-[#bcab6f]"

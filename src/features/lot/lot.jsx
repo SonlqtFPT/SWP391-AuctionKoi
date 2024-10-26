@@ -11,6 +11,7 @@ import { useNavigate, useParams } from "react-router-dom";
 function Lot() {
   const { auctionId } = useParams();
   const [lots, setLots] = useState([]);
+  const [startTime, setStartTime] = useState();
   const [endTime, setEndTime] = useState();
   const [remainingTime, setRemainingTime] = useState();
   const [isLoading, setIsLoading] = useState(true); // Add loading state
@@ -37,6 +38,7 @@ function Lot() {
         imageUrl: lot.koiFish.imageUrl,
       }));
       setLots(listLots);
+      setStartTime(response.data.data.startTime);
       setEndTime(response.data.data.endTime);
       setIsLoading(false); // Set loading state to false once data is fetched
     } catch (error) {
@@ -51,12 +53,15 @@ function Lot() {
 
   useEffect(() => {
     if (lots.length) {
+      const startingTime = new Date(startTime).getTime();
       const endingTime = new Date(endTime).getTime();
       const interval = setInterval(() => {
         const now = Date.now();
         const timeLeft = endingTime - now;
-
-        if (timeLeft <= 0) {
+        if (startingTime - now > 0) {
+          clearInterval(interval);
+          setRemainingTime(-2);
+        } else if (timeLeft <= 0) {
           clearInterval(interval);
           setRemainingTime(-1);
         } else {
@@ -84,7 +89,11 @@ function Lot() {
           <div className="mt-[50px] bg-hero-pattern bg-cover relative">
             <div className="absolute bg-black bg-opacity-70 inset-0"></div>
             <div className="relative">
-              <Time remainingTime={remainingTime} auctionId={auctionId} />
+              <Time
+                remainingTime={remainingTime}
+                auctionId={auctionId}
+                startTime={startTime}
+              />
             </div>
             <div className="mb-10 z-20 relative p-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
