@@ -72,7 +72,7 @@ const UserProfile = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-auto mt-40">
+    <div className="flex justify-center items-center h-auto mt-20">
       <Card
         title={
           <Title level={3} style={{ textAlign: "center", color: "#1890ff" }}>

@@ -276,7 +276,7 @@ const ManageRequest = () => {
   };
 
   return (
-    <div className="mt-20">
+    <div>
       {loading ? (
         <Spin size="large" />
       ) : (

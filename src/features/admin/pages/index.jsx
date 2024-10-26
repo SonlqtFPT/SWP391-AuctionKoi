@@ -9,6 +9,7 @@ import CreateStaff from "../components/CreateStaff.jsx";
 import UserProfile from "../components/UserProfile.jsx";
 import ManageTransport from "../components/ManageTransport.jsx";
 import { useState } from "react";
+import ManagerDashBoard from "../components/ManagerDashBoard.jsx";
 
 const AdminPage = () => {
   const [activeComponent, setActiveComponent] = useState("Dashboard");
@@ -31,7 +32,7 @@ const AdminPage = () => {
       case "Manage Transport":
         return <ManageTransport />;
       default:
-        return <div>Welcome to the Admin Dashboard!</div>; // Default content
+        return <ManagerDashBoard />; // Default content
     }
   };
 
@@ -40,7 +41,7 @@ const AdminPage = () => {
       <Header />
       <div className="flex flex-grow">
         <SidebarAdmin setActiveComponent={setActiveComponent} />
-        <div className="flex-grow p-4">
+        <div className="flex-grow p-4 mt-20">
           {renderComponent()} {/* Render the appropriate component */}
         </div>
       </div>
