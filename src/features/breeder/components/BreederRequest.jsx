@@ -14,6 +14,7 @@ import RequestDetails from "../components/RequestDetails";
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
 import { useAuth } from "../../protectedRoutes/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -27,6 +28,7 @@ const BreederRequest = () => {
   const [search, setSearch] = useState("");
   const [searchField, setSearchField] = useState("requestId");
   const [dateRange, setDateRange] = useState(null);
+  const navigate = useNavigate(); // Khởi tạo navigate
 
   useEffect(() => {
     fetchRequests();
@@ -101,9 +103,7 @@ const BreederRequest = () => {
   };
 
   const handleViewDetails = (request) => {
-    setSelectedRequest(request); // This now contains all details
-    setViewingDetails(true); // Set state to indicate we're viewing details
-    setRequests([]); // Clear the request list when viewing details
+    navigate(`/breeder/viewdetail/${request.requestId}`); // Chuyển đến trang viewdetail và truyền requestId
   };
 
   // New function to handle going back to the request list

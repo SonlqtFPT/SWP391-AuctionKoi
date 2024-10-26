@@ -7,7 +7,7 @@ import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import api from "../../config/axios";
 import { Button } from "antd";
-import Information from "../Upcomming-auction/component-upcomming/information";
+import Information from "./component-upcomming/information";
 
 function Upcomming() {
   const [upcomming, setUpcomming] = useState([]);
@@ -23,6 +23,7 @@ function Upcomming() {
         Authorization: `Bearer ${token}`,
       },
     });
+    console.log("API: ", response.data.data);
     const auction = response.data.data.map((auction) => ({
       auctionId: auction.auctionId,
       startTime: auction.startTime,

@@ -18,6 +18,8 @@ import BreederProfilePage from "./features/breeder/pages/BreederProfilePage.jsx"
 import BreederProfileDetails from "./features/breeder/components/BreederProfileDetails.jsx";
 import BreederRequest from "./features/breeder/components/BreederRequest.jsx";
 import Upcommming from "./features/Upcomming-auction/Upcomming-auction.jsx";
+import ViewDetail from "./features/breeder/components/RequestDetails.jsx";
+import UpdateRequest from "./features/breeder/components/UpdatebreederRequest.jsx";
 
 export default function App() {
   return (
@@ -60,6 +62,22 @@ export default function App() {
             element={
               <ProtectedRoute allowedRoles={["BREEDER"]}>
                 <AddRequestPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/breeder/viewdetail/:requestId"
+            element={
+              <ProtectedRoute allowedRoles={["BREEDER"]}>
+                <ViewDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/breeder/update-request/:requestId"
+            element={
+              <ProtectedRoute allowedRoles={["BREEDER"]}>
+                <UpdateRequest />
               </ProtectedRoute>
             }
           />
