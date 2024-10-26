@@ -67,44 +67,43 @@ public class BidServiceImpl implements BidService {
         Bid bid = createBid(bidRequestDto, member, lot);
         bidRepository.save(bid);
 
-
         //tech-debt here just check if auto-bid exist and handle exception based on the case
-        if(checkIfAutoBidderExistAndHaveHigherPrice(lot, bidRequestDto.getPrice())){
+//        if(checkIfAutoBidderExistAndHaveHigherPrice(lot, bidRequestDto.getPrice())){
+//
+//            Optional<AutoBid> autoBidEntity = Optional.ofNullable(getAutoBidEntity(lot));
+//
+//            Member memberOfAutoBid = memberService.getMemberById(autoBidEntity.get().getMemberId());
+//
+//            float updatedPrice = autoBidderCanAffordNewPrice(lot, bidRequestDto.getPrice())
+//                    ? bidRequestDto.getPrice() + lot.getStartingPrice() * 0.1f
+//                    : autoBidEntity.get().getAmount();
+//
+//            Bid autoBid = Bid.builder()
+//                    .bidAmount(updatedPrice)
+//                    .member(memberOfAutoBid)
+//                    .lot(lot)
+//                    .build();
+//
+//            bidRepository.save(autoBid);
+//            lot = updateLotWithSpecialType(updatedPrice, lot, memberOfAutoBid);
+//
+//        } else if (checkIfAutoBidderExistAndHaveLowerPrice(lot, bidRequestDto.getPrice())) {
+//            Optional<AutoBid> autoBidEntity = Optional.ofNullable(getAutoBidEntity(lot));
+//
+//            String subject = "\uD83D\uDD34 Outbid. Raise your bid of "
+//                    + autoBidEntity.get().getAmount()
+//                    + " for lot with id " + lot.getLotId();
+//
+//            emailService.sendEmail("mentionable9999@gmail.com",subject,"idk bro");
+//            redisServiceImpl.deleteData("Auto_bid_"+lot.getLotId().toString());
+//            lot = updateLotWithSpecialType(bidRequestDto.getPrice(), lot, member);
+//
+//        } else {
+//            lot = updateLotWithSpecialType(bidRequestDto.getPrice(), lot, member);
+//        }
 
-            Optional<AutoBid> autoBidEntity = Optional.ofNullable(getAutoBidEntity(lot));
-
-            Member memberOfAutoBid = memberService.getMemberById(autoBidEntity.get().getMemberId());
-
-            float updatedPrice = autoBidderCanAffordNewPrice(lot, bidRequestDto.getPrice())
-                    ? bidRequestDto.getPrice() + lot.getStartingPrice() * 0.1f
-                    : autoBidEntity.get().getAmount();
-
-            Bid autoBid = Bid.builder()
-                    .bidAmount(updatedPrice)
-                    .member(memberOfAutoBid)
-                    .lot(lot)
-                    .build();
-
-            bidRepository.save(autoBid);
-            lot = updateLotWithSpecialType(updatedPrice, lot, memberOfAutoBid);
-
-        } else if (checkIfAutoBidderExistAndHaveLowerPrice(lot, bidRequestDto.getPrice())) {
-            Optional<AutoBid> autoBidEntity = Optional.ofNullable(getAutoBidEntity(lot));
-
-            String subject = "\uD83D\uDD34 Outbid. Raise your bid of "
-                    + autoBidEntity.get().getAmount()
-                    + " for lot with id " + lot.getLotId();
-
-            emailService.sendEmail("mentionable9999@gmail.com",subject,"idk bro");
-            redisServiceImpl.deleteData("Auto_bid_"+lot.getLotId().toString());
-            lot = updateLotWithSpecialType(bidRequestDto.getPrice(), lot, member);
-
-        } else {
-            lot = updateLotWithSpecialType(bidRequestDto.getPrice(), lot, member);
-        }
-
+        lot = updateLotWithSpecialType(bidRequestDto.getPrice(), lot, member);
         updateDataOnClient(lot.getLotId(),bidRequestDto.getPrice(),account.getFirstName());
-
 
         lotRepository.save(lot);
     }

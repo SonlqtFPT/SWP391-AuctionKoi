@@ -16,7 +16,13 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "Invoice")
+@Table(name = "Invoice", indexes = {
+        @Index(name = "idx_invoice_member_id", columnList = "member_id"),
+        @Index(name = "idx_invoice_invoiceDate", columnList = "invoiceDate"),
+        @Index(name = "idx_invoice_status", columnList = "status"),
+        @Index(name = "idx_invoice_fishId", columnList = "fishId"),
+        // Add other indexes as needed
+})
 @Builder
 public class Invoice {
 

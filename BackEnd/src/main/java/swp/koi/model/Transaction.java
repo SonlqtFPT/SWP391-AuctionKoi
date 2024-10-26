@@ -11,7 +11,13 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@Table(name = "[Transaction]")
+@Table(name = "[Transaction]", indexes = {
+        @Index(name = "idx_transaction_lot_id", columnList = "lot_id"),
+        @Index(name = "idx_transaction_member_id", columnList = "member_id"),
+        @Index(name = "idx_transaction_breeder_id", columnList = "breeder_id"),
+        @Index(name = "idx_transaction_date", columnList = "createAt"),
+        @Index(name = "idx_transaction_type", columnList = "transactionType")
+})
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -26,12 +32,12 @@ public class Transaction {
     private TransactionTypeEnum transactionType;
 
 
-    @Column(name = "createAt", updatable = false)
-    private LocalDateTime createAt;
+    @Column(name = "transactionDate", updatable = false)
+    private LocalDateTime transactionDate;
 
     @PrePersist
     protected void onCreate() {
-        createAt = LocalDateTime.now();
+        transactionDate = LocalDateTime.now();
     }
 
     @Column(nullable = false)
@@ -40,15 +46,15 @@ public class Transaction {
     @Column(nullable = false)
     private String paymentStatus;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lot_id")
     private Lot lot;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "breeder_id")
     private KoiBreeder breeder;
 

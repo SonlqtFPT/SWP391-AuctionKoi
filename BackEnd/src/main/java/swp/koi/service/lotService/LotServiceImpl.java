@@ -51,7 +51,7 @@ public class LotServiceImpl implements LotService {
 
     @Override
     @Async
-    @Scheduled(fixedRate = 1000 * 20) // Run every 20 seconds
+    @Scheduled(fixedRate = 1000 * 60) // Run every 60 seconds
     public void startLotBy() {
         LocalDateTime now = LocalDateTime.now();
 
@@ -64,13 +64,20 @@ public class LotServiceImpl implements LotService {
         List<Lot> descendingLots = lotRepository.findAllByStatusAndAuctionAuctionTypeAuctionTypeName(LotStatusEnum.AUCTIONING, AuctionTypeNameEnum.DESCENDING_BID);
         descendingLots.forEach(this::decreasePrice);
 
+        System.out.println("--------------------------------------------Scanning--------------------------------------------");
     }
 
 
 
     private void startLot(Lot lot) {
         updateKoiFishStatus(lot.getKoiFish(), KoiFishStatusEnum.AUCTIONING);
-        updateAuctionStatus(lot.getAuction(), AuctionStatusEnum.AUCTIONING);
+
+        List<Lot> list = new ArrayList<>();
+        list.add(lot);
+
+        Auction auction = auctionRepository.findByLots(list);
+
+        updateAuctionStatus(auction, AuctionStatusEnum.AUCTIONING);
         lot.setStatus(LotStatusEnum.AUCTIONING);
         //setup a socket event for real-time communicate
         createSocketForLot(socketServer, lot);
@@ -208,7 +215,12 @@ public class LotServiceImpl implements LotService {
     }
 
     private Bid chooseLotWinner(Lot lot, List<Bid> bidList) {
-        return switch (lot.getAuction().getAuctionType().getAuctionTypeName()) {
+
+        List<Lot> lotList = new ArrayList<>();
+        lotList.add(lot);
+        Auction auction = auctionRepository.findByLots(lotList);
+
+        return switch (auction.getAuctionType().getAuctionTypeName()) {
             case FIXED_PRICE_SALE -> getFixedPriceWinner(bidList);
             case SEALED_BID, ASCENDING_BID -> getHighestBid(bidList);
             case DESCENDING_BID -> getFirstBid(bidList);
@@ -255,8 +267,9 @@ public class LotServiceImpl implements LotService {
 
         List<LotRegister> lotRegisters = lotRegisterRepository.findAllByMember(member);
         List<Lot> lots = lotRegisters.stream()
-                .map(lot -> lot.getLot())
+                .map(LotRegister::getLot)
                 .collect(Collectors.toList());
+
         return lots;
     }
 

@@ -49,7 +49,7 @@ public class KoiFish {
     @JoinColumn(name = "varietyId", nullable = false)
     Variety variety;
 
-    @OneToMany(mappedBy = "koiFish")
+    @OneToMany(mappedBy = "koiFish",fetch = FetchType.LAZY)
     List<Lot> lot;
 
     @OneToMany(mappedBy = "koiFish")
