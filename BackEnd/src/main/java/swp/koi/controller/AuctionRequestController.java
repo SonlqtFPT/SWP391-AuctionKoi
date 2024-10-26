@@ -86,17 +86,6 @@ public class AuctionRequestController {
         }
     }
 
-    @Operation(summary = "Send negotiation to manager")
-    @PostMapping("/breeder/request/negotiation/send-negotiation/{requestId}")
-    public ResponseData<?> sendReNegotiation(@PathVariable Integer requestId, @RequestBody KoiFishNegotiationDTO koiFishNegotiationDTO){
-        try{
-            auctionRequestService.sendReNegotiation(requestId, koiFishNegotiationDTO);
-            return new ResponseData<>(ResponseCode.SUCCESS);
-        }catch (KoiException e){
-            return new ResponseData<>(e.getResponseCode());
-        }
-    }
-
     @Operation(summary = "Retrieve all pending request")
     @GetMapping("/breeder/request/get-request/pending/{accountId}")
     public ResponseData<?> getAllPendingRequest(@PathVariable Integer accountId){
@@ -180,10 +169,10 @@ public class AuctionRequestController {
     }
 
     @Operation(summary = "Send negotiation to breeder")
-    @PostMapping("/manager/request/negotiation/{requestId}")
-    public ResponseData<?> managerNegotiation(@PathVariable Integer requestId, @RequestBody AuctionRequestNegotiationManagerDTO request){
+    @PostMapping("/request/negotiation/{requestId}")
+    public ResponseData<?> managerNegotiation(@PathVariable Integer requestId, @RequestBody AuctionRequestNegotiationDTO request){
         try{
-            auctionRequestService.managerNegotiation(requestId, request);
+            auctionRequestService.negotiation(requestId, request);
             return new ResponseData<>(ResponseCode.SUCCESS);
         }catch (KoiException e){
             return new ResponseData<>(e.getResponseCode());

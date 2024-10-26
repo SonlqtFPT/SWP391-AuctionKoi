@@ -26,11 +26,9 @@ public interface AuctionRequestService {
 
     void changeStatus(Integer requestId, UpdateStatusDTO request);
 
-    void managerNegotiation(Integer requestId, AuctionRequestNegotiationManagerDTO request);
+    void negotiation(Integer requestId, AuctionRequestNegotiationDTO request);
 
     void acceptNegotiation(Integer requestId);
-
-    void sendReNegotiation(Integer requestId, KoiFishNegotiationDTO koiFishNegotiationDTO);
 
     void managerAcceptNegotiation(Integer requestId);
 

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
         @Index(name = "idx_transaction_lot_id", columnList = "lot_id"),
         @Index(name = "idx_transaction_member_id", columnList = "member_id"),
         @Index(name = "idx_transaction_breeder_id", columnList = "breeder_id"),
-        @Index(name = "idx_transaction_date", columnList = "createAt"),
+        @Index(name = "idx_transaction_date", columnList = "transactionDate"),
         @Index(name = "idx_transaction_type", columnList = "transactionType")
 })
 @AllArgsConstructor
