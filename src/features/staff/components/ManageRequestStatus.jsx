@@ -170,7 +170,7 @@ const ManageRequestStatus = ({ onGoBack }) => {
   };
 
   return (
-    <div className="mt-20">
+    <div>
       {showList ? (
         <>
           <h1 className="text-left font-bold text-2xl my-5">Auction Request Manager</h1>

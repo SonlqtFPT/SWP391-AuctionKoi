@@ -59,7 +59,7 @@ const StaffProfile = () => {
     };
 
     return (
-        <div className="flex justify-center items-center h-auto pt-20">
+        <div className="flex justify-center items-center h-auto ">
             <Card
                 title={
                     <Title level={3} style={{ textAlign: 'center', color: '#1890ff' }}>

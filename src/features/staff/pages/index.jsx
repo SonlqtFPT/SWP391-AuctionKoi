@@ -19,7 +19,7 @@ const StaffPage = () => {
       case "Manage Transport":
         return <ManageTransport />;
       default:
-        return <div className="mt-28">Welcome to the Staff Dashboard!</div>; // Default content
+        return <div>Welcome to the Staff Dashboard!</div>; // Default content
     }
   };
 
@@ -28,7 +28,7 @@ const StaffPage = () => {
       <Header />
       <div className="flex flex-grow w-full">
         <SidebarStaff setActiveComponent={setActiveComponent} />
-        <div className="flex-grow p-4 w-full">
+        <div className="flex-grow p-4 w-full mt-20">
           {renderComponent()} {/* Render the appropriate component */}
         </div>
       </div>
