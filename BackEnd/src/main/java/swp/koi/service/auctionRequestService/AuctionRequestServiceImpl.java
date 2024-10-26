@@ -71,7 +71,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
 
             // Set the retrieved KoiBreeder, auction request status, and KoiFish in the AuctionRequest object
             auctionRequest.setKoiBreeder(koiBreeder);
-            auctionRequest.setStatus(AuctionRequestStatusEnum.PENDING);
+            auctionRequest.setStatus(AuctionRequestStatusEnum.REQUESTING);
             auctionRequest.setKoiFish(koiFish);
 
             // Save the AuctionRequest to the repository and return the saved instance
@@ -102,7 +102,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
             AuctionRequest request = auctionRequestRepository.findByRequestId(requestId)
                     .orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
 
-            if(request.getStatus().equals(AuctionRequestStatusEnum.INSPECTION_IN_PROGRESS))
+            if(request.getStatus().equals(AuctionRequestStatusEnum.ASSIGNED))
                 throw new KoiException(ResponseCode.ALREADY_HAVE_STAFF);
 
             Account account = accountService.findById(accountId);
@@ -110,7 +110,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
                 throw new KoiException(ResponseCode.MUST_BE_STAFF);
 
             request.setAccount(account);
-            request.setStatus(AuctionRequestStatusEnum.INSPECTION_IN_PROGRESS);
+            request.setStatus(AuctionRequestStatusEnum.ASSIGNED);
             auctionRequestRepository.save(request);
         }catch (KoiException e){
             throw e;
@@ -211,12 +211,12 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     public void managerNegotiation(Integer requestId, AuctionRequestNegotiationManagerDTO request) throws KoiException{
             AuctionRequest auctionRequest = auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
 
-            if(auctionRequest.getStatus().equals(AuctionRequestStatusEnum.INSPECTION_PASSED) ||
-            auctionRequest.getStatus().equals(AuctionRequestStatusEnum.PENDING_MANAGER_OFFER)){
+            if(auctionRequest.getStatus().equals(AuctionRequestStatusEnum.CONFIRMING) ||
+            auctionRequest.getStatus().equals(AuctionRequestStatusEnum.MANAGER_OFFERING)){
                 AuctionType auctionType = auctionTypeService.findByAuctionTypeName(request.getAuctionTypeName());
                 auctionRequest.setOfferPrice(request.getOfferPrice());
                 auctionRequest.setAuctionType(auctionType);
-                auctionRequest.setStatus(AuctionRequestStatusEnum.PENDING_BREEDER_OFFER);
+                auctionRequest.setStatus(AuctionRequestStatusEnum.BREEDER_OFFERING);
                 auctionRequestRepository.save(auctionRequest);
             }else{
                 throw new KoiException(ResponseCode.AUCTION_REQUEST_VALID_STATUS);
@@ -226,7 +226,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     @Override
     public void acceptNegotiation(Integer requestId) throws KoiException{
         AuctionRequest auctionRequest = auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
-        if(auctionRequest.getStatus().equals(AuctionRequestStatusEnum.PENDING_BREEDER_OFFER) && auctionRequest.getKoiFish().getStatus().equals(KoiFishStatusEnum.PENDING)){
+        if(auctionRequest.getStatus().equals(AuctionRequestStatusEnum.BREEDER_OFFERING) && auctionRequest.getKoiFish().getStatus().equals(KoiFishStatusEnum.PENDING)){
             KoiFish koiFish = auctionRequest.getKoiFish();
             AuctionType auctionType = auctionRequest.getAuctionType();
             koiFish.setPrice(auctionRequest.getOfferPrice());
@@ -234,7 +234,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
             koiFish.setStatus(KoiFishStatusEnum.WAITING);
             koiFishService.saveFish(koiFish);
 
-            auctionRequest.setStatus(AuctionRequestStatusEnum.APPROVE);
+            auctionRequest.setStatus(AuctionRequestStatusEnum.REGISTERED);
             auctionRequestRepository.save(auctionRequest);
         }else{
             throw new KoiException(ResponseCode.AUCTION_REQUEST_VALID_STATUS);
@@ -245,13 +245,13 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     public void sendReNegotiation(Integer requestId, KoiFishNegotiationDTO koiFishNegotiationDTO) throws KoiException {
         AuctionRequest auctionRequest = auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
 
-        if(auctionRequest.getStatus().equals(AuctionRequestStatusEnum.PENDING_BREEDER_OFFER) && auctionRequest.getKoiFish().getStatus().equals(KoiFishStatusEnum.PENDING)) {
+        if(auctionRequest.getStatus().equals(AuctionRequestStatusEnum.BREEDER_OFFERING) && auctionRequest.getKoiFish().getStatus().equals(KoiFishStatusEnum.PENDING)) {
             KoiFish koiFish = auctionRequest.getKoiFish();
             AuctionType auctionType = auctionTypeService.findByAuctionTypeName(koiFishNegotiationDTO.getAuctionTypeName());
             koiFish.setPrice(koiFishNegotiationDTO.getPrice());
             koiFish.setAuctionType(auctionType);
             koiFishService.saveFish(koiFish);
-            auctionRequest.setStatus(AuctionRequestStatusEnum.PENDING_MANAGER_OFFER);
+            auctionRequest.setStatus(AuctionRequestStatusEnum.MANAGER_OFFERING);
             auctionRequestRepository.save(auctionRequest);
         }else {
             throw new KoiException(ResponseCode.AUCTION_REQUEST_VALID_STATUS);
@@ -261,11 +261,11 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     @Override
     public void managerAcceptNegotiation(Integer requestId) throws KoiException{
         AuctionRequest auctionRequest = auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
-        if(auctionRequest.getStatus().equals(AuctionRequestStatusEnum.PENDING_MANAGER_OFFER) && auctionRequest.getKoiFish().getStatus().equals(KoiFishStatusEnum.PENDING)){
+        if(auctionRequest.getStatus().equals(AuctionRequestStatusEnum.MANAGER_OFFERING) && auctionRequest.getKoiFish().getStatus().equals(KoiFishStatusEnum.PENDING)){
             KoiFish koiFish = auctionRequest.getKoiFish();
             koiFish.setStatus(KoiFishStatusEnum.WAITING);
             koiFishService.saveFish(koiFish);
-            auctionRequest.setStatus(AuctionRequestStatusEnum.APPROVE);
+            auctionRequest.setStatus(AuctionRequestStatusEnum.REGISTERED);
             auctionRequestRepository.save(auctionRequest);
         }else{
             throw  new KoiException(ResponseCode.AUCTION_REQUEST_VALID_STATUS);
@@ -291,11 +291,11 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     @Override
     public void managerAcceptRequest(Integer requestId) {
         AuctionRequest auctionRequest = auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
-        if(auctionRequest.getStatus().equals(AuctionRequestStatusEnum.INSPECTION_PASSED)){
+        if(auctionRequest.getStatus().equals(AuctionRequestStatusEnum.CONFIRMING)){
             KoiFish koiFish = auctionRequest.getKoiFish();
             koiFish.setStatus(KoiFishStatusEnum.WAITING);
             koiFishService.saveFish(koiFish);
-            auctionRequest.setStatus(AuctionRequestStatusEnum.APPROVE);
+            auctionRequest.setStatus(AuctionRequestStatusEnum.REGISTERED);
             auctionRequestRepository.save(auctionRequest);
         }else {
             throw new KoiException(ResponseCode.FAIL);
@@ -309,19 +309,19 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     }
 
     @Override
-    public List<AuctionRequest> getAllPendingRequest(Integer accountId) {
+    public List<AuctionRequest> getAllRequestingRequest(Integer accountId) {
         Account account = accountService.findById(accountId);
         if(account != null && account.getRole().equals(AccountRoleEnum.BREEDER))
-            return auctionRequestRepository.findAllByStatusAndBreederId(AuctionRequestStatusEnum.PENDING, account.getKoiBreeder().getBreederId());
+            return auctionRequestRepository.findAllByStatusAndBreederId(AuctionRequestStatusEnum.REQUESTING, account.getKoiBreeder().getBreederId());
         else
             throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
     }
 
     @Override
-    public List<AuctionRequest> getAllInspectionPendingRequest(Integer accountId) {
+    public List<AuctionRequest> getAllAssignedRequest(Integer accountId) {
         Account account = accountService.findById(accountId);
         if(account != null && account.getRole().equals(AccountRoleEnum.BREEDER))
-            return auctionRequestRepository.findAllByStatusAndBreederId(AuctionRequestStatusEnum.INSPECTION_IN_PROGRESS, account.getKoiBreeder().getBreederId());
+            return auctionRequestRepository.findAllByStatusAndBreederId(AuctionRequestStatusEnum.ASSIGNED, account.getKoiBreeder().getBreederId());
         else
             throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
     }
@@ -330,16 +330,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     public List<AuctionRequest> getAllInspectionPassedRequest(Integer accountId) {
         Account account = accountService.findById(accountId);
         if(account != null && account.getRole().equals(AccountRoleEnum.BREEDER))
-            return auctionRequestRepository.findAllByStatusAndBreederId(AuctionRequestStatusEnum.INSPECTION_PASSED, account.getKoiBreeder().getBreederId());
-        else
-            throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
-    }
-
-    @Override
-    public List<AuctionRequest> getAllInspectionFailedRequest(Integer accountId) {
-        Account account = accountService.findById(accountId);
-        if(account != null && account.getRole().equals(AccountRoleEnum.BREEDER))
-            return auctionRequestRepository.findAllByStatusAndBreederId(AuctionRequestStatusEnum.INSPECTION_FAILED, account.getKoiBreeder().getBreederId());
+            return auctionRequestRepository.findAllByStatusAndBreederId(AuctionRequestStatusEnum.CONFIRMING, account.getKoiBreeder().getBreederId());
         else
             throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
     }
@@ -350,17 +341,17 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
         if(account == null || !account.getRole().equals(AccountRoleEnum.BREEDER))
             throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
         List<AuctionRequestStatusEnum> statues = Arrays.asList(
-                AuctionRequestStatusEnum.PENDING_MANAGER_OFFER,
-                AuctionRequestStatusEnum.PENDING_BREEDER_OFFER
+                AuctionRequestStatusEnum.MANAGER_OFFERING,
+                AuctionRequestStatusEnum.BREEDER_OFFERING
         );
         return auctionRequestRepository.findAllByStatusInAndBreederId(statues, account.getKoiBreeder().getBreederId());
     }
 
     @Override
-    public List<AuctionRequest> getAllApprovedRequest(Integer accountId) {
+    public List<AuctionRequest> getAllRegisteredRequest(Integer accountId) {
         Account account = accountService.findById(accountId);
         if(account != null && account.getRole().equals(AccountRoleEnum.BREEDER))
-            return auctionRequestRepository.findAllByStatusAndBreederId(AuctionRequestStatusEnum.APPROVE, account.getKoiBreeder().getBreederId());
+            return auctionRequestRepository.findAllByStatusAndBreederId(AuctionRequestStatusEnum.REGISTERED, account.getKoiBreeder().getBreederId());
         else
             throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
     }

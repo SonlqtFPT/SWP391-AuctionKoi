@@ -40,17 +40,14 @@ public interface AuctionRequestService {
 
     AuctionRequest getRequestDetail(Integer requestId);
 
-    List<AuctionRequest> getAllPendingRequest(Integer accountId);
+    List<AuctionRequest> getAllRequestingRequest(Integer accountId);
 
-    List<AuctionRequest> getAllInspectionPendingRequest(Integer accountId);
+    List<AuctionRequest> getAllAssignedRequest(Integer accountId);
 
-    List<AuctionRequest> getAllInspectionPassedRequest(Integer accountId);
-
-    List<AuctionRequest> getAllInspectionFailedRequest(Integer accountId);
-
+    List<AuctionRequest> getAllInspectionPassedRequest(Integer accountId);;
     List<AuctionRequest> getAllNegotiatingRequest(Integer accountId);
 
-    List<AuctionRequest> getAllApprovedRequest(Integer accountId);
+    List<AuctionRequest> getAllRegisteredRequest(Integer accountId);
 
     List<AuctionRequest> getAllRejectedRequest(Integer accountId);
 
