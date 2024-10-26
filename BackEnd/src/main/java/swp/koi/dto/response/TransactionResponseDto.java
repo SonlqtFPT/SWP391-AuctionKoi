@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class TransactionResponseDto {
 
     Integer transactionId;
-    LocalDateTime createAt;
+    LocalDateTime transactionDate;
     TransactionTypeEnum transactionType;
     float amount;
     String paymentStatus;

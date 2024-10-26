@@ -9,6 +9,6 @@ public enum AuctionRequestStatusEnum {
     PENDING_BREEDER_OFFER,
     APPROVE,
     REJECT,
-    CANCELLED,
+    CANCELED,
     WAITING_FOR_PAYMENT
 }
