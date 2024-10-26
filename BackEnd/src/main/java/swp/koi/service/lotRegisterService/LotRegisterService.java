@@ -21,5 +21,5 @@ public interface LotRegisterService {
 
     boolean isRegistered(Integer lotId, Integer accountId);
 
-    List<LotRegister> findAllLotRegisWithStatus(LotRegisterStatusEnum status);
+    List<LotRegisterResponseDTO> findAllLotRegisWithStatus(LotRegisterStatusEnum status);
 }
