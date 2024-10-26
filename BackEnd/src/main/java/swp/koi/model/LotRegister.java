@@ -33,8 +33,7 @@ public class LotRegister {
     @JoinColumn(name = "memberId")
     Member member;
 
-
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lotId")
     Lot lot;
 

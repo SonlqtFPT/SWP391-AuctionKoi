@@ -81,11 +81,11 @@ public class LotRegisterController {
         }
     }
 
-//    @GetMapping("/manager/get-all-transport")
-//    public ResponseData<?> getAllTransport(){
-//        List<InvoiceResponseDto> response =
-//        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
-//    }
+    @GetMapping("/lot-register/get-all-deposited-lot-for-member")
+    public ResponseData<?> getAllDepositedLotForMember(@RequestParam Integer accountId){
+        List<LotRegisterForMemberResponseDto> response = lotRegisterEntityToDtoConverter.convertLotRegisterListForMember(lotRegisterService.getAllDepositedLotForMember(accountId));
+        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+    }
 }
 
 

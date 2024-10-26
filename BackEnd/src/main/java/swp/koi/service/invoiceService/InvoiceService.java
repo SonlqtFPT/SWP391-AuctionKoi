@@ -30,4 +30,6 @@ public interface InvoiceService {
     void updateInvoiceStatus(Integer invoiceId, InvoiceStatusEnums status);
 
     List<Invoice> listAllInvoicesForManager();
+
+    List<Invoice> getAllInvoices();
 }

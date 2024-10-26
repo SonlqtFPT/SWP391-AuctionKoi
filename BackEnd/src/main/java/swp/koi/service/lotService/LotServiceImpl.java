@@ -258,19 +258,4 @@ public class LotServiceImpl implements LotService {
             }
         }
     }
-
-    @Override
-    public List<Lot> getLotByMember(Integer accountId) {
-        Account account = accountService.findById(accountId);
-        Member member = memberRepository.findByAccount(account);
-
-        List<LotRegister> lotRegisters = lotRegisterRepository.findAllByMember(member);
-        List<Lot> lots = lotRegisters.stream()
-                .map(LotRegister::getLot)
-                .collect(Collectors.toList());
-
-        return lots;
-    }
-
-
 }

@@ -228,4 +228,9 @@ public class InvoiceServiceImpl implements InvoiceService{
     public List<Invoice> listAllInvoicesForManager(){
         return invoiceRepository.findAll();
     }
+
+    @Override
+    public List<Invoice> getAllInvoices() {
+        return invoiceRepository.findAll();
+    }
 }

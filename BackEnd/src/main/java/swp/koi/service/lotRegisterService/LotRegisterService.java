@@ -23,4 +23,5 @@ public interface LotRegisterService {
 
     List<LotRegister> findAllLotRegisWithStatus(LotRegisterStatusEnum status);
 
+    List<LotRegister> getAllDepositedLotForMember(Integer accountId);
 }

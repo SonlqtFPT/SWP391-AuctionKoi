@@ -28,15 +28,4 @@ public class LotController {
     private final MemberService memberService;
     private final LotEntityToDtoConverter lotEntityToDtoConverter;
 
-    @Operation(summary = "Retrieve all lot that member registered")
-    @GetMapping("/get-lot-member")
-    public ResponseData<?> getLotByMember(@RequestParam Integer accountId){
-//        memberService.getMemberById()
-        List<LotResponseDto> response = lotEntityToDtoConverter.convertLotList(lotService.getLotByMember(accountId));
-//        MemberHistoryDepositedResponseDto response = new MemberHistoryDepositedResponseDto();
-//        response.setLots(lotsDto);
-//        response.setLotRegister();
-        return new ResponseData<>(ResponseCode.SUCCESS, response);
-    }
-
 }
