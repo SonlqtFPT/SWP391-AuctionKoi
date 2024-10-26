@@ -12,10 +12,11 @@ function FormRegister() {
     const navigate = useNavigate();
     const handleRegister = async (values) => {
         //submit into backend with receive values
-        console.log(values);
+        const { confirmPassword, ...data } = values;
+        console.log(data);
         try {
             setLoading(true);
-            const response = await api.post("authenticate/signup", values);
+            const response = await api.post("authenticate/signup", data);
             console.log(response);
             const { status } = response.data;
             const { message } = response.data;
@@ -158,6 +159,7 @@ function FormRegister() {
 
                             <Form.Item
                                 label={<label className='block text-sm font-medium leading-6 text-white'>Confirm Password</label>}
+                                name="confirmPassword"
                                 className='block text-sm font-medium leading-6 text-gray-900'
                                 dependencies={['password']}
                                 hasFeedback
