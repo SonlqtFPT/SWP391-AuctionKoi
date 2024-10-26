@@ -24,7 +24,7 @@ const IncomeLineChart = () => {
             console.log("Invoices data: " + requestData);
 
             const incomeByMonth2024 = requestData
-                .filter(item => item.status === "PAID")
+                .filter(item => item.status === "DELIVERED")
                 .filter(item => item.invoiceDate)
                 .filter(item => new Date(item.invoiceDate).getFullYear() === 2024)
                 .reduce((acc, item) => {
