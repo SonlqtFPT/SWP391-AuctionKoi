@@ -62,6 +62,10 @@ public class KoiFish {
     @OneToMany(mappedBy = "koiFish")
     List<Invoice> invoice;
 
+    @ManyToOne
+    @JoinColumn(name = "accountId")
+    Account account;
+
     public KoiFish() {
     }
 

@@ -12,10 +12,7 @@ import swp.koi.convert.LotEntityToDtoConverter;
 import swp.koi.convert.LotRegisterEntityToDtoConverter;
 import swp.koi.dto.request.LotRegisterDTO;
 
-import swp.koi.dto.response.LotRegisterResponseDTO;
-import swp.koi.dto.response.LotResponseDto;
-import swp.koi.dto.response.ResponseCode;
-import swp.koi.dto.response.ResponseData;
+import swp.koi.dto.response.*;
 import swp.koi.exception.KoiException;
 import swp.koi.model.LotRegister;
 import swp.koi.service.lotRegisterService.LotRegisterService;
@@ -82,6 +79,12 @@ public class LotRegisterController {
         }catch (KoiException e){
             return new ResponseData<>(e.getResponseCode());
         }
+    }
+
+    @GetMapping("/manager/get-all-transport")
+    public ResponseData<?> getAllTransport(){
+        List<InvoiceResponseDto> response =
+        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
     }
 }
 

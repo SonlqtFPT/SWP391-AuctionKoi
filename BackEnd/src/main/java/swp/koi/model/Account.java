@@ -54,6 +54,9 @@ public class Account {
     List<AuctionRequest> auctionRequest;
 
     @OneToMany(mappedBy = "account")
+    List<KoiFish> koiFishes;
+
+    @OneToMany(mappedBy = "account")
     List<Invoice> invoices;
 
     @Column(name = "createAt", updatable = false)
