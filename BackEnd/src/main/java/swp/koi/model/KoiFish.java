@@ -59,10 +59,6 @@ public class KoiFish {
     @JoinColumn(name = "auctionTypeId")
     AuctionType auctionType;
 
-    @ManyToOne
-    @JoinColumn(name = "accountId")
-    Account account;
-
     public KoiFish() {
     }
 

@@ -128,4 +128,5 @@ public class LotRegisterServiceImpl implements LotRegisterService{
     public List<LotRegister> findAllLotRegisWithStatus(LotRegisterStatusEnum status){
         return lotRegisterRepository.findAllByStatus(status);
     }
+
 }

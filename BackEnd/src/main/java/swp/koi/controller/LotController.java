@@ -11,7 +11,9 @@ import swp.koi.convert.LotEntityToDtoConverter;
 import swp.koi.dto.response.LotResponseDto;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.dto.response.ResponseData;
+import swp.koi.service.lotRegisterService.LotRegisterService;
 import swp.koi.service.lotService.LotService;
+import swp.koi.service.memberService.MemberService;
 
 import java.util.List;
 
@@ -22,12 +24,18 @@ import java.util.List;
 public class LotController {
 
     private final LotService lotService;
+    private final LotRegisterService lotRegisterService;
+    private final MemberService memberService;
     private final LotEntityToDtoConverter lotEntityToDtoConverter;
 
     @Operation(summary = "Retrieve all lot that member registered")
     @GetMapping("/get-lot-member")
     public ResponseData<?> getLotByMember(@RequestParam Integer accountId){
+//        memberService.getMemberById()
         List<LotResponseDto> response = lotEntityToDtoConverter.convertLotList(lotService.getLotByMember(accountId));
+//        MemberHistoryDepositedResponseDto response = new MemberHistoryDepositedResponseDto();
+//        response.setLots(lotsDto);
+//        response.setLotRegister();
         return new ResponseData<>(ResponseCode.SUCCESS, response);
     }
 
