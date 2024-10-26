@@ -73,7 +73,7 @@ public class AuctionServiceImpl implements AuctionService{
     public AuctionResponseDTO createAuctionWithLots(AuctionWithLotsDTO request) throws KoiException{
         try{
             Auction auction = new Auction();
-            AuctionType auctionType = new AuctionType();
+//            AuctionType auctionType = auctionTypeService.findByAuctionTypeName(request.getAuctionTypeName());
 
             if(!isValidAuctionTime(request.getStartTime(), request.getEndTime()))
                 throw new KoiException(ResponseCode.AUCTION_TIME_INVALID);
@@ -84,12 +84,13 @@ public class AuctionServiceImpl implements AuctionService{
 
             for(LotDTO lotDTO : request.getLots()){
                 KoiFish koiFish = koiFishService.findByFishId(lotDTO.getFishId());
+//                    !koiFish.getAuctionType().equals(auctionType)
                 if(koiFish == null || !koiFish.getStatus().equals(KoiFishStatusEnum.WAITING)){
                     throw new KoiException(ResponseCode.FAIL);
                 }
             }
 
-            auction.setAuctionType(auctionType);
+//            auction.setAuctionType(auctionType);
             auction.setStartTime(request.getStartTime());
             auction.setEndTime(request.getEndTime());
             auction.setStatus(AuctionStatusEnum.WAITING);
@@ -111,6 +112,7 @@ public class AuctionServiceImpl implements AuctionService{
                     lot.setStartingTime(savedAuction.getStartTime());
                     lot.setEndingTime(savedAuction.getEndTime());
                     lot.setStatus(LotStatusEnum.WAITING);
+                    lot.setAuctionType(koiFish.getAuctionType());
                     lots.add(lot);
             }
 

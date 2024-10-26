@@ -213,6 +213,7 @@ public class InvoiceServiceImpl implements InvoiceService{
 
         if(status.equals(InvoiceStatusEnums.DELIVERED)){
             LotRegister lotRegister = invoice.getLotRegister();
+            lotRegister.setStatus(LotRegisterStatusEnum.BREEDER_FUND_TRANSFER);
             lotRegisterRepository.save(lotRegister);
         }
 

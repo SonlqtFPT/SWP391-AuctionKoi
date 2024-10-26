@@ -5,15 +5,24 @@ import org.springframework.stereotype.Service;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
 import swp.koi.model.Account;
+import swp.koi.model.LotRegister;
 import swp.koi.model.Member;
 import swp.koi.model.enums.AccountRoleEnum;
+import swp.koi.model.enums.LotRegisterStatusEnum;
+import swp.koi.repository.LotRegisterRepository;
+import swp.koi.repository.LotRepository;
 import swp.koi.repository.MemberRepository;
+
+import java.util.Collections;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService{
 
     private final MemberRepository memberRepository;
+    private final LotRepository lotRepository;
+    private final LotRegisterRepository lotRegisterRepository;
 
     @Override
     public Member getMemberById(int id) {
@@ -45,5 +54,9 @@ public class MemberServiceImpl implements MemberService{
 
     }
 
-
+    @Override
+    public List<Member> getAllMembersToRefund() {
+        List<LotRegister> lotRegisters = lotRegisterRepository.findAllByStatus(LotRegisterStatusEnum.LOSE);
+        return memberRepository.findAllByLotRegisters(lotRegisters);
+    }
 }

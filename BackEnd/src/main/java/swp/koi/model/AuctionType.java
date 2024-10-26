@@ -28,7 +28,7 @@ public class AuctionType {
     AuctionTypeNameEnum auctionTypeName;
 
     @OneToMany(mappedBy = "auctionType")
-    List<Auction> auctions;
+    List<Lot> lots;
 
     @OneToMany(mappedBy = "auctionType")
     List<KoiFish> koiFishes;
@@ -41,6 +41,5 @@ public class AuctionType {
 
     public AuctionType(AuctionTypeNameEnum auctionTypeName, List<Auction> auctions){
         this.auctionTypeName = auctionTypeName;
-        this.auctions = auctions;
     }
 }
