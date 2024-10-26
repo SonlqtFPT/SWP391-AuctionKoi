@@ -17,6 +17,7 @@ function FormLogin() {
   const handleLoginGoogle = async (values) => {
     setLoading(true);
     const googleToken = values.credential;
+    console.log(googleToken);
 
     const data = { token: googleToken };
 
@@ -135,6 +136,8 @@ function FormLogin() {
               : "/staff"
         );
       } else if (status === 2) {
+        toast.error(message);
+      } else if (status === 1010) {
         toast.error(message);
       }
     } catch (error) {

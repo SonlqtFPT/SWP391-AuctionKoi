@@ -158,7 +158,6 @@ function FormRegister() {
 
                             <Form.Item
                                 label={<label className='block text-sm font-medium leading-6 text-white'>Confirm Password</label>}
-                                name="confirmPassword"
                                 className='block text-sm font-medium leading-6 text-gray-900'
                                 dependencies={['password']}
                                 hasFeedback
