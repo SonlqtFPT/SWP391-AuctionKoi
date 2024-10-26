@@ -159,11 +159,15 @@ function Bid() {
   useEffect(() => {
     if (lot) {
       console.log("End time: ", lot.endingTime);
+      const startingTime = new Date(lot.startingTime).getTime();
       const endingTime = new Date(lot.endingTime).getTime();
       const interval = setInterval(() => {
         const now = Date.now();
         const timeLeft = endingTime - now;
-        if (timeLeft <= 0) {
+        if (startingTime - now > 0) {
+          clearInterval(interval);
+          setRemainingTime(-2);
+        } else if (timeLeft <= 0) {
           clearInterval(interval);
           setRemainingTime(-1);
           if (registed) {
@@ -249,7 +253,13 @@ function Bid() {
       <div className="bg-hero-pattern bg-cover relative ">
         <div className="absolute bg-black bg-opacity-80 inset-0"></div>
         <h1 className="flex justify-center relative mt-5 lg:justify-normal mr-8 lg:mr-0">
-          {lot && <Time remainingTime={remainingTime} lotId={lotId} />}
+          {lot && (
+            <Time
+              remainingTime={remainingTime}
+              lotId={lotId}
+              startingTime={lot.startingTime}
+            />
+          )}
         </h1>
         <div className="flex flex-col lg:flex-row justify-center relative mb-10">
           <div className="mx-7 mt-11 lg:mx-0">

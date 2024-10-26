@@ -54,6 +54,12 @@ const ManageRequest = () => {
         varietyName: item.koiFish.variety.varietyName,
         requestedAt: item.requestedAt,
       }));
+
+      // Sort the requests by requestedAt in descending order
+      formattedRequests.sort(
+        (a, b) => new Date(b.requestedAt) - new Date(a.requestedAt)
+      );
+
       setAuctionRequests(formattedRequests);
       setFilteredRequests(formattedRequests); // Set filtered requests initially
     } catch (error) {

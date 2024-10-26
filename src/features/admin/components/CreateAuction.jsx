@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Steps, Button, message, Form, DatePicker, Select, Table } from "antd";
 import dayjs from "dayjs";
 import api from "../../../config/axios";
@@ -54,9 +53,7 @@ const CreateAuction = () => {
       auctionTypeName: auction.auctionTypeName,
       startTime: auction.startTime,
       endTime: auction.endTime,
-      lots: lots.map((lot) => ({
-        fishId: lot.fishId,
-      })),
+      lots: lots.map((lot) => ({ fishId: lot.fishId })),
     };
 
     console.log("Auction Data to Submit:", auctionData);
@@ -262,9 +259,10 @@ const AddLots = ({ setLots, auctionTypeName, lots }) => {
 
   useEffect(() => {
     const fetchFishData = async () => {
+      const token = localStorage.getItem("accessToken");
       try {
-        const response = await axios.post(
-          "http://localhost:8080/manager/get-fish-auction",
+        const response = await api.post(
+          "/manager/get-fish-auction",
           { auctionTypeName },
           {
             headers: {
@@ -272,8 +270,9 @@ const AddLots = ({ setLots, auctionTypeName, lots }) => {
             },
           }
         );
+        console.log(response);
         console.log(response.data.data);
-        setFishData(response.data.data);
+        setFishData(response.data.data || []);
       } catch (err) {
         console.error("Error fetching fish data", err);
       }

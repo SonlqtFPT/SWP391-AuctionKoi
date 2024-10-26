@@ -3,9 +3,9 @@ import { Form, InputNumber, Select, Upload, Button, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import api from "../../../config/axios";
 import uploadFile from "../../../utils/file";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
-const AddBreederRequest = () => {
+const UpdateBreederRequest = () => {
   const [form] = Form.useForm();
   const [imageList, setImageList] = useState([]);
   const [videoList, setVideoList] = useState([]);
@@ -15,11 +15,50 @@ const AddBreederRequest = () => {
   const accountId = accountData.accountId || null;
   const [varietyList, setVarietyList] = useState([]);
   const navigate = useNavigate();
+  const { requestId } = useParams();
+  const [request, setRequest] = useState();
 
   const get_variety_api = "variety/get-all-variety";
+  const get_request_api = `request/get/${requestId}`;
+  const patch_update_api = `breeder/request/update/${requestId}`;
 
+  const fetchRequest = async () => {
+    const token = localStorage.getItem("accessToken");
+    try {
+      const response = await api.get(get_request_api, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("API request:", response.data.data.koiFish); // Kiểm tra phản hồi
+
+      const koiFish = response.data.data.koiFish;
+
+      setRequest(koiFish);
+      form.setFieldsValue({
+        varietyName: koiFish.variety?.varietyName,
+        age: koiFish.age,
+        gender: koiFish.gender,
+        size: koiFish.size,
+        price: koiFish.price,
+        auctionTypeName: koiFish.auctionTypeName,
+      });
+
+      if (koiFish.media.imageUrl) {
+        setImageList([{ url: koiFish.media.imageUrl }]);
+      }
+      if (koiFish.media.videoUrl) {
+        setVideoList([{ url: koiFish.media.videoUrl }]);
+      }
+    } catch (error) {
+      console.error("Error fetching request:", error);
+      message.error("Failed to fetch request details.");
+    }
+  };
   useEffect(() => {
     fetchVariety();
+    fetchRequest();
   }, []);
 
   // Check if accountId exists
@@ -143,7 +182,7 @@ const AddBreederRequest = () => {
             />
           </span>
           <h1 className="text-center text-[#bcab6f] font-bold my-6 text-2xl">
-            ADD NEW BREEDER REQUEST
+            UPDATE BREEDER REQUEST
           </h1>
           <span>
             <img
@@ -341,4 +380,4 @@ const AddBreederRequest = () => {
   );
 };
 
-export default AddBreederRequest;
+export default UpdateBreederRequest;

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../../../config/axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -38,16 +38,12 @@ const CreateBreeder = () => {
     };
 
     try {
-      const response = await axios.post(
-        "http://localhost:8080/manager/createBreeder",
-        requestBody,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`, // Include the access token
-          },
-        }
-      );
+      const response = await api.post("/manager/createBreeder", requestBody, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`, // Include the access token
+        },
+      });
       const { status } = response.data;
       const { message } = response.data;
       if (status === 8) {
@@ -74,7 +70,7 @@ const CreateBreeder = () => {
     } catch (error) {
       toast.error(
         "Error creating breeder: " +
-        (error.response?.data?.message || error.message)
+          (error.response?.data?.message || error.message)
       );
       // Clear form fields
       setBreederName("");
@@ -148,7 +144,9 @@ const CreateBreeder = () => {
         onSubmit={handleSubmit}
         className="bg-slate-200 shadow-md rounded-2xl px-8 pt-6 pb-8 mb-4"
       >
-        <h2 className="text-2xl font-bold mb-4 text-center">Create New Breeder</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">
+          Create New Breeder
+        </h2>
         <div className="mb-2">
           <label
             htmlFor="breederName"
@@ -176,9 +174,12 @@ const CreateBreeder = () => {
             <option value="Dainichi">Dainichi</option>
           </select>
         </div>
-        <div className='grid grid-cols-2 gap-x-1.5'>
+        <div className="grid grid-cols-2 gap-x-1.5">
           <div className="mb-2">
-            <label htmlFor="location" className="block mb-1 text-sm font-medium">
+            <label
+              htmlFor="location"
+              className="block mb-1 text-sm font-medium"
+            >
               Location:
             </label>
             <input
@@ -205,7 +206,9 @@ const CreateBreeder = () => {
               required
               className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {phoneError && <p className="text-red-500 text-sm mt-1">{phoneError}</p>}
+            {phoneError && (
+              <p className="text-red-500 text-sm mt-1">{phoneError}</p>
+            )}
           </div>
         </div>
         <div className="mb-2">
@@ -220,12 +223,16 @@ const CreateBreeder = () => {
             required
             className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
-
+          {emailError && (
+            <p className="text-red-500 text-sm mt-1">{emailError}</p>
+          )}
         </div>
-        <div className='grid grid-cols-2 gap-x-1.5'>
+        <div className="grid grid-cols-2 gap-x-1.5">
           <div className="mb-2">
-            <label htmlFor="firstName" className="block mb-1 text-sm font-medium">
+            <label
+              htmlFor="firstName"
+              className="block mb-1 text-sm font-medium"
+            >
               First Name:
             </label>
             <input
@@ -236,11 +243,16 @@ const CreateBreeder = () => {
               required
               className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {firstNameError && <p className="text-red-500 text-sm mt-1">{firstNameError}</p>}
+            {firstNameError && (
+              <p className="text-red-500 text-sm mt-1">{firstNameError}</p>
+            )}
           </div>
 
           <div className="mb-2">
-            <label htmlFor="lastName" className="block mb-1 text-sm font-medium">
+            <label
+              htmlFor="lastName"
+              className="block mb-1 text-sm font-medium"
+            >
               Last Name:
             </label>
             <input
@@ -251,7 +263,9 @@ const CreateBreeder = () => {
               required
               className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {lastNameError && <p className="text-red-500 text-sm mt-1">{lastNameError}</p>}
+            {lastNameError && (
+              <p className="text-red-500 text-sm mt-1">{lastNameError}</p>
+            )}
           </div>
         </div>
         <div className="mb-2">
@@ -273,7 +287,8 @@ const CreateBreeder = () => {
           className="bg-blue-500 text-white p-2 rounded w-full hover:bg-blue-600 transition duration-200"
           disabled={isLoading} // Disable button during loading
         >
-          {isLoading ? "Loading..." : "Create Breeder"} {/* Toggle button text */}
+          {isLoading ? "Loading..." : "Create Breeder"}{" "}
+          {/* Toggle button text */}
         </button>
       </form>
       <ToastContainer /> {/* Toast container for notifications */}

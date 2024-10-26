@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../../../config/axios";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; // 
+import "react-toastify/dist/ReactToastify.css"; //
 
 const CreateStaff = () => {
   const [email, setEmail] = useState("");
@@ -32,16 +32,12 @@ const CreateStaff = () => {
     };
 
     try {
-      const response = await axios.post(
-        "http://localhost:8080/manager/createStaff",
-        requestBody,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`, // Include the access token
-          },
-        }
-      );
+      const response = await api.post("/manager/createStaff", requestBody, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`, // Include the access token
+        },
+      });
       const { status } = response.data;
       const { message } = response.data;
       if (status === 8) {
@@ -59,7 +55,7 @@ const CreateStaff = () => {
     } catch (error) {
       toast.error(
         "Error creating staff: " +
-        (error.response?.data?.message || error.message)
+          (error.response?.data?.message || error.message)
       ); // Show error toast
     } finally {
       setLoading(false); // Stop loading after submission
@@ -125,7 +121,9 @@ const CreateStaff = () => {
         onSubmit={handleSubmit}
         className="bg-slate-200 shadow-md rounded-2xl px-8 pt-6 pb-8 mb-4"
       >
-        <h2 className="text-2xl font-bold mb-4 text-center">Create New Staff</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">
+          Create New Staff
+        </h2>
         <div className="mb-4">
           <label htmlFor="email" className="block mb-1 text-sm font-medium">
             Email:
@@ -138,12 +136,16 @@ const CreateStaff = () => {
             required
             className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
-
+          {emailError && (
+            <p className="text-red-500 text-sm mt-1">{emailError}</p>
+          )}
         </div>
-        <div className='grid grid-cols-2 gap-x-1.5'>
+        <div className="grid grid-cols-2 gap-x-1.5">
           <div className="mb-4">
-            <label htmlFor="firstName" className="block mb-1 text-sm font-medium">
+            <label
+              htmlFor="firstName"
+              className="block mb-1 text-sm font-medium"
+            >
               First Name:
             </label>
             <input
@@ -154,10 +156,15 @@ const CreateStaff = () => {
               required
               className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {firstNameError && <p className="text-red-500 text-sm mt-1">{firstNameError}</p>}
+            {firstNameError && (
+              <p className="text-red-500 text-sm mt-1">{firstNameError}</p>
+            )}
           </div>
           <div className="mb-4">
-            <label htmlFor="lastName" className="block mb-1 text-sm font-medium">
+            <label
+              htmlFor="lastName"
+              className="block mb-1 text-sm font-medium"
+            >
               Last Name:
             </label>
             <input
@@ -168,7 +175,9 @@ const CreateStaff = () => {
               required
               className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {lastNameError && <p className="text-red-500 text-sm mt-1">{lastNameError}</p>}
+            {lastNameError && (
+              <p className="text-red-500 text-sm mt-1">{lastNameError}</p>
+            )}
           </div>
         </div>
         <div className="mb-4">
@@ -199,7 +208,9 @@ const CreateStaff = () => {
             required
             className="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          {phoneError && <p className="text-red-500 text-sm mt-1">{phoneError}</p>}
+          {phoneError && (
+            <p className="text-red-500 text-sm mt-1">{phoneError}</p>
+          )}
         </div>
         <button
           type="submit"

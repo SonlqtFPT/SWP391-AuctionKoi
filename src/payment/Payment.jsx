@@ -32,7 +32,6 @@ const Payment = () => {
 
         if (response.status === 200) {
           setInvoice(response.data.data);
-          console.log(response.data.data);
         } else {
           throw new Error("Failed to fetch invoice");
         }
@@ -156,184 +155,152 @@ const Payment = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <div className="flex min-h-full flex-1 columns-2 justify-center px-6 py-20 lg:px-8 bg-hero-pattern mt-25 bg-cover relative">
-        <div className="absolute bg-black bg-opacity-80 inset-0"></div>
-        <div className="flex-grow container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center space-x-4 relative my-7">
-            <span>
-              <img
-                src="\src\assets\Divider\diamondLeft.png"
-                alt="Left Divider"
-                className="w-auto transform scale-x-[-1]"
-              />
-            </span>
-            <h1 className="text-2xl font-bold text-center  text-[#bcab6f]">
-              Payment for Lot: {lotId}
-            </h1>
-            <span>
-              <img
-                src="\src\assets\Divider\diamondRight.png"
-                alt="Right Divider"
-                className="w-auto transform "
-              />
-            </span>
-          </div>
+      <div className="flex-grow container mx-auto px-4 py-8">
+        <h1 className="text-2xl font-bold text-center mb-8">
+          Payment for Lot: {lotId}
+        </h1>
 
-          <div className="flex justify-center space-x-4">
-            <Card
-              title="Invoice Details"
-              style={{ width: 300 }}
-              className="bg-slate-300 hover:bg-slate-200 rounded-2xl border-2 hover:border-4 border-[#bcab6f] outline outline-offset-2 outline-black w-full"
-            >
+        <div className="flex justify-center space-x-4">
+          <Card
+            title="Invoice Details"
+            style={{ width: 300 }}
+            className="shadow-lg"
+          >
+            <p>
+              <span className="font-semibold">Invoice ID:</span>{" "}
+              {invoice.invoiceId}
+            </p>
+            <p>
+              <span className="font-semibold">Final Amount:</span>{" "}
+              {invoice.finalAmount} {"(vnd)"}
+            </p>
+            <p>
+              <span className="font-semibold">Invoice Date:</span>{" "}
+              {new Date(invoice.invoiceDate).toLocaleString()}
+            </p>
+            <p>
+              <span className="font-semibold">Tax:</span> {invoice.tax}{" "}
+              {"(vnd)"}
+            </p>
+            <p>
+              <span className="font-semibold">Due Date:</span>{" "}
+              {new Date(invoice.dueDate).toLocaleString()}
+            </p>
+            <p>
+              <span className="font-semibold">Subtotal:</span>{" "}
+              {invoice.subTotal} {"(vnd)"}
+            </p>
+            <p>
+              <span className="font-semibold">Status:</span> {invoice.status}
+            </p>
+            {invoice.paymentLink && invoice.status !== "PAID" ? ( // Conditionally render the payment link if not PAID
               <p>
-                <span className="font-semibold">Invoice ID:</span>{" "}
-                {invoice.invoiceId}
-              </p>
-              <p>
-                <span className="font-semibold">Final Amount:</span>{" "}
-                {invoice.finalAmount} {"(vnd)"}
-              </p>
-              <p>
-                <span className="font-semibold">Invoice Date:</span>{" "}
-                {new Date(invoice.invoiceDate).toLocaleString()}
-              </p>
-              <p>
-                <span className="font-semibold">Tax:</span> {invoice.tax}{" "}
-                {"(vnd)"}
-              </p>
-              <p>
-                <span className="font-semibold">Due Date:</span>{" "}
-                {new Date(invoice.dueDate).toLocaleString()}
-              </p>
-              <p>
-                <span className="font-semibold">Subtotal:</span>{" "}
-                {invoice.subTotal} {"(vnd)"}
-              </p>
-              <p>
-                <span className="font-semibold">Status:</span> {invoice.status}
-              </p>
-              {invoice.paymentLink && invoice.status !== "PAID" ? ( // Conditionally render the payment link if not PAID
-                <p>
-                  <span className="font-semibold">Payment Link:</span>{" "}
-                  <a
-                    href={invoice.paymentLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 underline hover:text-blue-700"
-                  >
-                    Click here to pay
-                  </a>
-                </p>
-              ) : (
-                <p>
-                  <span className="font-semibold">Payment Link:</span>{" "}
-                  {invoice.status === "PAID"
-                    ? "Payment completed."
-                    : "Please update shipping details."}
-                </p>
-              )}
-              <p>
-                <span className="font-semibold">Shipping Address:</span>{" "}
-                {invoice.address || "Not provided"}
-              </p>
-              <p>
-                <span className="font-semibold">Estimated Distance:</span>{" "}
-                {invoice.kilometers.toFixed(2)} km
-              </p>
-            </Card>
-
-            {/* Update Form for Distance */}
-            {invoice.status !== "PAID" && ( // Conditionally render update form only if status is not PAID
-              <Card
-                title="Update Shipping Details"
-                style={{ width: 300 }}
-                className="flex flex-col bg-slate-300 hover:bg-slate-200 rounded-2xl border-2 hover:border-4 border-[#bcab6f] outline outline-offset-2 outline-black w-full"
-              >
-                <div className="flex flex-col mb-4 ">
-                  <label className="font-semibold">Address:</label>
-                  <Input
-                    value={address}
-                    placeholder="Selected address"
-                    onChange={(e) => setAddress(e.target.value)}
-                    disabled
-                  />
-                </div>
-                <div className="flex flex-col mb-4">
-                  <label className="font-semibold">Distance:</label>
-                  <Input
-                    value={distance.toFixed(2)} // Display distance value
-                    placeholder="Distance in km"
-                    type="number"
-                    disabled
-                  />
-                </div>
-                <Button
-                  type="primary"
-                  loading={updating}
-                  onClick={handleUpdateInvoice}
-                  className="mt-4"
+                <span className="font-semibold">Payment Link:</span>{" "}
+                <a
+                  href={invoice.paymentLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 underline hover:text-blue-700"
                 >
-                  Update Invoice
-                </Button>
-              </Card>
+                  Click here to pay
+                </a>
+              </p>
+            ) : (
+              <p>
+                <span className="font-semibold">Payment Link:</span>{" "}
+                {invoice.status === "PAID"
+                  ? "Payment completed."
+                  : "Please update shipping details."}
+              </p>
             )}
+            <p>
+              <span className="font-semibold">Shipping Address:</span>{" "}
+              {invoice.address || "Not provided"}
+            </p>
+            <p>
+              <span className="font-semibold">Estimated Distance:</span>{" "}
+              {invoice.kilometers !== null && invoice.kilometers !== undefined
+                ? invoice.kilometers.toFixed(2)
+                : "Not provided"}{" "}
+              km
+            </p>
+          </Card>
 
-            {/* Pricing Table Card */}
+          {/* Update Form for Distance */}
+          {invoice.status !== "PAID" && ( // Conditionally render update form only if status is not PAID
             <Card
-              title="Pricing Table"
+              title="Update Shipping Details"
               style={{ width: 300 }}
-              className="bg-slate-300 hover:bg-slate-200 rounded-2xl border-2 hover:border-4 border-[#bcab6f] outline outline-offset-2 outline-black w-full"
+              className="shadow-lg flex flex-col"
             >
-              <ul>
-                <li>0 - 10 km: Free</li>
-                <li>11 - 50 km: 1500 VND/km</li>
-                <li>51 - 100 km: 1200 VND/km</li>
-                <li>101 - 200 km: 1000 VND/km</li>
-                <li>200+ km: 800 VND/km</li>
-              </ul>
-              <div>
-                <span className="font-semibold">Price per km:</span>{" "}
-                {pricePerKm} VND
+              <div className="flex flex-col mb-4">
+                <label className="font-semibold">Address:</label>
+                <Input
+                  value={address}
+                  placeholder="Selected address"
+                  onChange={(e) => setAddress(e.target.value)}
+                  disabled
+                />
               </div>
-              <div>
-                <span className="font-semibold">Estimated Shipping Fee:</span>{" "}
-                {estimatedShippingFee} VND
+              <div className="flex flex-col mb-4">
+                <label className="font-semibold">Distance:</label>
+                <Input
+                  value={distance.toFixed(2)} // Display distance value
+                  placeholder="Distance in km"
+                  type="number"
+                  disabled
+                />
               </div>
+              <Button
+                type="primary"
+                loading={updating}
+                onClick={handleUpdateInvoice}
+                className="mt-4"
+              >
+                Update Invoice
+              </Button>
             </Card>
-          </div>
-
-          {/* Render Map Component with SearchLocation */}
-          {invoice.status !== "PAID" && ( // Conditionally render MapComponent only if status is not PAID
-            <>
-              <div className="flex items-center justify-center space-x-4 relative my-5 ">
-                <span>
-                  <img
-                    src="\src\assets\Divider\diamondLeft.png"
-                    alt="Left Divider"
-                    className="w-auto transform scale-x-[-1]"
-                  />
-                </span>
-                <h2 className="text-xl font-semibold text-center mt-5 mb-4 text-[#bcab6f]">
-                  Select End Point
-                </h2>
-                <span>
-                  <img
-                    src="\src\assets\Divider\diamondRight.png"
-                    alt="Right Divider"
-                    className="w-auto transform "
-                  />
-                </span>
-              </div>
-              <MapComponent
-                startPoint={startPoint}
-                endPoint={endPoint}
-                setEndPoint={setEndPoint}
-                setDistance={setDistance} // Update distance in the MapComponent
-                setAddress={setAddress}
-              />
-            </>
           )}
+
+          {/* Pricing Table Card */}
+          <Card
+            title="Pricing Table"
+            style={{ width: 300 }}
+            className="shadow-lg"
+          >
+            <ul>
+              <li>0 - 10 km: Free</li>
+              <li>11 - 50 km: 1500 VND/km</li>
+              <li>51 - 100 km: 1200 VND/km</li>
+              <li>101 - 200 km: 1000 VND/km</li>
+              <li>200+ km: 800 VND/km</li>
+            </ul>
+            <div>
+              <span className="font-semibold">Price per km:</span> {pricePerKm}{" "}
+              VND
+            </div>
+            <div>
+              <span className="font-semibold">Estimated Shipping Fee:</span>{" "}
+              {estimatedShippingFee} VND
+            </div>
+          </Card>
         </div>
+
+        {/* Render Map Component with SearchLocation */}
+        {invoice.status !== "PAID" && ( // Conditionally render MapComponent only if status is not PAID
+          <>
+            <h2 className="text-xl font-semibold text-center mt-8 mb-4">
+              Select End Point
+            </h2>
+            <MapComponent
+              startPoint={startPoint}
+              endPoint={endPoint}
+              setEndPoint={setEndPoint}
+              setDistance={setDistance} // Update distance in the MapComponent
+              setAddress={setAddress}
+            />
+          </>
+        )}
       </div>
       <Footer />
     </div>

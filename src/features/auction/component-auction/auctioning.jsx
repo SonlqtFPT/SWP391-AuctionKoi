@@ -2,7 +2,7 @@ import "../index.css";
 import { useNavigate } from "react-router-dom";
 
 function Auctioning({ auctionId }) {
-  const navigate = useNavigate(); // Sử dụng useNavigate
+  const navigate = useNavigate();
 
   const handlePageChange = () => {
     navigate(`/lot/${auctionId}`);

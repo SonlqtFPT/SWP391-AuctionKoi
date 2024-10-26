@@ -114,6 +114,7 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
         description: "Offer submitted successfully!",
       });
       fetchRequest;
+      onBack();
     } catch (error) {
       console.error("Error submitting negotiation offer:", error);
       notification.error({
@@ -150,7 +151,9 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
         message: "Success",
         description: "Staff assigned successfully!",
       });
-      fetchRequest;
+
+      fetchRequest(); // Call to refresh the request data
+      onBack();
       setIsModalVisible(false);
     } catch (error) {
       console.error("Error assigning staff:", error);

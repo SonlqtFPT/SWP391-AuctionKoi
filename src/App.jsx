@@ -17,6 +17,9 @@ import AddRequestPage from "./features/breeder/pages/AddRequestPage.jsx";
 import BreederProfilePage from "./features/breeder/pages/BreederProfilePage.jsx";
 import BreederProfileDetails from "./features/breeder/components/BreederProfileDetails.jsx";
 import BreederRequest from "./features/breeder/components/BreederRequest.jsx";
+import Upcommming from "./features/Upcomming-auction/Upcomming-auction.jsx";
+import ViewDetail from "./features/breeder/components/RequestDetails.jsx";
+import UpdateRequest from "./features/breeder/components/UpdatebreederRequest.jsx";
 
 export default function App() {
   return (
@@ -31,6 +34,7 @@ export default function App() {
           <Route path="/lot/:auctionId" element={<Lot />} />
           <Route path="/bid/:lotId/:auctionId" element={<Bid />} />
           <Route path="/payment/:lotId" element={<Payment />} />
+          <Route path="/upcomming" element={<Upcommming />} />
           <Route path="/auctioned" element={<PastAuction />} />
           <Route path="/forgotPass" element={<ForgotPassPage />} />
           <Route path="/reset-password" element={<ChangePassPage />} />
@@ -53,7 +57,6 @@ export default function App() {
             }
           />{" "}
           {/* Member Page */}
-
           <Route
             path="/breeder/add-request"
             element={
@@ -62,7 +65,22 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-
+          <Route
+            path="/breeder/viewdetail/:requestId"
+            element={
+              <ProtectedRoute allowedRoles={["BREEDER"]}>
+                <ViewDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/breeder/update-request/:requestId"
+            element={
+              <ProtectedRoute allowedRoles={["BREEDER"]}>
+                <UpdateRequest />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/breeder/profile"
             element={
@@ -71,7 +89,6 @@ export default function App() {
               </ProtectedRoute>
             }
           >
-
             <Route
               index
               element={
@@ -100,8 +117,6 @@ export default function App() {
             />
           </Route>
           {/* Breeder Page */}
-
-
           <Route
             path="/staff"
             element={
