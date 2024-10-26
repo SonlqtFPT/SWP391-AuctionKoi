@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.springframework.lang.Nullable;
+import swp.koi.model.enums.AuctionTypeNameEnum;
 import swp.koi.model.enums.LotStatusEnum;
 
 import java.util.List;
@@ -68,6 +69,10 @@ public class Lot {
     @JoinColumn(name = "auctionId")
     @JsonBackReference
     Auction auction;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "auction_type")
+    AuctionTypeNameEnum auctionTypeNameEnum;
 
     @OneToMany(mappedBy = "lot", fetch = FetchType.LAZY)
     List<Transaction> transactions;

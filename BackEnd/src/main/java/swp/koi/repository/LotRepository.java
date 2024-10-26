@@ -18,7 +18,7 @@ public interface LotRepository extends JpaRepository<Lot, Integer> {
 
     List<Lot> findAllByStatusAndEndingTimeLessThan(LotStatusEnum status, LocalDateTime endingTime);
 
-    List<Lot> findAllByStatusAndAuctionAuctionTypeAuctionTypeName(LotStatusEnum status, AuctionTypeNameEnum auctionTypeName);
+    List<Lot> findAllByStatusAndAuctionTypeNameEnum(LotStatusEnum status, AuctionTypeNameEnum auctionTypeName);
 
     List<Lot> findAllByAuction(Auction auction);
 }

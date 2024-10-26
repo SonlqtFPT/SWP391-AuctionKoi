@@ -201,7 +201,7 @@ public class BidServiceImpl implements BidService {
             throw new KoiException(ResponseCode.BID_TIME_PASSED);
         }
 
-        AuctionTypeNameEnum auctionType = lot.getAuction().getAuctionType().getAuctionTypeName();
+        AuctionTypeNameEnum auctionType = lot.getAuctionTypeNameEnum();
 
         List<Bid> bidList = bidRepository.getBidByLot(lot).orElse(null);
         if(bidList == null || bidList.isEmpty()) {
@@ -332,7 +332,7 @@ public class BidServiceImpl implements BidService {
      * @return the updated lot
      */
     private Lot updateLotWithSpecialType(float newPrice, Lot lot, Member member) {
-        return switch (lot.getAuction().getAuctionType().getAuctionTypeName()) {
+        return switch (lot.getAuctionTypeNameEnum()) {
             case ASCENDING_BID -> updateLotWithAscendingType(newPrice, lot, member);
             case DESCENDING_BID -> updateLotWithDescendingType(newPrice, lot, member);
             default -> lot;

@@ -83,6 +83,8 @@ public class LotRegisterController {
             return new ResponseData<>(e.getResponseCode());
         }
     }
+
+
 }
 
 

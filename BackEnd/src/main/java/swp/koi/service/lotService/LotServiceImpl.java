@@ -61,7 +61,7 @@ public class LotServiceImpl implements LotService {
         List<Lot> runningLots = lotRepository.findAllByStatusAndEndingTimeLessThan(LotStatusEnum.AUCTIONING, now);
         runningLots.forEach(this::endLot);
 
-        List<Lot> descendingLots = lotRepository.findAllByStatusAndAuctionAuctionTypeAuctionTypeName(LotStatusEnum.AUCTIONING, AuctionTypeNameEnum.DESCENDING_BID);
+        List<Lot> descendingLots = lotRepository.findAllByStatusAndAuctionTypeNameEnum(LotStatusEnum.AUCTIONING, AuctionTypeNameEnum.DESCENDING_BID);
         descendingLots.forEach(this::decreasePrice);
 
         System.out.println("--------------------------------------------Scanning--------------------------------------------");
@@ -216,11 +216,7 @@ public class LotServiceImpl implements LotService {
 
     private Bid chooseLotWinner(Lot lot, List<Bid> bidList) {
 
-        List<Lot> lotList = new ArrayList<>();
-        lotList.add(lot);
-        Auction auction = auctionRepository.findByLots(lotList);
-
-        return switch (auction.getAuctionType().getAuctionTypeName()) {
+        return switch (lot.getAuctionTypeNameEnum()) {
             case FIXED_PRICE_SALE -> getFixedPriceWinner(bidList);
             case SEALED_BID, ASCENDING_BID -> getHighestBid(bidList);
             case DESCENDING_BID -> getFirstBid(bidList);

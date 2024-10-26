@@ -179,6 +179,7 @@ public class InvoiceServiceImpl implements InvoiceService{
 
         LotRegister lotRegister = invoice.getLotRegister();
         lotRegister.setStatus(LotRegisterStatusEnum.DELIVERY_IN_PROGRESS);
+        lotRegisterRepository.save(lotRegister);
     }
 
     @Override
@@ -213,6 +214,7 @@ public class InvoiceServiceImpl implements InvoiceService{
 
         if(status.equals(InvoiceStatusEnums.DELIVERED)){
             LotRegister lotRegister = invoice.getLotRegister();
+            lotRegister.setStatus(LotRegisterStatusEnum.BREEDER_FUND_TRANSFER);
             lotRegisterRepository.save(lotRegister);
         }
 
