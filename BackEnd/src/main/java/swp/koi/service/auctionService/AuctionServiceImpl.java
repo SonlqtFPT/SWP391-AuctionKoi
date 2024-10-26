@@ -71,58 +71,61 @@ public class AuctionServiceImpl implements AuctionService{
 
     @Override
     public AuctionResponseDTO createAuctionWithLots(AuctionWithLotsDTO request) throws KoiException{
-        Auction auction = new Auction();
+        try{
+            Auction auction = new Auction();
 //            AuctionType auctionType = auctionTypeService.findByAuctionTypeName(request.getAuctionTypeName());
 
-        if(!isValidAuctionTime(request.getStartTime(), request.getEndTime()))
-            throw new KoiException(ResponseCode.AUCTION_TIME_INVALID);
+            if(!isValidAuctionTime(request.getStartTime(), request.getEndTime()))
+                throw new KoiException(ResponseCode.AUCTION_TIME_INVALID);
 
-        if(request.getLots().isEmpty()){
-            throw new KoiException(ResponseCode.NO_LOTS_PROVIDED);
-        }
-
-        for(LotDTO lotDTO : request.getLots()){
-            KoiFish koiFish = koiFishService.findByFishId(lotDTO.getFishId());
-            if(koiFish == null || !koiFish.getStatus().equals(KoiFishStatusEnum.WAITING) ){
-
-//                    !koiFish.getAuctionType().equals(auctionType)
-                throw new KoiException(ResponseCode.FAIL);
+            if(request.getLots().isEmpty()){
+                throw new KoiException(ResponseCode.NO_LOTS_PROVIDED);
             }
-        }
+
+            for(LotDTO lotDTO : request.getLots()){
+                KoiFish koiFish = koiFishService.findByFishId(lotDTO.getFishId());
+//                    !koiFish.getAuctionType().equals(auctionType)
+                if(koiFish == null || !koiFish.getStatus().equals(KoiFishStatusEnum.WAITING)){
+                    throw new KoiException(ResponseCode.FAIL);
+                }
+            }
 
 //            auction.setAuctionType(auctionType);
-        auction.setStartTime(request.getStartTime());
-        auction.setEndTime(request.getEndTime());
-        auction.setStatus(AuctionStatusEnum.WAITING);
+            auction.setStartTime(request.getStartTime());
+            auction.setEndTime(request.getEndTime());
+            auction.setStatus(AuctionStatusEnum.WAITING);
 
-        Auction savedAuction = auctionRepository.save(auction);
+            Auction savedAuction = auctionRepository.save(auction);
 
-        List<Lot> lots = new ArrayList<>();
-        for(LotDTO lotDTO : request.getLots()){
-            Lot lot = new Lot();
-            KoiFish koiFish = koiFishService.findByFishId(lotDTO.getFishId());
-            koiFish.setStatus(KoiFishStatusEnum.IN_AUCTION);
-            koiFishService.saveFish(koiFish);
-                lot.setAuction(auction);
-                lot.setKoiFish(koiFish);
-                lot.setDeposit((float)(koiFish.getPrice()*0.1));
-                lot.setStartingPrice(koiFish.getPrice());
-                lot.setIncrement((float)(koiFish.getPrice()*0.1));
-                lot.setCurrentPrice(lot.getStartingPrice());
-                lot.setStartingTime(savedAuction.getStartTime());
-                lot.setEndingTime(savedAuction.getEndTime());
-                lot.setStatus(LotStatusEnum.WAITING);
-                lot.setAuctionTypeNameEnum(koiFish.getAuctionType().getAuctionTypeName());
-                lots.add(lot);
+            List<Lot> lots = new ArrayList<>();
+            for(LotDTO lotDTO : request.getLots()){
+                Lot lot = new Lot();
+                KoiFish koiFish = koiFishService.findByFishId(lotDTO.getFishId());
+                koiFish.setStatus(KoiFishStatusEnum.IN_AUCTION);
+                koiFishService.saveFish(koiFish);
+                    lot.setAuction(auction);
+                    lot.setKoiFish(koiFish);
+                    lot.setDeposit((float)(koiFish.getPrice()*0.1));
+                    lot.setStartingPrice(koiFish.getPrice());
+                    lot.setIncrement((float)(koiFish.getPrice()*0.1));
+                    lot.setCurrentPrice(lot.getStartingPrice());
+                    lot.setStartingTime(savedAuction.getStartTime());
+                    lot.setEndingTime(savedAuction.getEndTime());
+                    lot.setStatus(LotStatusEnum.WAITING);
+                    lot.setAuctionType(koiFish.getAuctionType());
+                    lots.add(lot);
+            }
+
+            lotService.createLots(lots);
+            savedAuction.setLots(lots);
+
+            List<LotResponseDto> lotResponse = lotEntityToDtoConverter.convertLotList(lots);
+            AuctionResponseDTO auctionResponse = modelMapper.map(savedAuction, AuctionResponseDTO.class);
+            auctionResponse.setLots(lotResponse);
+            return auctionResponse;
+        }catch (KoiException e){
+            throw e;
         }
-
-        lotService.createLots(lots);
-        savedAuction.setLots(lots);
-
-        List<LotResponseDto> lotResponse = lotEntityToDtoConverter.convertLotList(lots);
-        AuctionResponseDTO auctionResponse = modelMapper.map(savedAuction, AuctionResponseDTO.class);
-        auctionResponse.setLots(lotResponse);
-        return auctionResponse;
     }
 
 

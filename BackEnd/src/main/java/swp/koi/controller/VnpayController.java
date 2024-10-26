@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import swp.koi.service.vnPayService.VnpayService;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 
 @RestController
 @RequestMapping("/api/pay")
@@ -28,6 +29,10 @@ public class VnpayController {
         if (isResponseValid) {
             vnpayService.handlePayment(request);
             return new ResponseEntity<>("Payment successful",HttpStatus.OK);
+//            URI redirect = URI.create("https://prestigekoiauction.netlify.app/deposit-success");
+//            return ResponseEntity.status(HttpStatus.FOUND)
+//                    .location(redirect)
+//                    .build();
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Something went wrong with this response");
     }

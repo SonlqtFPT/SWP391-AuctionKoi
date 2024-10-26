@@ -27,8 +27,8 @@ public class AuctionType {
     @Column(nullable = false)
     AuctionTypeNameEnum auctionTypeName;
 
-//    @OneToMany(mappedBy = "auctionType")
-//    List<Auction> auctions;
+    @OneToMany(mappedBy = "auctionType")
+    List<Lot> lots;
 
     @OneToMany(mappedBy = "auctionType")
     List<KoiFish> koiFishes;

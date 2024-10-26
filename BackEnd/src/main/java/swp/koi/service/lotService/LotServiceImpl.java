@@ -11,6 +11,7 @@ import swp.koi.model.*;
 import swp.koi.model.enums.*;
 import swp.koi.repository.*;
 import swp.koi.service.accountService.AccountService;
+import swp.koi.service.auctionTypeService.AuctionTypeService;
 import swp.koi.service.bidService.BidServiceImpl;
 import swp.koi.service.fireBase.FCMService;
 import swp.koi.service.invoiceService.InvoiceService;
@@ -42,6 +43,7 @@ public class LotServiceImpl implements LotService {
     private final RedisServiceImpl redisServiceImpl;
     private final FCMService fcmService;
     private final InvoiceService invoiceService;
+    private final AuctionTypeService auctionTypeService;
 
     @Override
     public Lot findLotById(int id) {
@@ -61,7 +63,8 @@ public class LotServiceImpl implements LotService {
         List<Lot> runningLots = lotRepository.findAllByStatusAndEndingTimeLessThan(LotStatusEnum.AUCTIONING, now);
         runningLots.forEach(this::endLot);
 
-        List<Lot> descendingLots = lotRepository.findAllByStatusAndAuctionTypeNameEnum(LotStatusEnum.AUCTIONING, AuctionTypeNameEnum.DESCENDING_BID);
+        AuctionType auctionType = auctionTypeService.findByAuctionTypeName("DESCENDING_BID");
+        List<Lot> descendingLots = lotRepository.findAllByStatusAndAuctionType(LotStatusEnum.AUCTIONING, auctionType);
         descendingLots.forEach(this::decreasePrice);
 
         System.out.println("--------------------------------------------Scanning--------------------------------------------");
@@ -216,7 +219,7 @@ public class LotServiceImpl implements LotService {
 
     private Bid chooseLotWinner(Lot lot, List<Bid> bidList) {
 
-        return switch (lot.getAuctionTypeNameEnum()) {
+        return switch (lot.getAuctionType().getAuctionTypeName()) {
             case FIXED_PRICE_SALE -> getFixedPriceWinner(bidList);
             case SEALED_BID, ASCENDING_BID -> getHighestBid(bidList);
             case DESCENDING_BID -> getFirstBid(bidList);
@@ -255,19 +258,4 @@ public class LotServiceImpl implements LotService {
             }
         }
     }
-
-    @Override
-    public List<Lot> getLotByMember(Integer accountId) {
-        Account account = accountService.findById(accountId);
-        Member member = memberRepository.findByAccount(account);
-
-        List<LotRegister> lotRegisters = lotRegisterRepository.findAllByMember(member);
-        List<Lot> lots = lotRegisters.stream()
-                .map(LotRegister::getLot)
-                .collect(Collectors.toList());
-
-        return lots;
-    }
-
-
 }

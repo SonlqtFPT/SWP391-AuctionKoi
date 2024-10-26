@@ -17,9 +17,6 @@ public interface LotService {
 
     List<Lot> createLots(List<Lot> lots);
 
-
     @Async
     void sendNotificateToFollower(Lot lot);
-
-    List<Lot> getLotByMember(Integer accountId);
 }

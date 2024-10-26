@@ -34,7 +34,7 @@ public class InvoiceController {
         }
     }
 
-    @GetMapping("/get-invoices")
+    @GetMapping("/get-invoices-of-winner")
     public ResponseData<List<InvoiceResponseDto>> getAllInvoicesOfMember() {
         try {
             List<InvoiceResponseDto> response = invoiceEntityToDtoConverter.convertInvoiceList(invoiceService.getAllInvoicesForAuctionWinner());
@@ -42,6 +42,12 @@ public class InvoiceController {
         } catch (KoiException e) {
             throw new KoiException(ResponseCode.MEMBER_NOT_FOUND);
         }
+    }
+
+    @GetMapping("/get-invoices")
+    public ResponseData<List<InvoiceResponseDto>> getAllInvoices() {
+            List<InvoiceResponseDto> response = invoiceEntityToDtoConverter.convertInvoiceList(invoiceService.getAllInvoices());
+            return new ResponseData<>(ResponseCode.SUCCESS, response);
     }
 
     @Operation(summary = "Update invoice with shipping address and distance")

@@ -70,9 +70,9 @@ public class Lot {
     @JsonBackReference
     Auction auction;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "auction_type")
-    AuctionTypeNameEnum auctionTypeNameEnum;
+    @ManyToOne()
+    @JoinColumn(name = "auctionTypeId")
+    AuctionType auctionType;
 
     @OneToMany(mappedBy = "lot", fetch = FetchType.LAZY)
     List<Transaction> transactions;

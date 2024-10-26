@@ -13,6 +13,7 @@ import swp.koi.repository.LotRegisterRepository;
 import swp.koi.repository.LotRepository;
 import swp.koi.service.accountService.AccountService;
 import swp.koi.service.authService.GetUserInfoByUsingAuth;
+import swp.koi.service.lotRegisterService.LotRegisterService;
 import swp.koi.service.memberService.MemberService;
 import swp.koi.service.vnPayService.VnpayServiceImpl;
 
@@ -56,7 +57,6 @@ public class InvoiceServiceImpl implements InvoiceService{
                 .finalAmount((float) (lot.getCurrentPrice() * 1.1 - lot.getDeposit()))
                 .priceWithoutShipFee((float) (lot.getCurrentPrice() * 1.1 - lot.getDeposit()))
                 .member(member)
-                .account(member.getAccount())
                 .lotRegister(lotRegister)
                 .build();
     }
@@ -174,7 +174,6 @@ public class InvoiceServiceImpl implements InvoiceService{
 
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(() -> new KoiException(ResponseCode.INVOICE_NOT_FOUND));
 
-        invoice.setAccount(account);
         invoice.setStatus(InvoiceStatusEnums.DELIVERY_IN_PROGRESS);
         invoiceRepository.save(invoice);
     }
@@ -225,6 +224,11 @@ public class InvoiceServiceImpl implements InvoiceService{
 
     @Override
     public List<Invoice> listAllInvoicesForManager(){
+        return invoiceRepository.findAll();
+    }
+
+    @Override
+    public List<Invoice> getAllInvoices() {
         return invoiceRepository.findAll();
     }
 }

@@ -132,4 +132,14 @@ public class LotRegisterServiceImpl implements LotRegisterService{
                 .map(lotRegister -> modelMapper.map(lotRegister, LotRegisterResponseDTO.class))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<LotRegister> getAllDepositedLotForMember(Integer accountId) {
+        Account account = accountService.findById(accountId);
+        Member member = memberService.getMemberByAccount(account);
+        if(member == null)
+            throw new KoiException(ResponseCode.MEMBER_NOT_FOUND);
+
+        return lotRegisterRepository.findAllByMember(member);
+    }
 }

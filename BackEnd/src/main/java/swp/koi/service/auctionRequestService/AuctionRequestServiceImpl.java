@@ -152,7 +152,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
                     auctionRequest.getKoiFish().getStatus().equals(KoiFishStatusEnum.WAITING)) {
                 KoiFish koiFish = auctionRequest.getKoiFish();
                 koiFish.setStatus(KoiFishStatusEnum.CANCELLED);
-                auctionRequest.setStatus(AuctionRequestStatusEnum.CANCELLED);
+                auctionRequest.setStatus(AuctionRequestStatusEnum.CANCELED);
                 auctionRequestRepository.save(auctionRequest);
             }
         }catch (KoiException e){
@@ -281,7 +281,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
             KoiFish koiFish = auctionRequest.getKoiFish();
             koiFish.setStatus(KoiFishStatusEnum.CANCELLED);
             koiFishService.saveFish(koiFish);
-            auctionRequest.setStatus(AuctionRequestStatusEnum.CANCELLED);
+            auctionRequest.setStatus(AuctionRequestStatusEnum.CANCELED);
             auctionRequestRepository.save(auctionRequest);
         }else{
             throw new KoiException(ResponseCode.AUCTION_REQUEST_VALID_STATUS);
@@ -378,7 +378,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     public List<AuctionRequest> getAllCancelledRequest(Integer accountId) {
         Account account = accountService.findById(accountId);
         if(account != null && account.getRole().equals(AccountRoleEnum.BREEDER))
-            return auctionRequestRepository.findAllByStatusAndBreederId(AuctionRequestStatusEnum.CANCELLED, account.getKoiBreeder().getBreederId());
+            return auctionRequestRepository.findAllByStatusAndBreederId(AuctionRequestStatusEnum.CANCELED, account.getKoiBreeder().getBreederId());
         else
             throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
     }

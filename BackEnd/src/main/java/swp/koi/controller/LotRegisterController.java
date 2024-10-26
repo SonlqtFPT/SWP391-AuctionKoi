@@ -12,10 +12,7 @@ import swp.koi.convert.LotEntityToDtoConverter;
 import swp.koi.convert.LotRegisterEntityToDtoConverter;
 import swp.koi.dto.request.LotRegisterDTO;
 
-import swp.koi.dto.response.LotRegisterResponseDTO;
-import swp.koi.dto.response.LotResponseDto;
-import swp.koi.dto.response.ResponseCode;
-import swp.koi.dto.response.ResponseData;
+import swp.koi.dto.response.*;
 import swp.koi.exception.KoiException;
 import swp.koi.model.LotRegister;
 import swp.koi.service.lotRegisterService.LotRegisterService;
@@ -84,9 +81,11 @@ public class LotRegisterController {
         }
     }
 
-
-
-
+    @GetMapping("/lot-register/get-all-deposited-lot-for-member")
+    public ResponseData<?> getAllDepositedLotForMember(@RequestParam Integer accountId){
+        List<LotRegisterForMemberResponseDto> response = lotRegisterEntityToDtoConverter.convertLotRegisterListForMember(lotRegisterService.getAllDepositedLotForMember(accountId));
+        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
+    }
 }
 
 

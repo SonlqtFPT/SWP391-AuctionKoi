@@ -46,10 +46,6 @@ public class Auction {
             @JsonManagedReference
     List<Lot> lots;
 
-//    @ManyToOne()
-//    @JoinColumn(name = "auctionTypeId")
-//    AuctionType auctionType;
-
     public Auction() {
     }
 
