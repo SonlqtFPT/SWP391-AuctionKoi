@@ -12,4 +12,5 @@ public interface MediaService {
     Media findByMediaId(Integer mediaId);
 
     void save(Media media);
+
 }

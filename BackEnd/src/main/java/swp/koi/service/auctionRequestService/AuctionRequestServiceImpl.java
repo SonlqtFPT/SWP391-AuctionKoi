@@ -156,7 +156,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     @Transactional
     @Override
     public AuctionRequest updateRequest(Integer requestId, AuctionRequestUpdateDTO dto) throws KoiException{
-        Account account = accountService.findById(dto.getAccountId());
+        Account account = getUserInfoByUsingAuth.getAccountFromAuth();
         if(!account.getRole().equals(AccountRoleEnum.BREEDER))
             throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
 
@@ -171,9 +171,9 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
             throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
         }
 
-        KoiFish koiFish = koiFishService.findByFishId(dto.getKoiFish().getFishId());
+        KoiFish koiFish = koiFishService.findByFishId(auctionRequest.getKoiFish().getFishId());
         Variety variety = varietyService.findByVarietyName(dto.getKoiFish().getVarietyName());
-        Media media = mediaService.findByMediaId(dto.getKoiFish().getMedia().getMediaId());
+        Media media = mediaService.findByMediaId(koiFish.getMedia().getMediaId());
         media.setImageUrl(dto.getKoiFish().getMedia().getImageUrl());
         media.setVideoUrl(dto.getKoiFish().getMedia().getVideoUrl());
         mediaService.save(media);

@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MediaUpdateDTO {
-    Integer mediaId;
+
     @NotBlank(message = "Image url is required")
     String imageUrl;
     @NotBlank(message = "Video url is required")

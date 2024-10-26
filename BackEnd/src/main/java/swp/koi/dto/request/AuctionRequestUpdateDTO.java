@@ -11,8 +11,6 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuctionRequestUpdateDTO {
-    @NotNull(message = "Account Id is required")
-    Integer accountId;
     @Valid
     KoiFishUpdateDTO koiFish;
 }
