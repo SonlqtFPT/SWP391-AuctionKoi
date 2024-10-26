@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { Button, Card, Select, Input, notification } from "antd";
 import api from "../../../config/axios";
 import { useNavigate, useParams } from "react-router-dom";
-import Footer from "../../../components/Footer";
-import Header from "../../../components/Header";
 
 const RequestDetails = () => {
   const { requestId } = useParams(); // Lấy requestId từ URL
@@ -213,9 +211,9 @@ const RequestDetails = () => {
     navigate(`/breeder/update-request/${requestId}`);
   };
   return (
-    <div>
-      <Header />
-      <div className=" bg-[#131313] text-white pt-10 h-screen">
+    <div className="flex min-h-full w:auto lg:w-full justify-center px-1 py-20 lg:px-8 bg-hero-pattern mt-16 bg-cover relative">
+      <div className="absolute bg-black bg-opacity-70 inset-0"></div>
+      <div className="p-6 bg-[#131313] rounded-2xl text-white my-5 relative">
         <button
           type="default"
           onClick={handlePageBack}
@@ -325,98 +323,98 @@ const RequestDetails = () => {
             {/* Only render the negotiation card when the status is PENDING_MANAGER_OFFER or PENDING_BREEDER_OFFER */}
             {(request.status === "PENDING_MANAGER_OFFER" ||
               request.status === "PENDING_BREEDER_OFFER") && (
-              <Card className="bg-gray-900 hover:bg-gray-800 rounded-2xl  my-4 border-2 border-[#bcab6f] py-4 pl-10 outline outline-offset-4 outline-white mx-60">
-                <h7 className="font-extrabold text-2xl text-[#bcab6f]">
-                  Negotiation
-                </h7>
+                <Card className="bg-gray-900 hover:bg-gray-800 rounded-2xl  my-4 border-2 border-[#bcab6f] py-4 pl-10 outline outline-offset-4 outline-white mx-60">
+                  <h7 className="font-extrabold text-2xl text-[#bcab6f]">
+                    Negotiation
+                  </h7>
 
-                {request.status === "PENDING_BREEDER_OFFER" && (
-                  <>
-                    {/* Display Manager's Offer */}
-                    <div style={{ marginBottom: "16px" }}>
-                      <h8 className="text-white font-semibold underline underline-offset-1">
-                        Manager's Offer
-                      </h8>
-                      <p className="text-white font-semibold">
-                        <strong>Offer Price:</strong> ${request.offerPrice}
-                      </p>
-                      <p className="text-white font-semibold">
-                        <strong>Auction Type:</strong>{" "}
-                        {formatAuctionType(request.auctionTypeName)}
-                      </p>
-                    </div>
+                  {request.status === "PENDING_BREEDER_OFFER" && (
+                    <>
+                      {/* Display Manager's Offer */}
+                      <div style={{ marginBottom: "16px" }}>
+                        <h8 className="text-white font-semibold underline underline-offset-1">
+                          Manager's Offer
+                        </h8>
+                        <p className="text-white font-semibold">
+                          <strong>Offer Price:</strong> ${request.offerPrice}
+                        </p>
+                        <p className="text-white font-semibold">
+                          <strong>Auction Type:</strong>{" "}
+                          {formatAuctionType(request.auctionTypeName)}
+                        </p>
+                      </div>
 
-                    {/* Negotiation Form */}
-                    <Input
-                      type="number"
-                      placeholder="Your Offer Price"
-                      value={offerPrice || ""}
-                      onChange={(e) =>
-                        setOfferPrice(
-                          e.target.value ? Number(e.target.value) : null
-                        )
-                      }
-                      className="text-black w-48 mb-4 mr-4 px-3 py-2 border-2 border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-yellow-500" // Thay đổi bg-gray-200 thành bg-white
-                      style={{ backgroundColor: "white" }} // Đảm bảo màu nền là trắng
-                    />
-                    <Select
-                      placeholder="Select Auction Type"
-                      value={offerAuctionType || undefined}
-                      onChange={setOfferAuctionType}
-                      style={{
-                        width: "200px",
-                        marginBottom: "16px",
-                        height: "38px",
-                      }}
-                      className="pr-5"
-                    >
-                      <Select.Option value="ASCENDING_BID">
-                        Ascending Bid
-                      </Select.Option>
-                      <Select.Option value="DESCENDING_BID">
-                        Descending Bid
-                      </Select.Option>
-                      <Select.Option value="SEALED_BID">
-                        Sealed Bid
-                      </Select.Option>
-                      <Select.Option value="DIRECT_SALE">
-                        Direct Sale
-                      </Select.Option>
-                    </Select>
-                    <Button type="primary" onClick={handleNegotiate}>
-                      Submit Offer
-                    </Button>
-
-                    {/* Actions for Breeder Offer */}
-                    <div className="mt-4">
-                      <h9 className="font-mono text-[#bcab6f]">
-                        Note! Clicking Accept Offer only if you have confirmed
-                        your deal with us.
-                      </h9>
-                      <button
-                        type="primary"
-                        onClick={handleAccept}
-                        className="bg-red-600 font-bold rounded-lg px-4 py-2 hover:bg-red-500 mx-4"
+                      {/* Negotiation Form */}
+                      <Input
+                        type="number"
+                        placeholder="Your Offer Price"
+                        value={offerPrice || ""}
+                        onChange={(e) =>
+                          setOfferPrice(
+                            e.target.value ? Number(e.target.value) : null
+                          )
+                        }
+                        className="text-black w-48 mb-4 mr-4 px-3 py-2 border-2 border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-yellow-500" // Thay đổi bg-gray-200 thành bg-white
+                        style={{ backgroundColor: "white" }} // Đảm bảo màu nền là trắng
+                      />
+                      <Select
+                        placeholder="Select Auction Type"
+                        value={offerAuctionType || undefined}
+                        onChange={setOfferAuctionType}
+                        style={{
+                          width: "200px",
+                          marginBottom: "16px",
+                          height: "38px",
+                        }}
+                        className="pr-5"
                       >
-                        Accept Offer
-                      </button>
-                      <button
-                        type="default"
-                        onClick={handleCancel}
-                        className="bg-slate-400 rounded-lg px-4 py-2 hover:bg-slate-300"
-                      >
-                        Cancel Offer
-                      </button>
-                    </div>
-                  </>
-                )}
-              </Card>
-            )}
+                        <Select.Option value="ASCENDING_BID">
+                          Ascending Bid
+                        </Select.Option>
+                        <Select.Option value="DESCENDING_BID">
+                          Descending Bid
+                        </Select.Option>
+                        <Select.Option value="SEALED_BID">
+                          Sealed Bid
+                        </Select.Option>
+                        <Select.Option value="DIRECT_SALE">
+                          Direct Sale
+                        </Select.Option>
+                      </Select>
+                      <Button type="primary" onClick={handleNegotiate}>
+                        Submit Offer
+                      </Button>
+
+                      {/* Actions for Breeder Offer */}
+                      <div className="mt-4">
+                        <h9 className="font-mono text-[#bcab6f]">
+                          Note! Clicking Accept Offer only if you have confirmed
+                          your deal with us.
+                        </h9>
+                        <button
+                          type="primary"
+                          onClick={handleAccept}
+                          className="bg-red-600 font-bold rounded-lg px-4 py-2 hover:bg-red-500 mx-4"
+                        >
+                          Accept Offer
+                        </button>
+                        <button
+                          type="default"
+                          onClick={handleCancel}
+                          className="bg-slate-400 rounded-lg px-4 py-2 hover:bg-slate-300"
+                        >
+                          Cancel Offer
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </Card>
+              )}
           </div>
 
           {/* Media Section */}
           <div>
-            <div className="flex flex-row justify-between gap-5 p-3">
+            <div className="flex flex-row justify-between gap-5 p-3 mt-3">
               {/* Image Display */}
               <div className="">
                 <strong className="text-[#bcab6f] font-extrabold text-2xl">
@@ -458,7 +456,6 @@ const RequestDetails = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

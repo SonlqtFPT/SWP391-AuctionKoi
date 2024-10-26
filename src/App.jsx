@@ -18,8 +18,8 @@ import BreederProfilePage from "./features/breeder/pages/BreederProfilePage.jsx"
 import BreederProfileDetails from "./features/breeder/components/BreederProfileDetails.jsx";
 import BreederRequest from "./features/breeder/components/BreederRequest.jsx";
 import Upcommming from "./features/Upcomming-auction/Upcomming-auction.jsx";
-import ViewDetail from "./features/breeder/components/RequestDetails.jsx";
 import UpdateRequest from "./features/breeder/components/UpdatebreederRequest.jsx";
+import BreederRequestDetailsPage from "./features/breeder/pages/BreederRequestDetailsPage.jsx";
 
 export default function App() {
   return (
@@ -69,7 +69,7 @@ export default function App() {
             path="/breeder/viewdetail/:requestId"
             element={
               <ProtectedRoute allowedRoles={["BREEDER"]}>
-                <ViewDetail />
+                <BreederRequestDetailsPage />
               </ProtectedRoute>
             }
           />
@@ -89,14 +89,6 @@ export default function App() {
               </ProtectedRoute>
             }
           >
-            <Route
-              index
-              element={
-                <ProtectedRoute allowedRoles={["BREEDER"]}>
-                  <BreederRequest />
-                </ProtectedRoute>
-              }
-            />
 
             <Route
               path="details" // Nested path, becomes /breeder/profile/details

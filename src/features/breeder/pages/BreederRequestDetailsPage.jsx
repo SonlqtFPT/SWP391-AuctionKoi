@@ -1,17 +1,17 @@
-import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
-import BreederProfile from '../components/BreederProfile';
+import Header from '../../../components/Header';
+import RequestDetails from '../components/RequestDetails';
 
-function BreederProfilePage() {
+function BreederRequestDetailsPage() {
     return (
         <div className="flex flex-col min-h-screen">
             <Header />
             <div className="flex flex-grow">
-                <BreederProfile />
+                <RequestDetails />
             </div>
             <Footer />
         </div>
     );
 }
 
-export default BreederProfilePage
+export default BreederRequestDetailsPage
