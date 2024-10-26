@@ -6,10 +6,8 @@ import org.springframework.stereotype.Service;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
 import swp.koi.model.*;
-import swp.koi.model.enums.AccountRoleEnum;
-import swp.koi.model.enums.InvoiceStatusEnums;
-import swp.koi.model.enums.LotRegisterStatusEnum;
-import swp.koi.model.enums.TransactionTypeEnum;
+import swp.koi.model.enums.*;
+import swp.koi.repository.AuctionRequestRepository;
 import swp.koi.repository.InvoiceRepository;
 import swp.koi.repository.LotRegisterRepository;
 import swp.koi.repository.LotRepository;
@@ -38,6 +36,7 @@ public class InvoiceServiceImpl implements InvoiceService{
     private final MemberService memberService;
     private final AccountService accountService;
     private final LotRegisterRepository lotRegisterRepository;
+    private final AuctionRequestRepository auctionRequestRepository;
 
 
     @Override
@@ -123,8 +122,10 @@ public class InvoiceServiceImpl implements InvoiceService{
 
         invoice.setFinalAmount(newPrice);
         invoiceRepository.save(invoice);
+
         String paymentLink = generatePaymentLink(invoice.getLot().getLotId(), member.getMemberId());
         invoice.setPaymentLink(paymentLink);
+
         return invoiceRepository.save(invoice);
     }
 
@@ -175,10 +176,6 @@ public class InvoiceServiceImpl implements InvoiceService{
 
         invoice.setStatus(InvoiceStatusEnums.DELIVERY_IN_PROGRESS);
         invoiceRepository.save(invoice);
-
-        LotRegister lotRegister = invoice.getLotRegister();
-        lotRegister.setStatus(LotRegisterStatusEnum.DELIVERY_IN_PROGRESS);
-        lotRegisterRepository.save(lotRegister);
     }
 
     @Override
@@ -212,9 +209,10 @@ public class InvoiceServiceImpl implements InvoiceService{
         );
 
         if(status.equals(InvoiceStatusEnums.DELIVERED)){
-            LotRegister lotRegister = invoice.getLotRegister();
-            lotRegister.setStatus(LotRegisterStatusEnum.BREEDER_FUND_TRANSFER);
-            lotRegisterRepository.save(lotRegister);
+            AuctionRequest auctionRequest = invoice.getKoiFish().getAuctionRequest();
+            auctionRequest.setAuctionFinalPrice(invoice.getSubTotal());
+            auctionRequest.setStatus(AuctionRequestStatusEnum.WAITING_FOR_PAYMENT);
+            auctionRequestRepository.save(auctionRequest);
         }
 
         if(statues.contains(status)){

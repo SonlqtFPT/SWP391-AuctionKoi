@@ -125,8 +125,12 @@ public class LotRegisterServiceImpl implements LotRegisterService{
     }
 
     @Override
-    public List<LotRegister> findAllLotRegisWithStatus(LotRegisterStatusEnum status){
-        return lotRegisterRepository.findAllByStatus(status);
+    public List<LotRegisterResponseDTO> findAllLotRegisWithStatus(LotRegisterStatusEnum status){
+        List<LotRegister> refundList = lotRegisterRepository.findAllByStatus(status);
+        return refundList
+                .stream()
+                .map(lotRegister -> modelMapper.map(lotRegister, LotRegisterResponseDTO.class))
+                .collect(Collectors.toList());
     }
 
     @Override

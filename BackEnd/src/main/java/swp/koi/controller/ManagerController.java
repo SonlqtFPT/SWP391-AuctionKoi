@@ -5,12 +5,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import swp.koi.convert.AccountEntityToDtoConverter;
+import swp.koi.convert.LotRegisterEntityToDtoConverter;
 import swp.koi.dto.request.AccountRegisterDTO;
 import swp.koi.dto.response.AccountFullResponseDto;
+import swp.koi.dto.response.LotRegisterResponseDTO;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.dto.response.ResponseData;
+import swp.koi.model.LotRegister;
 import swp.koi.model.Member;
+import swp.koi.model.enums.LotRegisterStatusEnum;
 import swp.koi.service.accountService.AccountService;
+import swp.koi.service.lotRegisterService.LotRegisterService;
 import swp.koi.service.memberService.MemberService;
 
 import java.util.List;
@@ -22,8 +27,9 @@ import java.util.List;
 public class ManagerController {
 
     private final AccountEntityToDtoConverter accountEntityToDtoConverter;
+    private final LotRegisterEntityToDtoConverter lotRegisterEntityToDtoConverter;
     private final AccountService accountService;
-    private final MemberService memberService;
+    private final LotRegisterService lotRegisterService;
 
     @Operation(summary = "Create manager account")
     @PostMapping("/manager/create-manager-account")
@@ -49,7 +55,9 @@ public class ManagerController {
 
     @Operation(summary = "api to get list of member to refund")
     @GetMapping("/manager/refund-notificate")
-    public ResponseData<List<Member>> getListOfMemberToRefund(){
-        return new ResponseData<>(ResponseCode.SUCCESS, memberService.getAllMembersToRefund());
+    public ResponseData<List<LotRegisterResponseDTO>> getListOfMemberToRefund(){
+        List<LotRegisterResponseDTO> lotRegisterList = lotRegisterService.findAllLotRegisWithStatus(LotRegisterStatusEnum.LOSE);
+
+        return new ResponseData<>(ResponseCode.SUCCESS, lotRegisterList);
     }
 }
