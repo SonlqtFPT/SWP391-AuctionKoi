@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Polyline } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Polyline,
+  ImageOverlay, // Import ImageOverlay
+} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import axios from "axios";
@@ -15,6 +21,12 @@ const redIcon = new L.Icon({
   popupAnchor: [1, -34],
   shadowSize: [41, 41],
 });
+
+// Coordinates to define the sensitive area bounds
+const sensitiveAreaBounds = [
+  [17.721816, 109.454496], // Top-left corner
+  [7.420495, 116.904607], // Bottom-right corner
+];
 
 const MapComponent = ({
   startPoint,
@@ -133,6 +145,13 @@ const MapComponent = ({
 
         {/* Display the Route */}
         {route.length > 0 && <Polyline positions={route} color="blue" />}
+
+        {/* Image Overlay for Sensitive Area */}
+        <ImageOverlay
+          bounds={sensitiveAreaBounds}
+          url="https://firebasestorage.googleapis.com/v0/b/swptest-7f1bb.appspot.com/o/vietnam.png?alt=media&token=060b595f-d49a-475b-9faf-2326e8d95547 " // Replace with your image URL
+          opacity={0.7} // Set opacity as needed
+        />
       </MapContainer>
     </div>
   );
