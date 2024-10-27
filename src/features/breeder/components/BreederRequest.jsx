@@ -158,7 +158,7 @@ const BreederRequest = () => {
         return "Canceled";
       case "INSPECTION_IN_PROGRESS":
         return "Assigned";
-      case "PENDING":
+      case "REQUESTING":
         return "Requesting";
       case "PENDING_NEGOTIATION":
         return "Negotiating";
@@ -185,7 +185,7 @@ const BreederRequest = () => {
         return "red";
       case "INSPECTION_IN_PROGRESS":
         return "orange";
-      case "PENDING":
+      case "REQUESTING":
         return "blue";
       case "PENDING_NEGOTIATION":
         return "purple";

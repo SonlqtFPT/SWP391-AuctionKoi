@@ -18,7 +18,7 @@ import BreederProfilePage from "./features/breeder/pages/BreederProfilePage.jsx"
 import BreederProfileDetails from "./features/breeder/components/BreederProfileDetails.jsx";
 import BreederRequest from "./features/breeder/components/BreederRequest.jsx";
 import Upcommming from "./features/Upcomming-auction/Upcomming-auction.jsx";
-import UpdateRequest from "./features/breeder/components/UpdatebreederRequest.jsx";
+import UpdateRequest from "./features/breeder/pages/UpdateRequestPage.jsx";
 import BreederRequestDetailsPage from "./features/breeder/pages/BreederRequestDetailsPage.jsx";
 import MemberProfilePage from "./features/user/pages/MemberProfilePage.jsx";
 import MemberProfileDetails from "./features/user/components/MemberProfileDetails.jsx";
@@ -51,8 +51,6 @@ export default function App() {
             }
           />{" "}
           {/* Admin Page */}
-
-
           <Route
             path="/member/profile"
             element={
@@ -80,8 +78,6 @@ export default function App() {
             />
           </Route>
           {/* Member Page */}
-
-
           <Route
             path="/breeder/add-request"
             element={
@@ -114,7 +110,6 @@ export default function App() {
               </ProtectedRoute>
             }
           >
-
             <Route
               path="details" // Nested path, becomes /breeder/profile/details
               element={
@@ -134,8 +129,6 @@ export default function App() {
             />
           </Route>
           {/* Breeder Page */}
-
-
           <Route
             path="/staff"
             element={

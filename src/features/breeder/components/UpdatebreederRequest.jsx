@@ -20,7 +20,7 @@ const UpdateBreederRequest = () => {
 
   const get_variety_api = "variety/get-all-variety";
   const get_request_api = `request/get/${requestId}`;
-  const patch_update_api = `breeder/request/update/${requestId}`;
+  const put_update_api = `breeder/request/update/${requestId}`;
 
   const fetchRequest = async () => {
     const token = localStorage.getItem("accessToken");
@@ -37,7 +37,7 @@ const UpdateBreederRequest = () => {
 
       setRequest(koiFish);
       form.setFieldsValue({
-        varietyName: koiFish.variety?.varietyName,
+        varietyName: koiFish.variety.varietyName,
         age: koiFish.age,
         gender: koiFish.gender,
         size: koiFish.size,
@@ -93,7 +93,6 @@ const UpdateBreederRequest = () => {
       if (videoList.length) media.videoUrl = videoList[0].url;
 
       const payload = {
-        accountId,
         koiFish: {
           varietyName: values.varietyName,
           gender: values.gender,
@@ -101,7 +100,7 @@ const UpdateBreederRequest = () => {
           size: values.size,
           price: values.price,
           auctionTypeName: values.auctionTypeName,
-          media,
+          media: media, // Thêm media vào payload
         },
       };
 
@@ -109,21 +108,21 @@ const UpdateBreederRequest = () => {
 
       // Send POST request to API
       const token = localStorage.getItem("accessToken");
-      const response = await api.post("/breeder/request/addRequest", payload, {
+      const response = await api.put(put_update_api, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
       console.log("API response:", response);
-      message.success("Breeder request submitted successfully!");
+      message.success("Breeder request modified successfully!");
       navigate("/breeder/profile/view-request");
     } catch (error) {
       const errorMessage =
         error.response?.data?.message ||
-        "Failed to submit breeder request. Please try again.";
+        "Failed to modify breeder request. Please try again.";
       message.error(errorMessage);
-      console.error("Error in submitting request:", error);
+      console.error("Error in update request:", error);
     } finally {
       setLoading(false);
     }
