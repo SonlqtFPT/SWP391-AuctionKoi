@@ -13,12 +13,30 @@ import {
 } from "antd";
 import api from "../../../config/axios";
 import { FaFish, FaFlag } from "react-icons/fa"; // Importing required icons
+import confirm from "antd/es/modal/confirm";
 
 const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [offerPrice, setOfferPrice] = useState(null);
   const [offerAuctionType, setOfferAuctionType] = useState(null);
+  const [localOfferPrice, setLocalOfferPrice] = useState(request.price);
+  const defaultAuctionType = "ASCENDING_BID"; // Giá trị mặc định nếu không có giá trị hợp lệ
+  const auctionTypes = [
+    "ASCENDING_BID",
+    "DESCENDING_BID",
+    "SEALED_BID",
+    "FIXED_PRICE_SALE",
+  ];
+
+  // Kiểm tra và gán giá trị mặc định cho localOfferAuctionType
+  const initialAuctionType =
+    request && auctionTypes.includes(request.auctionTypeName)
+      ? request.auctionTypeName
+      : defaultAuctionType;
+
+  const [localOfferAuctionType, setLocalOfferAuctionType] =
+    useState(initialAuctionType);
 
   useEffect(() => {
     if (request) {
@@ -26,62 +44,108 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
       console.log("Request Object:", request);
       setOfferPrice(request.price);
       setOfferAuctionType(request.auctionTypeName);
+      setLocalOfferPrice(request.price);
+      setLocalOfferAuctionType(request.auctionTypeName);
+      const auctionType = auctionTypes.includes(request.auctionTypeName)
+        ? request.auctionTypeName
+        : defaultAuctionType;
+      setLocalOfferAuctionType(auctionType);
     }
   }, [request]);
 
   if (!request) return <p>No request selected.</p>;
 
+  // Format the status
   const formatStatus = (status) => {
     switch (status) {
-      case "INSPECTION_PASSED":
+      case "CONFIRMING":
         return "Confirming";
-      case "INSPECTION_FAILED":
+      case "Cancled":
         return "Canceled";
-      case "INSPECTION_IN_PROGRESS":
+      case "ASSIGNED":
         return "Assigned";
-      case "PENDING":
-        return "Requesting";
-      case "PENDING_NEGOTIATION":
+      case "NEGOTIATING":
         return "Negotiating";
       case "PENDING_MANAGER_OFFER":
         return "Confirming";
       case "PENDING_BREEDER_OFFER":
         return "Negotiating";
-      case "COMPLETED":
-        return "Completed";
       case "CANCELLED":
         return "Cancelled";
-      case "APPROVE":
+      case "REGISTERED":
         return "Registered";
+      case "ASCENDING_BID":
+        return "Ascending Bid";
+      case "SEALED_BID":
+        return "Sealed Bid";
+      case "FIXED_PRICE_SALE":
+        return "Fixed Price Sale";
+      case "DESCENDING_BID":
+        return "Descending Bid";
       default:
         return status.charAt(0) + status.slice(1).toLowerCase();
     }
   };
 
+  // Determine the color for the status tag
   const getStatusColor = (status) => {
     switch (status) {
-      case "INSPECTION_PASSED":
-        return "green";
+      case "CONFIRMING":
+        return "orange";
       case "INSPECTION_FAILED":
         return "red";
-      case "INSPECTION_IN_PROGRESS":
+      case "ASSIGNED":
         return "orange";
-      case "PENDING":
+      case "REQUESTING":
         return "blue";
-      case "PENDING_NEGOTIATION":
-        return "purple";
+      case "NEGOTIATING":
+        return "orange";
       case "PENDING_MANAGER_OFFER":
         return "gold";
       case "PENDING_BREEDER_OFFER":
         return "lime";
       case "COMPLETED":
         return "geekblue";
-      case "CANCELLED":
+      case "CANCELED":
         return "volcano";
-      case "APPROVE":
+      case "REGISTERED":
         return "green";
       default:
         return "default";
+    }
+  };
+
+  const handleAcceptRequest = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await api.post(
+        `/manager/request/negotiation/accept/${request.requestId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Log request and response
+      console.log("Request Body: ", {});
+      console.log("Request Headers: ", {
+        Authorization: `Bearer ${token}`,
+      });
+      console.log("Response: ", response);
+      notification.success({
+        message: "Success",
+        description: "Request accepted successfully!",
+      });
+      fetchRequest();
+      onBack();
+    } catch (error) {
+      console.error("Error accepting request:", error);
+      notification.error({
+        message: "Error",
+        description: "Failed to accept the request.",
+      });
     }
   };
 
@@ -97,23 +161,32 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
 
     try {
       const token = localStorage.getItem("accessToken");
-      await api.post(
-        `/manager/request/negotiation/${request.requestId}`,
-        {
-          offerPrice, // Sử dụng giá trị offerPrice hiện tại
-          auctionTypeName: offerAuctionType,
-        },
+      const body = {
+        price: localOfferPrice,
+        auctionTypeName: localOfferAuctionType,
+      };
+
+      const response = await api.post(
+        `/request/negotiation/${request.requestId}`,
+        body,
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Pass token in Authorization header
+            Authorization: `Bearer ${token}`,
           },
         }
       );
+
+      // Log request and response
+      console.log("Request Body: ", body);
+      console.log("Request Headers: ", {
+        Authorization: `Bearer ${token}`,
+      });
+      console.log("Response: ", response);
       notification.success({
         message: "Success",
         description: "Offer submitted successfully!",
       });
-      fetchRequest;
+      fetchRequest();
       onBack();
     } catch (error) {
       console.error("Error submitting negotiation offer:", error);
@@ -253,7 +326,8 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
                   <strong>Price:</strong> {request.price} (vnd)
                 </p>
                 <p style={{ margin: "0 0 4px" }}>
-                  <strong>Auction Type:</strong> {request.auctionTypeName}
+                  <strong>Auction Type:</strong>{" "}
+                  {formatStatus(request.auctionTypeName)}
                 </p>
               </Col>
             </Row>
@@ -264,7 +338,7 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
             <h3>
               <strong>Actions</strong>
             </h3>
-            {request.status === "PENDING" && (
+            {request.status === "REQUESTING" && (
               <>
                 <Select
                   placeholder="Select staff"
@@ -300,25 +374,24 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
               </>
             )}
 
-            {(request.status === "INSPECTION_PASSED" ||
-              request.status === "PENDING_MANAGER_OFFER") && (
+            {request.status === "CONFIRMING" && (
               <>
                 <h3>
                   <strong>Negotiate</strong>
                 </h3>
-                {request.status === "PENDING_MANAGER_OFFER" && (
+                {request.status === "CONFIRMING" && (
                   <>
                     <p>Waiting for Manager Approve</p>
-                    <p>Breeder's price offer: {offerPrice} vnđ</p>
+                    <p>Breeder's price offer: {offerPrice} vnd</p>
                     <p>Breeder's auction type offer: {offerAuctionType}</p>
                   </>
                 )}
                 <Input
                   type="number"
                   placeholder="Offer Price"
-                  value={offerPrice || ""}
+                  value={localOfferPrice || ""}
                   onChange={(e) =>
-                    setOfferPrice(
+                    setLocalOfferPrice(
                       e.target.value ? Number(e.target.value) : null
                     )
                   }
@@ -326,8 +399,8 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
                 />
                 <Select
                   placeholder="Select Auction Type"
-                  value={offerAuctionType || undefined}
-                  onChange={setOfferAuctionType}
+                  value={localOfferAuctionType || undefined}
+                  onChange={(value) => setLocalOfferAuctionType(value)}
                   style={{ width: "200px", marginBottom: "16px" }}
                 >
                   <Select.Option value="ASCENDING_BID">
@@ -348,11 +421,19 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
                 >
                   Submit Offer
                 </Button>
+                <br></br>
+                <Button
+                  onClick={handleAcceptRequest}
+                  type="primary"
+                  className="bg-blue-400 hover:bg-red-700 text-white"
+                >
+                  Accept Offer
+                </Button>
               </>
             )}
 
-            {request.status === "PENDING_BREEDER_OFFER" && (
-              <p>Waiting for Breeder Approve</p>
+            {request.status === "NEGOTIATING" && (
+              <p>Waiting for Breeder Negotiate</p>
             )}
           </Card>
         </Col>

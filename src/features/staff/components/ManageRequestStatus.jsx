@@ -127,12 +127,6 @@ const ManageRequestStatus = ({ onGoBack }) => {
       key: "breederName",
     },
     {
-      title: "Image",
-      dataIndex: "mediaUrl",
-      key: "mediaUrl",
-      render: (image) => <img src={image} alt="koi fish picture" width={100} />,
-    },
-    {
       title: "Status",
       dataIndex: "status",
       key: "status",
@@ -146,7 +140,7 @@ const ManageRequestStatus = ({ onGoBack }) => {
           <Button onClick={() => handleViewDetail(record)} type="link">
             View Detail
           </Button>
-          {record.status === "INSPECTION_IN_PROGRESS" && (
+          {record.status === "ASSIGNED" && (
             <Button
               onClick={() => showUpdateStatusModal(record)}
               type="primary"
@@ -173,7 +167,9 @@ const ManageRequestStatus = ({ onGoBack }) => {
     <div>
       {showList ? (
         <>
-          <h1 className="text-left font-bold text-2xl my-5">Auction Request Manager</h1>
+          <h1 className="text-left font-bold text-2xl my-5">
+            Auction Request Manager
+          </h1>
           <Table columns={columns} dataSource={auctionRequests} />
 
           {/* Update Status Modal */}
@@ -194,12 +190,8 @@ const ManageRequestStatus = ({ onGoBack }) => {
               onChange={(value) => setSelectedStatus(value)}
               value={selectedStatus}
             >
-              <Select.Option value="INSPECTION_PASSED">
-                Inspection Passed
-              </Select.Option>
-              <Select.Option value="INSPECTION_FAILED">
-                Inspection Failed
-              </Select.Option>
+              <Select.Option value="CONFIRMING">Pass</Select.Option>
+              <Select.Option value="CANCELED">Fail</Select.Option>
             </Select>
           </Modal>
         </>

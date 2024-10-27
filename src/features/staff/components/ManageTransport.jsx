@@ -205,20 +205,30 @@ const ManageTransport = () => {
   // Format the status
   const formatStatus = (status) => {
     switch (status) {
-      case "PENDING":
-        return "Pending";
-      case "PAID":
-        return "Paid";
-      case "OVERDUE":
-        return "Overdue";
-      case "DELIVERY_IN_PROGRESS":
-        return "Delivering";
-      case "DELIVERED":
-        return "Delivered";
-      case "FAILED":
-        return "Failed";
+      case "CONFIRMING":
+        return "Confirming";
+      case "Cancled":
+        return "Canceled";
+      case "ASSIGNED":
+        return "Assigned";
+      case "NEGOTIATING":
+        return "Negotiating";
+      case "PENDING_MANAGER_OFFER":
+        return "Confirming";
+      case "PENDING_BREEDER_OFFER":
+        return "Negotiating";
       case "CANCELLED":
         return "Cancelled";
+      case "REGISTERED":
+        return "Registered";
+      case "ASCENDING_BID":
+        return "Ascending Bid";
+      case "SEALED_BID":
+        return "Sealed Bid";
+      case "FIXED_PRICE_SALE":
+        return "Fixed Price Sale";
+      case "DESCENDING_BID":
+        return "Descending Bid";
       default:
         return status.charAt(0) + status.slice(1).toLowerCase();
     }
@@ -227,20 +237,26 @@ const ManageTransport = () => {
   // Determine the color for the status tag
   const getStatusColor = (status) => {
     switch (status) {
-      case "PENDING":
-        return "blue";
-      case "PAID":
-        return "green";
-      case "OVERDUE":
-        return "red";
-      case "DELIVERY_IN_PROGRESS":
+      case "CONFIRMING":
         return "orange";
-      case "DELIVERED":
-        return "green";
-      case "FAILED":
+      case "INSPECTION_FAILED":
         return "red";
-      case "CANCELLED":
-        return "gray";
+      case "ASSIGNED":
+        return "orange";
+      case "REQUESTING":
+        return "blue";
+      case "NEGOTIATING":
+        return "orange";
+      case "PENDING_MANAGER_OFFER":
+        return "gold";
+      case "PENDING_BREEDER_OFFER":
+        return "lime";
+      case "COMPLETED":
+        return "geekblue";
+      case "CANCELED":
+        return "volcano";
+      case "REGISTERED":
+        return "green";
       default:
         return "default";
     }

@@ -23,8 +23,8 @@ const ManageRequest = () => {
   const [showList, setShowList] = useState(true);
   const [staffList, setStaffList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchField, setSearchField] = useState("requestId"); // Default search field
-  const [dateRange, setDateRange] = useState([null, null]); // Date range for filtering
+  const [searchField, setSearchField] = useState("requestId");
+  const [dateRange, setDateRange] = useState([null, null]);
 
   // Fetch auction requests
   const fetchRequest = async () => {
@@ -33,7 +33,7 @@ const ManageRequest = () => {
       const token = localStorage.getItem("accessToken");
       const response = await api.get("manager/request/getRequest", {
         headers: {
-          Authorization: `Bearer ${token}`, // Pass token in Authorization header
+          Authorization: `Bearer ${token}`,
         },
       });
       const auctionData = response.data.data;
@@ -45,23 +45,22 @@ const ManageRequest = () => {
         image: item.koiFish.media.imageUrl,
         breederId: item.breeder.breederId,
         breederName: item.breeder.breederName,
-        breederLocation: item.breeder.location, // Include breeder location
+        breederLocation: item.breeder.location,
         gender: item.koiFish.gender,
         age: item.koiFish.age,
         size: item.koiFish.size,
         price: item.koiFish.price,
-        auctionTypeName: item.koiFish.auctionTypeName,
+        auctionTypeName: formatStatus(item.koiFish.auctionTypeName), // Ensure formatStatus is applied
         varietyName: item.koiFish.variety.varietyName,
         requestedAt: item.requestedAt,
       }));
 
-      // Sort the requests by requestedAt in descending order
       formattedRequests.sort(
         (a, b) => new Date(b.requestedAt) - new Date(a.requestedAt)
       );
 
       setAuctionRequests(formattedRequests);
-      setFilteredRequests(formattedRequests); // Set filtered requests initially
+      setFilteredRequests(formattedRequests);
     } catch (error) {
       toast.error("Failed to fetch auction request data");
     } finally {
@@ -69,13 +68,12 @@ const ManageRequest = () => {
     }
   };
 
-  // Fetch staff members
   const fetchStaff = async () => {
     try {
       const token = localStorage.getItem("accessToken");
       const response = await api.get("/manager/request/assign-staff/getStaff", {
         headers: {
-          Authorization: `Bearer ${token}`, // Pass token in Authorization header
+          Authorization: `Bearer ${token}`,
         },
       });
       setStaffList(response.data.data);
@@ -89,35 +87,42 @@ const ManageRequest = () => {
     fetchStaff();
   }, []);
 
-  // View request details
   const handleViewDetail = (request) => {
     setSelectedRequest(request);
     setShowList(false);
   };
 
-  // Go back to the request list
   const handleGoBack = () => {
     setShowList(true);
     setSelectedRequest(null);
   };
 
-  // Handle search
   const handleSearch = (value) => {
+    const searchValue = value.toLowerCase();
+
     const filtered = auctionRequests.filter((request) => {
-      if (searchField === "requestedAt" && dateRange[0] && dateRange[1]) {
-        const requestDate = new Date(request.requestedAt);
-        return requestDate >= dateRange[0] && requestDate <= dateRange[1];
-      } else {
-        return request[searchField]
-          .toString()
-          .toLowerCase()
-          .includes(value.toLowerCase());
+      switch (searchField) {
+        case "requestId":
+          return request.requestId.toString().includes(searchValue);
+        case "fishId":
+          return request.fishId.toString().includes(searchValue);
+        case "breederId":
+          return request.breederId.toString().includes(searchValue);
+        case "breederName":
+          return request.breederName.toLowerCase().includes(searchValue);
+        case "status":
+          return request.status.toLowerCase().includes(searchValue);
+        case "auctionTypeName":
+          return request.auctionTypeName.toLowerCase().includes(searchValue);
+        case "varietyName":
+          return request.varietyName.toLowerCase().includes(searchValue);
+        default:
+          return false;
       }
     });
     setFilteredRequests(filtered);
   };
 
-  // Handle date range change
   const handleDateChange = (dates) => {
     setDateRange(dates);
     if (dates[0] && dates[1]) {
@@ -130,11 +135,10 @@ const ManageRequest = () => {
       });
       setFilteredRequests(filtered);
     } else {
-      setFilteredRequests(auctionRequests); // Reset to all if no date is selected
+      setFilteredRequests(auctionRequests);
     }
   };
 
-  // Table columns
   const columns = [
     {
       title: (
@@ -161,6 +165,17 @@ const ManageRequest = () => {
     {
       title: (
         <span className="flex items-center">
+          <FaFish className="mr-2" /> Fish Type
+        </span>
+      ),
+      dataIndex: "varietyName",
+      key: "varietyName",
+      sorter: (a, b) => a.varietyName.localeCompare(b.varietyName),
+      sortDirections: ["ascend", "descend"],
+    },
+    {
+      title: (
+        <span className="flex items-center">
           <FaFish className="mr-2" /> Breeder
         </span>
       ),
@@ -172,6 +187,17 @@ const ManageRequest = () => {
         </span>
       ),
       sorter: (a, b) => a.breederId - b.breederId,
+      sortDirections: ["ascend", "descend"],
+    },
+    {
+      title: (
+        <span className="flex items-center">
+          <FaFlag className="mr-2" /> Auction Type
+        </span>
+      ),
+      dataIndex: "auctionTypeName",
+      key: "auctionTypeName",
+      sorter: (a, b) => a.auctionTypeName.localeCompare(b.auctionTypeName),
       sortDirections: ["ascend", "descend"],
     },
     {
@@ -213,69 +239,67 @@ const ManageRequest = () => {
           <Button onClick={() => handleViewDetail(record)} type="link">
             <FaEye className="mr-1" /> View Detail
           </Button>
-          {/* Removed the Negotiate button */}
         </div>
       ),
     },
   ];
 
-  // Format the status
   const formatStatus = (status) => {
     switch (status) {
-      case "INSPECTION_PASSED":
+      case "CONFIRMING":
         return "Confirming";
-      case "INSPECTION_FAILED":
-        return "Canceled";
-      case "INSPECTION_IN_PROGRESS":
+      case "CANCELLED":
+        return "Cancelled";
+      case "ASSIGNED":
         return "Assigned";
-      case "PENDING":
-        return "Requesting";
-      case "PENDING_NEGOTIATION":
+      case "NEGOTIATING":
         return "Negotiating";
       case "PENDING_MANAGER_OFFER":
         return "Confirming";
       case "PENDING_BREEDER_OFFER":
         return "Negotiating";
-      case "COMPLETED":
-        return "Completed";
-      case "CANCELLED":
-        return "Cancelled";
-      case "APPROVE":
+      case "REGISTERED":
         return "Registered";
+      case "ASCENDING_BID":
+        return "Ascending Bid";
+      case "SEALED_BID":
+        return "Sealed Bid";
+      case "FIXED_PRICE_SALE":
+        return "Fixed Price Sale";
+      case "DESCENDING_BID":
+        return "Descending Bid";
       default:
         return status.charAt(0) + status.slice(1).toLowerCase();
     }
   };
 
-  // Determine the color for the status tag
   const getStatusColor = (status) => {
     switch (status) {
-      case "INSPECTION_PASSED":
-        return "green";
+      case "CONFIRMING":
+        return "orange";
       case "INSPECTION_FAILED":
         return "red";
-      case "INSPECTION_IN_PROGRESS":
+      case "ASSIGNED":
         return "orange";
-      case "PENDING":
+      case "REQUESTING":
         return "blue";
-      case "PENDING_NEGOTIATION":
-        return "purple";
+      case "NEGOTIATING":
+        return "orange";
       case "PENDING_MANAGER_OFFER":
         return "gold";
       case "PENDING_BREEDER_OFFER":
         return "lime";
       case "COMPLETED":
         return "geekblue";
-      case "CANCELLED":
+      case "CANCELED":
         return "volcano";
-      case "APPROVE":
+      case "REGISTERED":
         return "green";
       default:
         return "default";
     }
   };
 
-  // Format date for display
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleString();
@@ -304,6 +328,7 @@ const ManageRequest = () => {
                   <Option value="status">Status</Option>
                   <Option value="requestedAt">Created At</Option>
                   <Option value="breederName">Breeder Name</Option>
+                  <Option value="auctionTypeName">Auction Type</Option>
                 </Select>
 
                 {searchField === "requestedAt" ? (

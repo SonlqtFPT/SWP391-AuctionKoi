@@ -150,54 +150,60 @@ const BreederRequest = () => {
     setFilteredRequests(requests);
   };
 
+  // Format the status
   const formatStatus = (status) => {
     switch (status) {
-      case "INSPECTION_PASSED":
+      case "CONFIRMING":
         return "Confirming";
-      case "INSPECTION_FAILED":
+      case "Cancled":
         return "Canceled";
-      case "INSPECTION_IN_PROGRESS":
+      case "ASSIGNED":
         return "Assigned";
-      case "REQUESTING":
-        return "Requesting";
-      case "PENDING_NEGOTIATION":
+      case "NEGOTIATING":
         return "Negotiating";
       case "PENDING_MANAGER_OFFER":
         return "Confirming";
       case "PENDING_BREEDER_OFFER":
         return "Negotiating";
-      case "COMPLETED":
-        return "Completed";
       case "CANCELLED":
         return "Cancelled";
-      case "APPROVE":
+      case "REGISTERED":
         return "Registered";
+      case "ASCENDING_BID":
+        return "Ascending Bid";
+      case "SEALED_BID":
+        return "Sealed Bid";
+      case "FIXED_PRICE_SALE":
+        return "Fixed Price Sale";
+      case "DESCENDING_BID":
+        return "Descending Bid";
       default:
         return status.charAt(0) + status.slice(1).toLowerCase();
     }
   };
 
+  // Determine the color for the status tag
   const getStatusColor = (status) => {
     switch (status) {
-      case "INSPECTION_PASSED":
-        return "green";
+      case "CONFIRMING":
+        return "orange";
       case "INSPECTION_FAILED":
         return "red";
-      case "INSPECTION_IN_PROGRESS":
+      case "ASSIGNED":
         return "orange";
       case "REQUESTING":
         return "blue";
-      case "PENDING_NEGOTIATION":
-        return "purple";
+      case "NEGOTIATING":
+        return "orange";
       case "PENDING_MANAGER_OFFER":
         return "gold";
       case "PENDING_BREEDER_OFFER":
         return "lime";
       case "COMPLETED":
         return "geekblue";
-      case "CANCELLED":
+      case "CANCELED":
         return "volcano";
-      case "APPROVE":
+      case "REGISTERED":
         return "green";
       default:
         return "default";

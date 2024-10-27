@@ -47,54 +47,60 @@ const RequestDetails = () => {
     }
   };
 
+  // Format the status
   const formatStatus = (status) => {
     switch (status) {
-      case "INSPECTION_PASSED":
+      case "CONFIRMING":
         return "Confirming";
-      case "INSPECTION_FAILED":
+      case "Cancled":
         return "Canceled";
-      case "INSPECTION_IN_PROGRESS":
+      case "ASSIGNED":
         return "Assigned";
-      case "REQUESTING":
-        return "Requesting";
-      case "PENDING_NEGOTIATION":
+      case "NEGOTIATING":
         return "Negotiating";
       case "PENDING_MANAGER_OFFER":
         return "Confirming";
       case "PENDING_BREEDER_OFFER":
         return "Negotiating";
-      case "COMPLETED":
-        return "Completed";
       case "CANCELLED":
         return "Cancelled";
-      case "APPROVE":
+      case "REGISTERED":
         return "Registered";
+      case "ASCENDING_BID":
+        return "Ascending Bid";
+      case "SEALED_BID":
+        return "Sealed Bid";
+      case "FIXED_PRICE_SALE":
+        return "Fixed Price Sale";
+      case "DESCENDING_BID":
+        return "Descending Bid";
       default:
         return status.charAt(0) + status.slice(1).toLowerCase();
     }
   };
 
+  // Determine the color for the status tag
   const getStatusColor = (status) => {
     switch (status) {
-      case "INSPECTION_PASSED":
-        return "green";
+      case "CONFIRMING":
+        return "orange";
       case "INSPECTION_FAILED":
         return "red";
-      case "INSPECTION_IN_PROGRESS":
+      case "ASSIGNED":
         return "orange";
       case "REQUESTING":
         return "blue";
-      case "PENDING_NEGOTIATION":
-        return "purple";
+      case "NEGOTIATING":
+        return "orange";
       case "PENDING_MANAGER_OFFER":
         return "gold";
       case "PENDING_BREEDER_OFFER":
         return "lime";
       case "COMPLETED":
         return "geekblue";
-      case "CANCELLED":
+      case "CANCELED":
         return "volcano";
-      case "APPROVE":
+      case "REGISTERED":
         return "green";
       default:
         return "default";
@@ -117,7 +123,7 @@ const RequestDetails = () => {
     console.log("Chạy nè", offerAuctionType);
     try {
       const response = await api.post(
-        `/breeder/request/negotiation/send-negotiation/${request.requestId}`,
+        `/request/negotiation/${request.requestId}`,
         {
           price: offerPrice,
           auctionTypeName: offerAuctionType,
@@ -128,7 +134,7 @@ const RequestDetails = () => {
           },
         }
       );
-
+      console.log(offerAuctionType);
       console.log("Chạy nè");
       console.log(response);
       notification.success({
@@ -284,11 +290,11 @@ const RequestDetails = () => {
                     {new Date(request.requestedAt).toLocaleString()}
                   </p>
                   <p>
-                    <strong>Price:</strong> {request.koiFish.price} vnđ
+                    <strong>Price:</strong> {request.koiFish.price} vnd
                   </p>
                   <p>
                     <strong>Auction Type:</strong>{" "}
-                    {request.koiFish.auctionTypeName}
+                    {formatStatus(request.koiFish.auctionTypeName)}
                   </p>
                   <h6 className="font-extrabold text-2xl text-[#bcab6f]">
                     Request Info
@@ -320,15 +326,13 @@ const RequestDetails = () => {
             </div>
 
             {/* Negotiation Section */}
-            {/* Only render the negotiation card when the status is PENDING_MANAGER_OFFER or PENDING_BREEDER_OFFER */}
-            {(request.status === "PENDING_MANAGER_OFFER" ||
-              request.status === "PENDING_BREEDER_OFFER") && (
+            {request.status === "NEGOTIATING" && (
               <Card className="bg-gray-900 hover:bg-gray-800 rounded-2xl  my-4 border-2 border-[#bcab6f] py-4 pl-10 outline outline-offset-4 outline-white mx-60">
                 <h7 className="font-extrabold text-2xl text-[#bcab6f]">
                   Negotiation
                 </h7>
 
-                {request.status === "PENDING_BREEDER_OFFER" && (
+                {request.status === "NEGOTIATING" && (
                   <>
                     {/* Display Manager's Offer */}
                     <div style={{ marginBottom: "16px" }}>
@@ -336,7 +340,7 @@ const RequestDetails = () => {
                         Manager's Offer
                       </h8>
                       <p className="text-white font-semibold">
-                        <strong>Offer Price:</strong> ${request.offerPrice}
+                        <strong>Offer Price:</strong> {request.offerPrice} (vnd)
                       </p>
                       <p className="text-white font-semibold">
                         <strong>Auction Type:</strong>{" "}
