@@ -8,5 +8,6 @@ public enum AuctionRequestStatusEnum {
     REGISTERED,
     REJECT,
     CANCELED,
-    WAITING_FOR_PAYMENT
+    WAITING_FOR_PAYMENT,
+    PAID
 }

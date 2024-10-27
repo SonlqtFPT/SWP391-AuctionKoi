@@ -1,6 +1,7 @@
 package swp.koi.service.auctionRequestService;
 
 import swp.koi.dto.request.*;
+import swp.koi.exception.KoiException;
 import swp.koi.model.AuctionRequest;
 
 import java.util.List;
@@ -26,9 +27,9 @@ public interface AuctionRequestService {
 
     void changeStatus(Integer requestId, UpdateStatusDTO request);
 
-    void negotiation(Integer requestId, AuctionRequestNegotiationDTO request);
+    void negotiation(Integer requestId, AuctionRequestNegotiationDTO request) throws KoiException;
 
-    void acceptNegotiation(Integer requestId);
+    void acceptNegotiation(Integer requestId) throws KoiException;
 
     void managerAcceptNegotiation(Integer requestId);
 
@@ -37,5 +38,7 @@ public interface AuctionRequestService {
     void managerAcceptRequest(Integer requestId);
 
     AuctionRequest getRequestDetail(Integer requestId);
+
+    void completePaymentForBreeder(Integer requestAuctionId);
 
 }

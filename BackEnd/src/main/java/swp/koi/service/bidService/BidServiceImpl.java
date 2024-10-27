@@ -204,7 +204,7 @@ public class BidServiceImpl implements BidService {
         AuctionType auctionType = lot.getAuctionType();
 
         List<Bid> bidList = bidRepository.getBidByLot(lot).orElse(null);
-        if(bidList == null || bidList.isEmpty()) {
+        if(bidList == null || bidList.isEmpty() && bidRequestDto.getPrice() == lot.getStartingPrice()) {
             return;
         }
 

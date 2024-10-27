@@ -23,7 +23,6 @@ import swp.koi.service.koiFishService.KoiFishService;
 import swp.koi.service.mediaService.MediaService;
 import swp.koi.service.varietyService.VarietyService;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -297,6 +296,15 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     public AuctionRequest getRequestDetail(Integer requestId) throws KoiException{
         AuctionRequest auctionRequest = auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
         return auctionRequest;
+    }
+
+    @Override
+    public void completePaymentForBreeder(Integer requestAuctionId) {
+        AuctionRequest auctionRequest = auctionRequestRepository.findById(requestAuctionId)
+                .orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
+
+        auctionRequest.setStatus(AuctionRequestStatusEnum.PAID);
+        auctionRequestRepository.save(auctionRequest);
     }
 
 
