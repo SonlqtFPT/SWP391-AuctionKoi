@@ -121,7 +121,7 @@ public class AuctionRequestController {
 
     @Operation(summary = "Send negotiation")
     @PostMapping("/request/negotiation/{requestId}")
-    public ResponseData<?> managerNegotiation(@PathVariable Integer requestId, @RequestBody AuctionRequestNegotiationDTO request){
+    public ResponseData<?> negotiation(@PathVariable Integer requestId, @RequestBody AuctionRequestNegotiationDTO request){
         try{
             auctionRequestService.negotiation(requestId, request);
             return new ResponseData<>(ResponseCode.SUCCESS);
