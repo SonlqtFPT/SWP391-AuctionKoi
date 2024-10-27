@@ -86,55 +86,6 @@ public class AuctionRequestController {
         }
     }
 
-    @Operation(summary = "Retrieve all pending request")
-    @GetMapping("/breeder/request/get-request/pending/{accountId}")
-    public ResponseData<?> getAllPendingRequest(@PathVariable Integer accountId){
-        List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllRequestingRequest(accountId));
-        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
-    }
-
-    @Operation(summary = "Retrieve all inspection pending request")
-    @GetMapping("/breeder/request/get-request/inspection-pending/{accountId}")
-    public ResponseData<?> getAllInspectionPendingRequest(@PathVariable Integer accountId){
-        List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllAssignedRequest(accountId));
-        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
-    }
-
-    @Operation(summary = "Retrieve all inspection passed request")
-    @GetMapping("/breeder/request/get-request/inspection-passed/{accountId}")
-    public ResponseData<?> getAllInspectionPassedRequest(@PathVariable Integer accountId){
-        List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllInspectionPassedRequest(accountId));
-        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
-    }
-
-    @Operation(summary = "Retrieve all negotiating request")
-    @GetMapping("/breeder/request/get-request/negotiating/{accountId}")
-    public ResponseData<?> getAllNegotiatingRequest(@PathVariable Integer accountId){
-        List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllNegotiatingRequest(accountId));
-        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
-    }
-
-    @Operation(summary = "Retrieve all approved request")
-    @GetMapping("/breeder/request/get-request/approved/{accountId}")
-    public ResponseData<?> getAllRegisteredRequest(@PathVariable Integer accountId){
-        List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllRegisteredRequest(accountId));
-        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
-    }
-
-    @Operation(summary = "Retrieve all rejected request")
-    @GetMapping("/breeder/request/get-request/rejected/{accountId}")
-    public ResponseData<?> getAllRejectedRequest(@PathVariable Integer accountId){
-        List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllRejectedRequest(accountId));
-        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
-    }
-
-    @Operation(summary = "Retrieve all cancelled request")
-    @GetMapping("/breeder/request/get-request/cancelled/{accountId}")
-    public ResponseData<?> getAllCancelledRequest(@PathVariable Integer accountId){
-        List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllCancelledRequest(accountId));
-        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
-    }
-
     @Operation(summary = "Retrieve all request for manager")
     @GetMapping("/manager/request/getRequest")
     public ResponseData<List<AuctionRequestResponseDTO>> getAllAuctionRequest(){
@@ -168,7 +119,7 @@ public class AuctionRequestController {
         return new ResponseData<>(ResponseCode.AUCTION_STATUS_CHANGE);
     }
 
-    @Operation(summary = "Send negotiation to breeder")
+    @Operation(summary = "Send negotiation")
     @PostMapping("/request/negotiation/{requestId}")
     public ResponseData<?> managerNegotiation(@PathVariable Integer requestId, @RequestBody AuctionRequestNegotiationDTO request){
         try{
