@@ -116,7 +116,7 @@ const Header = () => {
         </div>
 
         {/* Center menu items container */}
-        <div className=" hidden flex-grow sm:flex absolute left-1/2 transform -translate-x-1/2">
+        <div className="invisible flex-grow absolute left-1/2 transform -translate-x-1/2 md:visible">
           <ul className="flex font-semibold font-heading space-x-8 content-center">
             <li className="flex items-center space-x-2 hover:bg-red-500 min-w-max rounded-full hover:text-black">
               <NavLink
