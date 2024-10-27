@@ -10,5 +10,6 @@ public enum AuctionRequestStatusEnum {
     APPROVE,
     REJECT,
     CANCELED,
-    WAITING_FOR_PAYMENT
+    WAITING_FOR_PAYMENT,
+    PAID
 }

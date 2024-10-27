@@ -5,34 +5,25 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import swp.koi.convert.AuctionRequestDtoToEntityConverter;
-import swp.koi.convert.AuctionRequestEntityToDtoConverter;
 import swp.koi.convert.KoiFishDtoToEntitConverter;
 import swp.koi.dto.request.*;
-import swp.koi.dto.response.AuctionRequestResponseDTO;
-import swp.koi.dto.response.AuctionResponseDTO;
-import swp.koi.dto.response.KoiBreederResponseDTO;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
 import swp.koi.model.*;
 import swp.koi.model.enums.AccountRoleEnum;
 import swp.koi.model.enums.AuctionRequestStatusEnum;
 import swp.koi.model.enums.KoiFishStatusEnum;
-import swp.koi.model.enums.TokenType;
 import swp.koi.repository.AuctionRequestRepository;
 import swp.koi.service.accountService.AccountService;
-import swp.koi.service.accountService.AccountServiceImpl;
 import swp.koi.service.auctionTypeService.AuctionTypeService;
 import swp.koi.service.jwtService.JwtService;
 import swp.koi.service.koiBreederService.KoiBreederService;
-import swp.koi.service.koiBreederService.KoiBreederServiceImpl;
 import swp.koi.service.koiFishService.KoiFishService;
 import swp.koi.service.mediaService.MediaService;
 import swp.koi.service.varietyService.VarietyService;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -381,5 +372,14 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
             return auctionRequestRepository.findAllByStatusAndBreederId(AuctionRequestStatusEnum.CANCELED, account.getKoiBreeder().getBreederId());
         else
             throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
+    }
+
+    @Override
+    public void completePaymentForBreeder(Integer requestAuctionId) {
+        AuctionRequest auctionRequest = auctionRequestRepository.findById(requestAuctionId)
+                .orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
+
+        auctionRequest.setStatus(AuctionRequestStatusEnum.PAID);
+        auctionRequestRepository.save(auctionRequest);
     }
 }

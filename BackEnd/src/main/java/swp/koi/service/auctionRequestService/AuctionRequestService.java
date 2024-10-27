@@ -55,4 +55,6 @@ public interface AuctionRequestService {
     List<AuctionRequest> getAllRejectedRequest(Integer accountId);
 
     List<AuctionRequest> getAllCancelledRequest(Integer accountId);
+
+    void completePaymentForBreeder(Integer requestAuctionId);
 }
