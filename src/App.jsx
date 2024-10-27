@@ -20,6 +20,9 @@ import BreederRequest from "./features/breeder/components/BreederRequest.jsx";
 import Upcommming from "./features/Upcomming-auction/Upcomming-auction.jsx";
 import UpdateRequest from "./features/breeder/components/UpdatebreederRequest.jsx";
 import BreederRequestDetailsPage from "./features/breeder/pages/BreederRequestDetailsPage.jsx";
+import MemberProfilePage from "./features/user/pages/MemberProfilePage.jsx";
+import MemberProfileDetails from "./features/user/components/MemberProfileDetails.jsx";
+import UpdatePassword from "./features/user/components/UpdatePassword.jsx";
 
 export default function App() {
   return (
@@ -48,15 +51,37 @@ export default function App() {
             }
           />{" "}
           {/* Admin Page */}
+
+
           <Route
-            path="/member"
+            path="/member/profile"
             element={
               <ProtectedRoute allowedRoles={["MEMBER"]}>
-                <Auction />
+                <MemberProfilePage />
               </ProtectedRoute>
             }
-          />{" "}
+          >
+            <Route
+              path="details" // Nested path, becomes /breeder/profile/details
+              element={
+                <ProtectedRoute allowedRoles={["MEMBER"]}>
+                  <MemberProfileDetails />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="update-password" // Nested path, becomes /breeder/profile/details
+              element={
+                <ProtectedRoute allowedRoles={["MEMBER"]}>
+                  <UpdatePassword />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
           {/* Member Page */}
+
+
           <Route
             path="/breeder/add-request"
             element={
@@ -109,6 +134,8 @@ export default function App() {
             />
           </Route>
           {/* Breeder Page */}
+
+
           <Route
             path="/staff"
             element={

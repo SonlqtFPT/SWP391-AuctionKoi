@@ -92,7 +92,7 @@ const Header = () => {
       case "BREEDER":
         return "/breeder/profile/view-request";
       case "MEMBER":
-        return "/member";
+        return "/member/profile/details";
       case "STAFF":
         return "/staff";
       default:
