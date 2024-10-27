@@ -73,8 +73,8 @@ public class KoiFishServiceImpl implements KoiFishService{
     }
 
     @Override
-    public List<KoiFish> getKoiFishFromApproveRequest() {
-        List<AuctionRequest> auctionRequestList = auctionRequestRepository.findAllFishByStatus(AuctionRequestStatusEnum.APPROVE);
+    public List<KoiFish> getKoiFishFromRegisteredRequest() {
+        List<AuctionRequest> auctionRequestList = auctionRequestRepository.findAllFishByStatus(AuctionRequestStatusEnum.REGISTERED);
 
         List<KoiFish> koiFishList = auctionRequestList.stream()
                 .map(AuctionRequest::getKoiFish)

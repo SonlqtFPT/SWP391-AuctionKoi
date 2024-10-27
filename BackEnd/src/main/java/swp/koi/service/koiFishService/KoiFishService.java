@@ -9,7 +9,7 @@ public interface KoiFishService {
     KoiFish createKoiFishFromRequest(KoiFishDTO koiRequest, MediaDTO mediaRequest);
     KoiFish findByFishId(Integer fishId);
 
-    List<KoiFish> getKoiFishFromApproveRequest();
+    List<KoiFish> getKoiFishFromRegisteredRequest();
 
     void saveFish(KoiFish koiFish);
 

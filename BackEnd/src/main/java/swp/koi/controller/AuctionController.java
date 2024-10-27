@@ -39,7 +39,7 @@ public class AuctionController {
     @GetMapping("/manager/getFish")
     public ResponseData<?> getKoiFishFromApproveRequest(){
         List<KoiFishResponseDTO> response = koiFishEntityToDtoConverter
-                .convertFishList(koiFishService.getKoiFishFromApproveRequest());
+                .convertFishList(koiFishService.getKoiFishFromRegisteredRequest());
         return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
     }
 

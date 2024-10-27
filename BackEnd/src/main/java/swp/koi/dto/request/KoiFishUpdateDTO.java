@@ -14,8 +14,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class KoiFishUpdateDTO {
 
-    Integer fishId;
-
     @NotBlank(message = "Variety name is required")
     private String varietyName;
 

@@ -22,7 +22,6 @@ import java.util.List;
 @Table(name = "Auction", indexes = {
         @Index(name = "idx_auction_start_time", columnList = "startTime"),
         @Index(name = "idx_auction_end_time", columnList = "endTime"),
-        @Index(name = "idx_auction_auction_type_id", columnList = "auctionTypeId"),
         @Index(name = "idx_auction_status", columnList = "status")
 })
 @AllArgsConstructor
