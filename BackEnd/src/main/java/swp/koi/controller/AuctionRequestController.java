@@ -146,7 +146,7 @@ public class AuctionRequestController {
     public ResponseData<?> managerCancelRequest(@PathVariable Integer requestId){
         try{
             auctionRequestService.managerCancelRequest(requestId);
-            return new ResponseData<>(ResponseCode.SUCCESS);
+            return new ResponseData<>(ResponseCode.CANCEL_REQUEST_SUCCESS);
         } catch (KoiException e) {
             return new ResponseData<>(e.getResponseCode());
         }
