@@ -251,10 +251,11 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     @Override
     public void managerAcceptNegotiation(Integer requestId) throws KoiException{
         AuctionRequest auctionRequest = auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
-        if(auctionRequest.getStatus().equals(AuctionRequestStatusEnum.NEGOTIATING) && auctionRequest.getKoiFish().getStatus().equals(KoiFishStatusEnum.PENDING)){
+        if(auctionRequest.getStatus().equals(AuctionRequestStatusEnum.CONFIRMING) && auctionRequest.getKoiFish().getStatus().equals(KoiFishStatusEnum.PENDING)){
             KoiFish koiFish = auctionRequest.getKoiFish();
             koiFish.setStatus(KoiFishStatusEnum.WAITING);
             koiFishService.saveFish(koiFish);
+
             auctionRequest.setStatus(AuctionRequestStatusEnum.REGISTERED);
             auctionRequestRepository.save(auctionRequest);
         }else{
