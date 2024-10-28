@@ -66,10 +66,10 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
         return "Assigned";
       case "NEGOTIATING":
         return "Negotiating";
-      case "PENDING_MANAGER_OFFER":
-        return "Confirming";
-      case "PENDING_BREEDER_OFFER":
-        return "Negotiating";
+      case "WAITING_FOR_PAYMENT":
+        return "Waiting For Payment";
+      case "PAID":
+        return "Paid";
       case "CANCELLED":
         return "Cancelled";
       case "REGISTERED":
@@ -100,10 +100,10 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
         return "blue";
       case "NEGOTIATING":
         return "orange";
-      case "PENDING_MANAGER_OFFER":
+      case "WAITING_FOR_PAYMENT":
         return "gold";
-      case "PENDING_BREEDER_OFFER":
-        return "lime";
+      case "PAID":
+        return "green";
       case "COMPLETED":
         return "geekblue";
       case "CANCELED":
@@ -145,6 +145,73 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
       notification.error({
         message: "Error",
         description: "Failed to accept the request.",
+      });
+    }
+  };
+
+  const handleCancelRequest = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await api.post(
+        `/manager/request/cancel/${request.requestId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Log request and response
+      console.log("Request Body: ", {});
+      console.log("Request Headers: ", {
+        Authorization: `Bearer ${token}`,
+      });
+      console.log("Response: ", response);
+      notification.success({
+        message: "Success",
+        description: "Request accepted successfully!",
+      });
+      fetchRequest();
+      onBack();
+    } catch (error) {
+      console.error("Error accepting request:", error);
+      notification.error({
+        message: "Error",
+        description: "Failed to accept the request.",
+      });
+    }
+  };
+
+  const handleCompletePayment = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await api.get(
+        `/manager/manager/complete-payment-for-breeder?requestAuctionId=${request.requestId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Log request and response
+      console.log("RequestAuctionId: ", request.requestId);
+      console.log("Request Headers: ", {
+        Authorization: `Bearer ${token}`,
+      });
+      console.log("Response: ", response);
+      notification.success({
+        message: "Success",
+        description: "Payment completed successfully!",
+      });
+      fetchRequest(); // Call to refresh the request data
+      onBack();
+    } catch (error) {
+      console.error("Error completing payment:", error);
+      notification.error({
+        message: "Error",
+        description: "Failed to complete the payment.",
       });
     }
   };
@@ -284,10 +351,10 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
                   <strong>Fish ID:</strong> {request.fishId}
                 </p>
                 <p style={{ margin: "0 0 4px" }}>
-                  <strong>Size:</strong> {request.size}
+                  <strong>Size:</strong> {request.size} cm
                 </p>
                 <p style={{ margin: "0 0 4px" }}>
-                  <strong>Age:</strong> {request.age}
+                  <strong>Age:</strong> {request.age} years old
                 </p>
                 <p style={{ margin: "0 0 4px" }}>
                   <strong>Variety:</strong> {request.varietyName}
@@ -338,6 +405,20 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
             <h3>
               <strong>Actions</strong>
             </h3>
+            {/* Render the Complete Payment button if the status is WAITING_FOR_PAYMENT */}
+            {request.status === "WAITING_FOR_PAYMENT" && (
+              <>
+                <p>Money to pay : {request.auctionFinalPrice} (vnd)</p>
+                <Button
+                  type="primary"
+                  onClick={handleCompletePayment}
+                  className="my-2"
+                >
+                  Complete Payment
+                </Button>
+              </>
+            )}
+
             {request.status === "REQUESTING" && (
               <>
                 <Select
@@ -371,6 +452,14 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
                 >
                   <p>Are you sure you want to assign this staff member?</p>
                 </Modal>
+                <br></br>
+                <Button
+                  onClick={handleCancelRequest}
+                  type="primary"
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  Cancel Request
+                </Button>
               </>
             )}
 
@@ -428,6 +517,13 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
                   className="bg-blue-400 hover:bg-red-700 text-white"
                 >
                   Accept Offer
+                </Button>
+                <Button
+                  onClick={handleCancelRequest}
+                  type="primary"
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  Cancel Request
                 </Button>
               </>
             )}

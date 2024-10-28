@@ -102,6 +102,21 @@ function EnterPrice({
 
   useEffect(() => {
     fetchRegisLink();
+
+    const handleRefresh = (event) => {
+      if (event.data === "payment_successful") {
+        // Làm mới trang khi nhận thông điệp
+        window.location.reload();
+      }
+    };
+
+    // Thêm sự kiện lắng nghe cho thông điệp
+    window.addEventListener("message", handleRefresh);
+
+    // Dọn dẹp sự kiện khi component unmount
+    return () => {
+      window.removeEventListener("message", handleRefresh);
+    };
   }, []);
 
   return (

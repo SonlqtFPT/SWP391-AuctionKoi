@@ -30,10 +30,10 @@ const RequestDetails = ({
         return "Assigned";
       case "NEGOTIATING":
         return "Negotiating";
-      case "PENDING_MANAGER_OFFER":
-        return "Confirming";
-      case "PENDING_BREEDER_OFFER":
-        return "Negotiating";
+      case "WAITING_FOR_PAYMENT":
+        return "Waiting For Payment";
+      case "PAID":
+        return "Paid";
       case "CANCELLED":
         return "Cancelled";
       case "REGISTERED":
@@ -64,10 +64,10 @@ const RequestDetails = ({
         return "blue";
       case "NEGOTIATING":
         return "orange";
-      case "PENDING_MANAGER_OFFER":
+      case "WAITING_FOR_PAYMENT":
         return "gold";
-      case "PENDING_BREEDER_OFFER":
-        return "lime";
+      case "PAID":
+        return "green";
       case "COMPLETED":
         return "geekblue";
       case "CANCELED":

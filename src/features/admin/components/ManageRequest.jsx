@@ -53,6 +53,7 @@ const ManageRequest = () => {
         auctionTypeName: formatStatus(item.koiFish.auctionTypeName), // Ensure formatStatus is applied
         varietyName: item.koiFish.variety.varietyName,
         requestedAt: item.requestedAt,
+        auctionFinalPrice: item.auctionFinalPrice,
       }));
 
       formattedRequests.sort(
@@ -244,20 +245,23 @@ const ManageRequest = () => {
     },
   ];
 
+  // Format the status
   const formatStatus = (status) => {
     switch (status) {
       case "CONFIRMING":
         return "Confirming";
-      case "CANCELLED":
-        return "Cancelled";
+      case "Cancled":
+        return "Canceled";
       case "ASSIGNED":
         return "Assigned";
       case "NEGOTIATING":
         return "Negotiating";
-      case "PENDING_MANAGER_OFFER":
-        return "Confirming";
-      case "PENDING_BREEDER_OFFER":
-        return "Negotiating";
+      case "WAITING_FOR_PAYMENT":
+        return "Waiting For Payment";
+      case "PAID":
+        return "Paid";
+      case "CANCELLED":
+        return "Cancelled";
       case "REGISTERED":
         return "Registered";
       case "ASCENDING_BID":
@@ -273,6 +277,7 @@ const ManageRequest = () => {
     }
   };
 
+  // Determine the color for the status tag
   const getStatusColor = (status) => {
     switch (status) {
       case "CONFIRMING":
@@ -285,10 +290,10 @@ const ManageRequest = () => {
         return "blue";
       case "NEGOTIATING":
         return "orange";
-      case "PENDING_MANAGER_OFFER":
+      case "WAITING_FOR_PAYMENT":
         return "gold";
-      case "PENDING_BREEDER_OFFER":
-        return "lime";
+      case "PAID":
+        return "green";
       case "COMPLETED":
         return "geekblue";
       case "CANCELED":
