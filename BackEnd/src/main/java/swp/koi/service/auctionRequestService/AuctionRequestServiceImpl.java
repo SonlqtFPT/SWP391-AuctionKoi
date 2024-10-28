@@ -220,6 +220,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
                 koiFish.setPrice(request.getPrice());
                 koiFish.setAuctionType(auctionType);
                 koiFishService.saveFish(koiFish);
+                auctionRequest.setStatus(AuctionRequestStatusEnum.CONFIRMING);
                 auctionRequestRepository.save(auctionRequest);
             }else{
                 throw new KoiException(ResponseCode.FAIL);
