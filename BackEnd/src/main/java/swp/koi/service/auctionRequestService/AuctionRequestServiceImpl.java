@@ -144,6 +144,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
                     auctionRequest.getKoiFish().getStatus().equals(KoiFishStatusEnum.WAITING)) {
                 KoiFish koiFish = auctionRequest.getKoiFish();
                 koiFish.setStatus(KoiFishStatusEnum.CANCELLED);
+                koiFishService.saveFish(koiFish);
                 auctionRequest.setStatus(AuctionRequestStatusEnum.CANCELED);
                 auctionRequestRepository.save(auctionRequest);
             }
