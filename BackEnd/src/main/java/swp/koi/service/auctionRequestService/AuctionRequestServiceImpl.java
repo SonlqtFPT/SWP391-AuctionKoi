@@ -21,6 +21,7 @@ import swp.koi.service.jwtService.JwtService;
 import swp.koi.service.koiBreederService.KoiBreederService;
 import swp.koi.service.koiFishService.KoiFishService;
 import swp.koi.service.mediaService.MediaService;
+import swp.koi.service.transactionService.TransactionService;
 import swp.koi.service.varietyService.VarietyService;
 
 import java.util.List;
@@ -42,6 +43,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     private final VarietyService varietyService;
     private final MediaService mediaService;
     private final GetUserInfoByUsingAuth getUserInfoByUsingAuth;
+    private final TransactionService transactionService;
 
     @Override
     public AuctionRequest createRequest(AuctionRequestDTO request) throws KoiException{
@@ -305,6 +307,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
 
         auctionRequest.setStatus(AuctionRequestStatusEnum.PAID);
         auctionRequestRepository.save(auctionRequest);
+        transactionService.createTransactionForBreederPayment(requestAuctionId);
     }
 
 

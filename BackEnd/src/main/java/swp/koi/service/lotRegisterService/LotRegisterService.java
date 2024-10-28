@@ -25,4 +25,5 @@ public interface LotRegisterService {
 
     List<LotRegister> getAllDepositedLotForMember(Integer accountId);
 
+    void refundForMember(int lotRegisterId);
 }

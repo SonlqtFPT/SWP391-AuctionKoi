@@ -4,17 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
-import swp.koi.model.Invoice;
-import swp.koi.model.Lot;
-import swp.koi.model.Member;
-import swp.koi.model.Transaction;
+import swp.koi.model.*;
 import swp.koi.model.enums.TransactionTypeEnum;
-import swp.koi.repository.InvoiceRepository;
-import swp.koi.repository.LotRepository;
-import swp.koi.repository.MemberRepository;
-import swp.koi.repository.TransactionRepository;
+import swp.koi.repository.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -25,6 +18,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final LotRepository lotRepository;
     private final MemberRepository memberRepository;
     private final InvoiceRepository invoiceRepository;
+    private final AuctionRequestRepository auctionRequestRepository;
 
     @Override
     public Transaction createTransactionForLotDeposit(int lotId, int memberId) {
@@ -43,6 +37,22 @@ public class TransactionServiceImpl implements TransactionService {
 
         Transaction transaction = buildTransactionForInvoicePayment(lot, member, invoice);
         return transactionRepository.save(transaction);
+    }
+
+    @Override
+    public void createTransactionForRefund(LotRegister lotRegister){
+        Transaction transaction = buildTransactionForRefund(lotRegister);
+        transactionRepository.save(transaction);
+    }
+
+    @Override
+    public void createTransactionForBreederPayment(Integer auctionRequestId){
+
+        AuctionRequest auctionRequest = auctionRequestRepository.findByRequestId(auctionRequestId)
+                .orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
+
+        Transaction transaction = buildTransactionForBreederPayment(auctionRequest);
+        transactionRepository.save(transaction);
     }
 
     private Lot getLot(int lotId) {
@@ -83,5 +93,24 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public List<Transaction> getAllTransaction() {
         return transactionRepository.findAll();
+    }
+
+    private Transaction buildTransactionForRefund(LotRegister lotRegister) {
+        return Transaction.builder()
+                .transactionType(TransactionTypeEnum.REFUND)
+                .amount(-lotRegister.getDeposit())
+                .lot(lotRegister.getLot())
+                .member(lotRegister.getMember())
+                .paymentStatus("SUCCESS")
+                .build();
+    }
+
+    private Transaction buildTransactionForBreederPayment(AuctionRequest auctionRequest) {
+        return Transaction.builder()
+                .transactionType(TransactionTypeEnum.PAYMENT_FOR_BREEDER)
+                .amount(-auctionRequest.getAuctionFinalPrice())
+                .breeder(auctionRequest.getKoiBreeder())
+                .paymentStatus("SUCCESS")
+                .build();
     }
 }

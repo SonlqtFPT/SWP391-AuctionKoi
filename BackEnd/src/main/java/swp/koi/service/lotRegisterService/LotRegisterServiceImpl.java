@@ -10,10 +10,7 @@ import swp.koi.dto.request.LotRegisterDTO;
 import swp.koi.dto.response.LotRegisterResponseDTO;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
-import swp.koi.model.Account;
-import swp.koi.model.Lot;
-import swp.koi.model.LotRegister;
-import swp.koi.model.Member;
+import swp.koi.model.*;
 import swp.koi.model.enums.LotRegisterStatusEnum;
 import swp.koi.model.enums.TransactionTypeEnum;
 import swp.koi.repository.AccountRepository;
@@ -23,6 +20,7 @@ import swp.koi.service.authService.GetUserInfoByUsingAuth;
 import swp.koi.service.lotService.LotService;
 import swp.koi.service.memberService.MemberService;
 import swp.koi.service.memberService.MemberServiceImpl;
+import swp.koi.service.transactionService.TransactionService;
 import swp.koi.service.vnPayService.VnpayService;
 
 import java.io.UnsupportedEncodingException;
@@ -44,6 +42,7 @@ public class LotRegisterServiceImpl implements LotRegisterService{
     private final GetUserInfoByUsingAuth getUserInfoByUsingAuth;
     private final MemberService memberService;
     private final AccountService accountService;
+    private final TransactionService transactionService;
 
     /**
      * @param lotRegisDto
@@ -141,5 +140,16 @@ public class LotRegisterServiceImpl implements LotRegisterService{
             throw new KoiException(ResponseCode.MEMBER_NOT_FOUND);
 
         return lotRegisterRepository.findAllByMember(member);
+    }
+
+    @Override
+    public void refundForMember(int lotRegisterId){
+        LotRegister lotRegister = lotRegisterRepository.findById(lotRegisterId)
+                .orElseThrow(() -> new KoiException(ResponseCode.LOT_REGISTER_NOT_FOUND));
+
+        lotRegister.setStatus(LotRegisterStatusEnum.REFUNDED);
+        lotRegisterRepository.save(lotRegister);
+
+        transactionService.createTransactionForRefund(lotRegister);
     }
 }

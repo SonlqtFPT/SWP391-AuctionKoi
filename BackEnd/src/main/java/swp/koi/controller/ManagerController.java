@@ -60,16 +60,22 @@ public class ManagerController {
     @GetMapping("/manager/refund-notificate")
     public ResponseData<List<LotRegisterResponseDTO>> getListOfMemberToRefund(){
         List<LotRegisterResponseDTO> lotRegisterList = lotRegisterService.findAllLotRegisWithStatus(LotRegisterStatusEnum.LOSE);
-
         return new ResponseData<>(ResponseCode.SUCCESS, lotRegisterList);
     }
 
-    @Operation(summary = "api to get list of member to refund")
+    @Operation(summary = "api to pay breeder")
     @GetMapping("/manager/complete-payment-for-breeder")
     public ResponseData<?> updateStatusOfRequest(@RequestParam Integer requestAuctionId){
 
         auctionRequestService.completePaymentForBreeder(requestAuctionId);
 
+        return new ResponseData<>(ResponseCode.SUCCESS);
+    }
+
+    @Operation(summary = "api to use after manager refund member")
+    @GetMapping("/manager/refund")
+    public ResponseData<?> refundToMember(@RequestParam Integer lotRegisterId){
+        lotRegisterService.refundForMember(lotRegisterId);
         return new ResponseData<>(ResponseCode.SUCCESS);
     }
 }
