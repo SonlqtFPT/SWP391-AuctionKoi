@@ -74,12 +74,23 @@ public class KoiFishServiceImpl implements KoiFishService{
 
     @Override
     public List<KoiFish> getKoiFishFromRegisteredRequest() {
-        List<AuctionRequest> auctionRequestList = auctionRequestRepository.findAllFishByStatus(AuctionRequestStatusEnum.REGISTERED);
+        List<AuctionRequest> auctionRequestList = auctionRequestRepository.findAllByStatus(AuctionRequestStatusEnum.REGISTERED);
 
         List<KoiFish> koiFishList = auctionRequestList.stream()
-                .map(AuctionRequest::getKoiFish)
-                .filter(Objects::nonNull)
+                .map(auctionRequest -> {
+                    KoiFish koiFish = null;
+                    if(auctionRequest.getKoiFish().getStatus().equals(KoiFishStatusEnum.WAITING)){
+                        koiFish = auctionRequest.getKoiFish();
+                    }
+                    if(koiFish != null)
+                        return koiFish;
+                    else
+                        throw new KoiException(ResponseCode.FOUND_NOTHING);
+                })
                 .collect(Collectors.toList());
+
+        if(koiFishList.isEmpty())
+            throw new KoiException(ResponseCode.FOUND_NOTHING);
 
         return koiFishList;
     }
