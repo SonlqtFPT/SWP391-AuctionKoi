@@ -17,7 +17,7 @@ public interface AuctionService {
 
     AuctionResponseDTO createAuctionWithLots(@Valid AuctionWithLotsDTO request);
 
-    LotResponseDto getLot(Integer lotId);
+    Lot getLot(Integer lotId);
 
     List<Auction> getAllAuction();
 
