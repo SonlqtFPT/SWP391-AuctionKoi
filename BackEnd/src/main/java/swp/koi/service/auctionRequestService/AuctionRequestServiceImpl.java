@@ -252,21 +252,6 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     }
 
     @Override
-    public void managerAcceptNegotiation(Integer requestId) throws KoiException{
-        AuctionRequest auctionRequest = auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
-        if(auctionRequest.getStatus().equals(AuctionRequestStatusEnum.CONFIRMING) && auctionRequest.getKoiFish().getStatus().equals(KoiFishStatusEnum.PENDING)){
-            KoiFish koiFish = auctionRequest.getKoiFish();
-            koiFish.setStatus(KoiFishStatusEnum.WAITING);
-            koiFishService.saveFish(koiFish);
-
-            auctionRequest.setStatus(AuctionRequestStatusEnum.REGISTERED);
-            auctionRequestRepository.save(auctionRequest);
-        }else{
-            throw  new KoiException(ResponseCode.AUCTION_REQUEST_VALID_STATUS);
-        }
-    }
-
-    @Override
     public void managerCancelRequest(Integer requestId) throws KoiException{
         AuctionRequest auctionRequest = auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
 
@@ -285,14 +270,14 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     @Override
     public void managerAcceptRequest(Integer requestId) {
         AuctionRequest auctionRequest = auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
-        if(auctionRequest.getStatus().equals(AuctionRequestStatusEnum.CONFIRMING)){
+        if(auctionRequest.getStatus().equals(AuctionRequestStatusEnum.CONFIRMING) && auctionRequest.getKoiFish().getStatus().equals(KoiFishStatusEnum.PENDING)){
             KoiFish koiFish = auctionRequest.getKoiFish();
             koiFish.setStatus(KoiFishStatusEnum.WAITING);
             koiFishService.saveFish(koiFish);
             auctionRequest.setStatus(AuctionRequestStatusEnum.REGISTERED);
             auctionRequestRepository.save(auctionRequest);
         }else {
-            throw new KoiException(ResponseCode.FAIL);
+            throw new KoiException(ResponseCode.AUCTION_REQUEST_VALID_STATUS);
         }
     }
 
