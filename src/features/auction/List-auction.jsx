@@ -69,7 +69,7 @@ function Auction() {
             className="bg-yellow-400 rounded-3xl h-[60px] w-[250px] flex justify-center items-center hover:bg-yellow-500 transition-colors duration-300 shadow-lg transform hover:scale-105"
           >
             <h1 className="text-black font-bold text-lg">
-              View Upcomming Auctions
+              View Upcoming Auctions
             </h1>
           </button>
         </div>

@@ -49,7 +49,7 @@ function Upcomming() {
     <div className="bg-black flex flex-col min-h-screen">
       <Header />
       <h1 className="text-[#bcab6f] mt-[100px] ml-10 text-3xl font-bold">
-        Upcomming Auction
+        Upcoming Auction
       </h1>
       <div className="flex flex-wrap justify-start gap-16 ml-[100px]">
         {upcomming.map((auction, index) => (
