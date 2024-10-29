@@ -20,14 +20,20 @@ const RequestDetails = ({
   if (!selectedRequest) return <p>No request selected.</p>;
 
   function formatPrice(price) {
+    // Check if price is null or undefined
+    if (price === null || price === undefined) {
+      return;
+    }
+
     // Format the price as a string with commas and add the currency symbol
     return price
       .toLocaleString("vi-VN", {
         style: "currency",
         currency: "VND",
         minimumFractionDigits: 0,
+        maximumFractionDigits: 0, // Ensures no decimal places are shown
       })
-      .replace("₫", "₫");
+      .replace(/\sđ/, "đ"); // Remove the space before the currency symbol
   }
 
   // Function to update status

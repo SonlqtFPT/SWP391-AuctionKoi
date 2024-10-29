@@ -5,11 +5,43 @@ import api from "../../../config/axios";
 
 const { Step } = Steps;
 const token = localStorage.getItem("accessToken");
+
+function formatPrice(price) {
+  // Check if price is null or undefined
+  if (price === null || price === undefined) {
+    return;
+  }
+
+  // Format the price as a string with commas and add the currency symbol
+  return price
+    .toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0, // Ensures no decimal places are shown
+    })
+    .replace(/\sđ/, "đ"); // Remove the space before the currency symbol
+}
+
+const formatStatus = (status) => {
+  switch (status) {
+    case "ASCENDING_BID":
+      return "Ascending Bid";
+    case "SEALED_BID":
+      return "Sealed Bid";
+    case "FIXED_PRICE_SALE":
+      return "Fixed Price Sale";
+    case "DESCENDING_BID":
+      return "Descending Bid";
+    default:
+      return status.charAt(0) + status.slice(1).toLowerCase();
+  }
+};
+
 const CreateAuction = () => {
   const [current, setCurrent] = useState(0);
   const [form] = Form.useForm();
   const [auction, setAuction] = useState({
-    auctionTypeName: null,
     startTime: null,
     endTime: null,
     lots: [],
@@ -23,7 +55,6 @@ const CreateAuction = () => {
         if (current === 0) {
           setAuction((prevAuction) => ({
             ...prevAuction,
-            auctionTypeName: values.auctionType,
             startTime: values.startTime
               ? dayjs(values.startTime).format("YYYY-MM-DDTHH:mm:ss")
               : null,
@@ -142,29 +173,6 @@ const CreateAuction = () => {
               className="w-full border border-gold rounded-md"
             />
           </Form.Item>
-          <Form.Item
-            label="Auction Type"
-            name="auctionType"
-            rules={[{ required: true, message: "Please select auction type!" }]}
-          >
-            <Select
-              placeholder="Select Auction Type"
-              className="w-full border border-gold rounded-md"
-            >
-              <Select.Option value="FIXED_PRICE_SALE">
-                Type 1 - Fixed Price Sale
-              </Select.Option>
-              <Select.Option value="SEALED_BID">
-                Type 2 - Sealed Auction
-              </Select.Option>
-              <Select.Option value="ASCENDING_BID">
-                Type 3 - Ascending Bid Auction
-              </Select.Option>
-              <Select.Option value="DESCENDING_BID">
-                Type 4 - Descending Price Auction
-              </Select.Option>
-            </Select>
-          </Form.Item>
         </Form>
       ),
     },
@@ -173,7 +181,6 @@ const CreateAuction = () => {
       content: (
         <AddLots
           setLots={setLots}
-          auctionTypeName={auction.auctionTypeName}
           startTime={auction.startTime}
           endTime={auction.endTime}
           lots={lots}
@@ -188,7 +195,6 @@ const CreateAuction = () => {
             Please review all the information before finalizing the auction.
           </p>
           <h2 className="font-semibold">Auction Details:</h2>
-          <p>Type: {auction.auctionTypeName}</p>
           <p>
             Start Time: {dayjs(auction.startTime).format("YYYY-MM-DD HH:mm:ss")}
           </p>
@@ -199,7 +205,9 @@ const CreateAuction = () => {
           <ul className="list-disc pl-5">
             {lots.map((lot, index) => (
               <li key={index} className="mb-2">
-                Fish ID: {lot.fishId}, Starting Price: {lot.startingPrice} (vnd)
+                Fish ID: {lot.fishId}, Starting Price:{" "}
+                {formatPrice(lot.startingPrice)}, Auction Type :{" "}
+                {formatStatus(lot.auctionTypeName)}
               </li>
             ))}
           </ul>
@@ -253,22 +261,18 @@ const CreateAuction = () => {
 };
 
 // AddLots Component for Step 2
-const AddLots = ({ setLots, auctionTypeName, lots }) => {
+const AddLots = ({ setLots, lots }) => {
   const [fishData, setFishData] = useState([]);
 
   useEffect(() => {
     const fetchFishData = async () => {
       const token = localStorage.getItem("accessToken");
       try {
-        const response = await api.post(
-          "/manager/get-fish-auction",
-          { auctionTypeName },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await api.get("/manager/getFish", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         console.log(response);
         console.log(response.data.data);
         setFishData(response.data.data || []);
@@ -277,17 +281,16 @@ const AddLots = ({ setLots, auctionTypeName, lots }) => {
       }
     };
 
-    if (auctionTypeName) {
-      fetchFishData();
-    }
-  }, [auctionTypeName]);
+    fetchFishData(); // Fetch fish data directly without auctionTypeName
+  }, []);
 
   const handleAddRemoveLot = (fish) => {
     const existingIndex = lots.findIndex((lot) => lot.fishId === fish.fishId);
     if (existingIndex === -1) {
       const newLot = {
         fishId: fish.fishId,
-        startingPrice: fish.price, // Make sure fish.price is set
+        startingPrice: fish.price,
+        auctionTypeName: fish.auctionTypeName,
       };
       setLots((prev) => [...prev, newLot]);
       message.success("Lot added successfully!");
@@ -300,7 +303,7 @@ const AddLots = ({ setLots, auctionTypeName, lots }) => {
   return (
     <>
       {fishData.length === 0 ? (
-        <p className="text-red-500">No fishes match auction type</p>
+        <p className="text-red-500">No fishes available for auction</p>
       ) : (
         <Table
           dataSource={fishData}

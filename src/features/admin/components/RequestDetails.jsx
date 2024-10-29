@@ -115,9 +115,27 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
     }
   };
 
+  function formatPrice(price) {
+    // Check if price is null or undefined
+    if (price === null || price === undefined) {
+      return;
+    }
+
+    // Format the price as a string with commas and add the currency symbol
+    return price
+      .toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0, // Ensures no decimal places are shown
+      })
+      .replace(/\sđ/, "đ"); // Remove the space before the currency symbol
+  }
+
   const handleAcceptRequest = async () => {
     try {
       const token = localStorage.getItem("accessToken");
+      console.log(request.requestId);
       const response = await api.post(
         `/manager/request/negotiation/accept/${request.requestId}`,
         {},
@@ -390,7 +408,7 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
                   {new Date(request.requestedAt).toLocaleString()}
                 </p>
                 <p style={{ margin: "0 0 4px" }}>
-                  <strong>Price:</strong> {request.price} (vnd)
+                  <strong>Price:</strong> {formatPrice(request.price)}
                 </p>
                 <p style={{ margin: "0 0 4px" }}>
                   <strong>Auction Type:</strong>{" "}
@@ -471,7 +489,7 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
                 {request.status === "CONFIRMING" && (
                   <>
                     <p>Waiting for Manager Approve</p>
-                    <p>Breeder's price offer: {offerPrice} vnd</p>
+                    <p>Breeder's price offer: {formatPrice(offerPrice)} </p>
                     <p>Breeder's auction type offer: {offerAuctionType}</p>
                   </>
                 )}
