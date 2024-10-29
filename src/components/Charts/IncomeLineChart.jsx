@@ -1,106 +1,152 @@
-import React, { useEffect, useState } from 'react'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import api from '../../config/axios';
-import { toast } from 'react-toastify';
-import { motion } from "framer-motion"
-import { HandCoins } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import {
+  Chart as Chartjs,
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  plugins,
+  Legend,
+  scales,
+} from "chart.js/auto";
+import { Line } from "react-chartjs-2";
+import api from "../../config/axios";
+import { toast } from "react-toastify";
+import { motion } from "framer-motion";
+import { Grid, HandCoins } from "lucide-react";
+import { Label } from "recharts";
 
-
-
+// Đăng ký các scale cần thiết
+Chartjs.register(CategoryScale, LinearScale, LineElement, PointElement);
 
 const IncomeLineChart = () => {
+  const [incomeData, setIncomeData] = useState([]);
+  const currentYear = new Date().getFullYear(); // Lấy năm hiện tại
 
-    const [incomeData, setIncomeData] = useState([]);
-    const fetchRequest = async () => {
-        try {
-            const token = localStorage.getItem("accessToken");
-            console.log(token);
-            const response = await api.get("invoice/get-invoices", {
-                headers: {
-                    Authorization: `Bearer ${token}`, // Corrected token syntax
-                },
-            });
-            const requestData = response.data.data;
-            console.log("Invoices data: " + requestData);
+  const data = {
+    labels: [
+      "Jan",
+      "Feb",
+      "Mar",
+      "April",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ],
+    datasets: [
+      {
+        label: `Income in ${currentYear}`,
+        data: incomeData,
+        backgroundColor: "#f26c6d",
+        borderColor: "#f26c6d",
+        pointBorderWidth: 4,
+        tension: 0.3,
+      },
+    ],
+  };
+  const options = {
+    plugins: {
+      legend: {
+        display: true,
+        labels: {
+          color: "black",
+          font: {
+            size: 20, // Kích thước chữ
+            weight: "bold", // Độ đậm của chữ
+          },
+        },
+      },
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: "VNĐ",
+        },
+        ticks: {
+          callback: (value) => formatValue(value),
+        },
+      },
+    },
+  };
 
-            const incomeByMonth2024 = requestData
-                .filter(item => item.status === "DELIVERED")
-                .filter(item => item.invoiceDate)
-                .filter(item => new Date(item.invoiceDate).getFullYear() === 2024)
-                .reduce((acc, item) => {
-                    const month = new Date(item.invoiceDate).getMonth();
-                    const income = (item.subTotal || 0) * 0.1;
-                    acc[month] = (acc[month] || 0) + income;
-                    return acc;
-                }, {});
+  const formatValue = (value) => {
+    if (value >= 1e9) {
+      return (value / 1e9).toFixed(2) + "B"; // Hàng tỉ
+    } else if (value >= 1e6) {
+      return (value / 1e6).toFixed(2) + "M"; // Hàng triệu
+    }
+    return value; // Trả về giá trị gốc nếu không thuộc hàng triệu hoặc hàng tỉ
+  };
 
-            const data = [
-                { name: "Jan.", Income: incomeByMonth2024[0] || 0 },
-                { name: "Feb.", Income: incomeByMonth2024[1] || 0 },
-                { name: "Mar.", Income: incomeByMonth2024[2] || 0 },
-                { name: "Apr.", Income: incomeByMonth2024[3] || 0 },
-                { name: "May.", Income: incomeByMonth2024[4] || 0 },
-                { name: "Jun.", Income: incomeByMonth2024[5] || 0 },
-                { name: "Jul.", Income: incomeByMonth2024[6] || 0 },
-                { name: "Aug.", Income: incomeByMonth2024[7] || 0 },
-                { name: "Sep.", Income: incomeByMonth2024[8] || 0 },
-                { name: "Oct.", Income: incomeByMonth2024[9] || 0 },
-                { name: "Nov.", Income: incomeByMonth2024[10] || 0 },
-                { name: "Dec.", Income: incomeByMonth2024[11] || 0 },
-            ];
+  const calculateShippingCost = (kilometers) => {
+    if (kilometers <= 10) {
+      return 0; // Free
+    } else if (kilometers <= 50) {
+      return kilometers * 1500; // 1500 VND/km
+    } else if (kilometers <= 100) {
+      return kilometers * 1200; // 1200 VND/km
+    } else if (kilometers <= 200) {
+      return kilometers * 1000; // 1000 VND/km
+    } else {
+      return kilometers * 800; // 800 VND/km
+    }
+  };
 
-            setIncomeData(data);
+  const fetchRequest = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await api.get("invoice/get-invoices", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
+      const requestData = response.data.data; // Lấy dữ liệu giao dịch
 
-        } catch (error) {
-            toast.error("Failed to fetch auction request data");
+      // Khởi tạo mảng để lưu tổng amount cho từng tháng
+      const monthlyTotals = Array(12).fill(0);
+
+      // Duyệt qua dữ liệu giao dịch
+      requestData.forEach((transaction) => {
+        const transactionDate = new Date(transaction.invoiceDate);
+        if (
+          transaction.status === "PAID" &&
+          transactionDate.getFullYear() === currentYear
+        ) {
+          const month = transactionDate.getMonth(); // Lấy tháng (0-11)
+          const shippingCost = calculateShippingCost(transaction.kilometers); // Tính toán chi phí vận chuyển
+          const calculatedAmount = transaction.subTotal * 0.1 + shippingCost; // Cập nhật công thức tính toán
+          monthlyTotals[month] += calculatedAmount; // Cộng dồn amount vào tháng tương ứng
         }
-    };
+      });
 
-    useEffect(() => {
-        fetchRequest();
-    }, []);
+      console.log("Tổng amount theo từng tháng: ", monthlyTotals);
+      setIncomeData(monthlyTotals); // Cập nhật state với tổng amount theo tháng
+    } catch (error) {
+      toast.error("Failed to fetch auction request data");
+    }
+  };
 
-    return (
-        <motion.div
-            className='bg-slate-300 bg-opacity-50 backdrop-blur-md overflow-hidden p-6 shadow-lg rounded-xl border border-slate-200'
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-        >
-            <h2 className="text-lg font-medium mb-4">
-                <span className='flex items-center text-sm font-medium text-black'>
-                    <HandCoins
-                        size={20}
-                        className='mr-2'
-                    />
-                    Auction Incomes for Each Month In 2024 (VND)
-                </span>
-            </h2>
+  useEffect(() => {
+    fetchRequest();
+  }, []);
 
-            <div className="h-80">
-                <ResponsiveContainer width={"100%"} height={"100%"}>
-                    <LineChart data={incomeData}>
-                        <CartesianGrid strokeDasharray='3 3' stroke='#4B5563' />
-                        <XAxis dataKey={"name"} />
-                        <XAxis stroke="#9ca3af" />
-                        <Tooltip
-                            itemStyle={{ color: "#2f4f4f" }}
-                        />
-                        <Line
-                            type="monotone"
-                            dataKey="Income"
-                            stroke='#6366F1'
-                            strokeWidth={3}
-                            dot={{ fill: "6366F1", strokeWidth: 2, r: 6 }}
-                            activeDot={{ r: 8, strokeWidth: 2 }}
-                        />
-                    </LineChart>
+  return (
+    <div className="h-[600px] w-[1100px] flex justify-center ml-16 bg-white shadow-2xl rounded-2xl p-4">
+      <Line data={data} options={options}></Line>
+    </div>
+  );
+};
 
-                </ResponsiveContainer>
-            </div>
-        </motion.div>
-    )
-}
-
-export default IncomeLineChart
+export default IncomeLineChart;
