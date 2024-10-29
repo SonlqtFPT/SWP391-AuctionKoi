@@ -113,6 +113,7 @@ public class InvoiceServiceImpl implements InvoiceService{
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
 
         invoice.setAddress(address);
+
         invoice.setKilometers(kilometer);
 
         float currentPrice = invoice.getPriceWithoutShipFee();

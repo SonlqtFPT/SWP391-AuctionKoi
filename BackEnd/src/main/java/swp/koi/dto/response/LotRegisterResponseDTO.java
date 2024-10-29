@@ -11,6 +11,7 @@ import swp.koi.model.enums.LotRegisterStatusEnum;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LotRegisterResponseDTO {
 
+    Integer LRID;
     MemberResponseDTO member;
     BaseLotResponseDTO lot;
     float deposit;

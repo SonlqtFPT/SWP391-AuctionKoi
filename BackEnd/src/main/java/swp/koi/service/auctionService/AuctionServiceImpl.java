@@ -45,7 +45,7 @@ public class AuctionServiceImpl implements AuctionService{
 
     @Override
     @Async
-    @Scheduled(fixedDelay = 1000 * 60)
+    @Scheduled(fixedDelay = 1000 * 20)
     public void updateAuctionStatusAndEndTime(){
         List<Auction> auctions = auctionRepository.findAllByStatus(AuctionStatusEnum.AUCTIONING);
         if(auctions.isEmpty()){
