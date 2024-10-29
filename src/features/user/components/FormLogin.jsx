@@ -12,7 +12,14 @@ import { GoogleLogin } from "@react-oauth/google";
 function FormLogin() {
   const [loading, setLoading] = useState(false); // State to manage loading
   const navigate = useNavigate();
-  const { setUserName, setRole, setAccessToken, setRefreshToken, setBreederName, setLocation } = useAuth();
+  const {
+    setUserName,
+    setRole,
+    setAccessToken,
+    setRefreshToken,
+    setBreederName,
+    setLocation,
+  } = useAuth();
 
   const handleLoginGoogle = async (values) => {
     setLoading(true);
@@ -23,6 +30,11 @@ function FormLogin() {
 
     const handleResponse = async () => {
       try {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("accountData");
+        localStorage.clear();
+
         const response = await api.post("authenticate/login-google", data);
         console.log(response.data);
 
@@ -52,7 +64,6 @@ function FormLogin() {
         } else if (role === "STAFF") {
           navigate("/staff");
         }
-
       } catch (error) {
         if (error.response) {
           // Retry logic: If the token is not valid yet, wait for a second and retry
@@ -73,6 +84,10 @@ function FormLogin() {
   const handleLogin = async (values) => {
     setLoading(true); // Start loading
     try {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("accountData");
+      localStorage.clear();
 
       const response = await api.post("authenticate/login", values);
       const { message } = response.data;
@@ -99,11 +114,14 @@ function FormLogin() {
         if (role === "BREEDER" && accessToken) {
           const fetchBreederInfo = async () => {
             try {
-              const breederResponse = await api.get("/breeder/get-breeder-information", {
-                headers: {
-                  Authorization: `Bearer ${accessToken}`,
-                },
-              });
+              const breederResponse = await api.get(
+                "/breeder/get-breeder-information",
+                {
+                  headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                  },
+                }
+              );
 
               const { data } = breederResponse.data;
               setBreederName(data.breederName);
@@ -116,8 +134,10 @@ function FormLogin() {
                 location: data.location,
               };
 
-              localStorage.setItem("accountData", JSON.stringify(updatedAccountData));
-
+              localStorage.setItem(
+                "accountData",
+                JSON.stringify(updatedAccountData)
+              );
             } catch (error) {
               console.error("Error fetching breeder information:", error);
               toast.error("Error fetching breeder information");
@@ -132,8 +152,8 @@ function FormLogin() {
           role === "MANAGER"
             ? "/admin"
             : role === "MEMBER" || role === "BREEDER"
-              ? "/"
-              : "/staff"
+            ? "/"
+            : "/staff"
         );
       } else if (status === 2) {
         toast.error(message);
@@ -148,42 +168,64 @@ function FormLogin() {
     }
   };
 
-
   return (
     <div className="flex min-h-full flex-1 columns-2 justify-center px-6 py-20 lg:px-8 bg-hero-pattern mt-25 bg-cover relative">
       <div className="absolute bg-black bg-opacity-80 inset-0"></div>
       <div className="max-w-md mx-auto md:max-w-2xl shadow-xl mt-10">
         <div className="md:flex">
           <div className="md:shrink-0">
-            <img className="h-48 w-full object-cover md:h-full md:w-80 rounded-l-2xl filter brightness-100" src={Picture} alt="Modern building architecture" />
+            <img
+              className="h-48 w-full object-cover md:h-full md:w-80 rounded-l-2xl filter brightness-100"
+              src={Picture}
+              alt="Modern building architecture"
+            />
           </div>
           <div className="relative p-8 sm:mx-auto sm:w-full sm:max-w-sm bg-[#131313] py-10 rounded-r-2xl">
             <img src={Logo} alt="Koi69 Logo" className="mx-auto h-10 w-14" />
-            <h2 className="mt-5 mb-5 text-center text-3xl font-extrabold leading-9 text-[#bcab6f]">Login in</h2>
+            <h2 className="mt-5 mb-5 text-center text-3xl font-extrabold leading-9 text-[#bcab6f]">
+              Login in
+            </h2>
             <Form labelCol={{ span: 24 }} onFinish={handleLogin}>
               <FormItem
-                label={<label className="block text-sm font-medium leading-6 text-white">Email</label>}
+                label={
+                  <label className="block text-sm font-medium leading-6 text-white">
+                    Email
+                  </label>
+                }
                 name="email"
                 rules={[{ required: true, message: "Please input your email" }]}
               >
                 <Input />
               </FormItem>
               <FormItem
-                label={<label className="block text-sm font-medium leading-6 text-white">Password</label>}
+                label={
+                  <label className="block text-sm font-medium leading-6 text-white">
+                    Password
+                  </label>
+                }
                 name="password"
-                rules={[{ required: true, message: "Please input your password" }]}
+                rules={[
+                  { required: true, message: "Please input your password" },
+                ]}
               >
                 <Input.Password />
               </FormItem>
 
               <label className="ml-24 text-center text-sm text-gray-500">
-                Forgot password? <Link to="/forgotPass" className="font-semibold leading-6 hover:text-[#c1b178] text-[#a99a65]">Click Here!</Link>
+                Forgot password?{" "}
+                <Link
+                  to="/forgotPass"
+                  className="font-semibold leading-6 hover:text-[#c1b178] text-[#a99a65]"
+                >
+                  Click Here!
+                </Link>
               </label>
 
               <div className="mt-10">
                 <button
-                  className={`flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 text-black shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 ${loading ? "bg-red-600" : "bg-red-600 hover:bg-red-700"
-                    }`}
+                  className={`flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 text-black shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 ${
+                    loading ? "bg-red-600" : "bg-red-600 hover:bg-red-700"
+                  }`}
                   type="submit"
                   disabled={loading} // Disable button when loading
                 >
@@ -191,7 +233,13 @@ function FormLogin() {
                 </button>
 
                 <p className="mt-2 text-center text-sm text-gray-500">
-                  Not a member? <Link to="/register" className="font-semibold leading-6 hover:text-yellow-500 text-yellow-600">Register Here!</Link>
+                  Not a member?{" "}
+                  <Link
+                    to="/register"
+                    className="font-semibold leading-6 hover:text-yellow-500 text-yellow-600"
+                  >
+                    Register Here!
+                  </Link>
                 </p>
                 <br />
                 <div className="flex w-full justify-center px-5 py-1.5 text-sm font-semibold leading-6">
@@ -200,8 +248,7 @@ function FormLogin() {
                     onError={() => console.log("Login Failed")}
                     useOneTap
                     disabled={loading} // Disable Google Login button when loading
-                  >
-                  </GoogleLogin>
+                  ></GoogleLogin>
                   {loading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-75 rounded-md">
                       <svg
