@@ -130,6 +130,10 @@ const AddBreederRequest = () => {
     }
   };
 
+  const formatNumber = (num) => {
+    return num ? num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") : "";
+  };
+
   return (
     <div className="flex min-h-full flex-1 columns-2 justify-center px-6 py-20 lg:px-8 bg-hero-pattern mt-25 bg-cover relative">
       <div className="absolute bg-black bg-opacity-80 inset-0"></div>
@@ -229,7 +233,11 @@ const AddBreederRequest = () => {
                 { required: true, message: "Please enter price of fish" },
               ]}
             >
-              <InputNumber style={{ width: "100%" }} />
+              <InputNumber
+                style={{ width: "100%" }}
+                formatter={(value) => formatNumber(value)}
+                parser={(value) => value.replace(/\./g, "")}
+              />
             </Form.Item>
 
             <Form.Item

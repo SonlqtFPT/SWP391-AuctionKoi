@@ -183,7 +183,7 @@ function FormLogin() {
           <div className="relative p-8 sm:mx-auto sm:w-full sm:max-w-sm bg-[#131313] py-10 rounded-r-2xl">
             <img src={Logo} alt="Koi69 Logo" className="mx-auto h-10 w-14" />
             <h2 className="mt-5 mb-5 text-center text-3xl font-extrabold leading-9 text-[#bcab6f]">
-              Login in
+              Login
             </h2>
             <Form labelCol={{ span: 24 }} onFinish={handleLogin}>
               <FormItem

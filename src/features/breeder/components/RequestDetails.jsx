@@ -216,6 +216,28 @@ const RequestDetails = () => {
   const handleUpdate = () => {
     navigate(`/breeder/update-request/${requestId}`);
   };
+
+  function formatPrice(price) {
+    // Check if price is null or undefined
+    if (price === null || price === undefined) {
+      return;
+    }
+
+    // Format the price as a string with commas and add the currency symbol
+    return price
+      .toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0, // Ensures no decimal places are shown
+      })
+      .replace(/\sđ/, "đ"); // Remove the space before the currency symbol
+  }
+
+  const formatNumber = (num) => {
+    return num ? num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") : "";
+  };
+
   return (
     <div className="flex min-h-full w:auto lg:w-full justify-center px-1 py-20 lg:px-8 bg-hero-pattern mt-16 bg-cover relative">
       <div className="absolute bg-black bg-opacity-70 inset-0"></div>
@@ -290,7 +312,7 @@ const RequestDetails = () => {
                     {new Date(request.requestedAt).toLocaleString()}
                   </p>
                   <p>
-                    <strong>Price:</strong> {request.koiFish.price} vnd
+                    <strong>Price:</strong> {formatPrice(request.koiFish.price)}
                   </p>
                   <p>
                     <strong>Auction Type:</strong>{" "}
@@ -340,7 +362,8 @@ const RequestDetails = () => {
                         Manager's Offer
                       </h8>
                       <p className="text-white font-semibold">
-                        <strong>Offer Price:</strong> {request.offerPrice} (vnd)
+                        <strong>Offer Price:</strong>{" "}
+                        {formatPrice(request.offerPrice)}
                       </p>
                       <p className="text-white font-semibold">
                         <strong>Auction Type:</strong>{" "}
@@ -350,16 +373,22 @@ const RequestDetails = () => {
 
                     {/* Negotiation Form */}
                     <Input
-                      type="number"
+                      type="text" // Change type to text for formatting
                       placeholder="Your Offer Price"
-                      value={offerPrice || ""}
-                      onChange={(e) =>
-                        setOfferPrice(
-                          e.target.value ? Number(e.target.value) : null
-                        )
-                      }
-                      className="text-black w-48 mb-4 mr-4 px-3 py-2 border-2 border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-yellow-500" // Thay đổi bg-gray-200 thành bg-white
-                      style={{ backgroundColor: "white" }} // Đảm bảo màu nền là trắng
+                      value={formatNumber(offerPrice) || ""} // Use formatted value for display
+                      onChange={(e) => {
+                        // Remove dots before converting to a number
+                        const valueWithoutDots = e.target.value.replace(
+                          /\./g,
+                          ""
+                        ); // Remove dots
+                        const numberValue = valueWithoutDots
+                          ? Number(valueWithoutDots)
+                          : null; // Convert to number or set to null
+                        setOfferPrice(numberValue); // Update the state with the numeric value
+                      }}
+                      className="text-black w-48 mb-4 mr-4 px-3 py-2 border-2 border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-yellow-500" // Maintain existing styles
+                      style={{ backgroundColor: "white" }} // Ensure background color is white
                     />
                     <Select
                       placeholder="Select Auction Type"

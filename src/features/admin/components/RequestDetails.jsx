@@ -136,8 +136,8 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
     try {
       const token = localStorage.getItem("accessToken");
       console.log(request.requestId);
-      const response = await api.post(
-        `/manager/request/negotiation/accept/${request.requestId}`,
+      const response = await api.patch(
+        `/manager/request/accept/${request.requestId}`,
         {},
         {
           headers: {
@@ -322,6 +322,10 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
     }
   };
 
+  const formatNumber = (num) => {
+    return num ? num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") : "";
+  };
+
   return (
     <div>
       <Button onClick={onBack} type="default" className="my-6">
@@ -426,7 +430,7 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
             {/* Render the Complete Payment button if the status is WAITING_FOR_PAYMENT */}
             {request.status === "WAITING_FOR_PAYMENT" && (
               <>
-                <p>Money to pay : {request.auctionFinalPrice} (vnd)</p>
+                <p>Money to pay : {formatPrice(request.auctionFinalPrice)}</p>
                 <Button
                   type="primary"
                   onClick={handleCompletePayment}
@@ -494,15 +498,17 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
                   </>
                 )}
                 <Input
-                  type="number"
+                  type="text" // Change type to text
                   placeholder="Offer Price"
-                  value={localOfferPrice || ""}
-                  onChange={(e) =>
+                  value={formatNumber(localOfferPrice) || ""} // Format the display value
+                  onChange={(e) => {
+                    // Remove dots for internal state
+                    const valueWithoutDots = e.target.value.replace(/\./g, ""); // Remove dots from input
                     setLocalOfferPrice(
-                      e.target.value ? Number(e.target.value) : null
-                    )
-                  }
-                  style={{ width: "200px", marginBottom: "16px" }}
+                      valueWithoutDots ? Number(valueWithoutDots) : null
+                    ); // Set number or null
+                  }}
+                  style={{ width: "200px", marginBottom: "16px" }} // Retain your styles
                 />
                 <Select
                   placeholder="Select Auction Type"
