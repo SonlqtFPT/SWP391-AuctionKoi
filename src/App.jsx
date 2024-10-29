@@ -24,6 +24,7 @@ import MemberProfilePage from "./features/user/pages/MemberProfilePage.jsx";
 import MemberProfileDetails from "./features/user/components/MemberProfileDetails.jsx";
 import UpdatePassword from "./features/user/components/UpdatePassword.jsx";
 import PaymentSuccess from "./features/bid/components-bid/PaymentSuccess.jsx";
+import AboutUs from "./features/user/pages/AboutUs.jsx";
 
 export default function App() {
   return (
@@ -43,6 +44,7 @@ export default function App() {
           <Route path="/forgotPass" element={<ForgotPassPage />} />
           <Route path="/reset-password" element={<ChangePassPage />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/about" element={<AboutUs />} />
           {/* Protected Routes */}
           <Route
             path="/admin"
