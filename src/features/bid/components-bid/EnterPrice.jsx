@@ -3,7 +3,6 @@ import { Input, Button } from "antd";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Socket } from "socket.io-client";
 import api from "../../../config/axios";
 
 function EnterPrice({
@@ -19,18 +18,18 @@ function EnterPrice({
   registed,
 }) {
   const [bidPrice, setBidPrice] = useState("");
-  const [registrationLink, setRegistrationLink] = useState(""); // Thêm state để lưu link đăng ký
+  const [registrationLink, setRegistrationLink] = useState("");
 
-  const post_bid_api = "bid/bidAuction"; //Bid
-  const post_regis_api = "register-lot/regis"; //Deposit
+  const post_bid_api = "bid/bidAuction";
+  const post_regis_api = "register-lot/regis";
   const post_socket_api = `test/send?eventName=${eventName}`;
 
   const handleBidNotification = async () => {
     try {
       await api.post(post_socket_api, {
-        winnerName: currentMemberId, // Tên người thắng
-        newPrice: bidPrice.replace(/\./g, ""), // Giá mới
-        lotId: lotId, // ID của lô
+        winnerName: currentMemberId,
+        newPrice: bidPrice.replace(/\./g, ""),
+        lotId: lotId,
       });
     } catch (error) {
       console.error("Error sending bid notification:", error);
@@ -40,29 +39,27 @@ function EnterPrice({
   const handleBid = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-
-      // Move the headers object outside of the data you're sending
       const response = await api.post(
         post_bid_api,
         {
           lotId: lotId,
-          price: bidPrice.replace(/\./g, ""), // Format price
-          memberId: currentMemberId, // Ensure this is correctly passed
+          price: bidPrice.replace(/\./g, ""),
+          memberId: currentMemberId,
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Include token in headers
+            Authorization: `Bearer ${token}`,
           },
         }
       );
-      if (response.data.message == "Bid placed successfully") {
+      if (response.data.message === "Bid placed successfully") {
         toast.success(response.data.message);
       } else {
         toast.warn(response.data.message);
       }
       fetchLot();
       fetchBidList();
-      await handleBidNotification(); // Gọi hàm thông báo sau khi đặt giá thầu
+      await handleBidNotification();
       setRegistrationLink("");
     } catch (error) {
       console.error("Error submitting bid:", error);
@@ -83,21 +80,37 @@ function EnterPrice({
         },
       }
     );
-    console.log("Đạ dang ki chua? ", registed);
     const link = response.data.data;
-    console.log("Link: ", link);
     setRegistrationLink(link);
   };
 
-  // Hàm định dạng số
   const formatNumber = (num) => {
-    return num ? num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") : ""; // {{ edit_8 }}
+    return num ? num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") : "";
   };
 
   const handleDepositClick = () => {
     if (registrationLink) {
-      window.open(registrationLink, "_blank"); // Mở link trong tab mới
+      window.open(registrationLink, "_blank");
     }
+  };
+
+  // Increase bid by increment, or set to current price + increment if no bid yet
+  const increaseBid = () => {
+    setBidPrice((prevBid) =>
+      prevBid
+        ? (Number(prevBid) + increment).toString()
+        : (currentPrice + increment).toString()
+    );
+  };
+
+  // Decrease bid, ensuring it doesn't fall below starting price
+  const decreaseBid = () => {
+    setBidPrice((prevBid) =>
+      Math.max(
+        currentPrice + increment,
+        Number(prevBid || currentPrice) - increment
+      ).toString()
+    );
   };
 
   useEffect(() => {
@@ -105,54 +118,72 @@ function EnterPrice({
 
     const handleRefresh = (event) => {
       if (event.data === "payment_successful") {
-        // Làm mới trang khi nhận thông điệp
         window.location.reload();
       }
     };
 
-    // Thêm sự kiện lắng nghe cho thông điệp
     window.addEventListener("message", handleRefresh);
 
-    // Dọn dẹp sự kiện khi component unmount
     return () => {
       window.removeEventListener("message", handleRefresh);
     };
   }, []);
 
+  function formatPrice(price) {
+    if (price === null || price === undefined) {
+      return;
+    }
+    return price
+      .toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      })
+      .replace(/\sđ/, "đ");
+  }
+
   return (
-    <div
-      className={`p-5 my-5 rounded-2xl border-2 hover:border-4 border-[#bcab6f] outline outline-offset-2 outline-white text-white shadow-md bg-gray-900 hover:bg-gray-800`}
-    >
-      {/* Price Section */}
-      <div className="flex flex-col sm:flex-row items-center gap-3  text-black">
+    <div className="p-5 my-5 rounded-2xl border-2 hover:border-4 border-[#bcab6f] outline outline-offset-2 outline-white text-white shadow-md bg-gray-900 hover:bg-gray-800">
+      <div className="flex flex-col sm:flex-row items-center gap-3 text-black">
         <div className="bg-slate-500 h-[40px] rounded-full flex items-center justify-between pl-5 pr-8 w-full py-6">
           <h1 className="text-xl font-bold w-auto lg:w-48">Highest Price</h1>
-          <h1 className="text-xl font-extrabold  text-[#af882b]">
-            {formatNumber(currentPrice)}
+          <h1 className="text-xl font-extrabold text-[#af882b]">
+            {formatPrice(currentPrice)}
           </h1>
         </div>
         <div className="bg-slate-500 h-[40px] rounded-full flex items-center justify-between pl-5 pr-8 w-full py-6">
           <h1 className="text-xl font-bold w-auto lg:w-48">Starting Price</h1>
-          <h1 className="text-xl font-bold">{formatNumber(startingPrice)}</h1>
+          <h1 className="text-xl font-bold">{formatPrice(startingPrice)}</h1>
         </div>
       </div>
 
-      {/* Bid Section */}
       <div className="flex flex-col sm:flex-row items-center gap-3 mt-7">
-        {/* Bid Input */}
         {registed && remainingTime > 0 && (
-          <div className="w-full ">
+          <div className="flex w-full items-center gap-2">
+            <Button
+              className="bg-red-500 text-black rounded-full"
+              onClick={decreaseBid}
+            >
+              -
+            </Button>
             <Input
               className="rounded-3xl h-[40px] w-full text-black"
               type="text"
               value={formatNumber(bidPrice)}
               onChange={(e) => setBidPrice(e.target.value.replace(/\./g, ""))}
             />
+            <Button
+              className="bg-green-400 text-white rounded-full"
+              onClick={increaseBid}
+            >
+              +
+            </Button>
           </div>
         )}
 
         {registed && remainingTime > 0 && (
-          <div className="w-full lg:w-36 ">
+          <div className="w-full lg:w-36">
             <button
               className="bg-red-600 hover:bg-red-500 rounded-2xl h-[40px] w-full lg:w-24 px-5 font-bold text-black hover:border-2 hover:border-[#bcab6f]"
               onClick={handleBid}
@@ -162,9 +193,8 @@ function EnterPrice({
           </div>
         )}
 
-        {/* Deposit Button */}
-        {!registed && (remainingTime > 0 || remainingTime == -2) && (
-          <div className=" w-full ">
+        {!registed && (remainingTime > 0 || remainingTime === -2) && (
+          <div className="w-full">
             <button
               className="bg-blue-400 hover:bg-blue-300 rounded-2xl h-[40px] w-full px-5 font-bold text-black hover:border-2 hover:border-[#bcab6f]"
               onClick={handleDepositClick}
@@ -174,10 +204,9 @@ function EnterPrice({
           </div>
         )}
 
-        {/* Increment Section */}
         <div className="bg-slate-500 h-[40px] rounded-full flex items-center justify-between pl-5 pr-8 w-full py-6 text-black">
           <h1 className="text-xl font-bold">Increment</h1>
-          <h1 className="text-xl font-bold">{formatNumber(increment)}</h1>
+          <h1 className="text-xl font-bold">{formatPrice(increment)}</h1>
         </div>
       </div>
     </div>
