@@ -46,39 +46,54 @@ const Header = () => {
     setLocation,
   } = useAuth();
 
-  // Function to handle logout: remove user-related data from localStorage
   const handleLogout = async () => {
     setLoading(true);
     const accessToken = localStorage.getItem("accessToken");
     const refreshToken = localStorage.getItem("refreshToken");
-    const data = {
-      accessToken: accessToken,
-      refreshToken: refreshToken,
-    };
+
+    if (!accessToken || !refreshToken) {
+      toast.error("No valid session found. Please log in again.");
+      navigate("/login");
+      setLoading(false);
+      return;
+    }
+
+    const data = { accessToken, refreshToken };
+
     try {
       const response = await api.post(`/authenticate/logout`, data, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      const { status } = response.data;
-      const { message } = response.data;
+
+      const { status, message } = response.data;
+
       if (status === 5) {
+        // Clear user data from localStorage
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
         localStorage.removeItem("accountData");
-        setAccountId("");
-        setAccessToken("");
-        setRefreshToken("");
-        setUserName("");
-        setBreederName("");
-        setLocation("");
-        setRole("");
-        navigate("/");
+        localStorage.clear(); // Ensures any other data stored in localStorage is removed
+
+        // Clear user data from state
+        setAccountId(null);
+        setAccessToken(null);
+        setRefreshToken(null);
+        setUserName(null);
+        setBreederName(null);
+        setLocation(null);
+        setRole(null);
+
+        // Redirect to the home or login page
+        // window.location.reload();
+        navigate("/login");
         toast.success(message);
+      } else {
+        toast.error("Unexpected status during logout. Please try again.");
       }
     } catch (error) {
-      console.log(error);
+      console.error("Error during logout:", error);
       toast.error("Error! Cannot log out!");
     } finally {
       setLoading(false);

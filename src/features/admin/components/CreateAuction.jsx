@@ -50,7 +50,6 @@ const CreateAuction = () => {
     }
 
     const auctionData = {
-      auctionTypeName: auction.auctionTypeName,
       startTime: auction.startTime,
       endTime: auction.endTime,
       lots: lots.map((lot) => ({ fishId: lot.fishId })),
