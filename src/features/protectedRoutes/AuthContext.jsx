@@ -83,7 +83,7 @@ export function AuthProvider({ children }) {
         setRole,
         setBreederName,
         setLocation,
-        setAccountData, // Expose setAccountData if needed
+        setAccountData,
       }}
     >
       {children}

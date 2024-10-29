@@ -1,10 +1,18 @@
 import { useEffect, useState } from "react";
-import { Button, Select, Table, Modal } from "antd";
+import { Button, Select, Table, Modal, Tag } from "antd";
 import { toast } from "react-toastify";
 import api from "../../../config/axios";
 import RequestDetails from "../components/RequestDetails";
+import {
+  FaFish,
+  FaIdCard,
+  FaFlag,
+  FaClock,
+  FaCog,
+  FaEye,
+} from "react-icons/fa";
 
-const ManageRequestStatus = ({ onGoBack }) => {
+const ManageRequestStatus = () => {
   const storedData = localStorage.getItem("accountData");
   const accountData = JSON.parse(storedData);
   const accountId = accountData.accountId;
@@ -23,7 +31,10 @@ const ManageRequestStatus = ({ onGoBack }) => {
           Authorization: `Bearer ${token}`, // Pass token in Authorization header
         },
       });
+
       const auctionData = response.data.data;
+      console.log(response);
+      console.log(auctionData);
 
       const formattedRequests = auctionData.map((item) => ({
         requestId: item.requestId,
@@ -34,9 +45,14 @@ const ManageRequestStatus = ({ onGoBack }) => {
         mediaUrl: item.koiFish.media.imageUrl,
         staff: item.staff,
         koiFish: item.koiFish,
+        varietyName: item.koiFish.variety.varietyName,
+        requestedAt: item.requestedAt,
       }));
+      const sortedRequests = formattedRequests.sort(
+        (a, b) => new Date(b.requestedAt) - new Date(a.requestedAt)
+      );
 
-      setAuctionRequests(formattedRequests);
+      setAuctionRequests(sortedRequests);
     } catch (error) {
       console.error("Error fetching auction request data:", error);
       toast.error("Failed to fetch auction request data");
@@ -46,6 +62,66 @@ const ManageRequestStatus = ({ onGoBack }) => {
   useEffect(() => {
     fetchRequest();
   }, []);
+
+  // Format the status
+  const formatStatus = (status) => {
+    switch (status) {
+      case "CONFIRMING":
+        return "Confirming";
+      case "Cancled":
+        return "Canceled";
+      case "ASSIGNED":
+        return "Assigned";
+      case "NEGOTIATING":
+        return "Negotiating";
+      case "WAITING_FOR_PAYMENT":
+        return "Waiting For Payment";
+      case "PAID":
+        return "Paid";
+      case "CANCELLED":
+        return "Cancelled";
+      case "REGISTERED":
+        return "Registered";
+      case "ASCENDING_BID":
+        return "Ascending Bid";
+      case "SEALED_BID":
+        return "Sealed Bid";
+      case "FIXED_PRICE_SALE":
+        return "Fixed Price Sale";
+      case "DESCENDING_BID":
+        return "Descending Bid";
+      default:
+        return status.charAt(0) + status.slice(1).toLowerCase();
+    }
+  };
+
+  // Determine the color for the status tag
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "CONFIRMING":
+        return "orange";
+      case "INSPECTION_FAILED":
+        return "red";
+      case "ASSIGNED":
+        return "orange";
+      case "REQUESTING":
+        return "blue";
+      case "NEGOTIATING":
+        return "orange";
+      case "WAITING_FOR_PAYMENT":
+        return "gold";
+      case "PAID":
+        return "green";
+      case "COMPLETED":
+        return "geekblue";
+      case "CANCELED":
+        return "volcano";
+      case "REGISTERED":
+        return "green";
+      default:
+        return "default";
+    }
+  };
 
   const handleUpdateStatus = async () => {
     if (!updatingRequest?.requestId || !selectedStatus) {
@@ -107,30 +183,79 @@ const ManageRequestStatus = ({ onGoBack }) => {
 
   const columns = [
     {
-      title: "Request ID",
+      title: (
+        <span className="flex items-center">
+          <FaIdCard className="mr-2" /> Request ID
+        </span>
+      ),
       dataIndex: "requestId",
       key: "requestId",
+      sorter: (a, b) => a.requestId - b.requestId,
+      sortDirections: ["ascend", "descend"],
     },
     {
-      title: "Fish ID",
+      title: (
+        <span className="flex items-center">
+          <FaFish className="mr-2" /> Fish ID
+        </span>
+      ),
       dataIndex: "fishId",
       key: "fishId",
+      sorter: (a, b) => a.fishId - b.fishId,
+      sortDirections: ["ascend", "descend"],
     },
     {
-      title: "Breeder ID",
-      dataIndex: "breederId",
-      key: "breederId",
+      title: (
+        <span className="flex items-center">
+          <FaFish className="mr-2" /> Fish Type
+        </span>
+      ),
+      dataIndex: "varietyName",
+      key: "varietyName",
+      sorter: (a, b) => a.varietyName.localeCompare(b.varietyName),
+      sortDirections: ["ascend", "descend"],
     },
     {
-      title: "Breeder Name",
-      dataIndex: "breederName",
-      key: "breederName",
+      title: (
+        <span className="flex items-center">
+          <FaFish className="mr-2" /> Breeder
+        </span>
+      ),
+      key: "breeder",
+      render: (text, record) => (
+        <span className="flex items-center">
+          <FaFish className="mr-2" />
+          ID: {record.breederId} - {record.breederName}
+        </span>
+      ),
+      sorter: (a, b) => a.breederId - b.breederId,
+      sortDirections: ["ascend", "descend"],
     },
     {
-      title: "Status",
+      title: (
+        <span className="flex items-center">
+          <FaFlag className="mr-2" /> Status
+        </span>
+      ),
       dataIndex: "status",
       key: "status",
-      render: (text, record) => displayStatus(record.status),
+      render: (text) => (
+        <Tag color={getStatusColor(text)}>{formatStatus(text)}</Tag>
+      ),
+      sorter: (a, b) => a.status.localeCompare(b.status),
+      sortDirections: ["ascend", "descend"],
+    },
+    {
+      title: (
+        <span className="flex items-center">
+          <FaClock className="mr-2" /> Created At
+        </span>
+      ),
+      dataIndex: "requestedAt",
+      key: "requestedAt",
+      render: (text) => new Date(text).toLocaleString(), // Format date as needed
+      sorter: (a, b) => new Date(a.requestedAt) - new Date(b.requestedAt),
+      sortDirections: ["ascend", "descend"],
     },
     {
       title: "Action",
@@ -168,7 +293,7 @@ const ManageRequestStatus = ({ onGoBack }) => {
       {showList ? (
         <>
           <h1 className="text-left font-bold text-2xl my-5">
-            Auction Request Manager
+            Staff Request Manager
           </h1>
           <Table columns={columns} dataSource={auctionRequests} />
 
@@ -200,17 +325,13 @@ const ManageRequestStatus = ({ onGoBack }) => {
           <Button onClick={handleGoBack}>Go Back</Button>
           <RequestDetails
             selectedRequest={selectedRequest}
-            staffList={[]} // Pass staff list if needed
-            onAssign={async (request, staffId) => {
-              // Handle staff assignment logic here
-            }}
             fetchRequest={fetchRequest}
-            onUpdateStatus={handleUpdateStatus}
             showUpdateStatusModal={showUpdateStatusModal} // Pass this for status modal
             updatingRequest={updatingRequest} // Pass this state to the modal in RequestDetails
             closeUpdateStatusModal={closeUpdateStatusModal} // Close modal callback
             selectedStatus={selectedStatus} // Status for the modal
             setSelectedStatus={setSelectedStatus} // Set status function for modal
+            onBack={handleGoBack}
           />
         </>
       )}
