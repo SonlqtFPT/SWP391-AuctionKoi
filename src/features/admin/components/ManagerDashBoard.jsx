@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import StatCard from "../../../components/StatCard";
-import { CheckCheck, CircleX, PenLine, UserCircle, Zap } from "lucide-react";
-import { toast } from "react-toastify";
+import { CheckCheck, CircleX, ReceiptEuro } from "lucide-react";
 import api from "../../../config/axios";
 import UserBarChart from "../../../components/Charts/UserBarChart";
 import RequestBarChart from "../../../components/Charts/RequestBarChart";
@@ -11,57 +10,89 @@ import TransactionBarChar from "../../../components/Charts/TransactionBarChar";
 import IncomeLineChart from "../../../components/Charts/IncomeLineChart";
 
 function ManagerDashBoard() {
-  const [registeredCount, setRegisteredCount] = useState([]);
-  const [cancleCount, setCancleCount] = useState([]);
+  const [registeredCount, setRegisteredCount] = useState();
+  const [cancleCount, setCancleCount] = useState();
+  const [invoiceCount, setInvoiceCount] = useState();
+  const token = localStorage.getItem("accessToken");
+
   const fetchRequest = async () => {
     try {
-      const token = localStorage.getItem("accessToken");
       const response = await api.get("manager/request/getRequest", {
         headers: {
           Authorization: `Bearer ${token}`, // Corrected token syntax
         },
       });
-      const auctionData = response.data.data;
+      const data = response.data.data;
 
       // Count all requests with status "PENDING"
-
-      const countRegistered = auctionData.filter(
-        (item) => item.status === "APPROVE"
-      ).length;
-      setRegisteredCount(countRegistered);
-
-      const countCancle1 = auctionData.filter(
-        (item) => item.status === "CANCELLED"
-      ).length;
-      const countCancle2 = auctionData.filter(
-        (item) => item.status === "INSPECTION_FAILED"
-      ).length;
-      setCancleCount(countCancle1 + countCancle2);
+      setRegisteredCount(
+        data.filter((item) => item.status === "REGISTERED").length
+      );
+      setCancleCount(data.filter((item) => item.status === "CANCELED").length);
     } catch (error) {
-      toast.error("Failed to fetch auction request data");
+      console.log("Error at fetchRequest in ManagerDashBoard.jsx: ", error);
+    }
+  };
+
+  const fetchInvoice = async () => {
+    try {
+      const response = await api.get("invoice/get-invoices", {
+        headers: {
+          Authorization: `Bearer ${token}`, // Corrected token syntax
+        },
+      });
+      const data = response.data.data;
+      setInvoiceCount(
+        data.filter((item) => item.status === "DELIVERED").length
+      );
+    } catch (error) {
+      console.log("Error at fetchInvoice in ManagerDashBoard.jsx: ", error);
     }
   };
 
   useEffect(() => {
     fetchRequest();
+    fetchInvoice();
   }, []);
 
   return (
     <div className="max-w-7xl mx-auto py-6 px-4 lg:px-8">
       <h1 className="text-2xl mb-4">Welcome to Manager DashBoard</h1>
+      {/* Stat Card Section */}
+      <motion.div
+        className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8 lg:flex lg:justify-center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1 }}
+      >
+        <StatCard
+          name="Total Invoices"
+          icon={ReceiptEuro}
+          value={invoiceCount}
+          color="#37AFE1"
+        />
+        <StatCard
+          name="Registered Request"
+          icon={CheckCheck}
+          value={registeredCount}
+          color="#32cd32"
+        />
+        <StatCard
+          name="Cancled Request"
+          icon={CircleX}
+          value={cancleCount}
+          color="#ff0000"
+        />
+      </motion.div>
 
-      {/* Transaction Section */}
-      <div className="my-8">
-        <hr className="border-t-4 border-gray-300 mb-4 w-autp  md:w-full mx-auto" />
-        <h3 className="text-2xl text-justify md:text-center lg:text-center font-bold w-auto lg:w-full">
-          Income Dashboard
-        </h3>
-        <hr className="border-t-4 border-gray-300 mt-4 w-auto  md:w-full mx-auto" />
-      </div>
-
-      {/* Chart Section */}
-      <div className="">
-        <IncomeLineChart />
+      {/* Chart Income*/}
+      <div className="flex justify-between space-x-4">
+        <div className="flex-1">
+          <IncomeLineChart />
+        </div>
+        <div className="flex-1">
+          <AuctionTypePieChart />
+        </div>
       </div>
     </div>
   );

@@ -12,9 +12,6 @@ import {
 import { Line } from "react-chartjs-2";
 import api from "../../config/axios";
 import { toast } from "react-toastify";
-import { motion } from "framer-motion";
-import { Grid, HandCoins } from "lucide-react";
-import { Label } from "recharts";
 
 // Đăng ký các scale cần thiết
 Chartjs.register(CategoryScale, LinearScale, LineElement, PointElement);
@@ -60,6 +57,16 @@ const IncomeLineChart = () => {
             weight: "bold", // Độ đậm của chữ
           },
         },
+      },
+      title: {
+        // Thêm phần tiêu đề
+        display: true,
+        text: "Yearly Income Summary", // Tiêu đề biểu đồ
+        font: {
+          size: 24, // Kích thước chữ tiêu đề
+          weight: "bold", // Độ đậm của chữ tiêu đề
+        },
+        align: "start", // Đặt tiêu đề nằm bên trái
       },
     },
     scales: {
@@ -121,7 +128,7 @@ const IncomeLineChart = () => {
       requestData.forEach((transaction) => {
         const transactionDate = new Date(transaction.invoiceDate);
         if (
-          transaction.status === "PAID" &&
+          transaction.status === "DELIVERED" &&
           transactionDate.getFullYear() === currentYear
         ) {
           const month = transactionDate.getMonth(); // Lấy tháng (0-11)
@@ -131,10 +138,10 @@ const IncomeLineChart = () => {
         }
       });
 
-      console.log("Tổng amount theo từng tháng: ", monthlyTotals);
+      console.log("Line Chart ", monthlyTotals);
       setIncomeData(monthlyTotals); // Cập nhật state với tổng amount theo tháng
     } catch (error) {
-      toast.error("Failed to fetch auction request data");
+      console.log("Error at IncomeLineChart.jsx: ", error);
     }
   };
 
@@ -143,7 +150,7 @@ const IncomeLineChart = () => {
   }, []);
 
   return (
-    <div className="h-[600px] w-[1100px] flex justify-center ml-16 bg-white shadow-2xl rounded-2xl p-4">
+    <div className="h-[400px] w-[800px] flex justify-center bg-white shadow-2xl rounded-2xl p-4">
       <Line data={data} options={options}></Line>
     </div>
   );

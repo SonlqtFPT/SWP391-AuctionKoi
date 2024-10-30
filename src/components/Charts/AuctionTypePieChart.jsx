@@ -1,100 +1,130 @@
-import { useEffect, useState } from 'react'
-import { motion } from "framer-motion"
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
-import { GavelIcon } from 'lucide-react';
-import api from '../../config/axios';
-import { toast } from 'react-toastify';
-
-
-
+import { useEffect, useState } from "react";
+import api from "../../config/axios";
+import { Pie } from "react-chartjs-2";
 
 const COLORS = ["#6366F1", "#8B5CF6", "#EC4899", "#10B981"];
 
 const AuctionTypePieChart = () => {
+  const [fixedPriceSale, setFixedPriceSale] = useState(0);
+  const [sealedBid, setSealedBid] = useState(0);
+  const [ascesdingBid, setAscendingBid] = useState(0);
+  const [descendingBid, setDescendingBid] = useState(0);
 
-    const [requestData, setRequestData] = useState([]);
-    const fetchRequest = async () => {
-        try {
-            const token = localStorage.getItem("accessToken");
-            const response = await api.get("manager/request/getRequest", {
-                headers: {
-                    Authorization: `Bearer ${token}`, // Corrected token syntax
-                },
-            });
-            const requestData = response.data.data;
-            console.log(requestData);
+  const fetchRequest = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await api.get("manager/request/getRequest", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = response.data.data;
+      console.log("Pie chart: ", data);
+      setFixedPriceSale(
+        data.filter(
+          (item) => item.koiFish.auctionTypeName === "FIXED_PRICE_SALE"
+        ).length
+      );
+      setSealedBid(
+        data.filter((item) => item.koiFish.auctionTypeName === "SEALED_BID")
+          .length
+      );
+      setAscendingBid(
+        data.filter((item) => item.koiFish.auctionTypeName === "ASCENDING_BID")
+          .length
+      );
+      setDescendingBid(
+        data.filter((item) => item.koiFish.auctionTypeName === "DESCENDING_BID")
+          .length
+      );
+      console.log(
+        "1. ",
+        fixedPriceSale,
+        "2. ",
+        sealedBid,
+        "3. ",
+        ascesdingBid,
+        "4. ",
+        descendingBid
+      );
+    } catch (error) {
+      console.log("Error at AuctionTypePieChart.jsx: ", error);
+    }
+  };
+  useEffect(() => {
+    fetchRequest();
+  }, []);
 
-            // Filter out members and group by month in 2024
-            const countAuctionType1 = requestData.filter(item => item.auctionTypeName === "FIXED_PRICE_SALE").length;
-            const countAuctionType2 = requestData.filter(item => item.auctionTypeName === "SEALED_BID").length;
-            const countAuctionType3 = requestData.filter(item => item.auctionTypeName === "ASCENDING_BID").length;
-            const countAuctionType4 = requestData.filter(item => item.auctionTypeName === "DESCENDING_BID").length;
+  const data = {
+    labels: [
+      "Fixed price sale",
+      "Sealed bid",
+      "Ascending bid",
+      "Descending bid",
+    ],
+    datasets: [
+      {
+        label: "Quantity: ",
+        data: [fixedPriceSale, sealedBid, ascesdingBid, descendingBid],
+        backgroundColor: [
+          "rgb(255, 99, 132)",
+          "rgb(54, 162, 235)",
+          "rgb(255, 205, 86)",
+          "rgb(75, 192, 192)",
+        ],
+        hoverOffset: 4,
+        percentageLabel: "Percentage: ",
+        percentageData: [
+          (fixedPriceSale /
+            (fixedPriceSale + sealedBid + ascesdingBid + descendingBid)) *
+            100,
+          (sealedBid /
+            (fixedPriceSale + sealedBid + ascesdingBid + descendingBid)) *
+            100,
+          (ascesdingBid /
+            (fixedPriceSale + sealedBid + ascesdingBid + descendingBid)) *
+            100,
+          (descendingBid /
+            (fixedPriceSale + sealedBid + ascesdingBid + descendingBid)) *
+            100,
+        ],
+      },
+    ],
+  };
 
-            const data = [
-                { name: "Fixed Price Sale", value: countAuctionType1 || 0 },
-                { name: "Sealed Bid", value: countAuctionType2 || 0 },
-                { name: "Ascending Bid", value: countAuctionType3 || 0 },
-                { name: "Descending Bid", value: countAuctionType4 || 0 },
+  const options = {
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: function (tooltipItem) {
+            const quantity = tooltipItem.raw; // Lấy số lượng
+            const percentage = (
+              (quantity /
+                (fixedPriceSale + sealedBid + ascesdingBid + descendingBid)) *
+              100
+            ).toFixed(2); // Tính phần trăm
+            return [`Quantity: ${quantity}`, `Percentage: ${percentage}%`]; // Trả về mảng để hiển thị
+          },
+        },
+      },
+      title: {
+        // Thêm phần tiêu đề
+        display: true,
+        text: "Auction Types Overview", // Tiêu đề biểu đồ
+        font: {
+          size: 24, // Kích thước chữ tiêu đề
+          weight: "bold", // Độ đm của chữ tiêu đề
+        },
+        align: "start", // Đặt tiêu đề nằm bên trái
+      },
+    },
+  };
 
-            ].filter(item => item.value > 0);
+  return (
+    <div className="w-[400px] h-[400px] bg-white shadow-2xl rounded-2xl p-4">
+      <Pie data={data} options={options} />
+    </div>
+  );
+};
 
-            console.log(data);
-
-            setRequestData(data);
-        } catch (error) {
-            toast.error("Failed to fetch auction request data");
-        }
-    };
-    useEffect(() => {
-        fetchRequest();
-    }, []);
-
-    return (
-        <motion.div
-            className='bg-slate-300 bg-opacity-50 backdrop-blur-md overflow-hidden p-6 shadow-lg rounded-xl border border-slate-200'
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-        >
-            <h2 className="text-lg font-medium mb-4">
-                <span className='flex items-center text-sm font-medium text-black'>
-                    <GavelIcon
-                        size={20}
-                        className='mr-2'
-                    />
-                    Percentage of Auction Type for Each Request
-                </span>
-            </h2>
-
-            <div className="h-80">
-                <ResponsiveContainer
-                    width={"100%"}
-                    height={"100%"}
-                >
-                    <PieChart>
-                        <Pie
-                            data={requestData}
-                            cx={"50%"}
-                            cy={"50%"}
-                            LabelLine={false}
-                            outerRadius={80}
-                            fill="#884d8"
-                            dataKey="value"
-                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                        >
-                            {requestData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                            ))}
-                        </Pie>
-                        <Tooltip
-                            itemStyle={{ color: "#2f4f4f" }}
-                        />
-                        <Legend />
-                    </PieChart>
-                </ResponsiveContainer>
-            </div>
-        </motion.div>
-    )
-}
-
-export default AuctionTypePieChart
+export default AuctionTypePieChart;
