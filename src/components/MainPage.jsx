@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../features/protectedRoutes/AuthContext";
 import { useEffect, useRef } from "react";
 
@@ -114,30 +114,17 @@ function MainPage() {
           Your direct connection to the top Japanese koi breeders
         </p>
         <div className="gap-2 w-full mb-10 z-20 sm:flex flex-wrap justify-center">
-          {[
-            { name: "Marushin", logo: "marushin-logo.png" },
-            { name: "NND", logo: "nnd-logo.png" },
-            { name: "Saki", logo: "sakai-logo.png" },
-            { name: "Torazo", logo: "torazo-logo.png" },
-            { name: "Shinoda", logo: "shinoda-logo.png" },
-            { name: "Maruhiro", logo: "maruhiro-logo.png" },
-            { name: "Kanno", logo: "kanno-logo.png" },
-            { name: "Izumiya", logo: "izumiya-logo.png" },
-            { name: "Isa", logo: "isa-logo.png" },
-            { name: "Dainichi", logo: "dainichi-logo.png" },
-          ].map((breeder) => (
-            <div
-              key={breeder.name}
-              className="aspect-square sm:w-48 p-4 flex flex-col items-center justify-around bg-amber-500 rounded-xl hover:bg-amber-400"
-            >
-              <img
-                className="object-contain max-h-[60%] max-w-[80%] h-full dark:saturate-0 invert-0 dark:invert"
-                src={`/src/assets/logo/${breeder.logo}`}
-                alt={`${breeder.name} Logo`}
-              />
-              <span className="font-semibold">{breeder.name}</span>
-            </div>
-          ))}
+          <NavLink
+            to="/saki" // Thay đổi đường dẫn theo yêu cầu
+            className="aspect-square sm:w-48 p-4 flex flex-col items-center justify-around bg-amber-500 rounded-xl hover:bg-amber-400"
+          >
+            <img
+              className="object-contain max-h-[60%] max-w-[80%] h-full dark:saturate-0 invert-0 dark:invert"
+              src={`/src/assets/logo/sakai-logo.png`}
+              alt={`Saki Logo`}
+            />
+            <span className="font-semibold">Saki</span>
+          </NavLink>
         </div>
       </section>
 

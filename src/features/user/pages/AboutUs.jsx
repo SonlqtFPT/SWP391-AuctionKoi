@@ -131,14 +131,12 @@ function AboutUs() {
             </h1>
             <div className="mt-3">
               <Collapse
-                defaultActiveKey={["1"]}
                 ghost
                 items={items}
                 expandIcon={({ isActive }) => (
                   <RightOutlined
                     style={{
                       color: "white",
-                      transition: "transform 0.3s ease",
                     }}
                     rotate={isActive ? 90 : 0}
                   />
