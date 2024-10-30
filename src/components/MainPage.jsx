@@ -115,7 +115,7 @@ function MainPage() {
         </p>
         <div className="gap-2 w-full mb-10 z-20 sm:flex flex-wrap justify-center">
           <NavLink
-            to="/saki" // Thay đổi đường dẫn theo yêu cầu
+            to="/saki"
             className="aspect-square sm:w-48 p-4 flex flex-col items-center justify-around bg-amber-500 rounded-xl hover:bg-amber-400"
           >
             <img
@@ -126,15 +126,26 @@ function MainPage() {
             <span className="font-semibold">Saki</span>
           </NavLink>
           <NavLink
-            to="/ishi" // Thay đổi đường dẫn theo yêu cầu
+            to="/ishi"
             className="aspect-square sm:w-48 p-4 flex flex-col items-center justify-around bg-amber-500 rounded-xl hover:bg-amber-400"
           >
             <img
               className=" max-h-[60%] max-w-[80%] h-full "
               src="https://ishikoi.vn/tassets/images/hinh-anh-footer-1.png"
-              alt={`IshLogo`}
+              alt={`Ishi Logo`}
             />
             <span className="font-semibold">Ishi</span>
+          </NavLink>
+          <NavLink
+            to="/dainichi"
+            className="aspect-square sm:w-48 p-4 flex flex-col items-center justify-around bg-amber-500 rounded-xl hover:bg-amber-400"
+          >
+            <img
+              className=" max-h-[60%] max-w-[80%] h-full "
+              src="https://dainichikoifarm.com/wp-content/themes/dainichi_231122/assets/images/common/main_logo.svg"
+              alt={`Dainichi Logo`}
+            />
+            <span className="font-semibold">Dainichi</span>
           </NavLink>
         </div>
       </section>

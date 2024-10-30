@@ -10,7 +10,7 @@ function ishi() {
     <div className="bg-hero-pattern bg-cover relative grid min-h-screen ">
       <Header />
       <div className="absolute bg-black bg-opacity-70 inset-0" />
-      <div className="relative flex justify-center items-center mt-20 bg-slate-300 w-full">
+      <div className="relative flex justify-center items-center mt-20 bg-white w-full">
         <img
           src="https://ishikoi.vn/tassets/images/hinh-anh-footer-1.png"
           className="rounded-2xl w-[300px] h-[200px]"

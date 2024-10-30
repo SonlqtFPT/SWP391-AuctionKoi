@@ -8,7 +8,7 @@ function saki() {
   }, []);
 
   return (
-    <div className="bg-hero-pattern bg-cover relative grid min-h-screen ">
+    <div className="bg-hero-pattern bg-cover relative grid  min-h-screen ">
       <Header />
       <div className="absolute bg-black bg-opacity-70 inset-0" />
       <div className="relative flex justify-center mt-28">
