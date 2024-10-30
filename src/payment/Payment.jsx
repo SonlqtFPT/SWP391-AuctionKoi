@@ -48,24 +48,25 @@ const Payment = () => {
 
   // Update states whenever distance changes
   useEffect(() => {
-    const newPricePerKm = calculatePricePerKm(distance);
+    const newPricePerKm = calculatePricePerKm(distance.toFixed(2));
     setPricePerKm(newPricePerKm);
-    calculateEstimatedShippingFee(distance, newPricePerKm);
-    console.log(`Distance: ${distance}`); // Log distance
+    calculateEstimatedShippingFee(distance.toFixed(2), newPricePerKm);
+    console.log(`Distance: ${distance.toFixed(2)}`); // Log distance
   }, [distance]);
 
   useEffect(() => {
     const handleRefresh = (event) => {
-      if (event.data === "payment_successful") {
-        // Làm mới trang khi nhận thông điệp
+      // Check if event.data exists and matches the expected value
+      if (event?.data === "payment_successful") {
+        // Reload the page when the message is received
         window.location.reload();
       }
     };
 
-    // Thêm sự kiện lắng nghe cho thông điệp
+    // Add an event listener for the 'message' event
     window.addEventListener("message", handleRefresh);
 
-    // Dọn dẹp sự kiện khi component unmount
+    // Clean up the event listener when the component unmounts
     return () => {
       window.removeEventListener("message", handleRefresh);
     };
@@ -110,7 +111,7 @@ const Payment = () => {
         params: {
           invoiceId: invoice.invoiceId,
           address,
-          kilometer: distance, // Send the distance as kilometer
+          kilometer: distance.toFixed(2), // Send the distance as kilometer
         },
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -140,6 +141,20 @@ const Payment = () => {
       setUpdating(false);
     }
   };
+
+  function formatPrice(price) {
+    if (price === null || price === undefined) {
+      return;
+    }
+    return price
+      .toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      })
+      .replace(/\sđ/, "đ");
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -172,7 +187,7 @@ const Payment = () => {
                 </p>
                 <p>
                   <span className="font-semibold">Final Amount:</span>{" "}
-                  {invoice.finalAmount} {"(vnd)"}
+                  {formatPrice(invoice.finalAmount)}
                 </p>
                 <p>
                   <span className="font-semibold">Invoice Date:</span>{" "}
@@ -180,7 +195,7 @@ const Payment = () => {
                 </p>
                 <p>
                   <span className="font-semibold">Platform fee:</span>{" "}
-                  {invoice.tax} {"(vnd)"}
+                  {formatPrice(invoice.tax)}
                 </p>
                 <p>
                   <span className="font-semibold">Due Date:</span>{" "}
@@ -188,7 +203,7 @@ const Payment = () => {
                 </p>
                 <p>
                   <span className="font-semibold">Bidded Price:</span>{" "}
-                  {invoice.subTotal} {"(vnd)"}
+                  {formatPrice(invoice.subTotal)}
                 </p>
                 <p>
                   <span className="font-semibold">Status:</span>{" "}
@@ -230,10 +245,10 @@ const Payment = () => {
                   <span className="font-semibold">Estimated Shipping Fee:</span>{" "}
                   {invoice.kilometers !== null &&
                   invoice.kilometers !== undefined
-                    ? `${
+                    ? `${formatPrice(
                         calculatePricePerKm(invoice.kilometers) *
-                        invoice.kilometers
-                      } VND`
+                          invoice.kilometers
+                      )}`
                     : "Not provided"}
                 </p>
               </Card>
@@ -291,7 +306,7 @@ const Payment = () => {
                 </div>
                 <div>
                   <span className="font-semibold">Estimated Shipping Fee:</span>{" "}
-                  {estimatedShippingFee} VND
+                  {formatPrice(estimatedShippingFee)}
                 </div>
               </Card>
             </div>

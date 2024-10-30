@@ -87,13 +87,15 @@ const CreateAuction = () => {
     };
 
     console.log("Auction Data to Submit:", auctionData);
-
+    const token = localStorage.getItem("accessToken");
     try {
       const response = await api.post("/manager/createAuction", auctionData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+
+      console.log(response);
 
       // Check if response has a custom status code
       if (response.data && response.data.status === 200) {

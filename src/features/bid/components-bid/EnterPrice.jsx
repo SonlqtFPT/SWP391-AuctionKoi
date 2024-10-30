@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { Input, Button } from "antd";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -23,6 +22,8 @@ function EnterPrice({
   const post_bid_api = "bid/bidAuction";
   const post_regis_api = "register-lot/regis";
   const post_socket_api = `test/send?eventName=${eventName}`;
+
+  const maxBid = startingPrice * 20; // Limit the bid to 20 times the starting price
 
   const handleBidNotification = async () => {
     try {
@@ -94,23 +95,25 @@ function EnterPrice({
     }
   };
 
-  // Increase bid by increment, or set to current price + increment if no bid yet
+  // Increase bid by increment, ensuring it doesn't exceed maxBid
   const increaseBid = () => {
-    setBidPrice((prevBid) =>
-      prevBid
-        ? (Number(prevBid) + increment).toString()
-        : (currentPrice + increment).toString()
-    );
+    setBidPrice((prevBid) => {
+      const newBid = prevBid
+        ? Math.min(Number(prevBid) + increment, maxBid).toString()
+        : Math.min(currentPrice + increment, maxBid).toString();
+      return newBid;
+    });
   };
 
-  // Decrease bid, ensuring it doesn't fall below starting price
+  // Decrease bid, ensuring it doesn't fall below the current price + increment
   const decreaseBid = () => {
-    setBidPrice((prevBid) =>
-      Math.max(
+    setBidPrice((prevBid) => {
+      const decreasedBid = Math.max(
         currentPrice + increment,
         Number(prevBid || currentPrice) - increment
-      ).toString()
-    );
+      );
+      return decreasedBid.toString();
+    });
   };
 
   useEffect(() => {
@@ -164,6 +167,7 @@ function EnterPrice({
             <Button
               className="bg-red-500 text-black rounded-full"
               onClick={decreaseBid}
+              disabled={Number(bidPrice) <= currentPrice + increment}
             >
               -
             </Button>
@@ -171,11 +175,16 @@ function EnterPrice({
               className="rounded-3xl h-[40px] w-full text-black"
               type="text"
               value={formatNumber(bidPrice)}
-              onChange={(e) => setBidPrice(e.target.value.replace(/\./g, ""))}
+              onChange={(e) => {
+                const newBid = e.target.value.replace(/\./g, "");
+                setBidPrice(Math.min(Number(newBid), maxBid).toString());
+              }}
+              disabled={Number(bidPrice) >= maxBid}
             />
             <Button
               className="bg-green-400 text-white rounded-full"
               onClick={increaseBid}
+              disabled={Number(bidPrice) >= maxBid}
             >
               +
             </Button>
@@ -187,6 +196,7 @@ function EnterPrice({
             <button
               className="bg-red-600 hover:bg-red-500 rounded-2xl h-[40px] w-full lg:w-24 px-5 font-bold text-black hover:border-2 hover:border-[#bcab6f]"
               onClick={handleBid}
+              disabled={Number(bidPrice) > maxBid}
             >
               Bid
             </button>

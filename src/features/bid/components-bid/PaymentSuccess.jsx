@@ -9,15 +9,16 @@ const PaymentSuccess = () => {
       setCountdown((prevCountdown) => prevCountdown - 1);
     }, 1000);
 
-    // When countdown reaches 0, send message, close the tab, and clear the interval
-    if (countdown === 0) {
-      window.opener.postMessage("payment_successful", "*");
-      window.close();
-      clearInterval(interval);
-    }
-
     // Cleanup interval on component unmount
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    // When countdown reaches 0, send message and close the tab
+    if (countdown === 0) {
+      window.opener?.postMessage("payment_successful", "*"); // Using optional chaining for safety
+      window.close();
+    }
   }, [countdown]);
 
   return (
