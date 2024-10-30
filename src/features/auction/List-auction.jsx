@@ -50,7 +50,7 @@ function Auction() {
           <div className="flex flex-col justify-center items-center">
             <div className="bg-gray-800 bg-opacity-60 p-6 rounded-lg">
               <h1 className="text-white text-3xl font-bold">
-                No scheduled auction
+                No auction happening
               </h1>
             </div>
           </div>

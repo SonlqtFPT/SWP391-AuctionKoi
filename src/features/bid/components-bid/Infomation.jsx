@@ -10,7 +10,8 @@ function Information({
   fishId,
   registed,
   win,
-  hasEnded, // New prop to check if the auction has ended
+  hasEnded,
+  auctionTypeName,
 }) {
   const [checkRegisted, setCheckRegisted] = useState("");
 
@@ -39,6 +40,21 @@ function Information({
     }
   };
 
+  const formatStatus = (status) => {
+    switch (status) {
+      case "ASCENDING_BID":
+        return "Ascending Bid";
+      case "SEALED_BID":
+        return "Sealed Bid";
+      case "FIXED_PRICE_SALE":
+        return "Fixed Price Sale";
+      case "DESCENDING_BID":
+        return "Descending Bid";
+      default:
+        return status.charAt(0) + status.slice(1).toLowerCase();
+    }
+  };
+
   useEffect(() => {
     handleCheckRegisted();
   }, [registed, win, hasEnded]); // Track registration status, win, and auction end status
@@ -48,17 +64,15 @@ function Information({
       {/* Header Section */}
       <div className="flex items-center justify-between">
         <h1 className="font-bold text-2xl sm:text-3xl text-[#bcab6f]">
-          {varietyName + " #" + fishId}
+          {varietyName + " #" + fishId + " - " + formatStatus(auctionTypeName)}
         </h1>
         <div
           className={
-            win && hasEnded
+            (win && hasEnded) || registed
               ? "bg-green-500 px-4 py-2 rounded-3xl flex justify-center items-center text-ellipsis overflow-hidden whitespace-nowrap" // Green for win and has ended
-              : registed
-              ? "bg-green-500 px-4 py-2 rounded-3xl flex justify-center items-center text-ellipsis overflow-hidden whitespace-nowrap" // Green if registered
               : !registed
               ? "bg-gray-700 px-4 py-2 rounded-3xl flex justify-center items-center text-ellipsis overflow-hidden whitespace-nowrap" // Gray if not registered
-              : !win
+              : !win && hasEnded
               ? "bg-[#C0392B] px-4 py-2 rounded-3xl flex justify-center items-center text-ellipsis overflow-hidden whitespace-nowrap" // Red if lost
               : ""
           }

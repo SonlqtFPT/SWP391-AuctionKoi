@@ -8,27 +8,53 @@ function EnterPrice({
   currentPrice,
   startingPrice,
   increment,
-  currentMemberId,
+  currentAccountId,
   lotId,
   fetchLot,
   fetchBidList,
   remainingTime,
   eventName,
   registed,
+  auctionTypeName,
 }) {
   const [bidPrice, setBidPrice] = useState("");
   const [registrationLink, setRegistrationLink] = useState("");
+  const [hasBid, setHasBid] = useState(false); // State to track if the member has bid
 
   const post_bid_api = "bid/bidAuction";
   const post_regis_api = "register-lot/regis";
   const post_socket_api = `test/send?eventName=${eventName}`;
+  const fetch_bids_api = `bid/list?lotId=${lotId}`;
 
   const maxBid = startingPrice * 20;
+
+  // Fetch existing bids
+  const fetchExistingBids = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await api.get(fetch_bids_api, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // Check if currentAccountId matches any accountId in the bids
+      const existingBids = response.data.data || [];
+      const userHasBid = existingBids.some(
+        (bid) => bid.member.account.accountId === currentAccountId
+      );
+      console.log(currentAccountId);
+      console.log("status", userHasBid);
+      setHasBid(userHasBid);
+    } catch (error) {
+      console.error("Error fetching existing bids:", error);
+    }
+  };
 
   const handleBidNotification = async () => {
     try {
       await api.post(post_socket_api, {
-        winnerName: currentMemberId,
+        winnerName: currentAccountId,
         newPrice: bidPrice.replace(/\./g, ""),
         lotId: lotId,
       });
@@ -38,18 +64,30 @@ function EnterPrice({
   };
 
   const handleBid = async () => {
+    // Fetch existing bids and check if the user has already placed a bid
+    await fetchLot(); // Refresh lot data
+    await fetchBidList(); // Refresh bid list
+    await fetchExistingBids();
+
     if (currentPrice >= maxBid) {
       toast.warn("Max bid reached. You cannot bid any higher.");
       return;
     }
+
+    // Check if user has already bid for fixed price sale
+    if (auctionTypeName === "FIXED_PRICE_SALE" && hasBid) {
+      toast.warn("You can only bid once for a fixed price sale.");
+      return;
+    }
+
     try {
       const token = localStorage.getItem("accessToken");
       const response = await api.post(
         post_bid_api,
         {
           lotId: lotId,
-          price: bidPrice.replace(/\./g, ""),
-          memberId: currentMemberId,
+          price: currentPrice,
+          memberId: currentAccountId,
         },
         {
           headers: {
@@ -57,18 +95,21 @@ function EnterPrice({
           },
         }
       );
+
       if (response.data.message === "Bid placed successfully") {
         toast.success(response.data.message);
+        fetchLot(); // Refresh lot data
+        fetchBidList(); // Refresh bid list
+        await handleBidNotification(); // Notify other participants
+        await fetchExistingBids();
       } else {
         toast.warn(response.data.message);
       }
-      fetchLot();
-      fetchBidList();
-      await handleBidNotification();
+
+      // Clear the registration link after a successful bid
       setRegistrationLink("");
     } catch (error) {
       console.error("Error submitting bid:", error);
-      console.log("Registration link: ", registrationLink);
     }
   };
 
@@ -99,33 +140,9 @@ function EnterPrice({
     }
   };
 
-  // Increase bid by increment, or set to current price + increment if no bid yet, without exceeding maxBid
-  const increaseBid = () => {
-    setBidPrice((prevBid) => {
-      const newBid = prevBid
-        ? Math.min(Number(prevBid) + increment, maxBid).toString()
-        : Math.min(currentPrice + increment, maxBid).toString();
-      return newBid;
-    });
-  };
-
-  // Decrease bid, starting from highest price if it equals starting price, otherwise as usual
-  const decreaseBid = () => {
-    setBidPrice((prevBid) => {
-      const baseBid =
-        currentPrice === startingPrice
-          ? currentPrice
-          : currentPrice + increment;
-      const newBid = Math.max(
-        baseBid,
-        Number(prevBid || currentPrice) - increment
-      );
-      return newBid.toString();
-    });
-  };
-
   useEffect(() => {
     fetchRegisLink();
+    fetchExistingBids(); // Fetch existing bids when the component mounts
 
     const handleRefresh = (event) => {
       if (event.data === "payment_successful") {
@@ -158,57 +175,83 @@ function EnterPrice({
     <div className="p-5 my-5 rounded-2xl border-2 hover:border-4 border-[#bcab6f] outline outline-offset-2 outline-white text-white shadow-md bg-gray-900 hover:bg-gray-800">
       <div className="flex flex-col sm:flex-row items-center gap-3 text-black">
         <div className="bg-slate-500 h-[40px] rounded-full flex items-center justify-between pl-5 pr-8 w-full py-6">
-          <h1 className="text-xl font-bold w-auto lg:w-48">Highest Price</h1>
+          <h1 className="text-xl font-bold w-auto lg:w-48">
+            {auctionTypeName === "FIXED_PRICE_SALE"
+              ? "Fixed Price Sale:"
+              : "Highest Price"}
+          </h1>
           <h1 className="text-xl font-extrabold text-[#af882b]">
-            {formatPrice(currentPrice)}
+            {formatPrice(
+              auctionTypeName === "FIXED_PRICE_SALE"
+                ? startingPrice
+                : currentPrice
+            )}
           </h1>
         </div>
-        <div className="bg-slate-500 h-[40px] rounded-full flex items-center justify-between pl-5 pr-8 w-full py-6">
-          <h1 className="text-xl font-bold w-auto lg:w-48">Starting Price</h1>
-          <h1 className="text-xl font-bold">{formatPrice(startingPrice)}</h1>
-        </div>
+        {/* Only show starting price when auction type is NOT FIXED_PRICE_SALE */}
+        {auctionTypeName !== "FIXED_PRICE_SALE" && (
+          <div className="bg-slate-500 h-[40px] rounded-full flex items-center justify-between pl-5 pr-8 w-full py-6">
+            <h1 className="text-xl font-bold w-auto lg:w-48">Starting Price</h1>
+            <h1 className="text-xl font-bold">{formatPrice(startingPrice)}</h1>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col sm:flex-row items-center gap-3 mt-7">
-        {registed && remainingTime > 0 && currentPrice < maxBid && (
-          <div className="flex w-full items-center gap-2">
-            <Button
-              className="bg-red-500 text-black rounded-full"
-              onClick={decreaseBid}
-            >
-              -
-            </Button>
-            <Input
-              className="rounded-3xl h-[40px] w-full text-black"
-              type="text"
-              value={formatNumber(bidPrice)}
-              onChange={(e) => {
-                const newBid = e.target.value.replace(/\./g, "");
-                setBidPrice(Math.min(Number(newBid), maxBid).toString());
-              }}
-            />
-            <Button
-              className="bg-green-400 text-white rounded-full"
-              onClick={increaseBid}
-            >
-              +
-            </Button>
-          </div>
-        )}
+        {registed &&
+          remainingTime > 0 &&
+          currentPrice < maxBid &&
+          auctionTypeName !== "FIXED_PRICE_SALE" && (
+            <div className="flex w-full items-center gap-2">
+              <Button
+                className="bg-red-500 text-black rounded-full"
+                onClick={decreaseBid}
+              >
+                -
+              </Button>
+              <Input
+                className="rounded-3xl h-[40px] w-full text-black"
+                type="text"
+                value={formatNumber(bidPrice)}
+                onChange={(e) => {
+                  const newBid = e.target.value.replace(/\./g, "");
+                  setBidPrice(Math.min(Number(newBid), maxBid).toString());
+                }}
+              />
+              <Button
+                className="bg-green-400 text-white rounded-full"
+                onClick={increaseBid}
+              >
+                +
+              </Button>
+            </div>
+          )}
 
         {registed && remainingTime > 0 && currentPrice < maxBid && (
           <div className="w-full lg:w-36">
-            <button
-              className="bg-red-600 hover:bg-red-500 rounded-2xl h-[40px] w-full lg:w-24 px-5 font-bold text-black hover:border-2 hover:border-[#bcab6f]"
-              onClick={handleBid}
-            >
-              Bid
-            </button>
+            {hasBid ? (
+              <div className="flex w-full justify-between">
+                <div className="text-red-500 font-bold">
+                  You have already bid! Please wait for bidding result.
+                </div>
+                <div className="flex-1" /> {/* Spacer to balance the layout */}
+              </div>
+            ) : (
+              <button
+                className="bg-red-600 hover:bg-red-500 rounded-2xl h-[40px] w-full lg:w-24 px-5 font-bold text-black hover:border-2 hover:border-[#bcab6f]"
+                onClick={handleBid}
+              >
+                Bid
+              </button>
+            )}
           </div>
         )}
 
         {currentPrice >= maxBid && (
-          <div className="text-red-500 font-bold">Max bid reached</div>
+          <div className="flex w-full justify-between">
+            <div className="text-red-500 font-bold">Max bid reached</div>
+            <div className="flex-1" /> {/* Spacer to balance the layout */}
+          </div>
         )}
 
         {!registed && (remainingTime > 0 || remainingTime === -2) && (
@@ -222,10 +265,13 @@ function EnterPrice({
           </div>
         )}
 
-        <div className="bg-slate-500 h-[40px] rounded-full flex items-center justify-between pl-5 pr-8 w-full py-6 text-black">
-          <h1 className="text-xl font-bold">Increment</h1>
-          <h1 className="text-xl font-bold">{formatPrice(increment)}</h1>
-        </div>
+        {/* Increment section will be hidden if auction type is FIXED_PRICE_SALE */}
+        {auctionTypeName !== "FIXED_PRICE_SALE" && (
+          <div className="bg-slate-500 h-[40px] rounded-full flex items-center justify-between pl-5 pr-8 w-full py-6 text-black">
+            <h1 className="text-xl font-bold">Increment</h1>
+            <h1 className="text-xl font-bold">{formatPrice(increment)}</h1>
+          </div>
+        )}
       </div>
     </div>
   );

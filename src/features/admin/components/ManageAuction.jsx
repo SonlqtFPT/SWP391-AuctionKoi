@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 const ManageAuction = () => {
   const [auctionList, setAuctionList] = useState([]);
   const navigate = useNavigate();
+
   const fetchAuction = async () => {
     try {
       const token = localStorage.getItem("accessToken");
@@ -38,6 +39,8 @@ const ManageAuction = () => {
         return "On going";
       case "COMPLETED":
         return "Ended";
+      default:
+        return "Unknown Status";
     }
   };
 
@@ -54,33 +57,31 @@ const ManageAuction = () => {
     };
     return date.toLocaleString("en-US", options); // Use toLocaleString for full date and time formatting
   };
+
   return (
-    <div className="">
-      <h1 className="text-3xl font-bold" style={{ color: "#507687" }}>
+    <div className="p-4">
+      <h1 className="text-3xl font-bold mb-5" style={{ color: "#507687" }}>
         Auction List
       </h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {auctionList.map((auction, index) => (
-          <div key={index}>
+          <div key={index} className="flex justify-center">
             <button
               onClick={() => handleLotPage(auction.auctionId)}
-              className="ml-10 mt-5 mb-10 h-[200px] w-[400px] rounded-lg"
-              style={{ backgroundColor: "#384B70" }}
+              className="h-[150px] w-full max-w-[400px] rounded-lg bg-[#384B70] p-4 flex flex-col justify-between"
             >
               <div>
-                <h1 className="text-[#bcab6f] text-3xl font-bold pt-5 pr-[200px]">
-                  Auction#{auction.auctionId}
+                <h1 className="text-[#bcab6f] text-3xl font-bold">
+                  Auction #{auction.auctionId}
                 </h1>
-                <div className="flex items-start ml-5">
-                  <TbGavel className="h-[150px] w-[70px] text-white pb-3" />
-                  <div className="mt-10 ml-3">
-                    <div>
-                      <h2 className="text-white flex items-center text-sm">
-                        {formatTime(auction.startTime)} -{" "}
-                        {formatTime(auction.endTime)}
-                      </h2>
-                    </div>
-                    <div className="flex items-start">
+                <div className="flex items-start">
+                  <TbGavel className="h-[50px] w-[50px] text-white pb-3" />
+                  <div className="mt-2 ml-3">
+                    <h2 className="text-white flex items-center text-sm">
+                      {formatTime(auction.startTime)} -{" "}
+                      {formatTime(auction.endTime)}
+                    </h2>
+                    <div className="flex items-center">
                       <h1 className="text-white text-xl font-bold">Status:</h1>
                       <h2 className="text-white text-l ml-1 mt-1">
                         {getStatusText(auction.status)}

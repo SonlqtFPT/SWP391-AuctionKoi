@@ -79,7 +79,7 @@ function Information({
       <div className="bg-black h-[3px] w-full mt-4" />
 
       {/* Row 3: Breeder Name and Gender */}
-      <div className="grid grid-cols-2 gap-4 mt-5">
+      <div className="grid grid-cols-2 gap-4 mt-1">
         <div className="flex items-center">
           <GiHouse className="m-3" size={16} />
           <h1 className="overflow-hidden whitespace-nowrap text-ellipsis">

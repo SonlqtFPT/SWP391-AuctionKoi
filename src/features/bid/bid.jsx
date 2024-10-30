@@ -275,6 +275,7 @@ function Bid() {
                   registed={registed}
                   win={win}
                   hasEnded={hasEnded}
+                  auctionTypeName={lot.auctionTypeName}
                 />
               )}
             </div>
@@ -291,11 +292,15 @@ function Bid() {
                   eventName={eventName}
                   socket={socketRef.current} // Use stable socket instance
                   registed={registed}
+                  auctionTypeName={lot.auctionTypeName}
+                  currentAccountId={currentAccountId}
                 />
               )}
             </div>
             <div className="mt-4 lg:mt-[20px]">
-              {lot && <TopBid list={bidList} />}
+              {lot && (
+                <TopBid list={bidList} auctionTypeName={lot.auctionTypeName} />
+              )}
             </div>
           </div>
           <div className="mt-10 mx-7 lg:mt-16">

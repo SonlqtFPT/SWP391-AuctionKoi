@@ -108,7 +108,7 @@ function Lot() {
                   >
                     <button
                       onClick={() => handlePageChange(lot.lotId)}
-                      className="h-[650px] w-full bg-gray-900 rounded-[50px] pb-14 border-2 border-[#bcab6f] hover:bg-gray-800 hover:border-4"
+                      className="h-[625px] w-full bg-gray-900 rounded-[50px] pb-14 border-2 border-[#bcab6f] hover:bg-gray-800 hover:border-4"
                     >
                       <div className="w-full h-auto object-cover">
                         <Picture img={lot.imageUrl} />
