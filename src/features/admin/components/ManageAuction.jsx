@@ -55,11 +55,11 @@ const ManageAuction = () => {
     return date.toLocaleString("en-US", options); // Use toLocaleString for full date and time formatting
   };
   return (
-    <div>
-      <h1 className="text-3xl  font-bold" style={{ color: "#507687" }}>
+    <div className="">
+      <h1 className="text-3xl font-bold" style={{ color: "#507687" }}>
         Auction List
       </h1>
-      <div className="flex flex-wrap justify-start gap-16 ml-[100px]">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {auctionList.map((auction, index) => (
           <div key={index}>
             <button

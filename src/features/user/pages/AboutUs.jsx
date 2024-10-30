@@ -98,6 +98,20 @@ function AboutUs() {
         </p>
       ),
     },
+    {
+      key: "7",
+      label: (
+        <span className="text-gray-100 text-xl">
+          Is there a maximum bid limit?
+        </span>
+      ),
+      children: (
+        <p className="text-gray-200 text-base">
+          Yes, the maximum bid for any koi fish is capped at 20 times its
+          starting price.
+        </p>
+      ),
+    },
   ];
 
   return (
@@ -131,14 +145,12 @@ function AboutUs() {
             </h1>
             <div className="mt-3">
               <Collapse
-                defaultActiveKey={["1"]}
                 ghost
                 items={items}
                 expandIcon={({ isActive }) => (
                   <RightOutlined
                     style={{
                       color: "white",
-                      transition: "transform 0.3s ease",
                     }}
                     rotate={isActive ? 90 : 0}
                   />
