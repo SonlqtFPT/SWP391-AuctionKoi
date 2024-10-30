@@ -147,6 +147,28 @@ function MainPage() {
             />
             <span className="font-semibold">Dainichi</span>
           </NavLink>
+          <NavLink
+            to="/marushin"
+            className="aspect-square sm:w-48 p-4 flex flex-col items-center justify-around bg-amber-500 rounded-xl hover:bg-amber-400"
+          >
+            <img
+              className=" max-h-[60%] max-w-[80%] h-full "
+              src="https://auctionkoi.com/images/marushin-logo.png"
+              alt={`Marushin Logo`}
+            />
+            <span className="font-semibold">Marushin</span>
+          </NavLink>
+          <NavLink
+            to="/kanno"
+            className="aspect-square sm:w-48 p-4 flex flex-col items-center justify-around bg-amber-500 rounded-xl hover:bg-amber-400"
+          >
+            <img
+              className=" max-h-[60%] max-w-[80%] h-full "
+              src="https://auctionkoi.com/images/kanno-logo.png"
+              alt={`Kanno Logo`}
+            />
+            <span className="font-semibold">Kanno</span>
+          </NavLink>
         </div>
       </section>
 

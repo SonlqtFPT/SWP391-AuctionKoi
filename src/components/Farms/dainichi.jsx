@@ -68,7 +68,9 @@ function dainichi() {
           </div>
         </div>
       </div>
-      <Footer />
+      <div className="relative">
+        <Footer />
+      </div>
     </div>
   );
 }

@@ -28,6 +28,8 @@ import AboutUs from "./features/user/pages/AboutUs.jsx";
 import Saki from "./components/Farms/saki.jsx";
 import Ishi from "./components/Farms/ishi.jsx";
 import Dainichi from "./components/Farms/dainichi.jsx";
+import Marushin from "./components/Farms/marushin.jsx";
+import Kanno from "./components/Farms/kanno.jsx";
 
 export default function App() {
   return (
@@ -51,6 +53,8 @@ export default function App() {
           <Route path="/saki" element={<Saki />} />
           <Route path="/ishi" element={<Ishi />} />
           <Route path="/dainichi" element={<Dainichi />} />
+          <Route path="/marushin" element={<Marushin />} />
+          <Route path="/kanno" element={<Kanno />} />
           {/* Protected Routes */}
           <Route
             path="/admin"
