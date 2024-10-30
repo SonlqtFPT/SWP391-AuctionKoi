@@ -119,11 +119,22 @@ function MainPage() {
             className="aspect-square sm:w-48 p-4 flex flex-col items-center justify-around bg-amber-500 rounded-xl hover:bg-amber-400"
           >
             <img
-              className="object-contain max-h-[60%] max-w-[80%] h-full dark:saturate-0 invert-0 dark:invert"
+              className="max-h-[60%] max-w-[80%] h-full"
               src={`/src/assets/logo/sakai-logo.png`}
               alt={`Saki Logo`}
             />
             <span className="font-semibold">Saki</span>
+          </NavLink>
+          <NavLink
+            to="/ishi" // Thay đổi đường dẫn theo yêu cầu
+            className="aspect-square sm:w-48 p-4 flex flex-col items-center justify-around bg-amber-500 rounded-xl hover:bg-amber-400"
+          >
+            <img
+              className=" max-h-[60%] max-w-[80%] h-full "
+              src="https://ishikoi.vn/tassets/images/hinh-anh-footer-1.png"
+              alt={`IshLogo`}
+            />
+            <span className="font-semibold">Ishi</span>
           </NavLink>
         </div>
       </section>

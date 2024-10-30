@@ -26,6 +26,7 @@ import UpdatePassword from "./features/user/components/UpdatePassword.jsx";
 import PaymentSuccess from "./features/bid/components-bid/PaymentSuccess.jsx";
 import AboutUs from "./features/user/pages/AboutUs.jsx";
 import Saki from "./components/Farms/saki.jsx";
+import Ishi from "./components/Farms/ishi.jsx";
 
 export default function App() {
   return (
@@ -47,6 +48,7 @@ export default function App() {
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/saki" element={<Saki />} />
+          <Route path="/ishi" element={<Ishi />} />
           {/* Protected Routes */}
           <Route
             path="/admin"

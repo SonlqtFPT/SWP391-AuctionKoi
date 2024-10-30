@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Header from "../Header";
 import Footer from "../Footer";
 
 function saki() {
+  useEffect(() => {
+    window.scrollTo(0, 0); // Cuộn lên đầu trang khi component được tải
+  }, []);
+
   return (
-    <div className="bg-hero-pattern bg-cover relative grid  min-h-screen ">
+    <div className="bg-hero-pattern bg-cover relative grid min-h-screen ">
       <Header />
       <div className="absolute bg-black bg-opacity-70 inset-0" />
       <div className="relative flex justify-center mt-28">
