@@ -23,7 +23,7 @@ function EnterPrice({
   const post_regis_api = "register-lot/regis";
   const post_socket_api = `test/send?eventName=${eventName}`;
 
-  const maxBid = startingPrice * 20; // Limit the bid to 20 times the starting price
+  const maxBid = startingPrice * 20;
 
   const handleBidNotification = async () => {
     try {
@@ -38,6 +38,10 @@ function EnterPrice({
   };
 
   const handleBid = async () => {
+    if (currentPrice >= maxBid) {
+      toast.warn("Max bid reached. You cannot bid any higher.");
+      return;
+    }
     try {
       const token = localStorage.getItem("accessToken");
       const response = await api.post(
@@ -95,7 +99,7 @@ function EnterPrice({
     }
   };
 
-  // Increase bid by increment, ensuring it doesn't exceed maxBid
+  // Increase bid by increment, or set to current price + increment if no bid yet, without exceeding maxBid
   const increaseBid = () => {
     setBidPrice((prevBid) => {
       const newBid = prevBid
@@ -105,14 +109,18 @@ function EnterPrice({
     });
   };
 
-  // Decrease bid, ensuring it doesn't fall below the current price + increment
+  // Decrease bid, starting from highest price if it equals starting price, otherwise as usual
   const decreaseBid = () => {
     setBidPrice((prevBid) => {
-      const decreasedBid = Math.max(
-        currentPrice + increment,
+      const baseBid =
+        currentPrice === startingPrice
+          ? currentPrice
+          : currentPrice + increment;
+      const newBid = Math.max(
+        baseBid,
         Number(prevBid || currentPrice) - increment
       );
-      return decreasedBid.toString();
+      return newBid.toString();
     });
   };
 
@@ -162,12 +170,11 @@ function EnterPrice({
       </div>
 
       <div className="flex flex-col sm:flex-row items-center gap-3 mt-7">
-        {registed && remainingTime > 0 && (
+        {registed && remainingTime > 0 && currentPrice < maxBid && (
           <div className="flex w-full items-center gap-2">
             <Button
               className="bg-red-500 text-black rounded-full"
               onClick={decreaseBid}
-              disabled={Number(bidPrice) <= currentPrice + increment}
             >
               -
             </Button>
@@ -179,28 +186,29 @@ function EnterPrice({
                 const newBid = e.target.value.replace(/\./g, "");
                 setBidPrice(Math.min(Number(newBid), maxBid).toString());
               }}
-              disabled={Number(bidPrice) >= maxBid}
             />
             <Button
               className="bg-green-400 text-white rounded-full"
               onClick={increaseBid}
-              disabled={Number(bidPrice) >= maxBid}
             >
               +
             </Button>
           </div>
         )}
 
-        {registed && remainingTime > 0 && (
+        {registed && remainingTime > 0 && currentPrice < maxBid && (
           <div className="w-full lg:w-36">
             <button
               className="bg-red-600 hover:bg-red-500 rounded-2xl h-[40px] w-full lg:w-24 px-5 font-bold text-black hover:border-2 hover:border-[#bcab6f]"
               onClick={handleBid}
-              disabled={Number(bidPrice) > maxBid}
             >
               Bid
             </button>
           </div>
+        )}
+
+        {currentPrice >= maxBid && (
+          <div className="text-red-500 font-bold">Max bid reached</div>
         )}
 
         {!registed && (remainingTime > 0 || remainingTime === -2) && (

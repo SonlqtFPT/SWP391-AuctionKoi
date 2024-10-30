@@ -14,7 +14,7 @@ function Lot() {
   const [startTime, setStartTime] = useState();
   const [endTime, setEndTime] = useState();
   const [remainingTime, setRemainingTime] = useState();
-  const [isLoading, setIsLoading] = useState(true); // Add loading state
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   const get_lot_api = `auction/get-auction/${auctionId}`;
@@ -36,11 +36,12 @@ function Lot() {
         size: lot.koiFish.size,
         age: lot.koiFish.age,
         imageUrl: lot.koiFish.imageUrl,
+        auctionTypeName: lot.auctionTypeName,
       }));
       setLots(listLots);
       setStartTime(response.data.data.startTime);
       setEndTime(response.data.data.endTime);
-      setIsLoading(false); // Set loading state to false once data is fetched
+      setIsLoading(false);
     } catch (error) {
       console.error("Error fetching lots: ", error);
       setIsLoading(false);
@@ -96,25 +97,23 @@ function Lot() {
               />
             </div>
             <div className="mb-10 z-20 relative p-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-                {" "}
-                {/* Use grid layout */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                 {lots.map((lot, index) => (
                   <div
                     key={index}
                     className="float-in"
                     style={{
-                      animationDelay: `${index * 0.2}s`, // Set delay for each card
+                      animationDelay: `${index * 0.2}s`,
                     }}
                   >
                     <button
                       onClick={() => handlePageChange(lot.lotId)}
-                      className="h-[600px] w-full bg-gray-900 rounded-[50px] pb-14 border-2 border-[#bcab6f] hover:bg-gray-800 hover:border-4"
+                      className="h-[650px] w-full bg-gray-900 rounded-[50px] pb-14 border-2 border-[#bcab6f] hover:bg-gray-800 hover:border-4"
                     >
                       <div className="w-full h-auto object-cover">
                         <Picture img={lot.imageUrl} />
                       </div>
-                      <div className="flex justify-center font-bold mt-3 ">
+                      <div className="flex justify-center font-bold mt-3">
                         <Information
                           varietyName={lot.varietyName}
                           currentPrice={lot.currentPrice}
@@ -122,6 +121,7 @@ function Lot() {
                           gender={lot.gender}
                           size={lot.size}
                           age={lot.age}
+                          auctionTypeName={lot.auctionTypeName}
                         />
                       </div>
                     </button>

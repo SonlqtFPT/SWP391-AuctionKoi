@@ -88,6 +88,7 @@ const CreateAuction = () => {
 
     console.log("Auction Data to Submit:", auctionData);
     const token = localStorage.getItem("accessToken");
+    console.log(token);
     try {
       const response = await api.post("/manager/createAuction", auctionData, {
         headers: {

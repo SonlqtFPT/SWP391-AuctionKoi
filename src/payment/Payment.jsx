@@ -56,8 +56,11 @@ const Payment = () => {
 
   useEffect(() => {
     const handleRefresh = (event) => {
-      // Check if event.data exists and matches the expected value
-      if (event?.data === "payment_successful") {
+      // Check if event.data exists and is a string that matches the expected value
+      if (
+        typeof event.data === "string" &&
+        event.data === "payment_successful"
+      ) {
         // Reload the page when the message is received
         window.location.reload();
       }

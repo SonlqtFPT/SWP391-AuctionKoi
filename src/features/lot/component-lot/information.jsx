@@ -1,3 +1,9 @@
+import React from "react";
+import { FaMars, FaVenus, FaGenderless } from "react-icons/fa";
+import { GiHouse } from "react-icons/gi";
+import { MdOutlineCake } from "react-icons/md";
+import { BiRuler } from "react-icons/bi";
+
 function Information({
   varietyName,
   currentPrice,
@@ -5,8 +11,9 @@ function Information({
   gender,
   size,
   age,
+  auctionTypeName,
 }) {
-  // Chuyển đổi giá trị gender
+  // Format gender value
   const formattedGender =
     gender === "MALE"
       ? "Male"
@@ -16,74 +23,89 @@ function Information({
       ? "Unknown"
       : gender;
 
+  // Map gender to corresponding icon
+  const genderIcon =
+    gender === "MALE" ? (
+      <FaMars className="m-3" />
+    ) : gender === "FEMALE" ? (
+      <FaVenus className="m-3" />
+    ) : (
+      <FaGenderless className="m-3" />
+    );
+
+  function formatPrice(price) {
+    if (price === null || price === undefined) {
+      return;
+    }
+    return price
+      .toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      })
+      .replace(/\sđ/, "đ");
+  }
+  const formatStatus = (status) => {
+    switch (status) {
+      case "ASCENDING_BID":
+        return "Ascending Bid";
+      case "SEALED_BID":
+        return "Sealed Bid";
+      case "FIXED_PRICE_SALE":
+        return "Fixed Price Sale";
+      case "DESCENDING_BID":
+        return "Descending Bid";
+      default:
+        return status.charAt(0) + status.slice(1).toLowerCase();
+    }
+  };
+
   return (
-    <div className=" text-white">
-      <div className="flex items-center gap-12">
-        <h1 className="font-bold  text-xl ml-6 mt-3">{varietyName}</h1>
+    <div className="text-white">
+      {/* Row 1: Variety Name */}
+      <h1 className="font-bold text-xl mt-3">{varietyName}</h1>
+
+      {/* Row 2: Auction Type Name and Current Price */}
+      <div className="grid grid-cols-2 gap-4 mt-2">
+        <h1 className="font-bold text-md overflow-hidden whitespace-nowrap text-ellipsis">
+          {formatStatus(auctionTypeName)}
+        </h1>
+        <h1 className="font-bold text-md text-right overflow-hidden whitespace-nowrap text-ellipsis">
+          {formatPrice(currentPrice)}
+        </h1>
+      </div>
+
+      <div className="bg-black h-[3px] w-full mt-4" />
+
+      {/* Row 3: Breeder Name and Gender */}
+      <div className="grid grid-cols-2 gap-4 mt-5">
         <div className="flex items-center">
-          <h1 className="font-bold  text-xl ml-8 mt-3 ">{currentPrice}</h1>
-          <h2 className="ml-1 text-xs mt-4">vnd</h2>
+          <GiHouse className="m-3" size={16} />
+          <h1 className="overflow-hidden whitespace-nowrap text-ellipsis">
+            {breederName}
+          </h1>
+        </div>
+        <div className="flex items-center">
+          {genderIcon}
+          <h1 className="ml-3">{formattedGender}</h1>
         </div>
       </div>
-      <div className="bg-black h-[3px] w-[300px] mt-4" />
-      <div className="flex items-center mt-5 ml-3">
-        <div className="">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            className="bi bi-house m-3"
-            viewBox="0 0 16 16"
-          >
-            <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z" />
-          </svg>
+
+      {/* Row 4: Size and Age */}
+      <div className="grid grid-cols-2 gap-4 mt-2">
+        <div className="flex items-center">
+          <BiRuler className="m-3" size={16} />
+          <h1 className="overflow-hidden whitespace-nowrap text-ellipsis">
+            {size} cm
+          </h1>
         </div>
-        <h1 className="">{breederName}</h1>
-        <div className="ml-[6px]">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            className="bi bi-gender-ambiguous"
-            viewBox="0 0 16 16"
-          >
-            <path
-              fillRule="evenodd"
-              d="M11.5 1a.5.5 0 0 1 0-1h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V1.707l-3.45 3.45A4 4 0 0 1 8.5 10.97V13H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V14H6a.5.5 0 0 1 0-1h1.5v-2.03a4 4 0 1 1 3.471-6.648L14.293 1zm-.997 4.346a3 3 0 1 0-5.006 3.309 3 3 0 0 0 5.006-3.31z"
-            />
-          </svg>
+        <div className="flex items-center">
+          <MdOutlineCake className="m-3" size={16} />
+          <h1 className="m-3 overflow-hidden whitespace-nowrap text-ellipsis">
+            {age} year
+          </h1>
         </div>
-        <h1 className="ml-3">{formattedGender}</h1>
-      </div>
-      <div className="flex items-center ml-3">
-        <div className="">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            className="bi bi-rulers m-3"
-            viewBox="0 0 16 16"
-          >
-            <path d="M1 0a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h5v-1H2v-1h4v-1H4v-1h2v-1H2v-1h4V9H4V8h2V7H2V6h4V2h1v4h1V4h1v2h1V2h1v4h1V1a1 1 0 0 0-1-1z" />
-          </svg>
-        </div>
-        <h1 className="">{size} cm</h1>
-        <div className="ml-[92px]">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            className="bi bi-cake-fill"
-            viewBox="0 0 16 16"
-          >
-            <path d="m7.399.804.595-.792.598.79A.747.747 0 0 1 8.5 1.806V4H11a2 2 0 0 1 2 2v3h1a2 2 0 0 1 2 2v4a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1v-4a2 2 0 0 1 2-2h1V6a2 2 0 0 1 2-2h2.5V1.813a.747.747 0 0 1-.101-1.01ZM12 6.414a.9.9 0 0 1-.646-.268 1.914 1.914 0 0 0-2.708 0 .914.914 0 0 1-1.292 0 1.914 1.914 0 0 0-2.708 0A.9.9 0 0 1 4 6.414v1c.49 0 .98-.187 1.354-.56a.914.914 0 0 1 1.292 0c.748.747 1.96.747 2.708 0a.914.914 0 0 1 1.292 0c.374.373.864.56 1.354.56zm2.646 5.732a.914.914 0 0 1-1.293 0 1.914 1.914 0 0 0-2.707 0 .914.914 0 0 1-1.292 0 1.914 1.914 0 0 0-2.708 0 .914.914 0 0 1-1.292 0 1.914 1.914 0 0 0-2.708 0 .914.914 0 0 1-1.292 0L1 11.793v1.34c.737.452 1.715.36 2.354-.28a.914.914 0 0 1 1.292 0c.748.748 1.96.748 2.708 0a.914.914 0 0 1 1.293 0 1.915 1.915 0 0 0 2.354.28v-1.34z" />
-          </svg>
-        </div>
-        <h1 className="m-3">{age} year</h1>
       </div>
     </div>
   );
