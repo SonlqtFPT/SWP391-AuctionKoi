@@ -18,7 +18,13 @@ const ViewTransaction = () => {
         },
       });
       const transactionData = response.data.data;
-      setTransactions(transactionData);
+
+      // Sort by date descending to show newest transactions first
+      const sortedTransactions = transactionData.sort(
+        (a, b) => new Date(b.transactionDate) - new Date(a.transactionDate)
+      );
+
+      setTransactions(sortedTransactions);
     } catch (error) {
       toast.error("Failed to fetch transaction data");
     } finally {
@@ -78,7 +84,7 @@ const ViewTransaction = () => {
       title: "Transaction Type",
       dataIndex: "transactionType",
       key: "transactionType",
-      render: (type) => formatStatus(type), // Use formatStatus to format the type
+      render: (type) => formatStatus(type),
       sorter: (a, b) => a.transactionType.localeCompare(b.transactionType),
     },
     {
@@ -101,12 +107,9 @@ const ViewTransaction = () => {
       title: "User",
       key: "user",
       render: (_, record) => {
-        // Check if koiBreeder exists to display breeder information
         if (record.koiBreeder) {
           return `Breeder: ${record.koiBreeder.breederId} - ${record.koiBreeder.breederName}`;
-        }
-        // Otherwise, display member information if available
-        else if (record.member && record.member.account) {
+        } else if (record.member && record.member.account) {
           const { accountId, firstName, lastName } = record.member.account;
           return `User: ${accountId} - ${firstName} ${lastName}`;
         } else {

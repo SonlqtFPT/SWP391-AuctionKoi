@@ -52,17 +52,18 @@ const CreateAuction = () => {
     form
       .validateFields()
       .then((values) => {
-        if (current === 0) {
-          setAuction((prevAuction) => ({
-            ...prevAuction,
-            startTime: values.startTime
-              ? dayjs(values.startTime).format("YYYY-MM-DDTHH:mm:ss")
-              : null,
-            endTime: values.endTime
-              ? dayjs(values.endTime).format("YYYY-MM-DDTHH:mm:ss")
-              : null,
-          }));
-        }
+        // Update auction object with the latest start and end times every time
+        setAuction((prevAuction) => ({
+          ...prevAuction,
+          startTime: values.startTime
+            ? dayjs(values.startTime).format("YYYY-MM-DDTHH:mm:ss")
+            : prevAuction.startTime,
+          endTime: values.endTime
+            ? dayjs(values.endTime).format("YYYY-MM-DDTHH:mm:ss")
+            : prevAuction.endTime,
+        }));
+
+        // Move to the next step
         setCurrent(current + 1);
       })
       .catch((errorInfo) => {
@@ -284,7 +285,7 @@ const AddLots = ({ setLots, lots }) => {
       }
     };
 
-    fetchFishData(); // Fetch fish data directly without auctionTypeName
+    fetchFishData();
   }, []);
 
   const handleAddRemoveLot = (fish) => {
@@ -330,6 +331,14 @@ const AddLots = ({ setLots, lots }) => {
               dataIndex: "price",
               key: "price",
               render: (price) => <span>{price} (vnd)</span>,
+            },
+            {
+              title: "Auction Type",
+              dataIndex: "auctionTypeName",
+              key: "auctionTypeName",
+              render: (auctionTypeName) => (
+                <span>{formatStatus(auctionTypeName)}</span>
+              ),
             },
             {
               title: "Action",
