@@ -22,6 +22,7 @@ public class TransactionEntityToDtoConverter {
             TransactionResponseDto dto = modelMapper.map(transaction, TransactionResponseDto.class);
 
             if (transaction.getLot() != null || transaction.getMember() != null) {
+
                 Integer lotId = transaction.getLot().getLotId();
                 dto.setLotId(lotId);
 
