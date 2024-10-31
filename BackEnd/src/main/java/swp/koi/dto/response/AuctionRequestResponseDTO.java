@@ -21,6 +21,7 @@ public class AuctionRequestResponseDTO {
     LocalDateTime requestedAt;
     String auctionTypeName;
     float offerPrice;
+    Float auctionFinalPrice;
     KoiFishResponseDTO KoiFish;
     KoiBreederResponseDTO breeder;
     AccountResponseDTO staff;

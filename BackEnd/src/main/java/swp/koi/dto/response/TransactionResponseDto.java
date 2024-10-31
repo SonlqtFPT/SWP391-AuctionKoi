@@ -22,4 +22,5 @@ public class TransactionResponseDto {
 //    LotResponseDto lot;
     Integer lotId;
     MemberResponseDTO member;
+    KoiBreederResponseDTO koiBreeder;
 }
