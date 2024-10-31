@@ -15,8 +15,6 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuctionWithLotsDTO {
 
-    @NotBlank(message = "Auction Type can not be null")
-    String auctionTypeName;
     @NotNull(message = "Start time can not be null")
     java.time.LocalDateTime startTime;
     @NotNull(message = "End time can not be null")

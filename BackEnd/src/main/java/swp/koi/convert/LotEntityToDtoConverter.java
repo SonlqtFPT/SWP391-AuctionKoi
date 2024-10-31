@@ -22,6 +22,10 @@ public class LotEntityToDtoConverter {
         if(lot == null)
             throw new KoiException(ResponseCode.LOT_NOT_FOUND);
         LotResponseDto response = modelMapper.map(lot, LotResponseDto.class);
+        response.getKoiFish().setBreederName(lot.getKoiFish().getAuctionRequest().getKoiBreeder().getBreederName());
+        response.getKoiFish().setImageUrl(lot.getKoiFish().getMedia().getImageUrl());
+        response.getKoiFish().setVideoUrl(lot.getKoiFish().getMedia().getVideoUrl());
+        response.setAuctionTypeName(lot.getAuctionType().getAuctionTypeName());
         return response;
     }
 
@@ -32,6 +36,7 @@ public class LotEntityToDtoConverter {
                     dto.getKoiFish().setImageUrl(lot.getKoiFish().getMedia().getImageUrl());
                     dto.getKoiFish().setVideoUrl(lot.getKoiFish().getMedia().getVideoUrl());
                     dto.getKoiFish().setBreederName(lot.getKoiFish().getAuctionRequest().getKoiBreeder().getBreederName());
+                    dto.setAuctionTypeName(lot.getAuctionType().getAuctionTypeName());
                     return dto;
                 })
                 .collect(Collectors.toList());

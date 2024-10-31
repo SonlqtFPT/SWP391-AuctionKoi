@@ -166,14 +166,8 @@ public class AuctionServiceImpl implements AuctionService{
     }
 
     @Override
-    public LotResponseDto getLot(Integer lotId) throws KoiException{
-        Lot lot = lotService.findLotById(lotId);
-        LotResponseDto dto = new LotResponseDto();
-        modelMapper.map(lot, dto);
-        dto.getKoiFish().setImageUrl(lot.getKoiFish().getMedia().getImageUrl());
-        dto.getKoiFish().setVideoUrl(lot.getKoiFish().getMedia().getVideoUrl());
-        dto.getKoiFish().setBreederName(lot.getKoiFish().getAuctionRequest().getKoiBreeder().getBreederName());
-        return dto;
+    public Lot getLot(Integer lotId) throws KoiException{
+        return lotService.findLotById(lotId);
     }
 
     @Override

@@ -31,8 +31,6 @@ public interface AuctionRequestService {
 
     void acceptNegotiation(Integer requestId) throws KoiException;
 
-    void managerAcceptNegotiation(Integer requestId);
-
     void managerCancelRequest(Integer requestId);
 
     void managerAcceptRequest(Integer requestId);

@@ -130,17 +130,6 @@ public class AuctionRequestController {
         }
     }
 
-    @Operation(summary = "Accept breeder's negotiation")
-    @PostMapping("/manager/request/negotiation/accept/{requestId}")
-    public ResponseData<?> managerAcceptNegotiation(@PathVariable Integer requestId){
-        try {
-            auctionRequestService.managerAcceptNegotiation(requestId);
-            return new ResponseData<>(ResponseCode.SUCCESS);
-        }catch (KoiException e){
-            return new ResponseData<>(e.getResponseCode());
-        }
-    }
-
     @Operation(summary = "Cancel breeder's request")
     @PostMapping("/manager/request/cancel/{requestId}")
     public ResponseData<?> managerCancelRequest(@PathVariable Integer requestId){
