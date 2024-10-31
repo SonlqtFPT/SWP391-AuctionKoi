@@ -10,6 +10,8 @@ import UserProfile from "../components/UserProfile.jsx";
 import ManageTransport from "../components/ManageTransport.jsx";
 import { useState } from "react";
 import ManagerDashBoard from "../components/ManagerDashBoard.jsx";
+import ViewTransaction from "../components/ViewTransaction.jsx";
+import ManageRefund from "../components/ManageRefund.jsx";
 
 const AdminPage = () => {
   const [activeComponent, setActiveComponent] = useState("Dashboard");
@@ -31,6 +33,10 @@ const AdminPage = () => {
         return <UserProfile />;
       case "Manage Transport":
         return <ManageTransport />;
+      case "View Transaction":
+        return <ViewTransaction />;
+      case "Manage Refund":
+        return <ManageRefund />;
       default:
         return <ManagerDashBoard />; // Default content
     }

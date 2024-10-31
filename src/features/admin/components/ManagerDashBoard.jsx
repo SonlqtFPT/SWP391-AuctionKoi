@@ -66,7 +66,7 @@ function ManagerDashBoard() {
         transition={{ duration: 1 }}
       >
         <StatCard
-          name="Total Invoices"
+          name="Total Paid Invoices"
           icon={ReceiptEuro}
           value={invoiceCount}
           color="#37AFE1"
