@@ -96,7 +96,7 @@ public class LotServiceImpl implements LotService {
         } else {
             concludeLot(lot, bidList);
         }
-        //real time update - remind me to delete this
+        //real time update
         notifyClient(lot);
         //send push notification to user who followed this lot
         sendNotificateToFollower(lot);
