@@ -26,7 +26,7 @@ import UpdatePassword from "./features/user/components/UpdatePassword.jsx";
 import PaymentSuccess from "./features/bid/components-bid/PaymentSuccess.jsx";
 import AboutUs from "./features/user/pages/AboutUs.jsx";
 import Saki from "./components/Farms/saki.jsx";
-import Ishi from "./components/Farms/ishi.jsx";
+import Isa from "./components/Farms/Isa.jsx";
 import Dainichi from "./components/Farms/dainichi.jsx";
 import Marushin from "./components/Farms/marushin.jsx";
 import Kanno from "./components/Farms/kanno.jsx";
@@ -51,7 +51,7 @@ export default function App() {
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/saki" element={<Saki />} />
-          <Route path="/ishi" element={<Ishi />} />
+          <Route path="/isa" element={<Isa />} />
           <Route path="/dainichi" element={<Dainichi />} />
           <Route path="/marushin" element={<Marushin />} />
           <Route path="/kanno" element={<Kanno />} />

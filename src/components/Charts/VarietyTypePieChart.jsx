@@ -24,44 +24,71 @@ function VarietyTypePieChart() {
       });
       const data = response.data.data;
 
-      // Kiểm tra và đếm các loại giống
+      // Biến tạm để đếm số lượng cho từng loại cá
+      let counts = {
+        kohaku: 0,
+        taishoSanke: 0,
+        showa: 0,
+        shiroUtsuri: 0,
+        utsurimono: 0,
+        beniKikokuryu: 0,
+        asagi: 0,
+        kikokuryu: 0,
+        hikariMuji: 0,
+        goshiki: 0,
+      };
+
       data.forEach((item) => {
         const varietyName = item.koiFish.variety.varietyName;
         switch (varietyName) {
           case "Kohaku":
-            setKohaku((prev) => prev + 1);
+            counts.kohaku++;
             break;
           case "Taisho Sanke":
-            setTaishoSanke((prev) => prev + 1);
+            counts.taishoSanke++;
             break;
           case "Showa":
-            setShowa((prev) => prev + 1);
+            counts.showa++;
             break;
           case "Shiro Utsuri":
-            setShiroUtsuri((prev) => prev + 1);
+            counts.shiroUtsuri++;
             break;
           case "Utsurimono":
-            setUtsurimono((prev) => prev + 1);
+            counts.utsurimono++;
             break;
           case "Beni Kikokuryu":
-            setBeniKikokuryu((prev) => prev + 1);
+            counts.beniKikokuryu++;
             break;
           case "Asagi":
-            setAsagi((prev) => prev + 1);
+            counts.asagi++;
             break;
           case "Kikokuryu":
-            setKikokuryu((prev) => prev + 1);
+            counts.kikokuryu++;
             break;
           case "Hikari Muji":
-            setHikariMuji((prev) => prev + 1);
+            counts.hikariMuji++;
             break;
           case "Goshiki":
-            setGoshiki((prev) => prev + 1);
+            counts.goshiki++;
             break;
           default:
             break;
         }
       });
+
+      // Cập nhật trạng thái một lần cho tất cả các loại cá
+      setKohaku(counts.kohaku);
+      setTaishoSanke(counts.taishoSanke);
+      setShowa(counts.showa);
+      setShiroUtsuri(counts.shiroUtsuri);
+      setUtsurimono(counts.utsurimono);
+      setBeniKikokuryu(counts.beniKikokuryu);
+      setAsagi(counts.asagi);
+      setKikokuryu(counts.kikokuryu);
+      setHikariMuji(counts.hikariMuji);
+      setGoshiki(counts.goshiki);
+
+      console.log("Counts: ", counts); // In ra tất cả các giá trị đã đếm
     } catch (error) {
       console.log("Error at VarietyPieChart.jsx: ", error);
     }
@@ -120,7 +147,7 @@ function VarietyTypePieChart() {
       title: {
         // Thêm phần tiêu đề
         display: true,
-        text: "Variety Overview", // Tiêu đề biểu đồ
+        text: "Varieties Overview", // Tiêu đề biểu đồ
         font: {
           size: 24, // Kích thước chữ tiêu đề
           weight: "bold", // Độ đm của chữ tiêu đề
