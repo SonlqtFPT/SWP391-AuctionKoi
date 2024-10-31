@@ -171,6 +171,22 @@ function EnterPrice({
       .replace(/\sđ/, "đ");
   }
 
+  const increaseBid = () => {
+    const newBidPrice = Math.min(
+      Number(bidPrice.replace(/\./g, "") || startingPrice) + increment,
+      maxBid
+    );
+    setBidPrice(newBidPrice);
+  };
+
+  const decreaseBid = () => {
+    const newBidPrice = Math.max(
+      Number(bidPrice.replace(/\./g, "") || startingPrice) - increment,
+      startingPrice
+    );
+    setBidPrice(newBidPrice);
+  };
+
   return (
     <div className="p-5 my-5 rounded-2xl border-2 hover:border-4 border-[#bcab6f] outline outline-offset-2 outline-white text-white shadow-md bg-gray-900 hover:bg-gray-800">
       <div className="flex flex-col sm:flex-row items-center gap-3 text-black">
@@ -229,7 +245,7 @@ function EnterPrice({
 
         {registed && remainingTime > 0 && currentPrice < maxBid && (
           <div className="w-full lg:w-36">
-            {hasBid ? (
+            {hasBid && auctionTypeName === "FIXED_PRICE_SALE" ? (
               <div className="flex w-full justify-between">
                 <div className="text-red-500 font-bold">
                   You have already bid! Please wait for bidding result.

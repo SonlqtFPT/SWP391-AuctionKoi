@@ -330,7 +330,7 @@ const AddLots = ({ setLots, lots }) => {
               title: "Starting Price",
               dataIndex: "price",
               key: "price",
-              render: (price) => <span>{price} (vnd)</span>,
+              render: (price) => <span>{formatPrice(price)}</span>,
             },
             {
               title: "Auction Type",
