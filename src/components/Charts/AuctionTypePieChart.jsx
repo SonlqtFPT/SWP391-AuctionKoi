@@ -117,11 +117,20 @@ const AuctionTypePieChart = () => {
         },
         align: "start", // Đặt tiêu đề nằm bên trái
       },
+      legend: {
+        display: true,
+        position: "right", // Đặt vị trí chú thích ở cuối bên phải
+        align: "center", // Căn giữa chiều dọc
+        labels: {
+          boxWidth: 30, // Kích thước hộp màu
+          padding: 10, // Khoảng cách giữa các mục
+        },
+      },
     },
   };
 
   return (
-    <div className="w-[400px] h-[400px] bg-white shadow-2xl rounded-2xl p-4">
+    <div className="w-[400px] h-[400px] bg-white shadow-xl rounded-2xl p-4">
       <Pie data={data} options={options} />
     </div>
   );

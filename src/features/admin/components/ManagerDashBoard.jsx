@@ -8,6 +8,7 @@ import RequestBarChart from "../../../components/Charts/RequestBarChart";
 import AuctionTypePieChart from "../../../components/Charts/AuctionTypePieChart";
 import TransactionBarChar from "../../../components/Charts/TransactionBarChar";
 import IncomeLineChart from "../../../components/Charts/IncomeLineChart";
+import VarietyPieChart from "../../../components/Charts/VarietyTypePieChart";
 
 function ManagerDashBoard() {
   const [registeredCount, setRegisteredCount] = useState();
@@ -86,13 +87,16 @@ function ManagerDashBoard() {
       </motion.div>
 
       {/* Chart Income*/}
-      <div className="flex justify-between space-x-4">
-        <div className="flex-1">
-          <IncomeLineChart />
+      <div className="flex justify-center gap-72 space-x-4">
+        <div className="">
+          <VarietyPieChart />
         </div>
-        <div className="flex-1">
+        <div className="">
           <AuctionTypePieChart />
         </div>
+      </div>
+      <div className="mt-32">
+        <IncomeLineChart />
       </div>
     </div>
   );

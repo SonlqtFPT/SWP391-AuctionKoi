@@ -150,7 +150,7 @@ const IncomeLineChart = () => {
   }, []);
 
   return (
-    <div className="h-[400px] w-[800px] flex justify-center bg-white shadow-2xl rounded-2xl p-4">
+    <div className="h-[600px] w-max flex justify-center bg-white shadow-2xl rounded-2xl p-4">
       <Line data={data} options={options}></Line>
     </div>
   );
