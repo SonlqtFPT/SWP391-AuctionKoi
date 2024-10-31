@@ -11,13 +11,13 @@ const Payment = () => {
   const [invoice, setInvoice] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [distance, setDistance] = useState(0); // Single state for distance
+  const [distance, setDistance] = useState(0);
   const [updating, setUpdating] = useState(false);
-  const [address, setAddress] = useState(""); // State for the address
+  const [address, setAddress] = useState("");
   const [startPoint, setStartPoint] = useState({ lat: 10.8412, lng: 106.8098 });
   const [endPoint, setEndPoint] = useState(null);
-  const [pricePerKm, setPricePerKm] = useState(0); // State for price per kilometer
-  const [estimatedShippingFee, setEstimatedShippingFee] = useState(0); // State for estimated shipping fee
+  const [pricePerKm, setPricePerKm] = useState(0);
+  const [estimatedShippingFee, setEstimatedShippingFee] = useState(0);
 
   useEffect(() => {
     const fetchInvoice = async () => {
@@ -46,36 +46,30 @@ const Payment = () => {
     fetchInvoice();
   }, [lotId]);
 
-  // Update states whenever distance changes
   useEffect(() => {
-    const newPricePerKm = calculatePricePerKm(distance.toFixed(2));
-    setPricePerKm(newPricePerKm);
-    calculateEstimatedShippingFee(distance.toFixed(2), newPricePerKm);
-    console.log(`Distance: ${distance.toFixed(2)}`); // Log distance
-  }, [distance]);
+    if (invoice) {
+      const newPricePerKm = calculatePricePerKm(distance.toFixed(2));
+      setPricePerKm(newPricePerKm);
+      calculateEstimatedShippingFee(distance.toFixed(2), newPricePerKm);
+    }
+  }, [distance, invoice]);
 
   useEffect(() => {
     const handleRefresh = (event) => {
-      // Check if event.data exists and is a string that matches the expected value
       if (
         typeof event.data === "string" &&
         event.data === "payment_successful"
       ) {
-        // Reload the page when the message is received
         window.location.reload();
       }
     };
 
-    // Add an event listener for the 'message' event
     window.addEventListener("message", handleRefresh);
-
-    // Clean up the event listener when the component unmounts
     return () => {
       window.removeEventListener("message", handleRefresh);
     };
   }, []);
 
-  // Function to calculate price per kilometer
   const calculatePricePerKm = (km) => {
     if (km >= 0 && km <= 10) {
       return 0;
@@ -88,14 +82,12 @@ const Payment = () => {
     } else if (km > 200) {
       return 800;
     }
-    return 0; // Default case
+    return 0;
   };
 
-  // Function to calculate estimated shipping fee using floored distance
   const calculateEstimatedShippingFee = (dist, price) => {
-    const fee = dist * price; // Use exact distance and price per km
-    console.log(dist, price, fee); // Log distance, price per km, and fee for debugging
-    setEstimatedShippingFee(fee); // Update state with the estimated shipping fee
+    const fee = dist * price;
+    setEstimatedShippingFee(fee);
   };
 
   const handleUpdateInvoice = async () => {
@@ -112,9 +104,9 @@ const Payment = () => {
       const accessToken = localStorage.getItem("accessToken");
       const response = await api.patch(`/invoice/update-invoice`, null, {
         params: {
-          invoiceId: invoice.invoiceId,
+          invoiceId: invoice?.invoiceId,
           address,
-          kilometer: distance.toFixed(2), // Send the distance as kilometer
+          kilometer: distance.toFixed(2),
         },
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -124,8 +116,8 @@ const Payment = () => {
       if (response.status === 200) {
         setInvoice({
           ...response.data.data,
-          address, // Add the updated address
-          kilometer: distance, // Add the updated kilometer
+          address,
+          kilometer: distance,
         });
         notification.success({
           message: "Success",
@@ -159,6 +151,7 @@ const Payment = () => {
       .replace(/\sđ/, "đ");
   }
 
+  // Conditional rendering based on invoice data
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -166,13 +159,13 @@ const Payment = () => {
         {loading ? (
           <div className="text-center">
             <h2>Your payment will be ready after 1 minute</h2>
-            <Spin size="large" className="mt-4" /> {/* Loading Spinner */}
+            <Spin size="large" className="mt-4" />
           </div>
         ) : error ? (
           <div className="text-center">
             <h2>Error fetching invoice: {error.message}</h2>
           </div>
-        ) : (
+        ) : invoice ? ( // Ensure invoice is not null before rendering details
           <>
             <h1 className="text-2xl font-bold text-center mb-8">
               Payment for Lot: {lotId}
@@ -186,7 +179,7 @@ const Payment = () => {
               >
                 <p>
                   <span className="font-semibold">Invoice ID:</span>{" "}
-                  {invoice.invoiceId}
+                  {invoice.invoiceId || "Not available"}
                 </p>
                 <p>
                   <span className="font-semibold">Final Amount:</span>{" "}
@@ -194,7 +187,9 @@ const Payment = () => {
                 </p>
                 <p>
                   <span className="font-semibold">Invoice Date:</span>{" "}
-                  {new Date(invoice.invoiceDate).toLocaleString()}
+                  {invoice.invoiceDate
+                    ? new Date(invoice.invoiceDate).toLocaleString()
+                    : "Not available"}
                 </p>
                 <p>
                   <span className="font-semibold">Platform fee:</span>{" "}
@@ -202,7 +197,9 @@ const Payment = () => {
                 </p>
                 <p>
                   <span className="font-semibold">Due Date:</span>{" "}
-                  {new Date(invoice.dueDate).toLocaleString()}
+                  {invoice.dueDate
+                    ? new Date(invoice.dueDate).toLocaleString()
+                    : "Not available"}
                 </p>
                 <p>
                   <span className="font-semibold">Bidded Price:</span>{" "}
@@ -268,13 +265,13 @@ const Payment = () => {
                       value={address}
                       placeholder="Selected address"
                       onChange={(e) => setAddress(e.target.value)}
-                      disabled
+                      disabled={invoice.address === undefined}
                     />
                   </div>
                   <div className="flex flex-col mb-4">
                     <label className="font-semibold">Distance:</label>
                     <Input
-                      value={distance.toFixed(2)} // Display distance value
+                      value={distance.toFixed(2)}
                       placeholder="Distance in km"
                       type="number"
                       disabled
@@ -329,6 +326,10 @@ const Payment = () => {
               </>
             )}
           </>
+        ) : (
+          <div className="text-center">
+            <h2>No invoice details available.</h2>
+          </div>
         )}
       </div>
       <Footer />
