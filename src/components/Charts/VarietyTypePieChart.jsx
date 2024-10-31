@@ -24,6 +24,7 @@ function VarietyTypePieChart() {
       });
       const data = response.data.data;
 
+<<<<<<< HEAD
       // Biến tạm để đếm số lượng cho từng loại cá
       let counts = {
         kohaku: 0,
@@ -38,6 +39,8 @@ function VarietyTypePieChart() {
         goshiki: 0,
       };
 
+=======
+>>>>>>> 4476d845a25a59375cacc512d2ff3966529ff119
       data.forEach((item) => {
         const varietyName = item.koiFish.variety.varietyName;
         switch (varietyName) {
@@ -98,6 +101,18 @@ function VarietyTypePieChart() {
     fetchRequest();
   }, []);
 
+  const totalVarietyCount =
+    kohaku +
+    taishoSanke +
+    showa +
+    shiroUtsuri +
+    utsurimono +
+    beniKikokuryu +
+    asagi +
+    kikokuryu +
+    hikariMuji +
+    goshiki;
+
   const data = {
     labels: [
       "Kohaku",
@@ -113,7 +128,7 @@ function VarietyTypePieChart() {
     ],
     datasets: [
       {
-        label: "Dataset 1",
+        label: "Quantity",
         data: [
           kohaku,
           taishoSanke,
@@ -144,6 +159,7 @@ function VarietyTypePieChart() {
 
   const options = {
     plugins: {
+<<<<<<< HEAD
       title: {
         // Thêm phần tiêu đề
         display: true,
@@ -151,20 +167,40 @@ function VarietyTypePieChart() {
         font: {
           size: 24, // Kích thước chữ tiêu đề
           weight: "bold", // Độ đm của chữ tiêu đề
+=======
+      tooltip: {
+        callbacks: {
+          label: function (tooltipItem) {
+            const quantity = tooltipItem.raw;
+            const percentage = ((quantity / totalVarietyCount) * 100).toFixed(
+              2
+            );
+            return [`Quantity: ${quantity}`, `Percentage: ${percentage}%`];
+          },
+>>>>>>> 4476d845a25a59375cacc512d2ff3966529ff119
         },
-        align: "start", // Đặt tiêu đề nằm bên trái
+      },
+      title: {
+        display: true,
+        text: "Variety Overview",
+        font: {
+          size: 24,
+          weight: "bold",
+        },
+        align: "start",
       },
       legend: {
         display: true,
-        position: "right", // Đặt vị trí chú thích ở cuối bên phải
-        align: "center", // Căn giữa chiều dọc
+        position: "right",
+        align: "center",
         labels: {
-          boxWidth: 30, // Kích thước hộp màu
-          padding: 10, // Khoảng cách giữa các mục
+          boxWidth: 30,
+          padding: 10,
         },
       },
     },
   };
+
   return (
     <div className="w-[400px] h-[400px] bg-white shadow-xl rounded-2xl p-4">
       <Doughnut data={data} options={options} />

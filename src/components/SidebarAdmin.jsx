@@ -38,8 +38,9 @@ const items = [
   ]),
   getItem("Manage Transport", "6", <CarOutlined />),
   getItem("View Transaction", "7", <FileOutlined />),
-  getItem("Create Breeder", "8", <PlusOutlined />),
-  getItem("Create Staff", "9", <PlusOutlined />),
+  getItem("Manage Refund", "8", <FileOutlined />),
+  getItem("Create Breeder", "9", <PlusOutlined />),
+  getItem("Create Staff", "10", <PlusOutlined />),
   // Add a new item for the collapse/expand button
   getItem("Toggle Menu", "toggle", <MenuFoldOutlined />),
 ];
@@ -78,9 +79,12 @@ const SidebarAdmin = ({ setActiveComponent }) => {
         setActiveComponent("View Transaction");
         break;
       case "8":
-        setActiveComponent("Create Breeder");
+        setActiveComponent("Manage Refund");
         break;
       case "9":
+        setActiveComponent("Create Breeder");
+        break;
+      case "10":
         setActiveComponent("Create Staff");
         break;
       default:
@@ -95,15 +99,20 @@ const SidebarAdmin = ({ setActiveComponent }) => {
       className="bg-black flex flex-col" // Use h-screen to ensure the height remains consistent
     >
       <div className="flex justify-center items-center flex-col my-20">
-        {!collapsed && <p className="text-white mt-16 font-bold">Admin Dashboard</p>}
+        {!collapsed && (
+          <p className="text-white mt-16 font-bold">Admin Dashboard</p>
+        )}
       </div>
       <Menu
         theme="dark"
         mode="inline"
         defaultSelectedKeys={["1"]}
-        items={items.map(item =>
+        items={items.map((item) =>
           item.key === "toggle"
-            ? { ...item, icon: collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined /> }
+            ? {
+                ...item,
+                icon: collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />,
+              }
             : item
         )}
         className="bg-[#c74743] text-white flex-grow"

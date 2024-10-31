@@ -229,6 +229,8 @@ const ManageTransport = () => {
         return "Fixed Price Sale";
       case "DESCENDING_BID":
         return "Descending Bid";
+      case "DELIVERY_IN_PROGRESS":
+        return "Delivering";
       default:
         return status.charAt(0) + status.slice(1).toLowerCase();
     }
