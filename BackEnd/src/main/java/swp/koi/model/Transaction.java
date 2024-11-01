@@ -58,6 +58,6 @@ public class Transaction {
     @JoinColumn(name = "breeder_id")
     private KoiBreeder breeder;
 
-    @OneToOne(mappedBy = "transaction")
+    @OneToOne(mappedBy = "transaction", fetch = FetchType.LAZY)
     private Invoice invoice;
 }

@@ -1,8 +1,10 @@
 package swp.koi.service.invoiceService;
 
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import swp.koi.dto.response.AuctionedFishPricesResponseDto;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
 import swp.koi.model.*;
@@ -20,10 +22,8 @@ import swp.koi.service.vnPayService.VnpayServiceImpl;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +37,7 @@ public class InvoiceServiceImpl implements InvoiceService{
     private final AccountService accountService;
     private final LotRegisterRepository lotRegisterRepository;
     private final AuctionRequestRepository auctionRequestRepository;
+    private final ModelMapper modelMapper;
 
 
     @Override
@@ -231,5 +232,17 @@ public class InvoiceServiceImpl implements InvoiceService{
     @Override
     public List<Invoice> getAllInvoices() {
         return invoiceRepository.findAll();
+    }
+
+    @Override
+    public List<AuctionedFishPricesResponseDto> getAllAuctionedFishPrices() {
+        List<Invoice> list = invoiceRepository.findAllByStatus(InvoiceStatusEnums.DELIVERED);
+        List<AuctionedFishPricesResponseDto> listDto = list.stream().map(invoice -> {
+            AuctionedFishPricesResponseDto dto = new AuctionedFishPricesResponseDto();
+            dto.setSubTotal(invoice.getSubTotal());
+            dto.setEndTime(invoice.getLot().getEndingTime());
+            return dto;
+        }).collect(Collectors.toList());
+        return listDto;
     }
 }

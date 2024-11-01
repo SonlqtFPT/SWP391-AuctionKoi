@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import swp.koi.convert.InvoiceEntityToDtoConverter;
+import swp.koi.dto.response.AuctionedFishPricesResponseDto;
 import swp.koi.dto.response.InvoiceResponseDto;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.dto.response.ResponseData;
@@ -113,6 +114,12 @@ public class InvoiceController {
         List<InvoiceResponseDto> response = invoiceEntityToDtoConverter.convertInvoiceList(invoiceService.listOfInvoices());
         return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
 
+    }
+
+    @Operation(summary = "Get all auctioned koi fish prices")
+    @GetMapping("get-all-auctioned-fish-prices")
+    public ResponseData<?> getAllAuctionedFishPrices(){
+        return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, invoiceService.getAllAuctionedFishPrices());
     }
 
 }
