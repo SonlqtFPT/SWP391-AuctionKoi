@@ -15,7 +15,6 @@ function TopBid({ list, auctionTypeName }) {
     if (price === null || price === undefined) {
       return;
     }
-    console.log(auctionTypeName);
     return price
       .toLocaleString("vi-VN", {
         style: "currency",

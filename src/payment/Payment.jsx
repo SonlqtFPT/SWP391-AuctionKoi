@@ -49,6 +49,7 @@ const Payment = () => {
   useEffect(() => {
     if (invoice) {
       const newPricePerKm = calculatePricePerKm(distance.toFixed(2));
+      console.log(newPricePerKm);
       setPricePerKm(newPricePerKm);
       calculateEstimatedShippingFee(distance.toFixed(2), newPricePerKm);
     }
@@ -86,7 +87,9 @@ const Payment = () => {
   };
 
   const calculateEstimatedShippingFee = (dist, price) => {
+    console.log("Distance : " + dist + "| Price: " + price);
     const fee = dist * price;
+    console.log(fee);
     setEstimatedShippingFee(fee);
   };
 
@@ -265,7 +268,7 @@ const Payment = () => {
                       value={address}
                       placeholder="Selected address"
                       onChange={(e) => setAddress(e.target.value)}
-                      disabled={invoice.address === undefined}
+                      disabled
                     />
                   </div>
                   <div className="flex flex-col mb-4">

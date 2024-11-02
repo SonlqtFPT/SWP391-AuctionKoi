@@ -24,7 +24,6 @@ function VarietyTypePieChart() {
       });
       const data = response.data.data;
 
-<<<<<<< HEAD
       // Biến tạm để đếm số lượng cho từng loại cá
       let counts = {
         kohaku: 0,
@@ -39,8 +38,6 @@ function VarietyTypePieChart() {
         goshiki: 0,
       };
 
-=======
->>>>>>> 4476d845a25a59375cacc512d2ff3966529ff119
       data.forEach((item) => {
         const varietyName = item.koiFish.variety.varietyName;
         switch (varietyName) {
@@ -159,7 +156,6 @@ function VarietyTypePieChart() {
 
   const options = {
     plugins: {
-<<<<<<< HEAD
       title: {
         // Thêm phần tiêu đề
         display: true,
@@ -167,27 +163,7 @@ function VarietyTypePieChart() {
         font: {
           size: 24, // Kích thước chữ tiêu đề
           weight: "bold", // Độ đm của chữ tiêu đề
-=======
-      tooltip: {
-        callbacks: {
-          label: function (tooltipItem) {
-            const quantity = tooltipItem.raw;
-            const percentage = ((quantity / totalVarietyCount) * 100).toFixed(
-              2
-            );
-            return [`Quantity: ${quantity}`, `Percentage: ${percentage}%`];
-          },
->>>>>>> 4476d845a25a59375cacc512d2ff3966529ff119
         },
-      },
-      title: {
-        display: true,
-        text: "Variety Overview",
-        font: {
-          size: 24,
-          weight: "bold",
-        },
-        align: "start",
       },
       legend: {
         display: true,

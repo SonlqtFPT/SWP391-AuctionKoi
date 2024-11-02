@@ -69,8 +69,11 @@ function EnterPrice({
     await fetchBidList(); // Refresh bid list
     await fetchExistingBids();
 
-    if (currentPrice >= maxBid) {
-      toast.warn("Max bid reached. You cannot bid any higher.");
+    if (
+      auctionTypeName === "ASCENDING_BID" &&
+      bidPrice.replace(/\./g, "") > maxBid
+    ) {
+      toast.warn("You can't bid higher than max bid");
       return;
     }
 
@@ -86,7 +89,7 @@ function EnterPrice({
         post_bid_api,
         {
           lotId: lotId,
-          price: currentPrice,
+          price: bidPrice.replace(/\./g, ""), // Use bidPrice from input
           memberId: currentAccountId,
         },
         {
@@ -171,22 +174,6 @@ function EnterPrice({
       .replace(/\sđ/, "đ");
   }
 
-  const increaseBid = () => {
-    const newBidPrice = Math.min(
-      Number(bidPrice.replace(/\./g, "") || startingPrice) + increment,
-      maxBid
-    );
-    setBidPrice(newBidPrice);
-  };
-
-  const decreaseBid = () => {
-    const newBidPrice = Math.max(
-      Number(bidPrice.replace(/\./g, "") || startingPrice) - increment,
-      startingPrice
-    );
-    setBidPrice(newBidPrice);
-  };
-
   return (
     <div className="p-5 my-5 rounded-2xl border-2 hover:border-4 border-[#bcab6f] outline outline-offset-2 outline-white text-white shadow-md bg-gray-900 hover:bg-gray-800">
       <div className="flex flex-col sm:flex-row items-center gap-3 text-black">
@@ -214,34 +201,19 @@ function EnterPrice({
       </div>
 
       <div className="flex flex-col sm:flex-row items-center gap-3 mt-7">
-        {registed &&
-          remainingTime > 0 &&
-          currentPrice < maxBid &&
-          auctionTypeName !== "FIXED_PRICE_SALE" && (
-            <div className="flex w-full items-center gap-2">
-              <Button
-                className="bg-red-500 text-black rounded-full"
-                onClick={decreaseBid}
-              >
-                -
-              </Button>
-              <Input
-                className="rounded-3xl h-[40px] w-full text-black"
-                type="text"
-                value={formatNumber(bidPrice)}
-                onChange={(e) => {
-                  const newBid = e.target.value.replace(/\./g, "");
-                  setBidPrice(Math.min(Number(newBid), maxBid).toString());
-                }}
-              />
-              <Button
-                className="bg-green-400 text-white rounded-full"
-                onClick={increaseBid}
-              >
-                +
-              </Button>
-            </div>
-          )}
+        {registed && remainingTime > 0 && currentPrice < maxBid && (
+          <div className="flex w-full items-center gap-2">
+            <Input
+              className="rounded-3xl h-[40px] w-full text-black"
+              type="text"
+              value={formatNumber(bidPrice)}
+              onChange={(e) => {
+                const newBid = e.target.value.replace(/\./g, "");
+                setBidPrice(newBid);
+              }}
+            />
+          </div>
+        )}
 
         {registed && remainingTime > 0 && currentPrice < maxBid && (
           <div className="w-full lg:w-36">

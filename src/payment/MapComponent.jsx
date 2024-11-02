@@ -150,7 +150,7 @@ const MapComponent = ({
         <ImageOverlay
           bounds={sensitiveAreaBounds}
           url="https://firebasestorage.googleapis.com/v0/b/swptest-7f1bb.appspot.com/o/vietnam.png?alt=media&token=060b595f-d49a-475b-9faf-2326e8d95547 " // Replace with your image URL
-          opacity={0.7} // Set opacity as needed
+          opacity={1} // Set opacity as needed
         />
       </MapContainer>
     </div>
