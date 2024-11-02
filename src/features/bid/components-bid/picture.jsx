@@ -2,12 +2,14 @@
 import { useEffect, useState } from "react";
 import Follow from "../../../components/Follow";
 
-function Picture({ img, lotId, followed, fetchCheckFollow }) {
+function Picture({ img, lotId, followed, fetchCheckFollow, isLogin }) {
   const [picture, setPicture] = useState("");
 
   useEffect(() => {
     setPicture(img);
+    console.log("Followed? ", followed);
   }, [img]);
+
   return (
     <div className="border-2 border-[#bcab6f] rounded-2xl outline outline-offset-2 outline-white relative">
       <img
@@ -22,6 +24,7 @@ function Picture({ img, lotId, followed, fetchCheckFollow }) {
           lotId={lotId}
           followed={followed}
           fetchCheckFollow={fetchCheckFollow}
+          isLogin={isLogin}
         />
       </div>
     </div>

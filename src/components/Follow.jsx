@@ -21,14 +21,17 @@ const Follow = ({ lotId, followed, fetchCheckFollow }) => {
   const [currentToken, setCurrentToken] = useState(null);
   const [error, setError] = useState(null);
   const [FCM, setFCM] = useState();
+  const token = localStorage.getItem("accessToken");
+  const [isFollow, setIsFollow] = useState(followed);
 
   const post_FCM_api = "notification/subscribe";
+  const get_unfollow_api = `/notification/unfollow-lot?lotId=${lotId}&token=${FCM}`;
 
-  const handleSendFCM = async () => {
+  const handleFollow = async () => {
     try {
       console.log("lotId neeeee: ", lotId);
       console.log("da follow chua neeeee: ", followed);
-      const token = localStorage.getItem("accessToken");
+
       const response = await api.post(
         post_FCM_api,
         {
@@ -41,12 +44,33 @@ const Follow = ({ lotId, followed, fetchCheckFollow }) => {
           },
         }
       );
+      console.log("follow: ", response.data);
       if (response.status === 200) {
         toast.success("Added to favorites"); // Hiển thị thông báo thành công
         fetchCheckFollow();
+        setIsFollow(true);
       }
     } catch (error) {
       console.error("Error handleSendFCM at Follow.jsx:", error);
+    }
+  };
+
+  const handleUnfollow = async () => {
+    try {
+      console.log("Info: ", followed);
+      const response = await api.get(get_unfollow_api, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("Unfollow: ", response.data);
+      if (response.status === 200) {
+        toast.success("Unfollow"); // Hiển thị thông báo thành công
+        fetchCheckFollow();
+        setIsFollow(false);
+      }
+    } catch (error) {
+      console.log("Error at unfollow: ", error);
     }
   };
 
@@ -142,11 +166,15 @@ const Follow = ({ lotId, followed, fetchCheckFollow }) => {
   return (
     <Button
       onClick={() => {
-        handleSendFCM();
+        if (isFollow) {
+          handleUnfollow();
+        } else {
+          handleFollow();
+        }
       }}
       variant="primary"
     >
-      {followed ? <FaHeart className="text-red-500" /> : <FaHeart />}
+      {isFollow ? <FaHeart className="text-red-500" /> : <FaHeart />}
     </Button>
   );
 };

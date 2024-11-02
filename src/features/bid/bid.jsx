@@ -8,14 +8,12 @@ import TopBid from "./components-bid/TopBid";
 import Video from "./components-bid/Video";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import { Await, useParams } from "react-router-dom"; // Import useParams
+import { useParams } from "react-router-dom"; // Import useParams
 import { io } from "socket.io-client";
 import api from "../../config/axios";
 import { toast } from "react-toastify"; // Import toast
 import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
-import { storage } from "../../config/firebase";
-import { getDownloadURL, ref } from "firebase/storage";
 
 function Bid() {
   const { lotId } = useParams(); // Lấy lotId từ URL
@@ -23,17 +21,18 @@ function Bid() {
   const [lot, setLot] = useState();
   const [remainingTime, setRemainingTime] = useState(0);
   const [bidList, setBidList] = useState([]); // State for bid list
-  const [connectionStatus, setConnectionStatus] = useState(""); // State to store connection status
+  // const [connectionStatus, setConnectionStatus] = useState(""); // State to store connection status
   const storedData = localStorage.getItem("accountData");
   const accountData = JSON.parse(storedData);
-  const currentAccountId = accountData.accountId;
+  const currentAccountId = accountData?.accountId;
   const eventName = `Event_${lotId}`;
-  const [winnerAccountId, setWinnerAccountId] = useState();
+  // const [winnerAccountId, setWinnerAccountId] = useState();
   const [hasEnded, setHasEnded] = useState(false); // Thêm biến trạng thái để theo dõi thời gian đã kết thúc
   const [registed, setRegisted] = useState(false);
   const [highestBidderAccountId, setHighestBidderAccountId] = useState(null); // Biến lưu accountId của người có bidAmount cao nhất
   const [followed, setFollowed] = useState(false);
   const [win, setWin] = useState(false);
+  const [isLogin, setIsLogin] = useState(false);
 
   // Memoize socket connection using useRef to ensure it's stable across renders
   const socketRef = useRef(null);
@@ -41,7 +40,7 @@ function Bid() {
 
   const get_lot_api = `auction/get-lot/${lotId}`; // Sử dụng lotId
   const get_bidList_api = `bid/list?lotId=${lotId}`; // API for bid list
-  const get_winner_api = `register-lot/get-winner?lotId=${lotId}`;
+  // const get_winner_api = `register-lot/get-winner?lotId=${lotId}`;
   const get_checkRegisted_api = `register-lot/is-registered/${lotId}/${currentAccountId}`;
   const get_checkFollow_api = `notification/user-subcribed-yet?lotId=${lotId}`;
 
@@ -64,21 +63,21 @@ function Bid() {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("Check follow: ", response.data);
-    if (response.status == 200) setFollowed(true);
+    if (response.data === "User subscribed") setFollowed(true);
+    // if (response.status === 200) setRegisted(true);
   };
 
-  const fetchWinner = async () => {
-    const token = localStorage.getItem("accessToken");
-    const response = await api.get(get_winner_api, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    console.log("Winner: ", response.data.data);
-    setWinnerAccountId(response.data.data.member.account.accountId);
-    console.log("Winner accountId: ", winnerAccountId);
-  };
+  // const fetchWinner = async () => {
+  //   const token = localStorage.getItem("accessToken");
+  //   const response = await api.get(get_winner_api, {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   });
+  //   console.log("Winner: ", response.data.data);
+  //   setWinnerAccountId(response.data.data.member.account.accountId);
+  //   console.log("Winner accountId: ", winnerAccountId);
+  // };
 
   const fetchLot = async () => {
     try {
@@ -122,9 +121,10 @@ function Bid() {
   useEffect(() => {
     fetchLot();
     fetchBidList();
-    fetchWinner();
+    // fetchWinner();
     fetchCheckRegisted();
     fetchCheckFollow();
+    if (currentAccountId != undefined) setIsLogin(true);
   }, [lotId]);
 
   const handlePaymentClick = (toastId) => {
@@ -231,7 +231,7 @@ function Bid() {
     // Listen for the connect event
     socket.on("connect", () => {
       console.log("WebSocket Connected");
-      setConnectionStatus("WebSocket Connected");
+      // setConnectionStatus("WebSocket Connected");
     });
 
     // Listen for specific event
@@ -294,6 +294,7 @@ function Bid() {
                   registed={registed}
                   auctionTypeName={lot.auctionTypeName}
                   currentAccountId={currentAccountId}
+                  isLogin={isLogin}
                 />
               )}
             </div>
@@ -311,6 +312,7 @@ function Bid() {
                   lotId={lotId}
                   followed={followed}
                   fetchCheckFollow={fetchCheckFollow}
+                  isLogin={isLogin}
                 />
               )}
             </div>
