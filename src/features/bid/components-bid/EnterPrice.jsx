@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import api from "../../../config/axios";
+import { useNavigate } from "react-router-dom";
 
 function EnterPrice({
   currentPrice,
@@ -16,10 +17,12 @@ function EnterPrice({
   eventName,
   registed,
   auctionTypeName,
+  isLogin,
 }) {
   const [bidPrice, setBidPrice] = useState("");
   const [registrationLink, setRegistrationLink] = useState("");
-  const [hasBid, setHasBid] = useState(false); // State to track if the member has bid
+  const [hasBid, setHasBid] = useState(false); // State to track if the member has bid\
+  const navigate = useNavigate();
 
   const post_bid_api = "bid/bidAuction";
   const post_regis_api = "register-lot/regis";
@@ -45,6 +48,7 @@ function EnterPrice({
       );
       console.log(currentAccountId);
       console.log("status", userHasBid);
+      console.log("Login? ", isLogin);
       setHasBid(userHasBid);
     } catch (error) {
       console.error("Error fetching existing bids:", error);
@@ -174,6 +178,26 @@ function EnterPrice({
       .replace(/\sđ/, "đ");
   }
 
+  const increaseBid = () => {
+    const newBidPrice = Math.min(
+      Number(bidPrice.replace(/\./g, "") || startingPrice) + increment,
+      maxBid
+    );
+    setBidPrice(newBidPrice);
+  };
+
+  const decreaseBid = () => {
+    const newBidPrice = Math.max(
+      Number(bidPrice.replace(/\./g, "") || startingPrice) - increment,
+      startingPrice
+    );
+    setBidPrice(newBidPrice);
+  };
+
+  const handleLoginChange = () => {
+    navigate("/login");
+  };
+
   return (
     <div className="p-5 my-5 rounded-2xl border-2 hover:border-4 border-[#bcab6f] outline outline-offset-2 outline-white text-white shadow-md bg-gray-900 hover:bg-gray-800">
       <div className="flex flex-col sm:flex-row items-center gap-3 text-black">
@@ -201,20 +225,42 @@ function EnterPrice({
       </div>
 
       <div className="flex flex-col sm:flex-row items-center gap-3 mt-7">
-        {registed && remainingTime > 0 && currentPrice < maxBid && (
-          <div className="flex w-full items-center gap-2">
-            <Input
-              className="rounded-3xl h-[40px] w-full text-black"
-              type="text"
-              value={formatNumber(bidPrice)}
-              onChange={(e) => {
-                const newBid = e.target.value.replace(/\./g, "");
-                setBidPrice(newBid);
-              }}
-            />
-          </div>
+        {registed &&
+          remainingTime > 0 &&
+          currentPrice < maxBid &&
+          auctionTypeName !== "FIXED_PRICE_SALE" && (
+            <div className="flex w-full items-center gap-2">
+              <Button
+                className="bg-red-500 text-black rounded-full"
+                onClick={decreaseBid}
+              >
+                -
+              </Button>
+              <Input
+                className="rounded-3xl h-[40px] w-full text-black"
+                type="text"
+                value={formatNumber(bidPrice)}
+                onChange={(e) => {
+                  const newBid = e.target.value.replace(/\./g, "");
+                  setBidPrice(Math.min(Number(newBid), maxBid).toString());
+                }}
+              />
+              <Button
+                className="bg-green-400 text-white rounded-full"
+                onClick={increaseBid}
+              >
+                +
+              </Button>
+            </div>
+          )}
+        {!isLogin && (
+          <Button
+            className="bg-red-600 w-52 h-12 rounded-3xl"
+            onClick={handleLoginChange}
+          >
+            Login
+          </Button>
         )}
-
         {registed && remainingTime > 0 && currentPrice < maxBid && (
           <div className="w-full lg:w-36">
             {hasBid && auctionTypeName === "FIXED_PRICE_SALE" ? (
@@ -242,16 +288,18 @@ function EnterPrice({
           </div>
         )}
 
-        {!registed && (remainingTime > 0 || remainingTime === -2) && (
-          <div className="w-full">
-            <button
-              className="bg-blue-400 hover:bg-blue-300 rounded-2xl h-[40px] w-full px-5 font-bold text-black hover:border-2 hover:border-[#bcab6f]"
-              onClick={handleDepositClick}
-            >
-              Deposit here!
-            </button>
-          </div>
-        )}
+        {isLogin &&
+          !registed &&
+          (remainingTime > 0 || remainingTime === -2) && (
+            <div className="w-full">
+              <button
+                className="bg-blue-400 hover:bg-blue-300 rounded-2xl h-[40px] w-full px-5 font-bold text-black hover:border-2 hover:border-[#bcab6f]"
+                onClick={handleDepositClick}
+              >
+                Deposit here!
+              </button>
+            </div>
+          )}
 
         {/* Increment section will be hidden if auction type is FIXED_PRICE_SALE */}
         {auctionTypeName !== "FIXED_PRICE_SALE" && (
