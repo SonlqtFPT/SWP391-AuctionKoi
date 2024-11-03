@@ -31,6 +31,12 @@ function EnterPrice({
 
   const maxBid = startingPrice * 20;
 
+  useEffect(() => {
+    if (auctionTypeName === "FIXED_PRICE_SALE") {
+      setBidPrice(startingPrice);
+    }
+  }, [auctionTypeName, startingPrice]);
+
   // Fetch existing bids
   const fetchExistingBids = async () => {
     try {
@@ -72,11 +78,10 @@ function EnterPrice({
     await fetchLot(); // Refresh lot data
     await fetchBidList(); // Refresh bid list
     await fetchExistingBids();
+    console.log(startingPrice);
+    console.log(currentPrice);
 
-    if (
-      auctionTypeName === "ASCENDING_BID" &&
-      bidPrice.replace(/\./g, "") > maxBid
-    ) {
+    if (auctionTypeName === "ASCENDING_BID" && bidPrice > maxBid) {
       toast.warn("You can't bid higher than max bid");
       return;
     }
@@ -93,7 +98,7 @@ function EnterPrice({
         post_bid_api,
         {
           lotId: lotId,
-          price: bidPrice.replace(/\./g, ""), // Use bidPrice from input
+          price: bidPrice,
           memberId: currentAccountId,
         },
         {
@@ -180,7 +185,7 @@ function EnterPrice({
 
   const increaseBid = () => {
     const newBidPrice = Math.min(
-      Number(bidPrice.replace(/\./g, "") || startingPrice) + increment,
+      Number(bidPrice || startingPrice) + increment,
       maxBid
     );
     setBidPrice(newBidPrice);
@@ -188,8 +193,8 @@ function EnterPrice({
 
   const decreaseBid = () => {
     const newBidPrice = Math.max(
-      Number(bidPrice.replace(/\./g, "") || startingPrice) - increment,
-      startingPrice
+      Number(bidPrice || startingPrice) - increment,
+      currentPrice
     );
     setBidPrice(newBidPrice);
   };

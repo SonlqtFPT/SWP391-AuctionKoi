@@ -40,7 +40,6 @@ const RequestDetails = ({ request, onBack, staffList, fetchRequest }) => {
 
   useEffect(() => {
     if (request) {
-      fetchRequest();
       console.log("Request Object:", request);
       setOfferPrice(request.price);
       setOfferAuctionType(request.auctionTypeName);
