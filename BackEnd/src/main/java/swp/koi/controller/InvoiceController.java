@@ -52,7 +52,7 @@ public class InvoiceController {
 
     @Operation(summary = "Update invoice with shipping address and distance")
     @PatchMapping("/update-invoice")
-    public ResponseData<?> updateInvoice(@RequestParam double kilometer,
+    public ResponseData<?> updateInvoice(@RequestParam float kilometer,
                                                @RequestParam int invoiceId,
                                                @RequestParam String address) {
         try {

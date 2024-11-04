@@ -1,6 +1,5 @@
 package swp.koi.service.invoiceService;
 
-import swp.koi.dto.response.InvoiceResponseDto;
 import swp.koi.model.Invoice;
 import swp.koi.model.enums.InvoiceStatusEnums;
 
@@ -17,7 +16,7 @@ public interface InvoiceService {
 
     List<Invoice> getAllInvoicesForAuctionWinner();
 
-    Invoice updateInvoiceAddress(double kilometer, int invoiceId, String address) throws UnsupportedEncodingException;
+    Invoice updateInvoiceAddress(float kilometer, int invoiceId, String address) throws UnsupportedEncodingException;
 
     Invoice getInvoiceForSpecificLot(int lotId);
 

@@ -43,7 +43,7 @@ public class Invoice {
     float subTotal;
 
     @Min(value = 0, message = "distance must be > 0")
-    Double kilometers;
+    Float kilometers;
 
     @Column(columnDefinition = "nvarchar(max)")
     String address;
