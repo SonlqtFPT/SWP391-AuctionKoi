@@ -9,7 +9,6 @@ import swp.koi.dto.request.BidRequestDto;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
 import swp.koi.model.*;
-import swp.koi.model.enums.AuctionTypeNameEnum;
 import swp.koi.model.enums.LotRegisterStatusEnum;
 import swp.koi.repository.*;
 import swp.koi.service.authService.GetUserInfoByUsingAuth;
@@ -216,7 +215,7 @@ public class BidServiceImpl implements BidService {
                 return;
             }
             case SEALED_BID: {
-                if (validateBidTypeSealed(member, lot)) {
+                if (validateIfUserAlreadyBidded(member, lot)) {
                     throw new KoiException(ResponseCode.BID_SEALED_ALREADY);
                 }
                 return;
@@ -229,14 +228,21 @@ public class BidServiceImpl implements BidService {
             case FIXED_PRICE_SALE: {
                 if (bidRequestDto.getPrice() != lot.getCurrentPrice()) {
                     throw new KoiException((ResponseCode.BID_PRICE_TOO_LOW));
-
+                } else if (validateIfUserAlreadyBidded(member, lot)) {
+                    throw new KoiException(ResponseCode.BID_SEALED_ALREADY);
                 }
-
                 return;
             }
             default:
                 throw new KoiException((ResponseCode.AUCTION_TYPE_NOT_FOUND));
         }
+    }
+
+    @Override
+    public boolean isUserBidded(int lotId) {
+        Lot lot = lotRepository.findById(lotId).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
+        Member member = getUserInfoByUsingAuth.getMemberFromAuth();
+        return validateIfUserAlreadyBidded(member, lot);
     }
 
     /**
@@ -347,13 +353,14 @@ public class BidServiceImpl implements BidService {
      * @return true if the member has already placed a sealed bid
      * @throws KoiException if the bid list is empty
      */
-    private boolean validateBidTypeSealed(Member member, Lot lot) throws KoiException {
+    private boolean validateIfUserAlreadyBidded(Member member, Lot lot) throws KoiException {
 
         List<Bid> bidList = bidRepository.getBidByLot(lot)
                 .orElseThrow(() -> new KoiException(ResponseCode.BID_LIST_EMPTY));
 
         return bidList.stream().anyMatch(lr -> lr.getMember().equals(member));
     }
+
 
     /**
      * Retrieves the AutoBid entity for a given lot from Redis.

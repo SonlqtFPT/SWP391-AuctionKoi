@@ -60,4 +60,13 @@ public class BidController {
             throw new RuntimeException(e);
         }
     }
+
+    @PostMapping("/user-bidded")
+    public ResponseData<?> isUserBidded(@RequestParam int lotId){
+        boolean isUserBidded = bidService.isUserBidded(lotId);
+        if(isUserBidded){
+            return new ResponseData<>(ResponseCode.SUCCESS, "User bidded");
+        }
+        return new ResponseData<>(ResponseCode.SUCCESS, "User not bidded");
+    }
 }

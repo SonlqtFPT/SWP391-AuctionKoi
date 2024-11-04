@@ -5,6 +5,7 @@ import swp.koi.dto.request.BidRequestDto;
 import swp.koi.dto.response.BidResponseDTO;
 import swp.koi.exception.KoiException;
 import swp.koi.model.Bid;
+import swp.koi.model.Lot;
 
 import java.util.List;
 
@@ -14,4 +15,8 @@ public interface BidService {
     List<Bid> listBidByLotId(int lotId);
 
     void activeAutoBid(AutoBidRequestDTO autoBidRequestDTO) throws KoiException;
+
+
+
+    boolean isUserBidded(int lotId);
 }
