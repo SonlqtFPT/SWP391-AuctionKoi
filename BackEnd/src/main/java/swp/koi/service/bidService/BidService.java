@@ -8,6 +8,7 @@ import swp.koi.model.Bid;
 import swp.koi.model.Lot;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BidService {
     void bid(BidRequestDto bidRequestDto);
@@ -19,4 +20,6 @@ public interface BidService {
 
 
     boolean isUserBidded(int lotId);
+
+    Optional<Integer> countNumberOfPeopleWhoBidOnSpecificLot(int lotId);
 }

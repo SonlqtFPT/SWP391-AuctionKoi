@@ -217,6 +217,8 @@ public class BidServiceImpl implements BidService {
             case SEALED_BID: {
                 if (validateIfUserAlreadyBidded(member, lot)) {
                     throw new KoiException(ResponseCode.BID_SEALED_ALREADY);
+                } else if(bidRequestDto.getPrice() != lot.getStartingPrice()) {
+                    throw new KoiException((ResponseCode.BID_PRICE_TOO_LOW));
                 }
                 return;
             }
@@ -245,6 +247,13 @@ public class BidServiceImpl implements BidService {
         return validateIfUserAlreadyBidded(member, lot);
     }
 
+    @Override
+    public Optional<Integer> countNumberOfPeopleWhoBidOnSpecificLot(int lotId){
+
+        Lot lot = lotRepository.findById(lotId).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
+
+        return bidRepository.countDistinctMemberByLot(lot);
+    }
     /**
      * Checks if a member is registered for a given lot.
      *

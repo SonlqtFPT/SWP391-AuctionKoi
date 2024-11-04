@@ -62,7 +62,7 @@ public enum ResponseCode {
     MEMBER_NOT_REGISTERED_FOR_LOT(5004, "Member is not registered for the Lot"),
     BID_TIME_PASSED(5005, "Bid time passed or auction lot not open yet"),
     BID_LIST_EMPTY(5006, "Bid list is empty"),
-    BID_SEALED_ALREADY(5007, "User already bidded to this sealed lot"),
+    BID_SEALED_ALREADY(5007, "User already bidded to this lot"),
     BID_HAVE_BEEN_OUTBID_BY_AUTO(5008, "User have been outbid by other auto bidder"),
     //Auction
     AUCTION_NOT_FOUND(6000, "Auction not found"),
