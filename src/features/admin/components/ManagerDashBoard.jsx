@@ -9,6 +9,7 @@ import AuctionTypePieChart from "../../../components/Charts/AuctionTypePieChart"
 import TransactionBarChar from "../../../components/Charts/TransactionBarChar";
 import IncomeLineChart from "../../../components/Charts/IncomeLineChart";
 import VarietyPieChart from "../../../components/Charts/VarietyTypePieChart";
+import TotalAuctionPriceBarChart from "../../../components/Charts/TotalAuctionPriceBarChart";
 
 function ManagerDashBoard() {
   const [registeredCount, setRegisteredCount] = useState();
@@ -58,7 +59,9 @@ function ManagerDashBoard() {
 
   return (
     <div className="max-w-7xl mx-auto py-6 px-4 lg:px-8">
-      <h1 className="text-2xl mb-4">Welcome to Manager DashBoard</h1>
+      <h1 className="mb-8 text-blue-500 font-bold text-4xl">
+        Welcome to Manager DashBoard
+      </h1>
       {/* Stat Card Section */}
       <motion.div
         className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8 lg:flex lg:justify-center"
@@ -87,7 +90,10 @@ function ManagerDashBoard() {
       </motion.div>
 
       {/* Chart Income*/}
-      <div className="flex justify-center gap-72 space-x-4">
+      <div className="flex justify-center gap-2 ">
+        <div>
+          <TotalAuctionPriceBarChart />
+        </div>
         <div className="">
           <VarietyPieChart />
         </div>

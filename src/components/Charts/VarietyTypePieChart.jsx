@@ -178,7 +178,7 @@ function VarietyTypePieChart() {
   };
 
   return (
-    <div className="w-[400px] h-[400px] bg-white shadow-xl rounded-2xl p-4">
+    <div className="w-[350px] h-[400px] bg-white shadow-xl rounded-2xl p-4">
       <Doughnut data={data} options={options} />
     </div>
   );
