@@ -90,10 +90,10 @@ function ManagerDashBoard() {
       </motion.div>
 
       {/* Chart Income*/}
-      <div className="flex justify-center gap-2 ">
-        <div>
+      <div className="flex justify-center gap-10 ">
+        {/* <div>
           <TotalAuctionPriceBarChart />
-        </div>
+        </div> */}
         <div className="">
           <VarietyPieChart />
         </div>

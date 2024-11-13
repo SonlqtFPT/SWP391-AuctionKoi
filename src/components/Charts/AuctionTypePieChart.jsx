@@ -56,12 +56,7 @@ const AuctionTypePieChart = () => {
   }, []);
 
   const data = {
-    labels: [
-      "Fixed price sale",
-      "Sealed bid",
-      "Ascending bid",
-      "Descending bid",
-    ],
+    labels: ["Fixed price sale", "Sealed bid", "Ascending bid"],
     datasets: [
       {
         label: "Quantity: ",
