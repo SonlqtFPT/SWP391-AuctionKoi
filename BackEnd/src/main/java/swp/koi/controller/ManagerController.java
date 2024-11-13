@@ -34,13 +34,6 @@ public class ManagerController {
     private final LotRegisterService lotRegisterService;
     private final AuctionRequestService auctionRequestService;
 
-    @Operation(summary = "Create manager account")
-    @PostMapping("/manager/create-manager-account")
-    public ResponseData<?> createManagerAccount(AccountRegisterDTO request){
-        accountService.createManagerAccountByRequest(request);
-        return new ResponseData<>(ResponseCode.SUCCESS_SIGN_UP);
-    }
-
     @Operation(summary = "Retrieve all account")
     @GetMapping("/manager/get-all-account")
     public ResponseData<?> getAllAccount(){

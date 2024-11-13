@@ -45,5 +45,4 @@ public interface AccountService {
 
     void disableAccount(Integer accountId);
 
-    void createManagerAccountByRequest(AccountRegisterDTO request);
 }

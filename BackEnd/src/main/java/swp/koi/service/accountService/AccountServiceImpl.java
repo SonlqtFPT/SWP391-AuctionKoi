@@ -99,21 +99,6 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public void createManagerAccountByRequest(AccountRegisterDTO request) {
-        Account account = new Account();
-
-        if (accountRepository.existsByEmail(request.getEmail())) {
-            throw new KoiException(ResponseCode.EMAIL_ALREADY_EXISTS);
-        }
-
-        modelMapper.map(request, account);
-        account.setPassword(passwordEncoder.encode(request.getPassword()));
-        account.setRole(AccountRoleEnum.MANAGER);
-        account.setStatus(true);
-        accountRepository.save(account);
-    }
-
-    @Override
     public Account findByEmail(String email) {
         return accountRepository.findByEmail(email).orElseThrow(() -> new KoiException(ResponseCode.EMAIL_NOT_FOUND));
     }
