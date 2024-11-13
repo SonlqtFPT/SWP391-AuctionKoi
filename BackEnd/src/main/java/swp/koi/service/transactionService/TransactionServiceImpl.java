@@ -78,7 +78,7 @@ public class TransactionServiceImpl implements TransactionService {
     private Transaction buildTransactionForInvoicePayment(Lot lot, Member member, Invoice invoice) {
         return Transaction.builder()
                 .transactionType(TransactionTypeEnum.INVOICE_PAYMENT)
-                .amount(calculateInvoiceAmount(lot))
+                .amount(invoice.getFinalAmount())
                 .member(member)
                 .paymentStatus("SUCCESS")
                 .lot(lot)
@@ -86,9 +86,6 @@ public class TransactionServiceImpl implements TransactionService {
                 .build();
     }
 
-    private float calculateInvoiceAmount(Lot lot) {
-        return (float) (lot.getCurrentPrice() * 1.1 - lot.getDeposit());
-    }
 
     @Override
     public List<Transaction> getAllTransaction() {

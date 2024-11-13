@@ -1,5 +1,6 @@
 package swp.koi.service.bidService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,7 +10,6 @@ import swp.koi.dto.request.BidRequestDto;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
 import swp.koi.model.*;
-import swp.koi.model.enums.AuctionTypeNameEnum;
 import swp.koi.model.enums.LotRegisterStatusEnum;
 import swp.koi.repository.*;
 import swp.koi.service.authService.GetUserInfoByUsingAuth;
@@ -45,6 +45,7 @@ public class BidServiceImpl implements BidService {
     private final MemberRepository memberRepository;
     private final RedisService redisService;
 
+    @Transactional
     @Override
     public void bid(BidRequestDto bidRequestDto) throws KoiException {
         // Retrieve the Member and Lot based on the DTO
@@ -63,7 +64,6 @@ public class BidServiceImpl implements BidService {
 
         
         // Create a Bid entity and update the Lot with the new bid
-
         Bid bid = createBid(bidRequestDto, member, lot);
         bidRepository.save(bid);
 
@@ -196,28 +196,32 @@ public class BidServiceImpl implements BidService {
         }
 
         if (LocalDateTime.now().isAfter(lot.getEndingTime()) || LocalDateTime.now().isBefore(lot.getStartingTime())) {
-            System.out.println(LocalDateTime.now());
-            System.out.println(lot.getEndingTime());
             throw new KoiException(ResponseCode.BID_TIME_PASSED);
+        }
+
+        if(bidRequestDto.getPrice() <= 0){
+            throw new KoiException(ResponseCode.INVALID_BIDDING_AMOUNT);
         }
 
         AuctionType auctionType = lot.getAuctionType();
 
-        List<Bid> bidList = bidRepository.getBidByLot(lot).orElse(null);
-        if(bidList == null || bidList.isEmpty() && bidRequestDto.getPrice() == lot.getStartingPrice()) {
-            return;
-        }
-
         switch (auctionType.getAuctionTypeName()) {
             case ASCENDING_BID: {
-                //jump price 10% of current price
+
+                List<Bid> bidList = bidRepository.getBidByLot(lot).orElse(null);
+                if(bidList == null || bidList.isEmpty() && bidRequestDto.getPrice() == lot.getStartingPrice()) {
+                    return;
+                }
+
                 if (bidRequestDto.getPrice() < lot.getCurrentPrice() + lot.getStartingPrice() * 0.1)
                     throw new KoiException((ResponseCode.BID_PRICE_TOO_LOW));
                 return;
             }
             case SEALED_BID: {
-                if (validateBidTypeSealed(member, lot)) {
+                if (validateIfUserAlreadyBidded(member, lot)) {
                     throw new KoiException(ResponseCode.BID_SEALED_ALREADY);
+                } else if(bidRequestDto.getPrice() < lot.getStartingPrice()) {
+                    throw new KoiException((ResponseCode.BID_PRICE_TOO_LOW));
                 }
                 return;
             }
@@ -229,9 +233,9 @@ public class BidServiceImpl implements BidService {
             case FIXED_PRICE_SALE: {
                 if (bidRequestDto.getPrice() != lot.getCurrentPrice()) {
                     throw new KoiException((ResponseCode.BID_PRICE_TOO_LOW));
-
+                } else if (validateIfUserAlreadyBidded(member, lot)) {
+                    throw new KoiException(ResponseCode.BID_SEALED_ALREADY);
                 }
-
                 return;
             }
             default:
@@ -239,6 +243,20 @@ public class BidServiceImpl implements BidService {
         }
     }
 
+    @Override
+    public boolean isUserBidded(int lotId) {
+        Lot lot = lotRepository.findById(lotId).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
+        Member member = getUserInfoByUsingAuth.getMemberFromAuth();
+        return validateIfUserAlreadyBidded(member, lot);
+    }
+
+    @Override
+    public Optional<Integer> countNumberOfPeopleWhoBidOnSpecificLot(int lotId){
+
+        Lot lot = lotRepository.findById(lotId).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
+
+        return bidRepository.countDistinctMemberByLot(lot);
+    }
     /**
      * Checks if a member is registered for a given lot.
      *
@@ -347,13 +365,14 @@ public class BidServiceImpl implements BidService {
      * @return true if the member has already placed a sealed bid
      * @throws KoiException if the bid list is empty
      */
-    private boolean validateBidTypeSealed(Member member, Lot lot) throws KoiException {
+    private boolean validateIfUserAlreadyBidded(Member member, Lot lot) throws KoiException {
 
         List<Bid> bidList = bidRepository.getBidByLot(lot)
                 .orElseThrow(() -> new KoiException(ResponseCode.BID_LIST_EMPTY));
 
         return bidList.stream().anyMatch(lr -> lr.getMember().equals(member));
     }
+
 
     /**
      * Retrieves the AutoBid entity for a given lot from Redis.

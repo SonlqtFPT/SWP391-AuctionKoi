@@ -17,6 +17,7 @@ import swp.koi.exception.KoiException;
 import swp.koi.service.bidService.BidService;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/bid")
@@ -59,5 +60,20 @@ public class BidController {
         } catch (KoiException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @PostMapping("/user-bidded")
+    public ResponseData<?> isUserBidded(@RequestParam int lotId){
+        boolean isUserBidded = bidService.isUserBidded(lotId);
+        if(isUserBidded){
+            return new ResponseData<>(ResponseCode.SUCCESS, "User bidded");
+        }
+        return new ResponseData<>(ResponseCode.SUCCESS, "User not bidded");
+    }
+
+    @PostMapping("/count")
+    public ResponseData<?> countNumberOfPeopleWhoBidOnLot(@RequestParam int lotId){
+        Optional<Integer> count = bidService.countNumberOfPeopleWhoBidOnSpecificLot(lotId);
+        return new ResponseData<>(ResponseCode.SUCCESS, count.orElse(0));
     }
 }

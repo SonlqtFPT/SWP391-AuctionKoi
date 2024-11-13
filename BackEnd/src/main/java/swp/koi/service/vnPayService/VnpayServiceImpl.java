@@ -222,8 +222,9 @@ public class VnpayServiceImpl implements VnpayService {
                 lotRegisterRepository.save(lotRegister);
                 transactionService.createTransactionForLotDeposit(lot.getLotId(), member.getMemberId());
             } else {
-                Transaction transaction = transactionService.createTransactionForInvoicePayment(lot.getLotId(), member.getMemberId());
                 Invoice invoice = invoiceRepository.findByLot(lot);
+                Transaction transaction = transactionService.createTransactionForInvoicePayment(lot.getLotId() , member.getMemberId());
+
                 invoice.setTransaction(transaction);
                 invoice.setStatus(InvoiceStatusEnums.PAID);
                 invoiceRepository.save(invoice);

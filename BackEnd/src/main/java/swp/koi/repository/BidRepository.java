@@ -13,5 +13,5 @@ public interface BidRepository extends JpaRepository<Bid, Integer> {
 
     Optional<List<Bid>> getBidByLot(Lot lot);
 
-
+    Optional<Integer> countDistinctMemberByLot(Lot lot);
 }

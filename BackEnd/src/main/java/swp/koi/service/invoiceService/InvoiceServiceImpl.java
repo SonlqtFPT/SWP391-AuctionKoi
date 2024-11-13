@@ -15,7 +15,6 @@ import swp.koi.repository.LotRegisterRepository;
 import swp.koi.repository.LotRepository;
 import swp.koi.service.accountService.AccountService;
 import swp.koi.service.authService.GetUserInfoByUsingAuth;
-import swp.koi.service.lotRegisterService.LotRegisterService;
 import swp.koi.service.memberService.MemberService;
 import swp.koi.service.vnPayService.VnpayServiceImpl;
 
@@ -109,7 +108,7 @@ public class InvoiceServiceImpl implements InvoiceService{
     }
 
     @Override
-    public Invoice updateInvoiceAddress(double kilometer, int invoiceId, String address) throws UnsupportedEncodingException {
+    public Invoice updateInvoiceAddress(float kilometer, int invoiceId, String address) throws UnsupportedEncodingException {
         Member member = getUserInfoByUsingAuth.getMemberFromAuth();
         Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
 
@@ -135,9 +134,9 @@ public class InvoiceServiceImpl implements InvoiceService{
         return vnpayService.generateInvoice(lotId, memberId, TransactionTypeEnum.INVOICE_PAYMENT);
     }
 
-    private float generateShippingPriceForInvoice(double kilometer) {
+    private float generateShippingPriceForInvoice(float kilometer) {
         float pricePerKm = pricePerKilometer(kilometer);
-        return (float) (pricePerKm * kilometer);
+        return (pricePerKm * kilometer);
     }
 
     private float pricePerKilometer(double kilometer) {
