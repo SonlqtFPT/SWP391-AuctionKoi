@@ -141,7 +141,7 @@ const AddBreederRequest = () => {
         <div className="flex items-center justify-center space-x-4">
           <span>
             <img
-              src="\src\assets\Divider\diamondLeft.png"
+              src="https://github.com/SonlqtFPT/SWP391-AuctionKoi/blob/phureal/src/assets/Divider/diamondLeft.png?raw=true"
               alt="Left Divider"
               className="w-auto transform scale-x-[-1]"
             />
@@ -151,7 +151,7 @@ const AddBreederRequest = () => {
           </h1>
           <span>
             <img
-              src="\src\assets\Divider\diamondRight.png"
+              src="https://github.com/SonlqtFPT/SWP391-AuctionKoi/blob/phureal/src/assets/Divider/diamondRight.png?raw=true"
               alt="Right Divider"
               className="w-auto"
             />
@@ -187,9 +187,17 @@ const AddBreederRequest = () => {
                 </label>
               }
               name="age"
-              rules={[{ required: true, message: "Please enter age of fish" }]}
+              rules={[
+                { required: true, message: "Please enter age of fish" },
+                {
+                  type: "number",
+                  min: 1,
+                  max: 250,
+                  message: "Age must be between 1 and 250",
+                },
+              ]}
             >
-              <InputNumber min={0} />
+              <InputNumber min={1} max={250} />
             </Form.Item>
 
             <Form.Item
@@ -259,9 +267,9 @@ const AddBreederRequest = () => {
                 <Select.Option value="ASCENDING_BID">
                   Ascending Bid
                 </Select.Option>
-                <Select.Option value="DESCENDING_BID">
+                {/* <Select.Option value="DESCENDING_BID">
                   Descending Bid
-                </Select.Option>
+                </Select.Option> */}
               </Select>
             </Form.Item>
 

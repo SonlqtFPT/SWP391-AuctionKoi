@@ -53,7 +53,7 @@ function MainPage() {
         className="text-center py-10 lg:py-20 opacity-0 translate-y-20 transition-all duration-700"
       >
         <img
-          src="/src/assets/Divider/t1HeaderDivider.png"
+          src="https://redirect.zalo.me/v3/verifyv2/pc?token=OMBwnDvpLWvc2F75snXKOMC4xwlM5bHXOWJlgpWm&continue=https%3A%2F%2Fgithub.com%2FSonlqtFPT%2FSWP391-AuctionKoi%2Fblob%2F0135d35ed6dc97888160624172e071424708495a%2Fsrc%2Fassets%2FDivider%2Ft1HeaderDivider.png%3Fraw%3Dtrue"
           alt="Divider"
           className="block w-full"
         />
@@ -120,7 +120,7 @@ function MainPage() {
           >
             <img
               className="max-h-[60%] max-w-[80%] h-full"
-              src={`/src/assets/logo/sakai-logo.png`}
+              src="https://github.com/SonlqtFPT/SWP391-AuctionKoi/blob/phureal/src/assets/logo/sakai-logo.png?raw=true"
               alt={`Saki Logo`}
             />
             <span className="font-semibold">Saki</span>
