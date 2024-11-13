@@ -21,7 +21,7 @@ function EnterPrice({
 }) {
   const [bidPrice, setBidPrice] = useState("");
   const [registrationLink, setRegistrationLink] = useState("");
-  const [hasBid, setHasBid] = useState(false); // State to track if the member has bid\
+  const [hasBid, setHasBid] = useState(false); // State to track if the member has bid
   const navigate = useNavigate();
 
   const post_bid_api = "bid/bidAuction";
@@ -52,9 +52,6 @@ function EnterPrice({
       const userHasBid = existingBids.some(
         (bid) => bid.member.account.accountId === currentAccountId
       );
-      console.log(currentAccountId);
-      console.log("status", userHasBid);
-      console.log("Login? ", isLogin);
       setHasBid(userHasBid);
     } catch (error) {
       console.error("Error fetching existing bids:", error);
@@ -78,8 +75,6 @@ function EnterPrice({
     await fetchLot(); // Refresh lot data
     await fetchBidList(); // Refresh bid list
     await fetchExistingBids();
-    console.log(startingPrice);
-    console.log(currentPrice);
 
     if (auctionTypeName === "ASCENDING_BID" && bidPrice > maxBid) {
       toast.warn("You can't bid higher than max bid");
@@ -211,20 +206,24 @@ function EnterPrice({
   return (
     <div className="p-5 my-5 rounded-2xl border-2 hover:border-4 border-[#bcab6f] outline outline-offset-2 outline-white text-white shadow-md bg-gray-900 hover:bg-gray-800">
       <div className="flex flex-col sm:flex-row items-center gap-3 text-black">
-        <div className="bg-slate-500 h-[40px] rounded-full flex items-center justify-between pl-5 pr-8 w-full py-6">
-          <h1 className="text-xl font-bold w-auto lg:w-48">
-            {auctionTypeName === "FIXED_PRICE_SALE"
-              ? "Fixed Price Sale:"
-              : "Highest Price"}
-          </h1>
-          <h1 className="text-xl font-extrabold text-[#af882b]">
-            {formatPrice(
-              auctionTypeName === "FIXED_PRICE_SALE"
-                ? startingPrice
-                : currentPrice
-            )}
-          </h1>
-        </div>
+        {/* Only show the highest price when the auction type is NOT SEALED_BID */}
+        {auctionTypeName !== "SEALED_BID" && (
+          <div className="bg-slate-500 h-[40px] rounded-full flex items-center justify-between pl-5 pr-8 w-full py-6">
+            <h1 className="text-xl font-bold w-auto lg:w-48">
+              {auctionTypeName === "FIXED_PRICE_SALE"
+                ? "Fixed Price Sale:"
+                : "Highest Price"}
+            </h1>
+            <h1 className="text-xl font-extrabold text-[#af882b]">
+              {formatPrice(
+                auctionTypeName === "FIXED_PRICE_SALE"
+                  ? startingPrice
+                  : currentPrice
+              )}
+            </h1>
+          </div>
+        )}
+
         {/* Only show starting price when auction type is NOT FIXED_PRICE_SALE */}
         {auctionTypeName !== "FIXED_PRICE_SALE" && (
           <div className="bg-slate-500 h-[40px] rounded-full flex items-center justify-between pl-5 pr-8 w-full py-6">
@@ -238,11 +237,13 @@ function EnterPrice({
         {registed &&
           remainingTime > 0 &&
           currentPrice < maxBid &&
-          auctionTypeName === "ASCENDING_BID" && (
+          (auctionTypeName === "ASCENDING_BID" ||
+            auctionTypeName === "SEALED_BID") && (
             <div className="flex w-full items-center gap-2">
               <Button
                 className="bg-red-500 text-black rounded-full"
                 onClick={decreaseBid}
+                disabled={hasBid || auctionTypeName === "SEALED_BID"}
               >
                 -
               </Button>
@@ -254,10 +255,12 @@ function EnterPrice({
                   const newBid = e.target.value.replace(/\./g, "");
                   setBidPrice(Math.min(Number(newBid), maxBid).toString());
                 }}
+                disabled={hasBid || auctionTypeName === "SEALED_BID"}
               />
               <Button
                 className="bg-green-400 text-white rounded-full"
                 onClick={increaseBid}
+                disabled={hasBid || auctionTypeName === "SEALED_BID"}
               >
                 +
               </Button>
@@ -283,6 +286,7 @@ function EnterPrice({
               <button
                 className="bg-red-600 hover:bg-red-500 rounded-2xl h-[40px] w-full lg:w-24 px-5 font-bold text-black hover:border-2 hover:border-[#bcab6f]"
                 onClick={handleBid}
+                disabled={hasBid && auctionTypeName === "SEALED_BID"}
               >
                 Bid
               </button>

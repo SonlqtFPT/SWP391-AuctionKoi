@@ -30,6 +30,7 @@ import Isa from "./components/Farms/Isa.jsx";
 import Dainichi from "./components/Farms/dainichi.jsx";
 import Marushin from "./components/Farms/marushin.jsx";
 import Kanno from "./components/Farms/kanno.jsx";
+import InvoiceList from "./features/user/components/InvoiceList.jsx";
 
 export default function App() {
   return (
@@ -93,6 +94,14 @@ export default function App() {
               }
             />
           </Route>
+          <Route
+            path="invoice-list"
+            element={
+              <ProtectedRoute allowedRoles={["MEMBER"]}>
+                <InvoiceList />
+              </ProtectedRoute>
+            }
+          />
           {/* Breeder Page */}
           <Route
             path="/breeder/add-request"

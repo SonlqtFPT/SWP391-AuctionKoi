@@ -7,6 +7,7 @@ import {
   FaSignInAlt,
   FaUserPlus,
   FaUserCircle,
+  FaFileInvoice,
 } from "react-icons/fa";
 import Logo from "../assets/logo/PrestigeKoi_White.png";
 import { Link, NavLink, useNavigate } from "react-router-dom";
@@ -195,13 +196,24 @@ const Header = () => {
                     to={getAccountLink()} // Dynamically generated link based on role
                     className="block px-4 py-2 text-white hover:bg-red-500 w-full text-center hover:rounded-lg"
                   >
+                    <FaUserCircle className="inline-block mr-2" />
                     Account
                   </Link>
+                  {role === "MEMBER" && (
+                    <Link
+                      to="/invoice-list"
+                      className="hover:bg-red-500 flex items-center justify-center space-x-2 rounded-full px-4 py-2 hover:text-black"
+                    >
+                      <FaFileInvoice className="inline-block mr-2" />
+                      Invoices
+                    </Link>
+                  )}
                   <button
                     className="block px-4 py-2 text-center text-white hover:bg-red-500 w-full hover:rounded-lg"
                     onClick={handleLogout}
                     disabled={loading}
                   >
+                    <FaSignInAlt className="inline-block mr-2" />
                     {loading ? "Loading..." : "Log Out"}
                   </button>
                 </div>
@@ -306,6 +318,17 @@ const Header = () => {
                   <FaUserCircle className="h-5 w-5" />
                   <span>Account</span>
                 </Link>
+              </li>
+              <li className="flex items-center justify-center">
+                {role === "MEMBER" && (
+                  <Link
+                    to="/invoice-list"
+                    className="hover:bg-red-500 flex items-center justify-center space-x-2 rounded-full px-4 py-2 hover:text-black"
+                  >
+                    <FaFileInvoice className="inline-block mr-2" />
+                    <span>Invoices</span>
+                  </Link>
+                )}
               </li>
               <li className="flex items-center justify-center">
                 <button
