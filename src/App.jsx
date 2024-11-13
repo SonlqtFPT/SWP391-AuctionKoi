@@ -56,6 +56,7 @@ export default function App() {
           <Route path="/marushin" element={<Marushin />} />
           <Route path="/kanno" element={<Kanno />} />
           {/* Protected Routes */}
+          {/* Admin Page */}
           <Route
             path="/admin"
             element={
@@ -63,8 +64,9 @@ export default function App() {
                 <AdminPage />
               </ProtectedRoute>
             }
-          />{" "}
-          {/* Admin Page */}
+          />
+          <Route path="/viewrequestdetail/:requestId"></Route>
+          {/* Member Page */}
           <Route
             path="/member/profile"
             element={
@@ -91,7 +93,7 @@ export default function App() {
               }
             />
           </Route>
-          {/* Member Page */}
+          {/* Breeder Page */}
           <Route
             path="/breeder/add-request"
             element={
@@ -142,7 +144,7 @@ export default function App() {
               }
             />
           </Route>
-          {/* Breeder Page */}
+          {/* Staff Page */}
           <Route
             path="/staff"
             element={
@@ -151,7 +153,6 @@ export default function App() {
               </ProtectedRoute>
             }
           />{" "}
-          {/* Staff Page */}
         </Routes>
       </Router>
     </AuthProvider>

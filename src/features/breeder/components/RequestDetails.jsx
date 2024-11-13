@@ -291,7 +291,8 @@ const RequestDetails = () => {
                       {request.koiFish.variety.varietyName}
                     </p>
                     <p>
-                      <strong>Gender:</strong> {request.koiFish.gender}
+                      <strong>Gender:</strong>{" "}
+                      {formatStatus(request.koiFish.gender)}
                     </p>
                   </div>
                   <h5 className="font-extrabold text-2xl text-[#bcab6f] mt-6">

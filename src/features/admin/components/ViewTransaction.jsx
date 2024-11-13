@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Button, Table, Spin, Tag } from "antd";
+import { Table, Spin, Tag, Badge, Row, Col } from "antd";
 import { toast } from "react-toastify";
 import api from "../../../config/axios";
 
 const ViewTransaction = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filteredTransactions, setFilteredTransactions] = useState([]);
+  const [transactionCounts, setTransactionCounts] = useState({});
+  const [activeFilter, setActiveFilter] = useState(null);
 
-  // Fetch transactions
+  // Fetch transactions and calculate totals
   const fetchTransactions = async () => {
     setLoading(true);
     try {
@@ -25,6 +28,19 @@ const ViewTransaction = () => {
       );
 
       setTransactions(sortedTransactions);
+      setFilteredTransactions(sortedTransactions);
+
+      // Calculate count for each transaction type
+      const counts = sortedTransactions.reduce((acc, transaction) => {
+        const { transactionType } = transaction;
+        if (!acc[transactionType]) {
+          acc[transactionType] = 0;
+        }
+        acc[transactionType] += 1;
+        return acc;
+      }, {});
+
+      setTransactionCounts(counts);
     } catch (error) {
       toast.error("Failed to fetch transaction data");
     } finally {
@@ -63,6 +79,19 @@ const ViewTransaction = () => {
   useEffect(() => {
     fetchTransactions();
   }, []);
+
+  // Handle tag click to filter transactions by type
+  const handleFilter = (type) => {
+    if (activeFilter === type) {
+      setActiveFilter(null);
+      setFilteredTransactions(transactions);
+    } else {
+      setActiveFilter(type);
+      setFilteredTransactions(
+        transactions.filter((t) => t.transactionType === type)
+      );
+    }
+  };
 
   // Columns configuration
   const columns = [
@@ -128,9 +157,37 @@ const ViewTransaction = () => {
           <h1 className="text-left font-bold text-2xl my-5">
             Transaction Manager
           </h1>
+          <Row justify="space-around" gutter={[16, 16]} className="mb-5">
+            {[
+              "REFUND",
+              "PAYMENT_FOR_BREEDER",
+              "DEPOSIT",
+              "INVOICE_PAYMENT",
+            ].map((type) => (
+              <Col key={type} xs={12} sm={6} md={6} lg={6}>
+                <Badge
+                  count={transactionCounts[type] || 0}
+                  showZero
+                  offset={[10, 0]}
+                >
+                  <Tag
+                    color={activeFilter === type ? "blue" : "default"}
+                    onClick={() => handleFilter(type)}
+                    style={{
+                      cursor: "pointer",
+                      width: "100%",
+                      textAlign: "center",
+                    }}
+                  >
+                    {formatStatus(type)}
+                  </Tag>
+                </Badge>
+              </Col>
+            ))}
+          </Row>
           <Table
             columns={columns}
-            dataSource={transactions}
+            dataSource={filteredTransactions}
             rowKey="transactionId"
           />
         </>
