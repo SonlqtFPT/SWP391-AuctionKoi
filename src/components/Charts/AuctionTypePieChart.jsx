@@ -130,7 +130,7 @@ const AuctionTypePieChart = () => {
   };
 
   return (
-    <div className="w-[400px] h-[400px] bg-white shadow-xl rounded-2xl p-4">
+    <div className="w-[350px] h-[400px] bg-white shadow-xl rounded-2xl p-4">
       <Pie data={data} options={options} />
     </div>
   );
