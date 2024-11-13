@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import swp.koi.dto.response.LotRegisterForMemberResponseDto;
-import swp.koi.dto.response.LotRegisterResponseDTO;
+import swp.koi.dto.response.LotRegisterResponseDto;
 import swp.koi.dto.response.LotResponseDto;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
@@ -20,10 +20,10 @@ public class LotRegisterEntityToDtoConverter {
     private final ModelMapper modelMapper;
     private final LotEntityToDtoConverter lotEntityToDtoConverter;
 
-    public LotRegisterResponseDTO convertLotRegister(LotRegister lotRegister){
+    public LotRegisterResponseDto convertLotRegister(LotRegister lotRegister){
         if(lotRegister == null)
             throw new KoiException(ResponseCode.FOUND_NOTHING);
-        LotRegisterResponseDTO response = modelMapper.map(lotRegister, LotRegisterResponseDTO.class);
+        LotRegisterResponseDto response = modelMapper.map(lotRegister, LotRegisterResponseDto.class);
         return response;
     }
 

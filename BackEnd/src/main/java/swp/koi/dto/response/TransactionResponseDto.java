@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import swp.koi.model.Lot;
 import swp.koi.model.enums.TransactionTypeEnum;
 
 import java.time.LocalDateTime;
@@ -21,6 +20,6 @@ public class TransactionResponseDto {
     String paymentStatus;
 //    LotResponseDto lot;
     Integer lotId;
-    MemberResponseDTO member;
-    KoiBreederResponseDTO koiBreeder;
+    MemberResponseDto member;
+    KoiBreederResponseDto koiBreeder;
 }

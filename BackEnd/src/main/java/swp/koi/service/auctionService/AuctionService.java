@@ -2,10 +2,8 @@ package swp.koi.service.auctionService;
 
 import jakarta.validation.Valid;
 import org.springframework.scheduling.annotation.Scheduled;
-import swp.koi.dto.request.AuctionWithLotsDTO;
-import swp.koi.dto.request.UpdateStatusDTO;
-import swp.koi.dto.response.AuctionResponseDTO;
-import swp.koi.dto.response.LotResponseDto;
+import swp.koi.dto.request.AuctionWithLotsDto;
+import swp.koi.dto.response.AuctionResponseDto;
 import swp.koi.model.Auction;
 import swp.koi.model.Lot;
 
@@ -15,7 +13,7 @@ public interface AuctionService {
     @Scheduled(fixedDelay = 1000 * 60)
     void updateAuctionStatusAndEndTime();
 
-    AuctionResponseDTO createAuctionWithLots(@Valid AuctionWithLotsDTO request);
+    AuctionResponseDto createAuctionWithLots(@Valid AuctionWithLotsDto request);
 
     Lot getLot(Integer lotId);
 

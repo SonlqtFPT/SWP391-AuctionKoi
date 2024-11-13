@@ -4,8 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import swp.koi.dto.request.MediaDTO;
-import swp.koi.dto.request.MediaUpdateDTO;
+import swp.koi.dto.request.MediaDto;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
 import swp.koi.model.Media;
@@ -20,7 +19,7 @@ public class MediaServiceImpl implements MediaService{
     private final ModelMapper modelMapper;
 
     @Override
-    public Media createMediaFromRequest(MediaDTO mediaRequest) {
+    public Media createMediaFromRequest(MediaDto mediaRequest) {
         Media media = new Media();
         media.setImageUrl(mediaRequest.getImageUrl());
         media.setVideoUrl(mediaRequest.getVideoUrl());

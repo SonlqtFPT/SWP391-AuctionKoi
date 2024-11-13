@@ -3,10 +3,7 @@ package swp.koi.convert;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
-import swp.koi.dto.response.AccountResponseDTO;
-import swp.koi.dto.response.AuctionRequestResponseDTO;
-import swp.koi.dto.response.KoiBreederResponseDTO;
-import swp.koi.dto.response.KoiFishResponseDTO;
+import swp.koi.dto.response.AuctionRequestResponseDto;
 import swp.koi.model.AuctionRequest;
 
 import java.util.List;
@@ -20,17 +17,17 @@ public class AuctionRequestEntityToDtoConverter {
     private final ModelMapper modelMapper;
     private final AccountEntityToDtoConverter accountEntityToDtoConverter;
 
-    public AuctionRequestResponseDTO convertAuctionRequest(AuctionRequest auctionRequest){
-        AuctionRequestResponseDTO response = modelMapper.map(auctionRequest, AuctionRequestResponseDTO.class);
+    public AuctionRequestResponseDto convertAuctionRequest(AuctionRequest auctionRequest){
+        AuctionRequestResponseDto response = modelMapper.map(auctionRequest, AuctionRequestResponseDto.class);
         return response;
     }
 
-    public List<AuctionRequestResponseDTO> convertAuctionRequestList(List<AuctionRequest> auctionRequests){
-        List<AuctionRequestResponseDTO> response = auctionRequests
+    public List<AuctionRequestResponseDto> convertAuctionRequestList(List<AuctionRequest> auctionRequests){
+        List<AuctionRequestResponseDto> response = auctionRequests
                 .stream()
                 .filter(Objects::nonNull)
                 .map(auctionRequest -> {
-                    AuctionRequestResponseDTO dto = modelMapper.map(auctionRequest, AuctionRequestResponseDTO.class);
+                    AuctionRequestResponseDto dto = modelMapper.map(auctionRequest, AuctionRequestResponseDto.class);
                     dto.getKoiFish().setAuctionTypeName(auctionRequest.getKoiFish().getAuctionType().getAuctionTypeName());
                     if(auctionRequest.getAccount() == null) {
                         dto.setStaff(null);

@@ -7,7 +7,6 @@ import swp.koi.dto.response.TransactionResponseDto;
 import swp.koi.model.Transaction;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component

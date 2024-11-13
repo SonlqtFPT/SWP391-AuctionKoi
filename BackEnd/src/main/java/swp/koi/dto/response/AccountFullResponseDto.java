@@ -8,6 +8,6 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AccountFullResponseDto extends AccountResponseDTO{
+public class AccountFullResponseDto extends AccountResponseDto {
     boolean status;
 }

@@ -36,7 +36,6 @@ public class InvoiceServiceImpl implements InvoiceService{
     private final AccountService accountService;
     private final LotRegisterRepository lotRegisterRepository;
     private final AuctionRequestRepository auctionRequestRepository;
-    private final ModelMapper modelMapper;
 
 
     @Override

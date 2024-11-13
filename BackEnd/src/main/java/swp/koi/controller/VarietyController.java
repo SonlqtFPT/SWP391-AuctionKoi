@@ -9,8 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import swp.koi.convert.VarietyEntityToDtoConverter;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.dto.response.ResponseData;
-import swp.koi.dto.response.VarietyResponseDTO;
-import swp.koi.model.Variety;
+import swp.koi.dto.response.VarietyResponseDto;
 import swp.koi.service.varietyService.VarietyService;
 
 import java.util.List;
@@ -26,8 +25,8 @@ public class VarietyController {
 
     @Operation(summary = "Retrieve all variety")
     @GetMapping("/get-all-variety")
-    public ResponseData<List<VarietyResponseDTO>> getAllVariety(){
-        List<VarietyResponseDTO> response = varietyEntityToDtoConverter.convertVarietyList(varietyService.getAllVariety());
+    public ResponseData<List<VarietyResponseDto>> getAllVariety(){
+        List<VarietyResponseDto> response = varietyEntityToDtoConverter.convertVarietyList(varietyService.getAllVariety());
         return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
     }
 

@@ -2,19 +2,13 @@ package swp.koi.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import okhttp3.Response;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import swp.koi.convert.LotEntityToDtoConverter;
 import swp.koi.convert.LotRegisterEntityToDtoConverter;
-import swp.koi.dto.request.LotRegisterDTO;
+import swp.koi.dto.request.LotRegisterDto;
 
 import swp.koi.dto.response.*;
 import swp.koi.exception.KoiException;
-import swp.koi.model.LotRegister;
 import swp.koi.service.lotRegisterService.LotRegisterService;
 
 
@@ -29,11 +23,10 @@ public class LotRegisterController {
 
     private final LotRegisterService lotRegisterService;
     private final LotRegisterEntityToDtoConverter lotRegisterEntityToDtoConverter;
-    private final LotEntityToDtoConverter lotEntityToDtoConverter;
 
     @Operation(summary = "Register for the lot")
     @PostMapping("/regis")
-    public ResponseData<?> registerLot(@RequestBody LotRegisterDTO lotRegisterDTO) {
+    public ResponseData<?> registerLot(@RequestBody LotRegisterDto lotRegisterDTO) {
         try{
             var paymentLink = lotRegisterService.regisSlotWithLotId(lotRegisterDTO);
             if(paymentLink != null) {
@@ -49,9 +42,9 @@ public class LotRegisterController {
 
     @Operation(summary = "Retrieve all lot register of a lot")
     @GetMapping("/list")
-    public ResponseData<List<LotRegisterResponseDTO>> listRegisterLotById(@RequestParam int lotId) {
+    public ResponseData<List<LotRegisterResponseDto>> listRegisterLotById(@RequestParam int lotId) {
         try{
-            List<LotRegisterResponseDTO> lotRegisterList = lotRegisterService.listLotRegistersByLotId(lotId);
+            List<LotRegisterResponseDto> lotRegisterList = lotRegisterService.listLotRegistersByLotId(lotId);
 
             return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, lotRegisterList);
         }catch (KoiException e){
@@ -62,7 +55,7 @@ public class LotRegisterController {
     @Operation(summary = "Retrieve winner of a lot")
     @GetMapping("/get-winner")
     public ResponseData<?> getLotWinner(@RequestParam Integer lotId){
-        LotRegisterResponseDTO response = lotRegisterEntityToDtoConverter.convertLotRegister(lotRegisterService.getLotWinner(lotId));
+        LotRegisterResponseDto response = lotRegisterEntityToDtoConverter.convertLotRegister(lotRegisterService.getLotWinner(lotId));
         return new ResponseData<>(ResponseCode.SUCCESS, response);
     }
 

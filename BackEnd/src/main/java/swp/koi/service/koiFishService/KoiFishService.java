@@ -6,12 +6,12 @@ import swp.koi.model.KoiFish;
 import java.util.List;
 
 public interface KoiFishService {
-    KoiFish createKoiFishFromRequest(KoiFishDTO koiRequest, MediaDTO mediaRequest);
+    KoiFish createKoiFishFromRequest(KoiFishDto koiRequest, MediaDto mediaRequest);
     KoiFish findByFishId(Integer fishId);
 
     List<KoiFish> getKoiFishFromRegisteredRequest();
 
     void saveFish(KoiFish koiFish);
 
-    List<KoiFish> getKoiFishBasedOnType(AuctionTypeDTO auctionTypeDTO);
+    List<KoiFish> getKoiFishBasedOnType(AuctionTypeDto auctionTypeDTO);
 }

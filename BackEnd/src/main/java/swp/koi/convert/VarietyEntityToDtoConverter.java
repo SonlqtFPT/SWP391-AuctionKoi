@@ -3,7 +3,7 @@ package swp.koi.convert;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
-import swp.koi.dto.response.VarietyResponseDTO;
+import swp.koi.dto.response.VarietyResponseDto;
 import swp.koi.model.Variety;
 
 import java.util.List;
@@ -15,9 +15,9 @@ public class VarietyEntityToDtoConverter {
 
     private final ModelMapper modelMapper;
 
-    public List<VarietyResponseDTO> convertVarietyList(List<Variety> varieties){
-        List<VarietyResponseDTO> response = varieties.stream()
-                .map(variety -> modelMapper.map(variety, VarietyResponseDTO.class))
+    public List<VarietyResponseDto> convertVarietyList(List<Variety> varieties){
+        List<VarietyResponseDto> response = varieties.stream()
+                .map(variety -> modelMapper.map(variety, VarietyResponseDto.class))
                 .collect(Collectors.toList());
         return response;
     }

@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.*;
 import swp.koi.convert.AccountEntityToDtoConverter;
 import swp.koi.convert.AuctionRequestEntityToDtoConverter;
@@ -13,7 +12,6 @@ import swp.koi.dto.response.*;
 import swp.koi.exception.KoiException;
 import swp.koi.service.accountService.AccountService;
 import swp.koi.service.auctionRequestService.AuctionRequestService;
-import swp.koi.service.koiBreederService.KoiBreederService;
 
 import java.util.List;
 
@@ -24,16 +22,14 @@ public class AuctionRequestController {
 
     private final AuctionRequestService auctionRequestService;
     private final AuctionRequestEntityToDtoConverter auctionRequestEntityToDtoConverter;
-    private final KoiBreederService koiBreederService;
     private final AccountEntityToDtoConverter accountEntityToDtoConverter;
     private final AccountService accountService;
-    private final ModelMapper modelMapper;
 
     @Operation(summary = "Add a new request")
     @PostMapping("/breeder/request/addRequest")
-    public ResponseData<AuctionRequestResponseDTO> createRequest(@Valid @RequestBody AuctionRequestDTO request){
+    public ResponseData<AuctionRequestResponseDto> createRequest(@Valid @RequestBody AuctionRequestDto request){
         try{
-            AuctionRequestResponseDTO response = auctionRequestEntityToDtoConverter
+            AuctionRequestResponseDto response = auctionRequestEntityToDtoConverter
                     .convertAuctionRequest(auctionRequestService.createRequest(request));
             return new ResponseData<>(ResponseCode.CREATED_SUCCESS, response);
         }catch (KoiException e){
@@ -43,9 +39,9 @@ public class AuctionRequestController {
 
     @Operation(summary = "Retrieve all request of a breeder", description = "Retrieve all request of a breeder by accountId")
     @GetMapping("/breeder/request/{accountId}")
-    public ResponseData<List<AuctionRequestResponseDTO>> getAllBreederRequest(@PathVariable Integer accountId){
+    public ResponseData<List<AuctionRequestResponseDto>> getAllBreederRequest(@PathVariable Integer accountId){
         try{
-            List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllBreederRequest(accountId));
+            List<AuctionRequestResponseDto> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllBreederRequest(accountId));
             return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
         }catch (KoiException e){
             return new ResponseData<>(e.getResponseCode());
@@ -65,10 +61,10 @@ public class AuctionRequestController {
 
     @Operation(summary = "Update a request information", description = "Update request information by request id")
     @PutMapping("/breeder/request/update/{requestId}")
-    public ResponseData<AuctionRequestResponseDTO> updateRequest(@PathVariable Integer requestId,
-                                                               @RequestBody AuctionRequestUpdateDTO auctionRequestUpdateDTO){
+    public ResponseData<AuctionRequestResponseDto> updateRequest(@PathVariable Integer requestId,
+                                                                 @RequestBody AuctionRequestUpdateDto auctionRequestUpdateDTO){
         try{
-            AuctionRequestResponseDTO response = auctionRequestEntityToDtoConverter.convertAuctionRequest(auctionRequestService.updateRequest(requestId, auctionRequestUpdateDTO));
+            AuctionRequestResponseDto response = auctionRequestEntityToDtoConverter.convertAuctionRequest(auctionRequestService.updateRequest(requestId, auctionRequestUpdateDTO));
            return new ResponseData<>(ResponseCode.UPDATE_REQUEST_SUCCESS, response);
         }catch (KoiException e){
             return new ResponseData<>(e.getResponseCode());
@@ -88,15 +84,15 @@ public class AuctionRequestController {
 
     @Operation(summary = "Retrieve all request for manager")
     @GetMapping("/manager/request/getRequest")
-    public ResponseData<List<AuctionRequestResponseDTO>> getAllAuctionRequest(){
-        List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllAuctionRequest());
+    public ResponseData<List<AuctionRequestResponseDto>> getAllAuctionRequest(){
+        List<AuctionRequestResponseDto> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllAuctionRequest());
         return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
     }
 
     @Operation(summary = "Retrieve all staff to assign a request")
     @GetMapping("/manager/request/assign-staff/getStaff")
-    public ResponseData<List<AccountResponseDTO>> getAllStaff(){
-        List<AccountResponseDTO> response = accountEntityToDtoConverter.convertAccountList(accountService.getAllStaff());
+    public ResponseData<List<AccountResponseDto>> getAllStaff(){
+        List<AccountResponseDto> response = accountEntityToDtoConverter.convertAccountList(accountService.getAllStaff());
         return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
     }
 
@@ -121,7 +117,7 @@ public class AuctionRequestController {
 
     @Operation(summary = "Send negotiation")
     @PostMapping("/request/negotiation/{requestId}")
-    public ResponseData<?> negotiation(@PathVariable Integer requestId, @RequestBody AuctionRequestNegotiationDTO request){
+    public ResponseData<?> negotiation(@PathVariable Integer requestId, @RequestBody AuctionRequestNegotiationDto request){
         try{
             auctionRequestService.negotiation(requestId, request);
             return new ResponseData<>(ResponseCode.SUCCESS);
@@ -143,9 +139,9 @@ public class AuctionRequestController {
 
     @Operation(summary = "Retrieve all request that sent to staff")
     @GetMapping("/staff/list-request/{accountId}")
-    public ResponseData<List<AuctionRequestResponseDTO>> getAllStaffRequest(@PathVariable Integer accountId){
+    public ResponseData<List<AuctionRequestResponseDto>> getAllStaffRequest(@PathVariable Integer accountId){
         try{
-            List<AuctionRequestResponseDTO> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllStaffRequest(accountId));
+            List<AuctionRequestResponseDto> response = auctionRequestEntityToDtoConverter.convertAuctionRequestList(auctionRequestService.getAllStaffRequest(accountId));
             return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
         }catch (KoiException e){
             return new ResponseData<>(e.getResponseCode());
@@ -154,16 +150,16 @@ public class AuctionRequestController {
 
     @Operation(summary = "Update status for request")
     @PatchMapping("/staff/request/{requestId}/status")
-    public ResponseData<?> changeStatus(@PathVariable Integer requestId, @RequestBody UpdateStatusDTO request){
+    public ResponseData<?> changeStatus(@PathVariable Integer requestId, @RequestBody UpdateStatusDto request){
         auctionRequestService.changeStatus(requestId, request);
         return new ResponseData<>(ResponseCode.AUCTION_STATUS_CHANGE);
     }
 
     @Operation(summary = "Retrieve request's details")
     @GetMapping("/request/get/{requestId}")
-    public ResponseData<AuctionRequestResponseDTO> getRequestDetail(@PathVariable Integer requestId){
+    public ResponseData<AuctionRequestResponseDto> getRequestDetail(@PathVariable Integer requestId){
         try{
-            AuctionRequestResponseDTO response = auctionRequestEntityToDtoConverter.convertAuctionRequest(auctionRequestService.getRequestDetail(requestId));
+            AuctionRequestResponseDto response = auctionRequestEntityToDtoConverter.convertAuctionRequest(auctionRequestService.getRequestDetail(requestId));
             return new ResponseData<>(ResponseCode.SUCCESS_GET_LIST, response);
         }catch (KoiException e){
             return new ResponseData<>(e.getResponseCode());

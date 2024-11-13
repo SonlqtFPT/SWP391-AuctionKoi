@@ -95,7 +95,7 @@ public enum ResponseCode {
     MEDIA_NOT_FOUND(9500, "Media not found"),
 
     //transaction
-    TRANSACTION_EXISTED(6969, "Fuck"),
+    TRANSACTION_EXISTED(6969, "Invalid payment"),
     TRANSACTION_NOT_FOUND(9700, "Transaction not found"),
 
     // invoice

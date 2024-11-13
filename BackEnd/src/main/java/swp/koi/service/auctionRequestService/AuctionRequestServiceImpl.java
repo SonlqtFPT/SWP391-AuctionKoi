@@ -4,7 +4,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import swp.koi.convert.AuctionRequestDtoToEntityConverter;
 import swp.koi.convert.KoiFishDtoToEntitConverter;
 import swp.koi.dto.request.*;
 import swp.koi.dto.response.ResponseCode;
@@ -34,11 +33,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     private final AuctionRequestRepository auctionRequestRepository;
     private final KoiBreederService koiBreederService;
     private final KoiFishService koiFishService;
-    private final ModelMapper modelMapper;
-    private final JwtService jwtService;
     private final AccountService accountService;
-    private final AuctionRequestDtoToEntityConverter auctionRequestDtoToEntityConverter;
-    private final KoiFishDtoToEntitConverter koiFishDtoToEntitConverter;
     private final AuctionTypeService auctionTypeService;
     private final VarietyService varietyService;
     private final MediaService mediaService;
@@ -46,7 +41,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     private final TransactionService transactionService;
 
     @Override
-    public AuctionRequest createRequest(AuctionRequestDTO request) throws KoiException{
+    public AuctionRequest createRequest(AuctionRequestDto request) throws KoiException{
         try {
             Account account = accountService.findById(request.getAccountId());
             if(!account.getRole().equals(AccountRoleEnum.BREEDER))
@@ -54,9 +49,9 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
             // Create a new AuctionRequest object to hold the auction request data
             AuctionRequest auctionRequest = new AuctionRequest();
 
-            // Retrieve the KoiFishDTO and MediaDTO from the incoming request
-            KoiFishDTO koiFishDTO = request.getKoiFish();
-            MediaDTO mediaDTO = request.getKoiFish().getMedia();
+            // Retrieve the KoiFishDto and MediaDto from the incoming request
+            KoiFishDto koiFishDTO = request.getKoiFish();
+            MediaDto mediaDTO = request.getKoiFish().getMedia();
 
             // Get the KoiBreeder based on the provided breederId in the request
             KoiBreeder koiBreeder = koiBreederService.findByAccount(account);
@@ -78,16 +73,6 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     @Override
     public List<AuctionRequest> getAllAuctionRequest() {
         return auctionRequestRepository.findAll();
-    }
-
-    @Override
-    public AuctionRequest findByRequestId(Integer requestId) {
-        return auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
-    }
-
-    @Override
-    public void saveRequest(AuctionRequest auctionRequest) {
-        auctionRequestRepository.save(auctionRequest);
     }
 
     @Override
@@ -157,7 +142,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
 
     @Transactional
     @Override
-    public AuctionRequest updateRequest(Integer requestId, AuctionRequestUpdateDTO dto) throws KoiException{
+    public AuctionRequest updateRequest(Integer requestId, AuctionRequestUpdateDto dto) throws KoiException{
         Account account = getUserInfoByUsingAuth.getAccountFromAuth();
         if(!account.getRole().equals(AccountRoleEnum.BREEDER))
             throw new KoiException(ResponseCode.BREEDER_NOT_FOUND);
@@ -194,7 +179,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     }
 
     @Override
-    public void changeStatus(Integer requestId, UpdateStatusDTO request) {
+    public void changeStatus(Integer requestId, UpdateStatusDto request) {
         AuctionRequest auctionRequest = auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));
         if(auctionRequest.getAccount().getRole().equals(AccountRoleEnum.STAFF)){
             auctionRequest.setStatus(request.getRequestStatus());
@@ -203,7 +188,7 @@ public class AuctionRequestServiceImpl implements AuctionRequestService{
     }
 
     @Override
-    public void negotiation(Integer requestId, AuctionRequestNegotiationDTO request) throws KoiException{
+    public void negotiation(Integer requestId, AuctionRequestNegotiationDto request) throws KoiException{
         Account account = getUserInfoByUsingAuth.getAccountFromAuth();
 
         AuctionRequest auctionRequest = auctionRequestRepository.findByRequestId(requestId).orElseThrow(() -> new KoiException(ResponseCode.AUCTION_REQUEST_NOT_FOUND));

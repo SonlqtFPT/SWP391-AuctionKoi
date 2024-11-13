@@ -21,7 +21,6 @@ import java.util.List;
 public class MemberServiceImpl implements MemberService{
 
     private final MemberRepository memberRepository;
-    private final LotRepository lotRepository;
     private final LotRegisterRepository lotRegisterRepository;
 
     @Override

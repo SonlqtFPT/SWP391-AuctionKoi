@@ -27,11 +27,11 @@ public class KoiBreeder {
     @Column(nullable = false)
     boolean status;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "accountId", nullable = false)
     Account account;
 
-    @OneToMany(mappedBy = "koiBreeder")
+    @OneToMany(mappedBy = "koiBreeder", fetch = FetchType.LAZY)
     List<AuctionRequest> auctionRequests;
 
     @OneToMany(mappedBy = "breeder",fetch = FetchType.LAZY)

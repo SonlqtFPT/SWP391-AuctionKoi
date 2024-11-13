@@ -6,8 +6,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import swp.koi.dto.request.LotRegisterDTO;
-import swp.koi.dto.response.LotRegisterResponseDTO;
+import swp.koi.dto.request.LotRegisterDto;
+import swp.koi.dto.response.LotRegisterResponseDto;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
 import swp.koi.model.*;
@@ -50,7 +50,7 @@ public class LotRegisterServiceImpl implements LotRegisterService{
      * @throws UnsupportedEncodingException
      */
     @Override
-    public String regisSlotWithLotId(LotRegisterDTO lotRegisDto) throws UnsupportedEncodingException, KoiException {
+    public String regisSlotWithLotId(LotRegisterDto lotRegisDto) throws UnsupportedEncodingException, KoiException {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
@@ -80,14 +80,14 @@ public class LotRegisterServiceImpl implements LotRegisterService{
     }
 
     @Override
-    public List<LotRegisterResponseDTO> listLotRegistersByLotId(int lotId) throws KoiException {
+    public List<LotRegisterResponseDto> listLotRegistersByLotId(int lotId) throws KoiException {
         Lot lot = lotService.findLotById(lotId);
 
         List<LotRegister> lotRegisters = lotRegisterRepository.findAllByLot(lot).orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
 
         return lotRegisters
                 .stream()
-                .map(lotRegister -> modelMapper.map(lotRegister, LotRegisterResponseDTO.class)).collect(Collectors.toList());
+                .map(lotRegister -> modelMapper.map(lotRegister, LotRegisterResponseDto.class)).collect(Collectors.toList());
     }
 
     private boolean validateMemberRegistration(Integer lotId, Member member){
@@ -124,11 +124,11 @@ public class LotRegisterServiceImpl implements LotRegisterService{
     }
 
     @Override
-    public List<LotRegisterResponseDTO> findAllLotRegisWithStatus(LotRegisterStatusEnum status){
+    public List<LotRegisterResponseDto> findAllLotRegisWithStatus(LotRegisterStatusEnum status){
         List<LotRegister> refundList = lotRegisterRepository.findAllByStatus(status);
         return refundList
                 .stream()
-                .map(lotRegister -> modelMapper.map(lotRegister, LotRegisterResponseDTO.class))
+                .map(lotRegister -> modelMapper.map(lotRegister, LotRegisterResponseDto.class))
                 .collect(Collectors.toList());
     }
 

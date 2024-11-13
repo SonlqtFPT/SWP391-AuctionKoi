@@ -14,7 +14,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,7 +29,6 @@ import swp.koi.model.enums.AccountRoleEnum;
 import swp.koi.model.enums.TokenType;
 import swp.koi.repository.AccountRepository;
 import swp.koi.service.authService.GetUserInfoByUsingAuth;
-import swp.koi.service.googleApiService.GoogleApiService;
 import swp.koi.service.jwtService.JwtServiceImpl;
 import swp.koi.service.mailService.EmailContent;
 import swp.koi.service.mailService.EmailService;
@@ -53,7 +51,6 @@ public class AccountServiceImpl implements AccountService{
     private final AccountDetailService accountDetailService;
     private final AccountEntityToDtoConverter accountEntityToDtoConverter;
     private final RedisServiceImpl redisService;
-    private final GoogleApiService googleApiService;
     private final EmailService emailService;
     private final EmailContent emailContent;
     private final GetUserInfoByUsingAuth getUserInfoByUsingAuth;
@@ -62,7 +59,7 @@ public class AccountServiceImpl implements AccountService{
     private String clientId;
 
     @Override
-    public AccountRegisterDTO findByAccountId(Integer accountId) {
+    public AccountRegisterDto findByAccountId(Integer accountId) {
         return accountRepository.findByAccountId(accountId).orElseThrow(() -> new KoiException(ResponseCode.ACCOUNT_ID_NOT_FOUND));
     }
 
@@ -80,7 +77,7 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public Account createAccountByRequest(@Valid AccountRegisterDTO request) throws KoiException{
+    public Account createAccountByRequest(@Valid AccountRegisterDto request) throws KoiException{
         Account account = new Account();
 
         if (accountRepository.existsByEmail(request.getEmail())) {
@@ -104,7 +101,7 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public AuthenticateResponse login(AccountLoginDTO request) throws KoiException {
+    public AuthenticateResponse login(AccountLoginDto request) throws KoiException {
         AuthenticateResponse authenticateResponse;
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
@@ -131,20 +128,6 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public AuthenticateResponse loginGoogle(GoogleTokenRequestDto googleTokenDto) {
-//        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
-//                .setAudience(Collections.singleton(clientId))
-//                .build();
-//        GoogleIdToken idTokenObj;
-//        try{
-//            idTokenObj = verifier.verify(idToken);
-//        }catch (Exception e){
-//            throw new KoiException(ResponseCode.INVALID_TOKEN);
-//        }
-//        if(idTokenObj == null)
-//            throw  new KoiException(ResponseCode.INVALID_TOKEN);
-
-//        GoogleIdToken.Payload payload = idTokenObj.getPayload();
-//        String email = payload.getEmail();
         String token = googleTokenDto.getToken();
         DecodedJWT decodedJWT = jwtService.verifyToken(token);
         if(decodedJWT == null)
@@ -230,7 +213,7 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public void createAccountStaff(AccountRegisterDTO staffDto) {
+    public void createAccountStaff(AccountRegisterDto staffDto) {
         Account account = new Account();
         if(accountRepository.existsByEmail(account.getEmail()))
             throw new KoiException(ResponseCode.EMAIL_ALREADY_EXISTS);
@@ -257,7 +240,7 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public void logout(LogoutDTO logoutDTO) {
+    public void logout(LogoutDto logoutDTO) {
         redisService.saveData(logoutDTO.getAccessToken(),"invalid",(long) 1000*60*60*24);
         redisService.saveData(logoutDTO.getRefreshToken(), "invalid",(long) 1000*60*60*24*15);
     }

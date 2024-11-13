@@ -2,16 +2,12 @@ package swp.koi.convert;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-import swp.koi.dto.response.BidResponseDTO;
-import swp.koi.dto.response.MemberResponseDTO;
-import swp.koi.model.Account;
+import swp.koi.dto.response.BidResponseDto;
+import swp.koi.dto.response.MemberResponseDto;
 import swp.koi.model.Bid;
-import swp.koi.model.Member;
 
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
@@ -20,12 +16,12 @@ public class BidEntityToDtoConverter {
     private final ModelMapper modelMapper;
     private final AccountEntityToDtoConverter accountEntityToDtoConverter;
 
-    public List<BidResponseDTO> convertBidList(List<Bid> bids){
-        List<BidResponseDTO> response = bids
+    public List<BidResponseDto> convertBidList(List<Bid> bids){
+        List<BidResponseDto> response = bids
                 .stream()
                 .map(bid -> {
-                    BidResponseDTO dto = modelMapper.map(bid, BidResponseDTO.class);
-                    MemberResponseDTO memberDto = new MemberResponseDTO();
+                    BidResponseDto dto = modelMapper.map(bid, BidResponseDto.class);
+                    MemberResponseDto memberDto = new MemberResponseDto();
                     memberDto.setAccount(accountEntityToDtoConverter
                             .convertAccount(bid.getMember().getAccount()));
                     dto.setMember(memberDto);

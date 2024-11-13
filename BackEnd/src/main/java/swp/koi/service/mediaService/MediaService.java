@@ -1,13 +1,10 @@
 package swp.koi.service.mediaService;
 
-import swp.koi.dto.request.MediaDTO;
-import swp.koi.dto.request.MediaUpdateDTO;
+import swp.koi.dto.request.MediaDto;
 import swp.koi.model.Media;
 
-import java.util.Optional;
-
 public interface MediaService {
-    Media createMediaFromRequest(MediaDTO mediaDTO);
+    Media createMediaFromRequest(MediaDto mediaDTO);
 
     Media findByMediaId(Integer mediaId);
 

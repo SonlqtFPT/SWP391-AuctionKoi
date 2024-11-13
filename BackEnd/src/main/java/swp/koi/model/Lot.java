@@ -56,7 +56,7 @@ public class Lot {
     @Column(nullable = false)
     LotStatusEnum status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     KoiFish koiFish;
 
     @OneToMany(mappedBy = "lot", fetch = FetchType.LAZY)
@@ -77,7 +77,7 @@ public class Lot {
     @OneToMany(mappedBy = "lot", fetch = FetchType.LAZY)
     List<Transaction> transactions;
 
-    @OneToOne(mappedBy = "lot")
+    @OneToOne(mappedBy = "lot", fetch = FetchType.LAZY)
     Invoice invoice;
 
     public Lot() {

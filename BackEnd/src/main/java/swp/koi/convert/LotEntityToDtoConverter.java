@@ -3,7 +3,6 @@ package swp.koi.convert;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
-import swp.koi.dto.response.FullLotResponseDTO;
 import swp.koi.dto.response.LotResponseDto;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;

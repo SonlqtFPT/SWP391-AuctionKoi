@@ -3,14 +3,12 @@ package swp.koi.service.auctionService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cglib.core.Local;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import swp.koi.convert.LotEntityToDtoConverter;
-import swp.koi.dto.request.AuctionWithLotsDTO;
-import swp.koi.dto.request.LotDTO;
+import swp.koi.dto.request.AuctionWithLotsDto;
+import swp.koi.dto.request.LotDto;
 import swp.koi.dto.response.*;
 import swp.koi.exception.KoiException;
 import swp.koi.model.*;
@@ -36,12 +34,9 @@ public class AuctionServiceImpl implements AuctionService{
 
     private final AuctionRepository auctionRepository;
     private final LotService lotService;
-    private final AuctionTypeService auctionTypeService;
     private final KoiFishService koiFishService;
     private final ModelMapper modelMapper;
-    private final AuctionRequestService auctionRequestService;
     private final LotEntityToDtoConverter lotEntityToDtoConverter;
-    private final RedisService redisService;
 
     @Override
     @Async
@@ -70,7 +65,7 @@ public class AuctionServiceImpl implements AuctionService{
     }
 
     @Override
-    public AuctionResponseDTO createAuctionWithLots(AuctionWithLotsDTO request) throws KoiException{
+    public AuctionResponseDto createAuctionWithLots(AuctionWithLotsDto request) throws KoiException{
         try{
             Auction auction = new Auction();
 //            AuctionType auctionType = auctionTypeService.findByAuctionTypeName(request.getAuctionTypeName());
@@ -82,7 +77,7 @@ public class AuctionServiceImpl implements AuctionService{
                 throw new KoiException(ResponseCode.NO_LOTS_PROVIDED);
             }
 
-            for(LotDTO lotDTO : request.getLots()){
+            for(LotDto lotDTO : request.getLots()){
                 KoiFish koiFish = koiFishService.findByFishId(lotDTO.getFishId());
 //                    !koiFish.getAuctionType().equals(auctionType)
                 if(koiFish == null || !koiFish.getStatus().equals(KoiFishStatusEnum.WAITING)){
@@ -98,7 +93,7 @@ public class AuctionServiceImpl implements AuctionService{
             Auction savedAuction = auctionRepository.save(auction);
 
             List<Lot> lots = new ArrayList<>();
-            for(LotDTO lotDTO : request.getLots()){
+            for(LotDto lotDTO : request.getLots()){
                 Lot lot = new Lot();
                 KoiFish koiFish = koiFishService.findByFishId(lotDTO.getFishId());
                 koiFish.setStatus(KoiFishStatusEnum.IN_AUCTION);
@@ -120,7 +115,7 @@ public class AuctionServiceImpl implements AuctionService{
             savedAuction.setLots(lots);
 
             List<LotResponseDto> lotResponse = lotEntityToDtoConverter.convertLotList(lots);
-            AuctionResponseDTO auctionResponse = modelMapper.map(savedAuction, AuctionResponseDTO.class);
+            AuctionResponseDto auctionResponse = modelMapper.map(savedAuction, AuctionResponseDto.class);
             auctionResponse.setLots(lotResponse);
             return auctionResponse;
         }catch (KoiException e){

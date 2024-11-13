@@ -29,7 +29,7 @@ public class LotRegister {
     @Column(nullable = false)
     LotRegisterStatusEnum status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberId")
     Member member;
 
@@ -37,7 +37,7 @@ public class LotRegister {
     @JoinColumn(name = "lotId")
     Lot lot;
 
-    @OneToOne(mappedBy = "lotRegister")
+    @OneToOne(mappedBy = "lotRegister", fetch = FetchType.LAZY)
     Invoice invoice;
 
     public LotRegister() {

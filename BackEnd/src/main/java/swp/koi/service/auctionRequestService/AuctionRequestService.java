@@ -7,13 +7,9 @@ import swp.koi.model.AuctionRequest;
 import java.util.List;
 
 public interface AuctionRequestService {
-    AuctionRequest createRequest(AuctionRequestDTO request);
+    AuctionRequest createRequest(AuctionRequestDto request);
 
     List<AuctionRequest> getAllAuctionRequest();
-
-    AuctionRequest findByRequestId(Integer requestId);
-
-    void saveRequest(AuctionRequest auctionRequest);
 
     void assignStaffToRequest(Integer requestId, Integer accountId);
 
@@ -23,11 +19,11 @@ public interface AuctionRequestService {
 
     void breederCancelRequest(Integer requestId);
 
-    AuctionRequest updateRequest(Integer requestId, AuctionRequestUpdateDTO auctionRequest);
+    AuctionRequest updateRequest(Integer requestId, AuctionRequestUpdateDto auctionRequest);
 
-    void changeStatus(Integer requestId, UpdateStatusDTO request);
+    void changeStatus(Integer requestId, UpdateStatusDto request);
 
-    void negotiation(Integer requestId, AuctionRequestNegotiationDTO request) throws KoiException;
+    void negotiation(Integer requestId, AuctionRequestNegotiationDto request) throws KoiException;
 
     void acceptNegotiation(Integer requestId) throws KoiException;
 

@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import swp.koi.dto.request.AutoBidRequestDTO;
+import swp.koi.dto.request.AutoBidRequestDto;
 import swp.koi.dto.request.BidRequestDto;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
@@ -41,9 +41,7 @@ public class BidServiceImpl implements BidService {
     private final EventListenerFactoryImpl socketService;
     private final RedisServiceImpl redisServiceImpl;
     private final GetUserInfoByUsingAuth getUserInfoByUsingAuth;
-    private final EmailService emailService;
     private final MemberRepository memberRepository;
-    private final RedisService redisService;
 
     @Transactional
     @Override
@@ -154,7 +152,7 @@ public class BidServiceImpl implements BidService {
      * @throws KoiException if any errors occur during the activation
      */
     @Override
-    public void activeAutoBid(AutoBidRequestDTO autoBidRequestDTO) throws KoiException {
+    public void activeAutoBid(AutoBidRequestDto autoBidRequestDTO) throws KoiException {
 
         Lot lot = lotRepository.findById(autoBidRequestDTO.getLotId())
                 .orElseThrow(() -> new KoiException(ResponseCode.LOT_NOT_FOUND));
@@ -429,7 +427,7 @@ public class BidServiceImpl implements BidService {
      * @param member            the member placing the auto-bid
      * @param incrementPrice    the increment price for the auto-bid
      */
-    private void handleNoExistingAutoBid(AutoBidRequestDTO autoBidRequestDTO,
+    private void handleNoExistingAutoBid(AutoBidRequestDto autoBidRequestDTO,
                                          Lot lot, Member member,
                                          float incrementPrice) {
         float currentPrice = lot.getCurrentPrice();
@@ -455,7 +453,7 @@ public class BidServiceImpl implements BidService {
      * @param incrementPrice    the increment price for the auto-bid
      * @throws KoiException if the bid is outbid by the auto-bid
      */
-    private void handleExistingAutoBid(AutoBidRequestDTO autoBidRequestDTO,
+    private void handleExistingAutoBid(AutoBidRequestDto autoBidRequestDTO,
                                        Lot lot, Member member,
                                        AutoBid existingAutoBid,
                                        float incrementPrice) {

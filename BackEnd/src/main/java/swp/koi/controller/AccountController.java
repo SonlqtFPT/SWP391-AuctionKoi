@@ -6,9 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import swp.koi.convert.AccountEntityToDtoConverter;
 import swp.koi.dto.request.*;
-import swp.koi.dto.response.AccountFullResponseDto;
 import swp.koi.dto.response.AuthenticateResponse;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.dto.response.ResponseData;
@@ -19,7 +17,6 @@ import swp.koi.service.koiBreederService.KoiBreederService;
 import javax.security.auth.login.AccountNotFoundException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/authenticate")
@@ -33,7 +30,7 @@ public class AccountController {
 
     @Operation(summary = "Login to system")
     @PostMapping("/login")
-    public ResponseData<?> login(@Valid @RequestBody AccountLoginDTO request) {
+    public ResponseData<?> login(@Valid @RequestBody AccountLoginDto request) {
         try {
             var tokenResponse = accountService.login(request);
 
@@ -55,7 +52,7 @@ public class AccountController {
 
     @Operation(summary = "Sign up for an account")
     @PostMapping("/signup")
-    public ResponseData<String> signup(@Valid @RequestBody AccountRegisterDTO request) {
+    public ResponseData<String> signup(@Valid @RequestBody AccountRegisterDto request) {
 
         try {
             accountService.createAccountByRequest(request);
@@ -84,7 +81,7 @@ public class AccountController {
 
     @Operation(summary = "Logout")
     @PostMapping("/logout")
-    public ResponseData<?> logout(@Valid @RequestBody LogoutDTO logoutDTO) {
+    public ResponseData<?> logout(@Valid @RequestBody LogoutDto logoutDTO) {
 
         accountService.logout(logoutDTO);
 

@@ -27,13 +27,13 @@ public class AuctionType {
     @Column(nullable = false)
     AuctionTypeNameEnum auctionTypeName;
 
-    @OneToMany(mappedBy = "auctionType")
+    @OneToMany(mappedBy = "auctionType", fetch = FetchType.LAZY)
     List<Lot> lots;
 
-    @OneToMany(mappedBy = "auctionType")
+    @OneToMany(mappedBy = "auctionType", fetch = FetchType.LAZY)
     List<KoiFish> koiFishes;
 
-    @OneToMany(mappedBy = "auctionType")
+    @OneToMany(mappedBy = "auctionType", fetch = FetchType.LAZY)
     List<AuctionRequest> auctionRequest;
 
     public AuctionType() {
