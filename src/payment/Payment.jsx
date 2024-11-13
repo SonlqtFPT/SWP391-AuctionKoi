@@ -195,7 +195,7 @@ const Payment = () => {
                     : "Not available"}
                 </p>
                 <p>
-                  <span className="font-semibold">Platform fee:</span>{" "}
+                  <span className="font-semibold">Platform fee {"(10%)"}:</span>{" "}
                   {formatPrice(invoice.tax)}
                 </p>
                 <p>
@@ -272,7 +272,7 @@ const Payment = () => {
                     />
                   </div>
                   <div className="flex flex-col mb-4">
-                    <label className="font-semibold">Distance:</label>
+                    <label className="font-semibold">Distance (km):</label>
                     <Input
                       value={distance.toFixed(2)}
                       placeholder="Distance in km"

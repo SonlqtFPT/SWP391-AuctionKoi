@@ -33,6 +33,7 @@ function Bid() {
   const [followed, setFollowed] = useState(false);
   const [win, setWin] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
+  const [winnerAccountId, setWinnerAccountId] = useState(null);
 
   // Memoize socket connection using useRef to ensure it's stable across renders
   const socketRef = useRef(null);
@@ -89,6 +90,8 @@ function Bid() {
       });
       console.log("Api lot: ", response.data.data);
       setLot(response.data.data);
+      console.log(response.data.data.currentMemberId);
+      setWinnerAccountId(response.data.data.currentMemberId);
     } catch (error) {
       console.error("Error fetching lot data at bid.jsx:", error);
     }
@@ -105,13 +108,15 @@ function Bid() {
       const listData = response.data.data.map((bid) => ({
         bidAmount: bid.bidAmount,
         firstName: bid.member.account.firstName,
-        accountId: bid.member.account.accountId, // Lưu accountId
+        accountId: bid.member.account.accountId,
+        memberId: bid.member.memberId,
       }));
       listData.sort((a, b) => b.bidAmount - a.bidAmount);
       setBidList(listData);
       if (listData.length > 0) {
         setHighestBidderAccountId(listData[0].accountId); // Lưu accountId của người có bidAmount cao nhất
       }
+      console.log(listData);
       console.log("AccountId: ", currentAccountId);
     } catch (error) {
       console.error("Error fetching bid data at bid.jsx:", error);
@@ -300,7 +305,12 @@ function Bid() {
             </div>
             <div className="mt-4 lg:mt-[20px]">
               {lot && (
-                <TopBid list={bidList} auctionTypeName={lot.auctionTypeName} />
+                <TopBid
+                  list={bidList}
+                  auctionTypeName={lot.auctionTypeName}
+                  hasEnded={hasEnded}
+                  winnerAccountId={winnerAccountId}
+                />
               )}
             </div>
           </div>

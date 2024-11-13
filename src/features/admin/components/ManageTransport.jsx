@@ -28,8 +28,6 @@ const ManageTransport = () => {
   const [assigningStaff, setAssigningStaff] = useState(false); // For modal loading
   const [selectedStaffId, setSelectedStaffId] = useState(null); // State for selected staff ID
 
-  // Fetch invoices from the new API endpoint
-  // Fetch invoices from the new API endpoint
   const fetchInvoices = async () => {
     setLoading(true);
     try {

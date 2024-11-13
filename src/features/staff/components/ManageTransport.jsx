@@ -10,7 +10,13 @@ import {
   Modal,
 } from "antd";
 import { toast } from "react-toastify";
-import { FaFish, FaIdCard, FaFlag, FaClock } from "react-icons/fa";
+import {
+  FaFish,
+  FaIdCard,
+  FaFlag,
+  FaClock,
+  FaMapMarkerAlt,
+} from "react-icons/fa";
 import api from "../../../config/axios";
 
 const { Search } = Input;
@@ -48,6 +54,7 @@ const ManageTransport = () => {
         age: item.koiFish.age,
         size: item.koiFish.size,
         varietyName: item.koiFish.varietyName,
+        address: item.address,
       }));
       setInvoices(formattedInvoices);
       setFilteredInvoices(formattedInvoices); // Set filtered invoices initially
@@ -168,6 +175,15 @@ const ManageTransport = () => {
       render: (text) => formatDate(text),
       sorter: (a, b) => new Date(a.invoiceDate) - new Date(b.invoiceDate),
       sortDirections: ["ascend", "descend"],
+    },
+    {
+      title: (
+        <span className="flex items-center">
+          <FaMapMarkerAlt className="mr-2" /> Address
+        </span>
+      ),
+      dataIndex: "address",
+      key: "address",
     },
     {
       title: (

@@ -67,15 +67,18 @@ function Information({
           {varietyName + " #" + fishId + " - " + formatStatus(auctionTypeName)}
         </h1>
         <div
-          className={
-            (win && hasEnded) || registed
-              ? "bg-green-500 px-4 py-2 rounded-3xl flex justify-center items-center text-ellipsis overflow-hidden whitespace-nowrap" // Green for win and has ended
-              : !registed
-              ? "bg-gray-700 px-4 py-2 rounded-3xl flex justify-center items-center text-ellipsis overflow-hidden whitespace-nowrap" // Gray if not registered
-              : !win && hasEnded
-              ? "bg-[#C0392B] px-4 py-2 rounded-3xl flex justify-center items-center text-ellipsis overflow-hidden whitespace-nowrap" // Red if lost
-              : ""
-          }
+          className={(() => {
+            if (win && hasEnded) {
+              return "bg-green-500 px-4 py-2 rounded-3xl flex justify-center items-center text-ellipsis overflow-hidden whitespace-nowrap"; // Green for win and has ended
+            }
+            if (!win && hasEnded) {
+              return "bg-[#C0392B] px-4 py-2 rounded-3xl flex justify-center items-center text-ellipsis overflow-hidden whitespace-nowrap"; // Red if lost
+            }
+            if (registed) {
+              return "bg-green-500 px-4 py-2 rounded-3xl flex justify-center items-center text-ellipsis overflow-hidden whitespace-nowrap"; // Gray if not registered
+            }
+            return "bg-gray-700 px-4 py-2 rounded-3xl flex justify-center items-center text-ellipsis overflow-hidden whitespace-nowrap"; // Default case
+          })()}
         >
           <h1 className="font-bold text-white">{checkRegisted}</h1>
         </div>

@@ -92,6 +92,11 @@ function EnterPrice({
       return;
     }
 
+    if (auctionTypeName === "SEALED_BID" && hasBid) {
+      toast.warn("You can only bid once for sealed bid.");
+      return;
+    }
+
     try {
       const token = localStorage.getItem("accessToken");
       const response = await api.post(
@@ -233,7 +238,7 @@ function EnterPrice({
         {registed &&
           remainingTime > 0 &&
           currentPrice < maxBid &&
-          auctionTypeName !== "FIXED_PRICE_SALE" && (
+          auctionTypeName === "ASCENDING_BID" && (
             <div className="flex w-full items-center gap-2">
               <Button
                 className="bg-red-500 text-black rounded-full"
@@ -268,12 +273,11 @@ function EnterPrice({
         )}
         {registed && remainingTime > 0 && currentPrice < maxBid && (
           <div className="w-full lg:w-36">
-            {hasBid && auctionTypeName === "FIXED_PRICE_SALE" ? (
-              <div className="flex w-full justify-between">
-                <div className="text-red-500 font-bold">
-                  You have already bid! Please wait for bidding result.
-                </div>
-                <div className="flex-1" /> {/* Spacer to balance the layout */}
+            {hasBid &&
+            (auctionTypeName === "FIXED_PRICE_SALE" ||
+              auctionTypeName === "SEALED_BID") ? (
+              <div className="text-red-500 font-bold w-full ">
+                You have already bid! Please wait for bidding result.
               </div>
             ) : (
               <button
@@ -307,7 +311,7 @@ function EnterPrice({
           )}
 
         {/* Increment section will be hidden if auction type is FIXED_PRICE_SALE */}
-        {auctionTypeName !== "FIXED_PRICE_SALE" && (
+        {auctionTypeName === "ASCENDING_BID" && (
           <div className="bg-slate-500 h-[40px] rounded-full flex items-center justify-between pl-5 pr-8 w-full py-6 text-black">
             <h1 className="text-xl font-bold">Increment</h1>
             <h1 className="text-xl font-bold">{formatPrice(increment)}</h1>
