@@ -82,8 +82,7 @@ public class LotServiceImpl implements LotService {
 
         updateAuctionStatus(auction, AuctionStatusEnum.AUCTIONING);
         lot.setStatus(LotStatusEnum.AUCTIONING);
-        //setup a socket event for real-time communicate
-        createSocketForLot(socketServer, lot);
+
         lotRepository.save(lot);
     }
 
@@ -242,7 +241,7 @@ public class LotServiceImpl implements LotService {
     }
 
     private void createSocketForLot(SocketIOServer socketIOServer, Lot lot) {
-        eventListenerFactory.createDataListener(socketIOServer,lot.getLotId().toString());
+//        eventListenerFactory.createDataListener(socketIOServer,lot.getLotId().toString());
     }
 
     @Async

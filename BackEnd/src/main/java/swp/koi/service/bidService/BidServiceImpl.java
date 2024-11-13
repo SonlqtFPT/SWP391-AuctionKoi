@@ -1,5 +1,6 @@
 package swp.koi.service.bidService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -44,6 +45,7 @@ public class BidServiceImpl implements BidService {
     private final MemberRepository memberRepository;
     private final RedisService redisService;
 
+    @Transactional
     @Override
     public void bid(BidRequestDto bidRequestDto) throws KoiException {
         // Retrieve the Member and Lot based on the DTO
@@ -62,7 +64,6 @@ public class BidServiceImpl implements BidService {
 
         
         // Create a Bid entity and update the Lot with the new bid
-
         Bid bid = createBid(bidRequestDto, member, lot);
         bidRepository.save(bid);
 
@@ -195,21 +196,23 @@ public class BidServiceImpl implements BidService {
         }
 
         if (LocalDateTime.now().isAfter(lot.getEndingTime()) || LocalDateTime.now().isBefore(lot.getStartingTime())) {
-            System.out.println(LocalDateTime.now());
-            System.out.println(lot.getEndingTime());
             throw new KoiException(ResponseCode.BID_TIME_PASSED);
+        }
+
+        if(bidRequestDto.getPrice() <= 0){
+            throw new KoiException(ResponseCode.INVALID_BIDDING_AMOUNT);
         }
 
         AuctionType auctionType = lot.getAuctionType();
 
-        List<Bid> bidList = bidRepository.getBidByLot(lot).orElse(null);
-        if(bidList == null || bidList.isEmpty() && bidRequestDto.getPrice() == lot.getStartingPrice()) {
-            return;
-        }
-
         switch (auctionType.getAuctionTypeName()) {
             case ASCENDING_BID: {
-                //jump price 10% of current price
+
+                List<Bid> bidList = bidRepository.getBidByLot(lot).orElse(null);
+                if(bidList == null || bidList.isEmpty() && bidRequestDto.getPrice() == lot.getStartingPrice()) {
+                    return;
+                }
+
                 if (bidRequestDto.getPrice() < lot.getCurrentPrice() + lot.getStartingPrice() * 0.1)
                     throw new KoiException((ResponseCode.BID_PRICE_TOO_LOW));
                 return;
@@ -217,7 +220,7 @@ public class BidServiceImpl implements BidService {
             case SEALED_BID: {
                 if (validateIfUserAlreadyBidded(member, lot)) {
                     throw new KoiException(ResponseCode.BID_SEALED_ALREADY);
-                } else if(bidRequestDto.getPrice() != lot.getStartingPrice()) {
+                } else if(bidRequestDto.getPrice() < lot.getStartingPrice()) {
                     throw new KoiException((ResponseCode.BID_PRICE_TOO_LOW));
                 }
                 return;

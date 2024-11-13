@@ -67,7 +67,7 @@ public enum ResponseCode {
     //Auction
     AUCTION_NOT_FOUND(6000, "Auction not found"),
     AUCTION_TIME_INVALID(6002, "Auction time invalid"),
-
+    INVALID_BIDDING_AMOUNT(6003, "Invalid bidding amount"),
     //Lot
     NO_LOTS_PROVIDED(6500, "There are not any lots in auction"),
 

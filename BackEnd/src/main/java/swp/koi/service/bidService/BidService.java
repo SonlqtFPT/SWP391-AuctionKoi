@@ -11,13 +11,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BidService {
+
     void bid(BidRequestDto bidRequestDto);
 
     List<Bid> listBidByLotId(int lotId);
 
     void activeAutoBid(AutoBidRequestDTO autoBidRequestDTO) throws KoiException;
-
-
 
     boolean isUserBidded(int lotId);
 

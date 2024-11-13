@@ -14,11 +14,11 @@ public class testSocket {
 
     @GetMapping("/create")
     public void createSocketIo(@RequestParam String port) {
-        eventListenerFactory.createDataListener(socketIOServer, port);
+//        eventListenerFactory.createDataListener(socketIOServer, port);
     }
 
     @PostMapping("/send-data")
     public void sendData(@RequestBody SocketDetail socketDetail, String event){
-        eventListenerFactory.sendDataToClient(socketDetail,event);
+        eventListenerFactory.sendDataToClient(socketDetail, event);
     }
 }
