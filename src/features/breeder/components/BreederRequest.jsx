@@ -209,6 +209,10 @@ const BreederRequest = () => {
         return "default";
     }
   };
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString();
+  };
 
   return (
     <div>
@@ -329,6 +333,7 @@ const BreederRequest = () => {
                     key: "requestedAt",
                     sorter: (a, b) =>
                       new Date(a.requestedAt) - new Date(b.requestedAt),
+                    render: (date) => <span>{formatDate(date)}</span>, // Apply formatDate here
                     className:
                       "text-gray-400 text-left px-4 py-2 font-semibold",
                   },
