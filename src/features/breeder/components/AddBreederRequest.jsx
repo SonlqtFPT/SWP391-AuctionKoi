@@ -141,7 +141,7 @@ const AddBreederRequest = () => {
         <div className="flex items-center justify-center space-x-4">
           <span>
             <img
-              src="\src\assets\Divider\diamondLeft.png"
+              src="https://github.com/SonlqtFPT/SWP391-AuctionKoi/blob/phureal/src/assets/Divider/diamondLeft.png?raw=true"
               alt="Left Divider"
               className="w-auto transform scale-x-[-1]"
             />
@@ -151,7 +151,7 @@ const AddBreederRequest = () => {
           </h1>
           <span>
             <img
-              src="\src\assets\Divider\diamondRight.png"
+              src="https://github.com/SonlqtFPT/SWP391-AuctionKoi/blob/phureal/src/assets/Divider/diamondRight.png?raw=true"
               alt="Right Divider"
               className="w-auto"
             />
