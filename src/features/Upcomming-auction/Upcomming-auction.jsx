@@ -44,7 +44,7 @@ function Upcomming() {
   return (
     <div className="bg-black flex flex-col min-h-screen">
       <Header />
-      <h1 className="text-[#bcab6f] mt-[30px] ml-10 text-3xl font-bold">
+      <h1 className="text-[#bcab6f] mt-[100px] ml-10 text-3xl font-bold">
         Upcoming Auction
       </h1>
       <div className="flex flex-grow justify-center items-center">
