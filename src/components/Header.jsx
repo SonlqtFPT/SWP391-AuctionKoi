@@ -196,7 +196,6 @@ const Header = () => {
                     to={getAccountLink()} // Dynamically generated link based on role
                     className="block px-4 py-2 text-white hover:bg-red-500 w-full text-center hover:rounded-lg"
                   >
-                    <FaUserCircle className="inline-block mr-2" />
                     Account
                   </Link>
                   {role === "MEMBER" && (
@@ -204,7 +203,6 @@ const Header = () => {
                       to="/invoice-list"
                       className="hover:bg-red-500 flex items-center justify-center space-x-2 rounded-full px-4 py-2 hover:text-black"
                     >
-                      <FaFileInvoice className="inline-block mr-2" />
                       Invoices
                     </Link>
                   )}
@@ -213,7 +211,6 @@ const Header = () => {
                     onClick={handleLogout}
                     disabled={loading}
                   >
-                    <FaSignInAlt className="inline-block mr-2" />
                     {loading ? "Loading..." : "Log Out"}
                   </button>
                 </div>

@@ -243,7 +243,7 @@ function EnterPrice({
               <Button
                 className="bg-red-500 text-black rounded-full"
                 onClick={decreaseBid}
-                disabled={hasBid || auctionTypeName === "SEALED_BID"}
+                disabled={hasBid && auctionTypeName === "SEALED_BID"}
               >
                 -
               </Button>
@@ -255,12 +255,12 @@ function EnterPrice({
                   const newBid = e.target.value.replace(/\./g, "");
                   setBidPrice(Math.min(Number(newBid), maxBid).toString());
                 }}
-                disabled={hasBid || auctionTypeName === "SEALED_BID"}
+                disabled={hasBid && auctionTypeName === "SEALED_BID"}
               />
               <Button
                 className="bg-green-400 text-white rounded-full"
                 onClick={increaseBid}
-                disabled={hasBid || auctionTypeName === "SEALED_BID"}
+                disabled={hasBid && auctionTypeName === "SEALED_BID"}
               >
                 +
               </Button>
