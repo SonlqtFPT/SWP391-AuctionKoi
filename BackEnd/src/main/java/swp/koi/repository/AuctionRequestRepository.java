@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface AuctionRequestRepository extends JpaRepository<AuctionRequest, Integer> {
-    @Query("SELECT ar FROM AuctionRequest ar WHERE ar.status = :status")
-    List<AuctionRequest> findAllFishByStatus(@Param("status") AuctionRequestStatusEnum status);
+public interface AuctionRequestRepository extends JpaRepository<AuctionRequest, Integer>{
+
+    List<AuctionRequest> findAllByStatus(AuctionRequestStatusEnum status);
 
     Optional<AuctionRequest> findByRequestId(Integer requestId);
 
@@ -23,4 +23,5 @@ public interface AuctionRequestRepository extends JpaRepository<AuctionRequest, 
 
     @Query("SELECT ar FROM AuctionRequest ar WHERE ar.koiBreeder.id = :breederId")
     List<AuctionRequest> findAllByBreederId(Integer breederId);
+
 }

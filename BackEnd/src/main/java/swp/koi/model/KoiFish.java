@@ -38,21 +38,24 @@ public class KoiFish {
     @Column(nullable = false)
     KoiFishStatusEnum status;
 
-    @OneToOne(mappedBy = "koiFish", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "koiFish", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     AuctionRequest auctionRequest;
 
-    @OneToOne()
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mediaId")
     Media media;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "varietyId", nullable = false)
     Variety variety;
 
-    @OneToMany(mappedBy = "koiFish")
+    @OneToMany(mappedBy = "koiFish",fetch = FetchType.LAZY)
     List<Lot> lot;
 
-    @ManyToOne
+    @OneToMany(mappedBy = "koiFish", fetch = FetchType.LAZY)
+    List<Invoice> invoices;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auctionTypeId")
     AuctionType auctionType;
 

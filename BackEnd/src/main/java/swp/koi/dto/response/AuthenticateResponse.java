@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuthenticateResponse {
 
-    AccountResponseDTO account;
+    AccountResponseDto account;
     private String accessToken;
     private String refreshToken;
 

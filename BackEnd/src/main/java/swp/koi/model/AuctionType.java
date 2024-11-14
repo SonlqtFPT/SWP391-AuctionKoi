@@ -27,13 +27,13 @@ public class AuctionType {
     @Column(nullable = false)
     AuctionTypeNameEnum auctionTypeName;
 
-    @OneToMany(mappedBy = "auctionType")
-    List<Auction> auctions;
+    @OneToMany(mappedBy = "auctionType", fetch = FetchType.LAZY)
+    List<Lot> lots;
 
-    @OneToMany(mappedBy = "auctionType")
+    @OneToMany(mappedBy = "auctionType", fetch = FetchType.LAZY)
     List<KoiFish> koiFishes;
 
-    @OneToMany(mappedBy = "auctionType")
+    @OneToMany(mappedBy = "auctionType", fetch = FetchType.LAZY)
     List<AuctionRequest> auctionRequest;
 
     public AuctionType() {
@@ -41,6 +41,5 @@ public class AuctionType {
 
     public AuctionType(AuctionTypeNameEnum auctionTypeName, List<Auction> auctions){
         this.auctionTypeName = auctionTypeName;
-        this.auctions = auctions;
     }
 }

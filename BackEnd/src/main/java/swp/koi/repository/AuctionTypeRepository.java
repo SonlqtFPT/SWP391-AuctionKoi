@@ -3,7 +3,6 @@ package swp.koi.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import swp.koi.dto.request.AuctionTypeDTO;
 import swp.koi.model.AuctionType;
 import swp.koi.model.enums.AuctionTypeNameEnum;
 

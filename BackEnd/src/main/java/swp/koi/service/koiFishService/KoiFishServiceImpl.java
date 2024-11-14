@@ -3,7 +3,6 @@ package swp.koi.service.koiFishService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.stereotype.Service;
 import swp.koi.convert.KoiFishEntityToDtoConverter;
 import swp.koi.dto.request.*;
@@ -19,7 +18,6 @@ import swp.koi.service.mediaService.MediaService;
 import swp.koi.service.varietyService.VarietyService;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,7 +34,7 @@ public class KoiFishServiceImpl implements KoiFishService{
     private final ModelMapper modelMapper;
 
     @Override
-    public KoiFish createKoiFishFromRequest(KoiFishDTO koiRequest, MediaDTO mediaRequest) throws KoiException{
+    public KoiFish createKoiFishFromRequest(KoiFishDto koiRequest, MediaDto mediaRequest) throws KoiException{
             try{
                 KoiFish koiFish = new KoiFish();
 
@@ -73,13 +71,16 @@ public class KoiFishServiceImpl implements KoiFishService{
     }
 
     @Override
-    public List<KoiFish> getKoiFishFromApproveRequest() {
-        List<AuctionRequest> auctionRequestList = auctionRequestRepository.findAllFishByStatus(AuctionRequestStatusEnum.APPROVE);
+    public List<KoiFish> getKoiFishFromRegisteredRequest() {
+        List<AuctionRequest> auctionRequestList = auctionRequestRepository.findAllByStatus(AuctionRequestStatusEnum.REGISTERED);
 
         List<KoiFish> koiFishList = auctionRequestList.stream()
                 .map(AuctionRequest::getKoiFish)
-                .filter(Objects::nonNull)
+                .filter(koiFish -> koiFish.getStatus().equals(KoiFishStatusEnum.WAITING))
                 .collect(Collectors.toList());
+
+        if(koiFishList.isEmpty())
+            throw new KoiException(ResponseCode.FOUND_NOTHING);
 
         return koiFishList;
     }
@@ -90,7 +91,7 @@ public class KoiFishServiceImpl implements KoiFishService{
     }
 
     @Override
-    public List<KoiFish> getKoiFishBasedOnType(AuctionTypeDTO auctionTypeDTO) {
+    public List<KoiFish> getKoiFishBasedOnType(AuctionTypeDto auctionTypeDTO) {
         List<KoiFish> list = koiFishRepository.findAll().stream()
                 .filter(fish -> fish.getAuctionType().getAuctionTypeName().equals(auctionTypeDTO.getAuctionTypeName()) && fish.getStatus().equals(KoiFishStatusEnum.WAITING))
                 .collect(Collectors.toList());

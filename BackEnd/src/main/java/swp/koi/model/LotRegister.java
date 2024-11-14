@@ -29,14 +29,16 @@ public class LotRegister {
     @Column(nullable = false)
     LotRegisterStatusEnum status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberId")
     Member member;
 
-
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lotId")
     Lot lot;
+
+    @OneToOne(mappedBy = "lotRegister", fetch = FetchType.LAZY)
+    Invoice invoice;
 
     public LotRegister() {
     }

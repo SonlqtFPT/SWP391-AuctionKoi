@@ -30,7 +30,7 @@ public class SocketIOConfig {
     private final UserDetailsService userDetailsService;
 
     // I have set the configuration values in application.yaml file
-    @Value("localhost")
+    @Value("0.0.0.0")
     private String socketHost;
 
     @Value("8081")
@@ -57,17 +57,17 @@ public class SocketIOConfig {
         config.setHostname(socketHost);
         config.setPort(socketPort);
 
-        config.setAuthorizationListener(auth -> {
-            var token = auth.getHttpHeaders().get("socket-token");
-            if (!token.isEmpty()) {
-                var username = jwtService.extractUsername(token, TokenType.ACCESS_TOKEN);
-                var account = userDetailsService.loadUserByUsername(username);
-                jwtService.validateToken(token, account, TokenType.ACCESS_TOKEN);
-                return new AuthorizationResult(true);
-            }
-
-            return new AuthorizationResult(false);
-        });
+//        config.setAuthorizationListener(auth -> {
+//            var token = auth.getHttpHeaders().get("socket-token");
+//            if (!token.isEmpty()) {
+//                var username = jwtService.extractUsername(token, TokenType.ACCESS_TOKEN);
+//                var account = userDetailsService.loadUserByUsername(username);
+//                jwtService.validateToken(token, account, TokenType.ACCESS_TOKEN);
+//                return new AuthorizationResult(true);
+//            }
+//
+//            return new AuthorizationResult(true);
+//        });
 
         server = new SocketIOServer(config);
         server.start();

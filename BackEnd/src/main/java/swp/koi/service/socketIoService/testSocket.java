@@ -2,10 +2,7 @@ package swp.koi.service.socketIoService;
 
 import com.corundumstudio.socketio.SocketIOServer;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,6 +14,11 @@ public class testSocket {
 
     @GetMapping("/create")
     public void createSocketIo(@RequestParam String port) {
-        eventListenerFactory.createDataListener(socketIOServer,port);
+//        eventListenerFactory.createDataListener(socketIOServer, port);
+    }
+
+    @PostMapping("/send-data")
+    public void sendData(@RequestBody SocketDetail socketDetail, String event){
+        eventListenerFactory.sendDataToClient(socketDetail, event);
     }
 }

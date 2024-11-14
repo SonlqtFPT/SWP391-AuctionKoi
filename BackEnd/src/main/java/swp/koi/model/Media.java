@@ -23,7 +23,7 @@ public class Media {
     @Column(nullable = false)
     String videoUrl;
 
-    @OneToOne(mappedBy = "media", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "media", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     KoiFish koiFish;
 
     public Media() {

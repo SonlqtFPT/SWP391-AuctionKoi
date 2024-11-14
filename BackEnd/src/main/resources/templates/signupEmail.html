@@ -4,66 +4,106 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
-        .container {
-            background-color: #ffffff;
-            border: 1px solid #dddddd;
-            border-radius: 5px;
-            padding: 30px;
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
             max-width: 600px;
-            width: 100%; /* Đảm bảo chiều rộng là 100% */
-            margin: auto;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            background-color: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
-        h2 { color: #333333; margin-bottom: 10px; }
-        p { color: #555555; line-height: 1.6; }
-        ul { list-style-type: none; padding: 0; }
-        li { margin: 5px 0; }
-        a { color: #007BFF; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        .footer {
-            margin-top: 20px;
+        .email-header {
+            background-color: #FFD700;
+            padding: 25px;
+            text-align: center;
+            color: #000;
+            font-size: 26px;
+            font-weight: bold;
+            border-bottom: 4px solid #e5be00;
+        }
+        .email-body {
+            background-image: url('https://firebasestorage.googleapis.com/v0/b/website-4922d.appspot.com/o/resetPassword2.jpg?alt=media&token=50f0ec0e-41a9-4757-ac70-894e6d2360d3');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            padding: 40px 20px;
+            color: #fff;
+            text-align: left;
+        }
+        .email-body-content {
+            position: relative;
+        }
+        h2 {
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #fff;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 5px 0;
+        }
+        a {
+            color: #FFD700;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .email-footer {
+            background-color: #222;
+            color: #888;
+            padding: 15px;
+            text-align: center;
             font-size: 12px;
-            color: #888888;
-            border-top: 1px solid #dddddd;
-            padding-top: 10px;
+            border-top: 4px solid #FFD700;
         }
-        .highlight {
-            background-color: #e7f3fe;
-            padding: 10px;
-            border-left: 4px solid #007BFF;
+        .footer p {
+            margin: 5px 0;
         }
-        .social-links { margin-top: 10px; }
-        .social-links a { margin-right: 15px; }
-        .footer p { margin: 5px 0; }
-        .footer .contact-info { margin-top: 10px; }
+        .footer .contact-info {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <h2>Welcome to Koi Auction!</h2>
-    <h2>Hello, <span th:text="${firstName}">User</span>!</h2>
-    <p>Thank you for signing up for Koi Auction! We are excited to have you on board.</p>
-    <p>Your account information is as follows:</p>
-    <ul>
-        <li><strong>Email:</strong> <span th:text="${email}">email@example.com</span></li>
-        <li><strong>Password:</strong> <span th:text="${password}">password</span></li>
-    </ul>
-    <div class="highlight">
-        <p>Please use the above password to log in to your account. We highly recommend that you change your password immediately after your first login to ensure the security of your account.</p>
+<div class="email-container">
+    <div class="email-header">
+        PrestigeKoi Auction
     </div>
-    <p>If you have any questions, please do not hesitate to <a href="mailto:support@koi.com">contact our support team</a>.</p>
-    <p>Best regards,<br>The Koi Auction Team</p>
-    <div class="footer">
-        <p>This email was sent to you because you signed up for Koi Auction. If you did not sign up, please ignore this email.</p>
-        <div class="contact-info">
-            <p>Contact us: <a href="mailto:support@koi.com">support@koi.com</a> | Phone: (123) 456-7890</p>
+    <div class="email-body">
+        <div class="email-body-content">
+            <h1>Welcome to PrestigeKoi Auction</h1>
+            <h2>Hello, <span th:text="${firstName}">User</span>!</h2>
+            <p>Thank you for signing up for Koi Auction! We are excited to have you on board.</p>
+            <p>Your account information is as follows:</p>
+            <ul>
+                <li><strong>Email:</strong> <span th:text="${email}">email@example.com</span></li>
+                <li><strong>Password:</strong> <span th:text="${password}">password</span></li>
+            </ul>
+            <div class="highlight">
+                <p>Please use the above password to log in to your account. We highly recommend that you change your password immediately after your first login to ensure the security of your account.</p>
+            </div>
+            <p>If you have any questions, please do not hesitate to <a href="mailto:sennkii4@gmail.com">contact our support team</a>.</p>
+            <p>Thank you for choosing PrestigeKoi Auction!</p>
+            <p>Best regards,<br>The PrestigeKoi Auction Team</p>
         </div>
-        <div class="social-links">
-            <a href="https://www.facebook.com/koiauction" target="_blank">Facebook</a>
-            <a href="https://twitter.com/koiauction" target="_blank">Twitter</a>
-            <a href="https://www.instagram.com/koiauction" target="_blank">Instagram</a>
-        </div>
+    </div>
+    <div class="email-footer">
+        © 2024 PrestigeKoi Auction. All rights reserved. <br>
+        <a href="https://prestigekoiauction.netlify.app/">Visit our website</a>
     </div>
 </div>
 </body>

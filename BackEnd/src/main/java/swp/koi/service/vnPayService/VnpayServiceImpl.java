@@ -7,6 +7,7 @@ import swp.koi.config.VnpayConfig;
 import swp.koi.dto.response.ResponseCode;
 import swp.koi.exception.KoiException;
 import swp.koi.model.*;
+import swp.koi.model.enums.AuctionRequestStatusEnum;
 import swp.koi.model.enums.InvoiceStatusEnums;
 import swp.koi.model.enums.LotRegisterStatusEnum;
 import swp.koi.model.enums.TransactionTypeEnum;
@@ -30,6 +31,7 @@ public class VnpayServiceImpl implements VnpayService {
     private final TransactionServiceImpl transactionService;
     private final TransactionRepository transactionRepository;
     private final InvoiceRepository invoiceRepository;
+    private final AuctionRequestRepository auctionRequestRepository;
 
     //generate invoice that's it!!!
     @Override
@@ -37,6 +39,8 @@ public class VnpayServiceImpl implements VnpayService {
 
         Lot lot = lotRepository.findById(registerLot)
                 .orElseThrow(() -> new NoSuchElementException("Lot with such id not found"));
+
+        Invoice invoice = invoiceRepository.findByLot(lot);
 
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
@@ -46,7 +50,7 @@ public class VnpayServiceImpl implements VnpayService {
         if(transactionTypeEnum.equals(TransactionTypeEnum.DEPOSIT)){
             amount = (long) lot.getDeposit()*100;
         } else {
-            amount = (long) lot.getCurrentPrice()*100;
+            amount = (long) invoice.getFinalAmount()*100;
         }
 
         String bankCode = "NCB";
@@ -79,7 +83,7 @@ public class VnpayServiceImpl implements VnpayService {
         String vnp_CreateDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
-        cld.add(Calendar.MINUTE, 30);
+        cld.add(Calendar.DATE, 7);
         String vnp_ExpireDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
@@ -173,7 +177,7 @@ public class VnpayServiceImpl implements VnpayService {
     //if the response is correct then assign member to slot
     // TECH_DEBT!!!!!!!!!!!!
     @Override
-    public void regisMemberToLot(HttpServletRequest request) throws UnsupportedEncodingException {
+    public void handlePayment(HttpServletRequest request) throws UnsupportedEncodingException {
         String orderInfo = request.getParameter("vnp_OrderInfo");
 
         if (orderInfo != null && !orderInfo.isEmpty()) {
@@ -216,15 +220,28 @@ public class VnpayServiceImpl implements VnpayService {
                         .build();
 
                 lotRegisterRepository.save(lotRegister);
-                Transaction transaction = transactionService.createTransactionForLotDeposit(lot.getLotId(), member.getMemberId());
+                transactionService.createTransactionForLotDeposit(lot.getLotId(), member.getMemberId());
             } else {
-                Transaction transaction = transactionService.createTransactionForInvoicePayment(lot.getLotId(), member.getMemberId());
                 Invoice invoice = invoiceRepository.findByLot(lot);
+                Transaction transaction = transactionService.createTransactionForInvoicePayment(lot.getLotId() , member.getMemberId());
+
                 invoice.setTransaction(transaction);
                 invoice.setStatus(InvoiceStatusEnums.PAID);
                 invoiceRepository.save(invoice);
+//                processPaymentForBreeder(invoice);
+
+                LotRegister lotRegister = invoice.getLotRegister();
+                lotRegister.setStatus(LotRegisterStatusEnum.PAID);
+                lotRegisterRepository.save(lotRegister);
             }
 
         }
+    }
+
+    private void processPaymentForBreeder(Invoice invoice) {
+        AuctionRequest auctionRequest = invoice.getLot().getKoiFish().getAuctionRequest();
+        auctionRequest.setStatus(AuctionRequestStatusEnum.WAITING_FOR_PAYMENT);
+        auctionRequest.setAuctionFinalPrice(invoice.getLot().getCurrentPrice());
+        auctionRequestRepository.save(auctionRequest);
     }
 }

@@ -40,19 +40,19 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers("/authenticate/**").permitAll()
-//                        .requestMatchers("/api/pay/vn-pay-callback").permitAll()
-//                        .requestMatchers("/auctionRequest/addRequest").hasAuthority("ROLE_BREEDER")
-//                        .requestMatchers("/auctionRequest/getRequest").permitAll()
-//                        .requestMatchers("/register-lot/regis").hasAuthority("ROLE_MEMBER")
-//                        .requestMatchers("/register-lot/list").hasAuthority("ROLE_MANAGER")
-//                        .requestMatchers("/bid/bidAuction").hasAuthority("ROLE_MEMBER")
-//                        .requestMatchers("/bid/list").hasAuthority("ROLE_MANAGER")
-//                        .requestMatchers("/api/v1/createBreeder").hasAuthority("ROLE_MANAGER")
-//                        .requestMatchers("/manager/**").hasAuthority("ROLE_MANAGER")
-                        .anyRequest().authenticated()
+                        .requestMatchers("/authenticate/**","/send/**","/daa.html","/notification/send/**", "/auction/**", "/bid/list").permitAll()
+                        .requestMatchers("/api/pay/vn-pay-callback").hasAuthority("ROLE_MEMBER")
+                        .requestMatchers("/manager/**").hasAuthority("ROLE_MANAGER")
+                        .requestMatchers("/breeder/**").hasAuthority("ROLE_BREEDER")
+                        .requestMatchers("/staff/**").hasAuthority("ROLE_STAFF")
+                        .requestMatchers("/bid/**").hasAuthority("ROLE_MEMBER")
+                        .requestMatchers("/register-lot/regis").hasAuthority("ROLE_MEMBER")
+                        .requestMatchers("/invoice/manager/**").hasAuthority("ROLE_MANAGER")
+                        .requestMatchers("/invoice/staff/**").hasAuthority("ROLE_STAFF")
+                          .anyRequest().authenticated()
                 )
                 .formLogin(Customizer.withDefaults())
+                .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .oauth2Login(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults())
@@ -64,7 +64,7 @@ public class SecurityConfiguration {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer(){
         return websecurity -> websecurity.ignoring()
-                    .requestMatchers("/actuator/**", "/v3/**", "/webjars/**", "/swagger-ui*/*swagger-initializer.js", "/swagger-ui*/**");
+                    .requestMatchers("/actuator/**", "/v3/**", "/webjars/**", "/swagger-ui*/*swagger-initializer.js", "/swagger-ui*/**","/api/pay/vn-pay-callback/**");
     }
 
     @Bean

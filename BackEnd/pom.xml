@@ -44,9 +44,18 @@
 			<version>2.7.0</version>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.google.http-client</groupId>
 			<artifactId>google-http-client-jackson2</artifactId>
 			<version>1.45.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>2.15.2</version> <!-- Use the latest version available -->
 		</dependency>
 
 		<dependency>
@@ -94,6 +103,12 @@
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.nimbusds</groupId>
+			<artifactId>nimbus-jose-jwt</artifactId>
+			<version>9.40</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.modelmapper</groupId>
 			<artifactId>modelmapper</artifactId>
 			<version>2.4.4</version>
@@ -114,6 +129,11 @@
 			<artifactId>jjwt-jackson</artifactId>
 			<version>0.11.5</version>
 		</dependency>
+		<dependency>
+			<groupId>com.auth0</groupId>
+			<artifactId>java-jwt</artifactId>
+			<version>4.4.0</version>
+		</dependency>
 		<!--	===========JWT DEPENDENCY============	-->
 		<dependency>
 			<groupId>javax.annotation</groupId>
@@ -131,6 +151,7 @@
 			<artifactId>spring-security-crypto</artifactId>
 			<version>6.3.3</version>
 		</dependency>
+		<!--	===========REAL-TIME DEPENDENCY============	-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-websocket</artifactId>
@@ -145,11 +166,21 @@
 			<artifactId>socket.io-client</artifactId>
 			<version>2.1.1</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>4.0.0</version> <!-- Use the latest version -->
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>com.corundumstudio.socketio</groupId>
 			<artifactId>netty-socketio</artifactId>
 			<version>2.0.11</version>
 		</dependency>
+		<!--	===========REAL-TIME DEPENDENCY============	-->
+
 		<!--	===========REDIS DEPENDENCY============	-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -158,6 +189,15 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-cache</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>3.10.3</version> <!-- Use the latest version -->
+		</dependency>
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
 		</dependency>
 		<!--	===========REDIS DEPENDENCY============	-->
 
@@ -168,6 +208,121 @@
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
 		<!--	===========MAIL DEPENDENCY============	-->
+
+		<dependency>
+			<groupId>fr.dudie</groupId>
+			<artifactId>nominatim-api</artifactId>
+			<version>3.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.opencagedata</groupId>
+			<artifactId>jopencage</artifactId>
+			<version>2.2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.maps</groupId>
+			<artifactId>google-maps-services</artifactId>
+			<version>2.2.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>1.70</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bitbucket.b_c</groupId>
+			<artifactId>jose4j</artifactId>
+			<version>0.9.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.firebase</groupId>
+			<artifactId>firebase-admin</artifactId>
+			<version>9.2.0</version> <!-- Check for the latest version -->
+		</dependency>
+
+		<!--	===========LOCATION DEPENDENCY============	-->
+		<dependency>
+			<groupId>fr.dudie</groupId>
+			<artifactId>nominatim-api</artifactId>
+			<version>3.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.opencagedata</groupId>
+			<artifactId>jopencage</artifactId>
+			<version>2.2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.maps</groupId>
+			<artifactId>google-maps-services</artifactId>
+			<version>2.2.0</version>
+		</dependency>
+		<!--	===========LOCATION DEPENDENCY============	-->
+
+		<!--	===========PUSH-NOTIFICATION DEPENDENCY============	-->
+		<dependency>
+			<groupId>com.google.firebase</groupId>
+			<artifactId>firebase-admin</artifactId>
+			<version>9.3.0</version> <!-- Check for the latest version -->
+		</dependency>
+
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-netty-shaded</artifactId>
+			<version>1.58.0</version> <!-- Or latest version -->
+		</dependency>
+		<!--	===========PUSH-NOTIFICATION DEPENDENCY============	-->
+
+		<!--	===========EXPORT-PDF DEPENDENCY============	-->
+		<dependency>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>pdfbox</artifactId>
+			<version>2.0.29</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>fontbox</artifactId>
+			<version>2.0.29</version> <!-- Ensure fontbox is included for font operations -->
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>5.2.3</version> <!-- Check for the latest version -->
+		</dependency>
+		<!--	===========EXPORT-PDF DEPENDENCY============	-->
+
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>core</artifactId>
+			<version>3.4.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>javase</artifactId>
+			<version>3.4.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>5.9.2</version> <!-- Use the latest stable version -->
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>5.9.2</version> <!-- Use the latest stable version -->
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-junit-jupiter</artifactId>
+			<version>4.0.0</version> <!-- Use the latest stable version -->
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>

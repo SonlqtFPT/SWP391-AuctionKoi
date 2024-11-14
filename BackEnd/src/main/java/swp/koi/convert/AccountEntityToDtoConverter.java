@@ -3,7 +3,8 @@ package swp.koi.convert;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Configuration;
-import swp.koi.dto.response.AccountResponseDTO;
+import swp.koi.dto.response.AccountFullResponseDto;
+import swp.koi.dto.response.AccountResponseDto;
 import swp.koi.model.Account;
 
 import java.util.List;
@@ -15,15 +16,23 @@ public class AccountEntityToDtoConverter {
 
     private final ModelMapper modelMapper;
 
-    public AccountResponseDTO convertAccount(Account account){
-        AccountResponseDTO response = modelMapper.map(account, AccountResponseDTO.class);
+    public AccountResponseDto convertAccount(Account account){
+        AccountResponseDto response = modelMapper.map(account, AccountResponseDto.class);
         return response;
     }
 
-    public List<AccountResponseDTO> convertAccountList(List<Account> accountList){
-        List<AccountResponseDTO> response = accountList
+    public List<AccountResponseDto> convertAccountList(List<Account> accountList){
+        List<AccountResponseDto> response = accountList
                 .stream()
-                .map(account -> modelMapper.map(account, AccountResponseDTO.class))
+                .map(account -> modelMapper.map(account, AccountResponseDto.class))
+                .collect(Collectors.toList());
+        return response;
+    }
+
+    public List<AccountFullResponseDto> convertAccountFullList(List<Account> accountList){
+        List<AccountFullResponseDto> response = accountList
+                .stream()
+                .map(account -> modelMapper.map(account, AccountFullResponseDto.class))
                 .collect(Collectors.toList());
         return response;
     }

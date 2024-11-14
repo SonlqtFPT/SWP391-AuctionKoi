@@ -11,5 +11,5 @@ public interface VnpayService {
 
     public boolean isResponseValid(HttpServletRequest request) throws UnsupportedEncodingException;
 
-    public void regisMemberToLot(HttpServletRequest request) throws UnsupportedEncodingException;
+    public void handlePayment(HttpServletRequest request) throws UnsupportedEncodingException;
 }
