@@ -140,6 +140,21 @@ const Payment = () => {
     }
   };
 
+  const formatStatus = (status) => {
+    switch (status) {
+      case "PENDING":
+        return "Pending";
+      case "PAID":
+        return "Paid";
+      case "OVERDUE":
+        return "Overdue";
+      case "DELIVERY_IN_PROGRESS":
+        return "Delivering";
+      default:
+        return status.charAt(0) + status.slice(1).toLowerCase();
+    }
+  };
+
   function formatPrice(price) {
     if (price === null || price === undefined) {
       return;
@@ -210,7 +225,7 @@ const Payment = () => {
                 </p>
                 <p>
                   <span className="font-semibold">Status:</span>{" "}
-                  {invoice.status}
+                  {formatStatus(invoice.status)}
                 </p>
                 {invoice.paymentLink && invoice.status !== "PAID" ? (
                   <p>
