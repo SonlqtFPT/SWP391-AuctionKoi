@@ -1,0 +1,34 @@
+.search-container {
+  position: relative; /* Position relative to allow absolute positioning of suggestions */
+  margin-bottom: 10px; /* Add some space if needed */
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.suggestions-dropdown {
+  position: absolute; /* Position absolute to float over the map */
+  top: 100%; /* Position below the input */
+  left: 0;
+  right: 0; /* Make it the same width as the input */
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  z-index: 1000; /* Ensure it's on top of other elements */
+  max-height: 200px; /* Set max height to prevent overflow */
+  overflow-y: auto; /* Allow scrolling if too many items */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.suggestion-item {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.suggestion-item:hover {
+  background-color: #f0f0f0; /* Highlight on hover */
+}
