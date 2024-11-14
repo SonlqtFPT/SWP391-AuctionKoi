@@ -63,12 +63,12 @@ const InvoiceList = () => {
   useEffect(() => {
     const fetchInvoices = async () => {
       try {
+        const token = localStorage.getItem("accessToken");
         const response = await axios.get(
           "http://localhost:8080/invoice/get-invoices-of-winner",
           {
             headers: {
-              Authorization:
-                "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyQGdtYWlsLmNvbSIsImlhdCI6MTczMTU1Nzc5MiwiZXhwIjoxNzMxNjQ0MTkyfQ.zCNwxSHyCid3DFk9Bg5aEpNLcSdFZdFjXRtfQLmf5-5yITizwPXAuiahYr9mFx0oiilwCmOFEHgB8gI8AFEPAA",
+              Authorization: `Bearer ${token}`,
               Accept: "*/*",
             },
           }
