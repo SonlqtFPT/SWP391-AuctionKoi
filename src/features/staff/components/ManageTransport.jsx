@@ -10,14 +10,9 @@ import {
   Modal,
 } from "antd";
 import { toast } from "react-toastify";
-import {
-  FaFish,
-  FaIdCard,
-  FaFlag,
-  FaClock,
-  FaMapMarkerAlt,
-} from "react-icons/fa";
+import { FaFish, FaIdCard, FaFlag, FaClock } from "react-icons/fa";
 import api from "../../../config/axios";
+import { useNavigate } from "react-router-dom";
 
 const { Search } = Input;
 const { Option } = Select;
@@ -29,6 +24,11 @@ const ManageTransport = () => {
   const [loading, setLoading] = useState(true);
   const [searchField, setSearchField] = useState("invoiceId"); // Default search field
   const [dateRange, setDateRange] = useState([null, null]); // Date range for filtering
+  const navigate = useNavigate();
+
+  const handleRequestDetailPage = (transportId) => {
+    navigate(`/staff/transportdetail/${transportId}`);
+  };
 
   // Fetch delivering invoices from the new API endpoint
   const fetchInvoices = async () => {
@@ -54,7 +54,6 @@ const ManageTransport = () => {
         age: item.koiFish.age,
         size: item.koiFish.size,
         varietyName: item.koiFish.varietyName,
-        address: item.address,
       }));
       setInvoices(formattedInvoices);
       setFilteredInvoices(formattedInvoices); // Set filtered invoices initially
@@ -179,15 +178,6 @@ const ManageTransport = () => {
     {
       title: (
         <span className="flex items-center">
-          <FaMapMarkerAlt className="mr-2" /> Address
-        </span>
-      ),
-      dataIndex: "address",
-      key: "address",
-    },
-    {
-      title: (
-        <span className="flex items-center">
           <FaFlag className="mr-2" /> Status
         </span>
       ),
@@ -203,17 +193,30 @@ const ManageTransport = () => {
       title: "Action",
       key: "action",
       render: (text, record) => {
-        return record.status === "DELIVERY_IN_PROGRESS" ? (
-          <Select
-            placeholder="Update Status"
-            onChange={(value) => handleStatusUpdate(record.invoiceId, value)}
-            style={{ width: 180 }}
-          >
-            <Option value="DELIVERED">Delivered</Option>
-            <Option value="FAILED">Failed</Option>
-            <Option value="CANCELLED">Cancelled</Option>
-          </Select>
-        ) : null; // Only show action if the status is "DELIVERY_IN_PROGRESS"
+        return (
+          <div>
+            {record.status === "DELIVERY_IN_PROGRESS" && (
+              <Select
+                placeholder="Update Status"
+                onChange={(value) =>
+                  handleStatusUpdate(record.invoiceId, value)
+                }
+                style={{ width: 180, marginRight: 8 }}
+              >
+                <Option value="DELIVERED">Delivered</Option>
+                <Option value="FAILED">Failed</Option>
+                <Option value="CANCELLED">Cancelled</Option>
+              </Select>
+            )}
+            <Button
+              type="primary"
+              style={{ backgroundColor: "red", borderColor: "red" }}
+              onClick={() => handleRequestDetailPage(record.invoiceId)}
+            >
+              View Detail
+            </Button>
+          </div>
+        );
       },
     },
   ];

@@ -31,6 +31,7 @@ import Dainichi from "./components/Farms/dainichi.jsx";
 import Marushin from "./components/Farms/marushin.jsx";
 import Kanno from "./components/Farms/kanno.jsx";
 import InvoiceList from "./features/user/components/InvoiceList.jsx";
+import TransportDetail from "./features/staff/components/TransportDetail.jsx";
 
 export default function App() {
   return (
@@ -159,6 +160,14 @@ export default function App() {
             element={
               <ProtectedRoute allowedRoles={["STAFF"]}>
                 <StaffPage />
+              </ProtectedRoute>
+            }
+          />{" "}
+          <Route
+            path="/staff/transportdetail/:transportId"
+            element={
+              <ProtectedRoute allowedRoles={["STAFF"]}>
+                <TransportDetail />
               </ProtectedRoute>
             }
           />{" "}
